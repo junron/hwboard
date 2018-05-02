@@ -1,0 +1,71 @@
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>HwBoard</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Disable tap highlight on IE -->
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="HwBoard">
+    <link rel="apple-touch-icon" href="/images/icons/some_image.png">
+
+    <!-- Tile icon for Win8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="images/icons/some_image.png">
+    <meta name="msapplication-TileColor" content="#2F3BA2">
+
+    <!-- Place favicon.png in the images directory -->
+    <link rel="shortcut icon" href="images/icons/favicon.png" type="image/png">
+    <link rel="icon" href="images/images/favicon.png" type="image/png">
+
+    <!-- Color the status bar on mobile devices -->
+    <meta name="theme-color" content="#2F3BA2">
+    <style>
+    .app-fab--absolute {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+      }
+      * {
+          font-family:Roboto,Helvetica
+      }
+      @media(min-width: 1024px) {
+         .app-fab--absolute {
+          bottom: 1.5rem;
+          right: 1.5rem;
+        }
+      }
+        .Center-Container {
+      position: relative;
+      height: 100%;
+      }
+      
+      .Absolute-Center {
+      width: 50%;
+      height: 50%;
+      overflow: auto;
+      margin: auto;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      border: solid black;
+      }
+      .mdc-bottom-sheet{
+        width:100vh;
+        max-width:500px;
+        position:fixed;
+        bottom:0px
+      }
+      .mdc-list-item__text{
+        white-space: initial;
+      }
+      .mdc-select__menu{
+      top: inherit !important;
+      left: inherit !important;
+      }
+      
+        </style>
+</head>

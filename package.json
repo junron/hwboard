@@ -1,0 +1,28 @@
+{
+  "name": "hwboard2",
+  "version": "2.0.0",
+  "description": "version 2 of homeworkboard",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha test",
+    "start:dev": "nodemon ./bin/www"
+  },
+  "author": "junron",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cookie-parser": "~1.4.3",
+    "ejs": "^2.4.2",
+    "express": "^4.16.3",
+    "morgan": "^1.9.0",
+    "socket.io": "^2.1.0",
+    "socket.io-cookie-parser": "1.0.0",
+    "sugar-date": "^2.0.4"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.1.1",
+    "nodemon": "^1.17.2",
+    "socket.io-client": "^2.1.0"
+  }
+}
