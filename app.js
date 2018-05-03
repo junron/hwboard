@@ -1,3 +1,6 @@
+//Very important for CSP
+const hostName = "nushhwboard.tk"
+
 //Utils
 const http = require('http')
 const express = require("express")
@@ -20,7 +23,6 @@ app.set('view engine', 'ejs');
 //Content security policy settings
 //"unsafe-inline" for inline styles and scripts, aim to remove
 //https://developers.google.com/web/fundamentals/security/csp/
-const hostName = "nushhwboard.tk"
 const csp = "default-src 'self';"+
             "script-src 'self' 'unsafe-inline' cdn.ravenjs.com;"+
             "style-src 'self' 'unsafe-inline';"+
