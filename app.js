@@ -17,6 +17,19 @@ const routes = require('./routes/index');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+//Content security policy settings
+//"unsafe-inline" for inline styles and scripts, aim to remove
+//https://developers.google.com/web/fundamentals/security/csp/
+const hostName = "nushhwboard.tk"
+const csp = "default-src 'self';"+
+            "script-src 'self' 'unsafe-inline' cdn.ravenjs.com;"+
+            "style-src 'self' 'unsafe-inline';"+
+            `connect-src 'self' https://sentry.io wss://${hostName};` +
+            "report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908"
+app.use(function(req,res,next){
+  res.header("Content-Security-Policy",csp)
+  next()
+})
 //express setup
 app.use(logger('dev'));
 app.use(bodyParser.json());

@@ -35,15 +35,19 @@
      <!--DoNt toUcHa my eRRor rePoTer-->
      <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" crossorigin="anonymous"></script>
     <script>
-    //DoNt toUcHa my eRRor rePoTer
-    Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
+    //uncomment in dev enviroment
+    //document.cookie="dev=true"
+    if(!document.cookie.includes("dev=true")){
+      //DoNt toUcHa my eRRor rePoTer
+      Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
+    }
     const conn = io(document.domain,{transports: ['websocket'], upgrade: false, secure: true});
-    //Handle websocket connection errors 
+    //Handle websocket connection errors
     //Standard code for all my websocket apps
     conn.on("connect_error",function(e){
       if(navigator.onLine==undefined){
         //Some browsers may not support navigator.onLine
-        //EDIT: appears that most browsers support but meh 
+        //EDIT: appears that most browsers support but meh
         //https://caniuse.com/#feat=online-status
         console.log(`Error checking connection state`)
         return
@@ -57,7 +61,7 @@
         //Load data from cache since user is offline
       }
     })
-    
+
     conn.on("connect",function(){
       console.log("Connected to server!")
     })
