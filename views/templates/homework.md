@@ -34,9 +34,9 @@ It is followed by a `<h3>` tag that contains the subject name.
 Finally, an unclosed `<ul>`is appended to `html`
    - If this subject is not the first subject, a closing `</ul>` and `</li>` should be appended to close this subject. An appropriate seperating element may be used to mark the end of the subject.   
   
-A `<li>` tag is appended to `html`. It should contain an [icon](#icon) and the relevant data about the homework.
+A `<li>` tag is appended to `html`. It should contain an [icon](#icons) and the relevant data about the homework.
 
-### <div id="icon"></div>Icons
+### Icons
 All icons are from [Google's material design icon font](https://material.io/icons/).  
 
 If the homework is graded or is a test, an [assessment icon](https://material.io/icons/#ic_assessment) (HTML entity: `&#xE85C;`) may be used.
@@ -49,14 +49,14 @@ If the homework is not graded, a [description icon](https://material.io/icons/#i
 <p style="background-color:#ffffff;color:black">Otherwise, the background color remains white.</p>
 
 #### Font color
-<p style="color:#ff0000">If the homework is due <a href="#dates">today</a>, <code style="color:#ff0000">#ff0000</code> may be used as the font color</p>
-<p style="color:#ab47bc">If the homework is due <a href="#dates">the following day</a>, <code style="color:#ab47bc">#ab47bc</code> may be used as the font color</p>
+<p style="color:#ff0000">If the homework is due <a href="#-definition-of-dates">today</a>, <code style="color:#ff0000">#ff0000</code> may be used as the font color</p>
+<p style="color:#ab47bc">If the homework is due <a href="#-definition-of-dates">the following day</a>, <code style="color:#ab47bc">#ab47bc</code> may be used as the font color</p>
 <p style="background-color:#ffffff;color:black">Otherwise, the text remains black</p>
 
-### <div id="dates"></div> Definition of dates
+### Definition of dates
 The number of days is defined as the number of squares on a calendar until that date.  
-T
 For example
+
 | Start        | End          | Days  | 
 | ------------- | ------------- | ----- |
 | 5/3/2018 6:40pm  | 6/3/2018 7:00am | 1 |

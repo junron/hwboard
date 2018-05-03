@@ -4,11 +4,14 @@
 1. [`database.js`](database.js)   
   This file handles all the database logic, including getting, adding, deleting and editing homework in the database  
   @therealorange
+
 2. [`websocket.js`](websocket.js)  
   Handles all the websocket logic  
   @Jro
+
 3. [`./views/index.ejs`](./views/index.ejs)  
   Main ejs file to be served @owl10124
+  
 4. [`./views/templates/homework.ejs`](./views/templates/homework.ejs)  
   A template for rendering homework  
   Simple wrapper for [`./public/scripts/parse.js`](./public/scripts/parse.js)   
