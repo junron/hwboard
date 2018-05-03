@@ -58,7 +58,7 @@ The number of days is defined as the number of squares on a calendar until that 
 T
 For example
 | Start        | End          | Days  | 
-| ------------- |:-------------:| -----:|
+| ------------- | ------------- | ----- |
 | 5/3/2018 6:40pm  | 6/3/2018 7:00am | 1 |
 | 5/3/2018 6:40pm  | 5/3/2018 7:00pm | 0 |
 | 5/3/2018 6:40pm  | 6/3/2018 12 midnight | 1 |
