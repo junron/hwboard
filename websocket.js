@@ -18,6 +18,7 @@ io.on('connection', function(socket){
       console.log("Error could not be handled by callback: \n",error)
     })
   })
+
   socket.on("addReq",function(msg,callback){
     //You can access cookies in websockets too!
     const cookies = socket.request.cookies
@@ -39,6 +40,8 @@ io.on('connection', function(socket){
       return callback("401: Unauthorised")
     }
   })
+
+  
   //For tests
   socket.on("textMessage",function(msg,callback){
     return callback(null,msg+"received")

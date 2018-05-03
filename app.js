@@ -1,5 +1,5 @@
 //Very important for CSP
-const hostName = "nushhwboard.tk"
+const hostName = process.env.HOSTNAME || "nushhwboard.tk" 
 
 //Utils
 const http = require('http')
