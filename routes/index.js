@@ -1,7 +1,9 @@
+'use strict'
 const express = require('express');
 const Sugar = require("sugar-date")
 const router = express.Router();
 const db = require("../database")
+const auth = require("../auth")
 //Files to HTTP2 push for quicker page loading
 //TODO: find a library to auto push required files
 
@@ -35,10 +37,31 @@ function parsePushHeaders(files){
 }
 
 /* GET home page. */
-router.get('/', (req, res, next) => {
-  res.header("Link",parsePushHeaders(pushFiles))
-  db.getHomework().then(function(data){
-    res.render('index', { title: 'Express',data,Sugar,sortType:"Due date",sortOrder:0});
+router.get('/', async (req, res, next) => {
+  //Check auth here
+  if(!req.cookies.token){
+    return res.render("auth")
+  }
+  const token = req.cookies.token
+  res.clearCookie("token")
+  res.cookie("token",token,{
+    httpOnly:true,
+    secure:true
   })
+  const decodedToken = await auth.verifyToken(token)
+  if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
+    throw new Error("You must log in with a NUSH email.")
+  }
+
+  //Server push
+  res.header("Link",parsePushHeaders(pushFiles))
+
+  //Get homework for rendering
+  let data = await db.getHomework()
+  //Dont show homework that is overdue
+  data = data.filter(homework => {
+    return homework.dueDate >= new Date().getTime()/1000
+  })
+  res.render('index', {data,Sugar,sortType:"Due date",sortOrder:0})
 });
 module.exports = router;

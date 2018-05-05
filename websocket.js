@@ -2,6 +2,7 @@
 exports.createServer = function(server){
 const io = require('socket.io')(server);
 const db = require("./database")
+const auth = require("./auth")
 const cookieParser = require('socket.io-cookie-parser')
 io.set('transports', ['websocket'])
 io.use(cookieParser())
@@ -26,19 +27,28 @@ io.on('connection', function(socket){
     const token = cookies.token || msg.token
     //Check auth here
     //TODO actually check auth token
-    if(token){
-      db.addHomework(msg).then(function(){
-        return callback(null)
-      }).catch(function(error){
-        return callback(error)
-      }).catch(function(error){
-        //This could be caused by not passing a function as a callback
-        console.log("Error could not be handled by callback: \n",error)
-      })
-    }else{
-      //Not authorised
-      return callback("401: Unauthorised")
-    }
+    auth.verifyToken(token).then(function(decodedToken){
+      if(decodedToken){
+        db.addHomework(msg).then(function(){
+          return callback(null)
+        }).catch(function(error){
+          return callback(error.toString())
+        }).catch(function(error){
+          //This could be caused by not passing a function as a callback
+          console.log("Error could not be handled by callback: \n",error.toString())
+        })
+      }else{
+        //Not authorised
+        return callback("401: Unauthorised")
+      }
+    //Token errors
+    }).catch(function(error){
+      console.log(error)
+      return callback("403: Token error: " + error.toString())
+    }).catch(function(error){
+      //This could be caused by not passing a function as a callback
+      console.log("Error could not be handled by callback: \n",error.toString())
+    })
   })
 
   
