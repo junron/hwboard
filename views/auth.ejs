@@ -3,8 +3,8 @@
 <script>
 const graphAPIScopes = ["https://graph.microsoft.com/user.read"]
 const msalconfig = {
-  clientID: "43ce8c47-0f1d-486e-ab22-c5d5125ccfb7",
-  redirectUri: "https://nushhwboard.tk"
+  clientID: `"${clientID}"`,
+  redirectUri: `"${hostname}"`
 };
 function loginCallback(errorDesc, token, error, tokenType) {
  if(tokenType=="id_token"){

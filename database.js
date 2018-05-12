@@ -2,8 +2,13 @@
 //If your db library return promises, they will be unwrapped automatically
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 const Sequelize = require('sequelize')
-//Use actual username and password here
-const sequelize = new Sequelize('postgres://username:password@127.0.0.1:5432/hwboard')
+
+//Same as docker env variables
+const dbPasswd = process.env.POSTGRES_PASSWORD
+const dbUser = process.env.POSTGRES_USER 
+const dbName = process.env.POSTGRES_DB || "hwboard"
+
+const sequelize = new Sequelize(`postgres://${dbUser}:${dbPasswd}@127.0.0.1:5432/${dbName}`)
 sequelize.authenticate()
 .then(() => {
   console.log('Connection has been established successfully.');
@@ -46,6 +51,7 @@ Homework.sync().then(()=>{
 }).catch(function(err){
   console.log(err)
 })
+
 async function getHomework(){
   const data = await Homework.findAll({
     raw: true

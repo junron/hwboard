@@ -41,7 +41,9 @@ function parsePushHeaders(files){
 router.get('/', async (req, res, next) => {
   //Check auth here
   if(!req.cookies.token){
-    return res.render("auth")
+    const hostname = process.env.HOSTNAME
+    const clientID = process.env.MS_CLIENTID
+    return res.render("auth",{hostname,clientID})
   }
   const token = req.cookies.token
   res.clearCookie("token")

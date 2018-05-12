@@ -23,13 +23,15 @@ app.set('view engine', 'ejs');
 //Content security policy settings
 //"unsafe-inline" for inline styles and scripts, aim to remove
 //https://developers.google.com/web/fundamentals/security/csp/
-const csp = "default-src 'self';"+
+let csp = "default-src 'self';"+
             "script-src 'self' 'unsafe-inline' https://cdn.ravenjs.com https://secure.aadcdn.microsoftonline-p.com;"+
             "style-src 'self' 'unsafe-inline';"+
             `connect-src 'self' https://sentry.io wss://${hostName} https://login.microsoftonline.com/;` +
-            //"report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908;"+
             "object-src 'none';"+
             "img-src 'self' data:"
+            if(!process.env.DEV){
+              csp += "report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908;"
+            }
 app.use(function(req,res,next){
   res.header("Content-Security-Policy",csp)
   next()
