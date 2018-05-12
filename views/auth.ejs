@@ -3,8 +3,8 @@
 <script>
 const graphAPIScopes = ["https://graph.microsoft.com/user.read"]
 const msalconfig = {
-  clientID: `"${clientID}"`,
-  redirectUri: `"${hostname}"`
+  clientID: "<%= clientID %>",
+  redirectUri: "https://<%- hostname %>"
 };
 function loginCallback(errorDesc, token, error, tokenType) {
  if(tokenType=="id_token"){

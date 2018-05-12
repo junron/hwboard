@@ -1,5 +1,5 @@
 //Very important for CSP
-const hostName = process.env.HOSTNAME || "nushhwboard.tk" 
+const hostName = process.env.HOSTNAME || require("./config.json").HOSTNAME || "nushhwboard.tk" 
 
 //Utils
 const http = require('http')
@@ -28,7 +28,7 @@ let csp = "default-src 'self';"+
             "style-src 'self' 'unsafe-inline';"+
             `connect-src 'self' https://sentry.io wss://${hostName} https://login.microsoftonline.com/;` +
             "object-src 'none';"+
-            "img-src 'self' data:"
+            "img-src 'self' data:;"
             if(!process.env.DEV){
               csp += "report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908;"
             }

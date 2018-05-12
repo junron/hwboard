@@ -41,8 +41,9 @@ function parsePushHeaders(files){
 router.get('/', async (req, res, next) => {
   //Check auth here
   if(!req.cookies.token){
-    const hostname = process.env.HOSTNAME
-    const clientID = process.env.MS_CLIENTID
+    const hostname = process.env.HOSTNAME || require("../config.json").HOSTNAME || "nushhwboard.tk" 
+    const clientID = process.env.MS_CLIENTID || require("../config.json").MS_CLIENTID
+    console.log(clientID)
     return res.render("auth",{hostname,clientID})
   }
   const token = req.cookies.token

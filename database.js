@@ -3,10 +3,12 @@
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 const Sequelize = require('sequelize')
 
-//Same as docker env variables
-const dbPasswd = process.env.POSTGRES_PASSWORD
-const dbUser = process.env.POSTGRES_USER 
-const dbName = process.env.POSTGRES_DB || "hwboard"
+//Same as docker env variables 
+//or use a config file
+const config = require("./config.json")
+const dbPasswd = process.env.POSTGRES_PASSWORD || config.POSTGRES_PASSWORD
+const dbUser = process.env.POSTGRES_USER || config.POSTGRES_USER
+const dbName = process.env.POSTGRES_DB || config.POSTGRES_DB ||"hwboard"
 
 const sequelize = new Sequelize(`postgres://${dbUser}:${dbPasswd}@127.0.0.1:5432/${dbName}`)
 sequelize.authenticate()
