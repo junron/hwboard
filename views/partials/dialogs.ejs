@@ -1,0 +1,257 @@
+ <aside id="my-mdc-dialog"
+    class="mdc-dialog"
+    role="alertdialog"
+    aria-labelledby="my-mdc-dialog-label"
+    aria-describedby="my-mdc-dialog-description">
+    <div class="mdc-dialog__surface">
+      <header class="mdc-dialog__header">
+        <h2 class="mdc-dialog__header__title">
+        Sort options
+        </h2>
+      </header>
+      <section class="mdc-dialog__body">
+    <div class="mdc-select" id="selectSortParam" role="listbox">
+  <div class="mdc-select__surface" tabindex="0">
+  <div class="mdc-select__label mdc-select__label--float-above">Sort parameter</div>
+  <div class="mdc-select__selected-text"></div>
+  <div class="mdc-select__bottom-line"></div>
+  </div>
+  <div class="mdc-menu mdc-select__menu">
+  <ul class="mdc-list mdc-menu__items">
+    <li class="mdc-list-item" role="option"  aria-selected tabindex="0">Subject name</li>
+    <li class="mdc-list-item" role="option" tabindex="0">Due date</li>
+  </ul>
+  </div>
+  </div>
+  <div class="mdc-select" id="selectSortOrder"  role="listbox">
+  <div class="mdc-select__surface" tabindex="0">
+  <div class="mdc-select__label mdc-select__label--float-above">Sort order</div>
+  <div class="mdc-select__selected-text"></div>
+  <div class="mdc-select__bottom-line"></div>
+  </div>
+  <div class="mdc-menu mdc-select__menu">
+  <ul class="mdc-list mdc-menu__items">
+  <li class="mdc-list-item" role="option" aria-selected tabindex="0">Ascending</li>
+  <li class="mdc-list-item" role="option" tabindex="0">Descending</li>
+  </ul>
+  </div>
+  </div>
+  <div class="mdc-form-field normalisemdc">
+  <div id="setDefaultCheckBox" style="--mdc-ripple-left:10px; --mdc-ripple-top:10px;" class="mdc-checkbox mdc-checkbox--upgraded mdc-ripple-upgraded mdc-ripple-upgraded--unbounded">
+    <input type="checkbox" id="setDefault" class="mdc-checkbox__native-control"/>
+    <div class="mdc-checkbox__background">
+      <svg class="mdc-checkbox__checkmark"
+          viewBox="0 0 30 30">
+        <path class="mdc-checkbox__checkmark-path"
+              fill="none"
+              stroke="white"
+              d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+      </svg>
+      <div class="mdc-checkbox__mixedmark"></div>
+    </div>
+  </div>
+  <label for="setDefault">Set as default</label>
+  </div>
+  </section>
+  <footer class="mdc-dialog__footer">
+    <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel">Cancel</button>
+    <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept">Continue</button>
+  </footer>
+  </div>
+  <div class="mdc-dialog__backdrop"></div>
+  </aside>
+  <aside id="edit-dialog"
+    class="mdc-dialog"
+    role="alertdialog"
+    aria-labelledby="my-mdc-dialog-label"
+    aria-describedby="my-mdc-dialog-description">
+    <div class="mdc-dialog__surface">
+      <header class="mdc-dialog__header">
+        <h2 id="edit-dialog-label" class="mdc-dialog__header__title">
+        Add homework
+        </h2>
+      </header>
+      <section class="mdc-dialog__body mdc-dialog__body--scrollable" style="max-height:50vh">
+        <br>
+        <div id="subject-select" class="mdc-select" role="listbox">
+      <div class="mdc-select__surface" tabindex="0">
+      <div class="mdc-select__label">Select subject</div>
+      <div class="mdc-select__selected-text"></div>
+      <div class="mdc-select__bottom-line"></div>
+      </div>
+      <div class="mdc-menu mdc-select__menu">
+      <ul class="mdc-list mdc-menu__items">
+        <li class="mdc-list-item" role="option" tabindex="0">ADMIN</li>
+        <li class="mdc-list-item" role="option" tabindex="0">ANNOUNCEMENTS</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Biology</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Chemistry</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Chinese</li>
+        <li class="mdc-list-item" role="option" tabindex="0">CS</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Da-vinci (D&E)</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Da-vinci (SP)</li>
+        <li class="mdc-list-item" role="option" tabindex="0">English</li>
+        <li class="mdc-list-item" role="option" tabindex="0">French</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Geography</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Higher Chinese</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Hindi</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Humanities</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Japanese</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Math</li>
+          <li class="mdc-list-item" role="option" tabindex="0">Miscellaneous</li>
+        <li class="mdc-list-item" role="option" tabindex="0">PE</li>
+        <li class="mdc-list-item" role="option" tabindex="0">Physics</li>
+      </ul>
+      </div>
+      </div>
+      <br>
+      <div class="mdc-form-field normalisemdc">
+      <div id="gradedCheckbox" class="mdc-checkbox mdc-checkbox--upgraded mdc-ripple-upgraded mdc-ripple-upgraded--unbounded">
+        <input type="checkbox" id="graded" class="mdc-checkbox__native-control"/>
+        <div class="mdc-checkbox__background">
+          <svg class="mdc-checkbox__checkmark"
+              viewBox="0 0 24 24">
+            <path class="mdc-checkbox__checkmark-path"
+                  fill="none"
+                  stroke="white"
+                  d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+          </svg>
+          <div class="mdc-checkbox__mixedmark"></div>
+        </div>
+      </div>
+      <label for="graded">Graded/test</label>
+      </div>
+      <br>
+      <div id="date" class="mdc-text-field mdc-text-field--upgraded " data-mdc-auto-init="MDCTextField">
+        <input type="text" id="dueDate" oninput = "parseDate()" class="mdc-text-field__input" aria-controls="my-text-field-helper-text">
+        <label class="mdc-text-field__label mdc-text-field__label--float-above" for="pre-filled">
+      When is it due?
+        </label>
+        <div class="mdc-line-ripple" style="transform-origin: 80.5px center"></div>
+      </div>
+      <p id="dateMsg" class="mdc-text-field-helper-text mdc-text-field-helper-text--persistent" aria-hidden="true">
+        Relative dates such as "next lesson" are accepted
+      </p><div id="outdate"></div>
+      <div class="mdc-text-field mdc-text-field--upgraded " data-mdc-auto-init="MDCTextField">
+        <input id="hwname" type="text" class="mdc-text-field__input" aria-controls="my-text-field-helper-text">
+        <label class="mdc-text-field__label mdc-text-field__label--float-above" for="pre-filled">
+      Enter homework name
+        </label>
+        <div class="mdc-line-ripple" style="transform-origin: 80.5px center"></div>
+      </div>
+      <br>
+      <button id="updateBtn" class="mdc-button normalisemdc mdc-button--raised">Update hwboard!</button>
+  </section>
+  </div>
+  <div class="mdc-dialog__backdrop"></div>
+  </aside>
+  <aside id="delete-dialog"
+    class="mdc-dialog"
+    role="alertdialog"
+    aria-labelledby="my-mdc-dialog-label"
+    aria-describedby="my-mdc-dialog-description">
+    <div class="mdc-dialog__surface">
+      <header class="mdc-dialog__header">
+        <h2  class="mdc-dialog__header__title">
+        Deletion confirmation
+        </h2>
+      </header>
+      <section class="mdc-dialog__body">
+  Are you sure you want to delete this homework?
+  </section>
+  <footer class="mdc-dialog__footer">
+    <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel">Cancel</button>
+    <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept" onclick="deleteHomework()">Continue</button>
+  </footer>
+  </div>
+  <div class="mdc-dialog__backdrop"></div>
+  </aside>
+  <aside id="details-sheet"
+    class="mdc-dialog"
+    role="alertdialog"
+    aria-labelledby="my-mdc-dialog-label"
+    aria-describedby="my-mdc-dialog-description">
+    <div style="width:100%" class="mdc-dialog__surface mdc-bottom-sheet">
+      <header class="mdc-dialog__header">
+        <h2 id="details-sheet-label" class="mdc-dialog__header__title">
+
+        </h2>
+      </header>
+      <section class="mdc-dialog__body">
+  <ul class="mdc-list">
+  <li class="mdc-list-item">
+    <span class="mdc-list-item__text">
+      <span class="mdc-list-item__secondary-text">
+        Subject
+      </span>
+      <span id="detailSubject"></span>
+  </span>
+  </li>
+  <li class="mdc-list-item">
+    <span class="mdc-list-item__text">
+      <span class="mdc-list-item__secondary-text">
+  Due
+      </span>
+      <span id="detailDue"></span>
+  </span>
+  </li>
+  <li class="mdc-list-item">
+    <span class="mdc-list-item__text">
+      <span class="mdc-list-item__secondary-text">
+        Graded
+      </span>
+      <span id="detailGraded"></span>
+  </span>
+  </li>
+  <li class="mdc-list-item">
+    <span class="mdc-list-item__text">
+      <span class="mdc-list-item__secondary-text">
+        Last edited
+      </span>
+      <span id="detailLastEdit"></span>
+  </span>
+  </li>
+  </ul>
+  </section>
+  </div>
+  <div class="mdc-dialog__backdrop"></div>
+  </aside>
+  <div class="mdc-snackbar"
+      aria-live="assertive"
+      aria-atomic="true"
+      aria-hidden="true">
+    <div class="mdc-snackbar__text"></div>
+    <div class="mdc-snackbar__action-wrapper">
+      <button type="button" class="mdc-snackbar__action-button"></button>
+    </div>
+  </div>
+<script>
+const MDCSelect = mdc.select.MDCSelect
+const sortParam = new MDCSelect(document.querySelector('#selectSortParam'));
+const sortOrder = new MDCSelect(document.querySelector('#selectSortOrder'));
+var dialog = new mdc.dialog.MDCDialog(document.querySelector('#my-mdc-dialog'));
+const sortOptions ={}
+dialog.listen('MDCDialog:accept', function() {
+  if(setDefaultcheckbox.checked){
+    document.cookie = "sortType="+sortParam.selectedText_.innerHTML
+    document.cookie = "sortOrder="+sortOrder.selectedIndex
+  }
+  sortOptions.type = sortParam.selectedText_.innerHTML
+  sortOptions.order = sortOrder.selectedIndex
+  worker.postMessage({
+    type:"get"
+  }).then(data=>{
+    reRender(data)
+  })
+})
+const MDCSnackBar = mdc.snackbar.MDCSnackbar;
+const snackBar = new MDCSnackBar(document.querySelector('.mdc-snackbar'));
+const subjectSelect = new MDCSelect(document.querySelector('#subject-select'));
+const MDCCheckbox = mdc.checkbox.MDCCheckbox;
+const editDialog = new mdc.dialog.MDCDialog(document.querySelector('#edit-dialog'));
+const deleteDialog = new mdc.dialog.MDCDialog(document.querySelector('#delete-dialog'));
+const detailsSheet = new mdc.dialog.MDCDialog(document.querySelector('#details-sheet'));
+const toolbar = mdc.toolbar.MDCToolbar.attachTo(document.querySelector('.mdc-toolbar'));
+toolbar.fixedAdjustElement = document.querySelector('.mdc-toolbar-fixed-adjust');
+let checkbox = new MDCCheckbox(document.querySelector('#gradedCheckbox'));
+let setDefaultcheckbox = new MDCCheckbox(document.querySelector('#setDefaultCheckBox'));
+</script>

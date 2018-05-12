@@ -1,5 +1,6 @@
 'use strict'
 const express = require('express');
+const renderer = require('../public/scripts/renderer')
 const Sugar = require("sugar-date")
 const router = express.Router();
 const db = require("../database")
@@ -48,20 +49,28 @@ router.get('/', async (req, res, next) => {
     httpOnly:true,
     secure:true
   })
+
+  //TODO actually check for admin
+  let admin = true
+  if(req.cookies.admin=="false"){
+    admin = false
+  }
+
   const decodedToken = await auth.verifyToken(token)
   if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
     throw new Error("You must log in with a NUSH email.")
   }
-
+  //Get sort options
+  let {sortOrder,sortType} = req.cookies
+  if(sortOrder){
+    sortOrder = parseInt(sortOrder)
+  }
   //Server push
   res.header("Link",parsePushHeaders(pushFiles))
 
   //Get homework for rendering
   let data = await db.getHomework()
-  //Dont show homework that is overdue
-  data = data.filter(homework => {
-    return homework.dueDate >= new Date().getTime()/1000
-  })
-  res.render('index', {data,Sugar,sortType:"Due date",sortOrder:0})
+  
+  res.render('index', {renderer,data,sortType,sortOrder,admin})
 });
 module.exports = router;
