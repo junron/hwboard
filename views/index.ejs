@@ -99,6 +99,8 @@
         type:"set",
         data
       })
+      //Add to localstorage as a fallback
+      localStorage.setItem("data",JSON.stringify(data))
     })
 
     //Server pushes data, re-render
@@ -109,6 +111,8 @@
         type:"set",
         data
       })
+      //Add to localstorage as a fallback
+      localStorage.setItem("data",JSON.stringify(data))
     })
     </script>
     <link rel="stylesheet" href = "/styles/material-components-web.min.css">

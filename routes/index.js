@@ -1,5 +1,6 @@
 'use strict'
 const express = require('express');
+const request = require("request-promise-native")
 const renderer = require('../public/scripts/renderer')
 const Sugar = require("sugar-date")
 const router = express.Router();
@@ -40,18 +41,50 @@ function parsePushHeaders(files){
 /* GET home page. */
 router.get('/', async (req, res, next) => {
   //Check auth here
+  //Temp var to store fresh token
+  let tempToken
+  //Auth settings
+  const config = require("../config.json") 
+  const clientId = process.env.MS_CLIENTID || config.MS_CLIENTID
+  const clientSecret = process.env.MS_CLIENTSECRET || config.MS_CLIENTSECRET
+  const hostname = process.env.HOSTNAME || config.HOSTNAME || "https://nushhwboard.tk"
   if(!req.cookies.token){
-    const hostname = process.env.HOSTNAME || require("../config.json").HOSTNAME || "nushhwboard.tk" 
-    const clientID = process.env.MS_CLIENTID || require("../config.json").MS_CLIENTID
-    console.log(clientID)
-    return res.render("auth",{hostname,clientID})
+    if(!req.query.code){
+      return res.redirect(`https://login.microsoftonline.com/common/oauth2/v2.0/authorize?
+      response_type=code&
+      scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read%20openid%20profile&
+      client_id=${clientId}&
+      redirect_uri=${hostname}&
+      prompt=select_account&
+      response_mode=query`)
+    }else{
+      const code = req.query.code
+      const options = {
+        method:"POST",
+        uri:"https://login.microsoftonline.com/common/oauth2/v2.0/token",
+        formData:{
+          //grant_type:"id_token",
+          grant_type:"authorization_code",
+          scope:"https://graph.microsoft.com/user.read openid profile",
+          client_id:clientId,
+          redirect_uri:hostname,
+          code,
+          client_secret:clientSecret
+        }
+      }
+      try{
+        const data = JSON.parse(await request(options))
+        res.cookie("token",data.id_token,{
+          httpOnly:true,
+          secure:true
+        })
+        tempToken = data.id_token
+      }catch(e){
+        console.log(e)
+      }
+    }
   }
-  const token = req.cookies.token
-  res.clearCookie("token")
-  res.cookie("token",token,{
-    httpOnly:true,
-    secure:true
-  })
+  const token = req.cookies.token || tempToken
 
   //TODO actually check for admin
   let admin = true

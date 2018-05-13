@@ -1,10 +1,17 @@
 //Get data from indexeddb about specific homework
 async function getExistingInfo(){
   const id = parseInt($(lastTouched).attr("sqlid"))
-  return worker.postMessage({
+  const result = await worker.postMessage({
     type:"getSingle",
     id
   })
+  if((!result)||result.length==0){
+    //Perhaps indexeddb screwed up 
+    return JSON.parse(localStorage.getItem("data")).filter((homework)=>{
+      return homework.id == id
+    })[0]
+  }
+  return result
 }
 //Show toolbar
 function showEditToolbar(){

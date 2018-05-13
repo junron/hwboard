@@ -240,6 +240,10 @@ dialog.listen('MDCDialog:accept', function() {
   worker.postMessage({
     type:"get"
   }).then(data=>{
+    if((!data)||data.length==0){
+      //Perhaps indexeddb screwed up 
+      data = JSON.parse(localStorage.getItem("data"))
+    }
     reRender(data)
   })
 })

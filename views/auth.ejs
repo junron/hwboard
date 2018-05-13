@@ -6,6 +6,7 @@ const msalconfig = {
   clientID: "<%= clientID %>",
   redirectUri: "https://<%- hostname %>"
 };
+
 function loginCallback(errorDesc, token, error, tokenType) {
  if(tokenType=="id_token"){
   document.cookie = "token="+token
@@ -23,6 +24,7 @@ const userAgentApplication = new Msal.UserAgentApplication(msalconfig.clientID, 
 });
 function initLogin(){
   const user = userAgentApplication.getUser()
+  alert(user)
   if(!user){
     userAgentApplication.loginRedirect(graphAPIScopes);
   }
@@ -31,7 +33,9 @@ function signOut() {
     userAgentApplication.logout()
 }
 window.onload = function(){
-  initLogin()
+  //setTimeout(function(){
+    initLogin()
+  //},5000)
 }
 </script>
 </body>

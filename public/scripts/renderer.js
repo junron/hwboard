@@ -46,13 +46,7 @@ parser.parseBySubject = function (data,order=0) {
     return html
 }
 parser.parseHomeworkSubject = function(homework) {
-  let {
-    dueDate,
-    editTime,
-    editPerson,
-    isTest,
-    subject,
-    daysLeft,
+  const {
     id,
     iconColor,
     bgColor,
@@ -63,7 +57,7 @@ parser.parseHomeworkSubject = function(homework) {
     extra
   } = parser.parseHomeworkMetaData(homework)
   return `
-  <li class="mdc-list-item hwitem" dueDate="${dueDate}" editTime="${editTime}" editPerson="${editPerson}" isTest = ${isTest} subject="${subject}" daysLeft="${daysLeft}" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
+  <li class="mdc-list-item hwitem" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
   <span class="mdc-list-item__graphic" role="presentation">
     <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
   </span>
@@ -115,24 +109,17 @@ parser.parseByDate = function(data,order=0) {
   return html
 }
 parser.parseHomeworkDate = function(homework) {
-  let {
-    dueDate,
-    editTime,
-    editPerson,
-    isTest,
+  const {
     subject,
-    daysLeft,
     id,
     iconColor,
     bgColor,
     icon,
     text,
-    displayDate,
-    dueDate2,
     extra
   } = parser.parseHomeworkMetaData(homework)
   return `
-  <li class="mdc-list-item hwitem" dueDate="${dueDate}" editTime="${editTime}" editPerson="${editPerson}" isTest = ${isTest} subject="${subject}" daysLeft="${daysLeft}" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
+  <li class="mdc-list-item hwitem" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
   <span class="mdc-list-item__graphic" role="presentation">
     <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
   </span>
