@@ -17,6 +17,6 @@ cache:
 
 build:
   script:
-   - npm instal
-   - whoam
+   - npm install
+   - whoami
    - curl ip-api.com
