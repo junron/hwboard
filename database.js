@@ -1,83 +1,84 @@
 //All functions here should be async.
 //If your db library return promises, they will be unwrapped automatically
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
+const Sequelize = require('sequelize')
+
+//Same as docker env variables 
+//or use a config file
+const config = require("./loadConfig")
+const {POSTGRES_PASSWORD:dbPasswd,POSTGRES_USER:dbUser,POSTGRES_DB:dbName="hwboard"} = config
+
+const sequelize = new Sequelize(`postgres://${dbUser}:${dbPasswd}@127.0.0.1:5432/${dbName}`)
+sequelize.authenticate()
+.then(() => {
+  console.log('Connection has been established successfully.');
+})
+.catch(err => {
+  console.error('Unable to connect to the database:', err);
+});
+const Homework = sequelize.define('homework', {
+  id :{
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true
+  },
+  text: {
+    type: Sequelize.STRING
+  },
+  subject: {
+    type: Sequelize.STRING
+  },
+  dueDate: {
+    type: Sequelize.DATE
+  },
+  isTest: {
+    type: Sequelize.BOOLEAN
+  },
+  lastEditPerson: {
+    type: Sequelize.STRING
+  },
+  lastEditTime: {
+    type: Sequelize.DATE
+  }
+},{
+  timestamps:true,
+  createdAt: false,
+  updatedAt: 'lastEditTime'
+})
+Homework.sync().then(()=>{
+  console.log("Table init complete")
+}).catch(function(err){
+  console.log(err)
+})
+
 async function getHomework(){
-    //TODO actually get data from db
-    return [ { id: 186,
-        subject: 'Biology',
-        dueDate: 1524547800,
-        isTest: 1,
-        text: 'common test cardiac cycle to respiration (24/4)',
-        lastEditTime: '2018-04-10T10:04:24.000Z',
-        lastEditPerson: 'LAM JUN RONG' },
-      { id: 212,
-        subject: 'Higher Chinese',
-        dueDate: 1524816000,
-        isTest: 1,
-        text: 'HCL Exam (27/4)',
-        lastEditTime: '2018-04-16T10:20:42.000Z',
-        lastEditPerson: 'WANG HENGYUE' },
-      { id: 214,
-        subject: 'English',
-        dueDate: 1524816000,
-        isTest: 1,
-        text: 'EL exam (27/4)',
-        lastEditTime: '2018-04-09T09:42:21.000Z',
-        lastEditPerson: 'WANG HENGYUE' },
-      { id: 213,
-        subject: 'Chinese',
-        dueDate: 1524816000,
-        isTest: 1,
-        text: 'CL exam (27/4)',
-        lastEditTime: '2018-04-09T09:41:04.000Z',
-        lastEditPerson: 'WANG HENGYUE' },
-      { id: 215,
-        subject: 'Geography',
-        dueDate: 1525075200,
-        isTest: 1,
-        text: 'Geography exam (30/4)',
-        lastEditTime: '2018-04-09T09:42:46.000Z',
-        lastEditPerson: 'WANG HENGYUE' },
-      { id: 216,
-        subject: 'Physics',
-        dueDate: 1525249800,
-        isTest: 1,
-        text: 'Physics exam (2/5)',
-        lastEditTime: '2018-04-09T09:43:10.000Z',
-        lastEditPerson: 'WANG HENGYUE' },
-      { id: 220,
-        subject: 'Math',
-        dueDate: 1525341600,
-        isTest: 1,
-        text: 'Math exam (3/5)',
-        lastEditTime: '2018-04-10T10:11:58.000Z',
-        lastEditPerson: 'LAM JUN RONG' },
-      { id: 221,
-        subject: 'Chemistry',
-        dueDate: 1525404600,
-        isTest: 1,
-        text: 'Chemistry exam (4/5)',
-        lastEditTime: '2018-04-10T10:12:36.000Z',
-        lastEditPerson: 'LAM JUN RONG' },
-      { id: 235,
-        subject: 'Japanese',
-        dueDate: 1525680000,
-        isTest: 1,
-        text: 'Japanese Exam (7/5)',
-        lastEditTime: '2018-04-17T10:50:03.000Z',
-        lastEditPerson: 'WANG HENGYUE' },
-      { id: 236,
-        subject: 'French',
-        dueDate: 1525680000,
-        isTest: 1,
-        text: 'French Exam (7/5)',
-        lastEditTime: '2018-04-17T10:50:22.000Z',
-        lastEditPerson: 'WANG HENGYUE' } 
-    ]
+  const data = await Homework.findAll({
+    raw: true
+  })
+  return data.filter((homework)=>{
+    return homework.dueDate >= new Date().getTime()
+  })
 }
+
 async function addHomework(newHomework){
-  //TODO actually add homework to database
-  //resolve on success
-  return
+  return Homework.create(newHomework)
 }
-module.exports={getHomework,addHomework}
+
+async function editHomework(newHomework){
+  Homework.update(newHomework,
+    {
+    where:{
+      id:newHomework.id
+    }
+  })
+}
+async function deleteHomework(homeworkId){
+  Homework.destroy(
+    {
+    where:{
+      id:homeworkId
+    }
+  })
+}
+module.exports={getHomework,addHomework,editHomework,deleteHomework}

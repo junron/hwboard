@@ -1,4 +1,10 @@
-<%function parseBySubject(data,order=0) {
+let parser ={}
+if(typeof Sugar =="undefined"){
+  if(typeof navigator=="undefined"){
+    Sugar = require("sugar-date")
+  }
+}
+parser.parseBySubject = function (data,order=0) {
   data = data.sort(function(a,b){
     if(a.subject>b.subject){
       return -1
@@ -23,7 +29,7 @@
       if(subjects.length!=0){
         html += subjectEnd
       }
-      const subjectId = "hex" + toHex(subject)
+      const subjectId = "hex" + parser.toHex(subject)
       html += `
       <li  class="form mdc-elevation--z5" style="background-color:#ffffff">
       <h3 class="mdc-list-group__subheader" style="font-size:125%;"><span style="background-color:#ffffff">${subject}</span></h3>
@@ -31,21 +37,16 @@
       `
       subjects.push(subject)
     }
-    html+=parseHomeworkSubject(homework)
+    html+=parser.parseHomeworkSubject(homework)
   }
-  if(html==""){
-    return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
-  }
-  return html
+    if(html==""){     
+      return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"   
+    }
+    html+="</ul>"
+    return html
 }
-function parseHomeworkSubject(homework) {
-  let {
-    dueDate,
-    editTime,
-    editPerson,
-    isTest,
-    subject,
-    daysLeft,
+parser.parseHomeworkSubject = function(homework) {
+  const {
     id,
     iconColor,
     bgColor,
@@ -54,9 +55,9 @@ function parseHomeworkSubject(homework) {
     displayDate,
     dueDate2,
     extra
-  } = parseHomeworkMetaData(homework)
+  } = parser.parseHomeworkMetaData(homework)
   return `
-  <li class="mdc-list-item hwitem" dueDate="${dueDate}" editTime="${editTime}" editPerson="${editPerson}" isTest = ${isTest} subject="${subject}" daysLeft="${daysLeft}" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
+  <li class="mdc-list-item hwitem" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
   <span class="mdc-list-item__graphic" role="presentation">
     <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
   </span>
@@ -69,7 +70,7 @@ function parseHomeworkSubject(homework) {
   </li>
   `
 }
-function parseByDate(data,order=0) {
+parser.parseByDate = function(data,order=0) {
   data = data.sort(function(a,b){
     if(a.dueDate>b.dueDate){
       return -1
@@ -87,7 +88,7 @@ function parseByDate(data,order=0) {
   </li>
   </li>`
   for (let homework of data) {
-    let {displayDate,dueDate2,daysLeft} = parseHomeworkMetaData(homework)
+    let {displayDate,dueDate2,daysLeft} = parser.parseHomeworkMetaData(homework)
     if (dates.indexOf(displayDate) == -1) {
       if(dates.length!=0){
         html += dateEnd
@@ -99,32 +100,26 @@ function parseByDate(data,order=0) {
       `
       dates.push(displayDate)
     }
-    html+=parseHomeworkDate(homework)
+    html+=parser.parseHomeworkDate(homework)
   }
   if(html==""){
     return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
   }
+  html+="</ul>"
   return html
 }
-function parseHomeworkDate(homework) {
-  let {
-    dueDate,
-    editTime,
-    editPerson,
-    isTest,
+parser.parseHomeworkDate = function(homework) {
+  const {
     subject,
-    daysLeft,
     id,
     iconColor,
     bgColor,
     icon,
     text,
-    displayDate,
-    dueDate2,
     extra
-  } = parseHomeworkMetaData(homework)
+  } = parser.parseHomeworkMetaData(homework)
   return `
-  <li class="mdc-list-item hwitem" dueDate="${dueDate}" editTime="${editTime}" editPerson="${editPerson}" isTest = ${isTest} subject="${subject}" daysLeft="${daysLeft}" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
+  <li class="mdc-list-item hwitem" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
   <span class="mdc-list-item__graphic" role="presentation">
     <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
   </span>
@@ -132,14 +127,15 @@ function parseHomeworkDate(homework) {
     ${text}  <span class="mdc-list-item__secondary-text">
        ${subject}${extra}
   </span>
+  </span>
   </li>
   `
 }
-toTitle = function(str)
+parser.toTitle = function(str)
 {
 return str.substring(0,1).toUpperCase()+str.substring(1,10000)
 }
-toHex = function(str){
+parser.toHex = function(str){
   var hex, i;
 
   var result = "";
@@ -150,7 +146,7 @@ toHex = function(str){
 
   return result
 }
-function parseHomeworkMetaData(homework){
+parser.parseHomeworkMetaData =  function(homework){
   let {
     id,
     subject,
@@ -161,7 +157,7 @@ function parseHomeworkMetaData(homework){
     lastEditTime: editTime
   } = homework
   text = text.replace(/ *\([^)]*\) */g, "");
-  let dueDate2 = Sugar.Date.create(dueDate * 1000)
+  let dueDate2 = Sugar.Date.create(dueDate)
   let daysLeft = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(dueDate2, "{d}/{M}"), "en-GB"))
   let iconColor = ""
   if (Sugar.Date.isToday(dueDate2)) {
@@ -192,7 +188,7 @@ function parseHomeworkMetaData(homework){
       displayDate = `${daysLeft} days left`
   }
   if (isTest) {
-    displayDate = toTitle(displayDate.replace("Due ", ""))
+    displayDate = parser.toTitle(displayDate.replace("Due ", ""))
   }
   return {
     dueDate,
@@ -211,9 +207,13 @@ function parseHomeworkMetaData(homework){
     extra
   }
 }
-%>
-<% if(sortType=="Due date"){ %>
-  <%- parseByDate(data,sortOrder) %>
-<%}else{%>
-  <%- parseBySubject(data,sortOrder) %>
-  <%}%>
+const renderer = function(data,sortType="Due date",sortOrder=0){
+if(sortType=="Due date"){
+  return parser.parseByDate(data,sortOrder)
+}else{
+  return parser.parseBySubject(data,sortOrder)
+}
+}
+if(typeof navigator=="undefined"){
+  module.exports =  renderer
+}

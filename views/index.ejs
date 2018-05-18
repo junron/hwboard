@@ -2,52 +2,57 @@
 <html lang="en">
 <%- include("partials/head") %>
 <body>
-    <div class="mdc-toolbar">
-        <div class="mdc-toolbar__row">
-            <div class="mdc-toolbar__section mdc-toolbar__section--shrink-to-fit mdc-toolbar__section--align-start">
-                <h1 class="mdc-toolbar__title">Class Homework Board</h1>
-            </div>
-            <div class="mdc-toolbar__section mdc-toolbar__section--align-end">
-                <div>
-                    <nav class="mdc-tab-bar custom-tab-bar-in-toolbar">
-                        <a class="mdc-tab mdc-tab--active" href="#one">
-                            Item One
-                            <span class="mdc-tab__indicator"></span>
-                        </a>
-                        <a class="mdc-tab" href="#two">
-                            Item Two
-                            <span class="mdc-tab__indicator"></span></a>
-                        <a class="mdc-tab" href="#three">
-                            Item Three
-                            <span class="mdc-tab__indicator"></span>
-                        </a>
-                    </nav>
-                </div>
-            </div>
-        </div>
+    <div>
+      <header class="mdc-toolbar mdc-toolbar--fixed mdc-toolbar--waterfall">
+      <div id="normalToolbar">
+      <div class="mdc-toolbar__row">
+      <span>
+      <button class="mdc-button" onclick="dialog.show();setTimeout(function(){setDefaultcheckbox = new MDCCheckbox(document.querySelector('#setDefaultCheckBox'));},500)"> <i class="material-icons" style="color:white">&#xE164;</i></button>
+      </span>
+      <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+      <div class="mdc-toolbar__title">
+      <span onclick="location.href='/'">207 Homework Board</span><br>
+      <div class="mdc-list-item__secondary-text" style="color:#fff" id="networkStatus">
+      </div>
+      </div>
+      </section>
+      </div>
+      </div>
+      <div id="editMenu" style="display:none">
+      <div class="mdc-toolbar__row">
+      <% if(admin) { %>
+      <span>
+      <button style="float:right" class="admin-only mdc-button" onclick="startEdit()"><i  style="color:white" class="material-icons">&#xE254;</i></button>
+      </span>
+      <span>
+      <button style="float:right" class="admin-only mdc-button" onclick="deleteDialog.show()"><i  style="color:white" class="material-icons">&#xE872;</i></button>
+      </span>
+      <% } %>
+
+      <span>
+      <button class="mdc-button" onclick="loadDetails()"> <i style="color:white" class="material-icons">&#xE88F;</i></button>
+      </span>
+      <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
+      </section>
+      </div>
+      </div>
+      </header>
     </div>
     <link href="/styles/roboto.css" rel="stylesheet">
-    <link href="/styles/mdc-core.css" rel="stylesheet">
+    <!--<link href="/styles/new.css" rel="stylesheet">-->
     <link rel="stylesheet" href = "/styles/icons.css">
-    <ul class="mdc-list mdc-list--two-line" style="background-color:#aee0e475">
-      <%- include("templates/homework",{data,Sugar,sortType,sortOrder}) -%>
+    <ul class="mdc-list mdc-list--two-line" style="background-color:#aee0e475;position:relative;top:50px">
+      <%- renderer(data,sortType,sortOrder) -%>
      </ul>
-     <script src="./scripts/parse.js"></script>
      <script src="./scripts/jquery.min.js"></script>
+     <script src="./scripts/renderer.js"></script>
+     <script src="/scripts/promise-worker.js"></script>
      <script src="./scripts/sugar-date.min.js"></script>
      <script>
      //Web worker for indexedDB
-     const worker = new Worker("./scripts/worker.js")
-     worker.onmessage = function(event){
-      const data = event.data
-      if(data.type=="error") throw data.data;
-      if(data.type=="get"){
-        //$(".mdc-list--two-line").html(parser.parse(data.data))
-      }
-     }
-     worker.postMessage({
-      type:"get"
-     })
+     const oldWorker = new Worker("./scripts/worker.js")
+     //Use promise based messaging
+     const worker = new PromiseWorker(oldWorker)
      </script>
 
      <script src="/scripts/socket.io.js"></script>
@@ -56,7 +61,7 @@
     <script>
     //run the following line if in dev enviroment
     //document.cookie="dev=true"
-    if(!document.cookie.includes("dev=true")){
+    if(!(document.cookie.includes("dev=true")||navigator.userAgent == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36")){
       //DoNt toUcHa my eRRor rePoTer
       Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
     }
@@ -89,27 +94,45 @@
     conn.emit("dataReq",null,function(err,data){
       //Always check if error occurred
       if(err) throw err;
-      //Yey data from server
-      console.log(data)
       //Put data into client-side database for caching
       worker.postMessage({
-      type:"set",
-      data
-     })
+        type:"set",
+        data
+      })
+      //Add to localstorage as a fallback
+      localStorage.setItem("data",JSON.stringify(data))
     })
-    //Add homework to database
-    const newHomework = {
-        //Add other stuffs also
-        "text":"hello"
-    }
-    conn.emit("addReq",newHomework,function(err){
-      //Always check if error occurred
-      if(err) throw err;
-      //Tell user that homework successfully added
-      //Eg snackbar
-      console.log("Homework add success")
+
+    //Server pushes data, re-render
+    conn.on("data",(data)=>{
+      reRender(data)
+      //Add data into client-side db
+      worker.postMessage({
+        type:"set",
+        data
+      })
+      //Add to localstorage as a fallback
+      localStorage.setItem("data",JSON.stringify(data))
     })
     </script>
     <link rel="stylesheet" href = "/styles/material-components-web.min.css">
+  <% if (admin){ %>
+    <button class="app-fab--absolute mdc-fab admin-only" style="position:fixed" onclick="reset();editDialog.show();setTimeout(function(){checkbox = new MDCCheckbox(document.querySelector('#gradedCheckbox'));},500)" aria-label="Favorite">
+  <span class="mdc-fab__icon material-icons">
+      &#xe145;
+  </span>
+</button>
+<script src="/scripts/turndown.js"></script>
+<% } %>
+
+<!-- non critical styles and scripts can be deferred-->
+<script src="/scripts/material-components-web.min.js"></script>
+<script defer src="/scripts/dates.js"></script>
+<script src="/scripts/generalForms.js"></script>
+<% if (admin){ %>
+<script src="./scripts/adminForms.js"></script>
+<% } %>
+<script defer src="./scripts/eventHandlers.js"></script>
+<%- include("partials/dialogs.ejs") %>
 </body>
 </html>
