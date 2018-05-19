@@ -5,12 +5,13 @@ const Sequelize = require('sequelize')
 
 //Same as docker env variables 
 //or use a config file
-const config = require("./config.json")
-const dbPasswd = process.env.POSTGRES_PASSWORD || config.POSTGRES_PASSWORD
-const dbUser = process.env.POSTGRES_USER || config.POSTGRES_USER
-const dbName = process.env.POSTGRES_DB || config.POSTGRES_DB ||"hwboard"
-
-const sequelize = new Sequelize(`postgres://${dbUser}:${dbPasswd}@127.0.0.1:5432/${dbName}`)
+const config = require("./loadConfig")
+const {POSTGRES_PASSWORD:dbPasswd,POSTGRES_USER:dbUser,POSTGRES_DB:dbName="hwboard"} = config
+let POSTGRES_HOST = "localhost"
+if(process.env.CI_PROJECT_NAME=="hwboard2"){
+  POSTGRES_HOST = "postgres"
+}
+const sequelize = new Sequelize(`postgres://${dbUser}:${dbPasswd}@${POSTGRES_HOST}:5432/${dbName}`)
 sequelize.authenticate()
 .then(() => {
   console.log('Connection has been established successfully.');
@@ -48,11 +49,10 @@ const Homework = sequelize.define('homework', {
   createdAt: false,
   updatedAt: 'lastEditTime'
 })
-Homework.sync().then(()=>{
-  console.log("Table init complete")
-}).catch(function(err){
-  console.log(err)
-})
+
+async function init(){
+  return Homework.sync()
+}
 
 async function getHomework(){
   const data = await Homework.findAll({
@@ -83,4 +83,4 @@ async function deleteHomework(homeworkId){
     }
   })
 }
-module.exports={getHomework,addHomework,editHomework,deleteHomework}
+module.exports={getHomework,addHomework,editHomework,deleteHomework,init}

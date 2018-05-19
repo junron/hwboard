@@ -1,6 +1,6 @@
 # Hwboard v2
 
-[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/master/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/master)
+[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/dev/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/dev)
 ## Important files
 1. [`database.js`](database.js)   
   This file handles all the database logic, including getting, adding, deleting and editing homework in the database  
@@ -46,4 +46,3 @@ This ensures that any accidental errors are not reported to Sentry. However, CSP
         `snyk test`
 2. Unit testing  
 `npm test`
-

@@ -4,6 +4,8 @@ const io = require('socket.io')(server);
 const db = require("./database")
 const auth = require("./auth")
 const cookieParser = require('socket.io-cookie-parser')
+//Dangerous, allows bypass authentication, only use in CI environment
+const testing = (process.env.CI == 'true')
 io.set('transports', ['websocket'])
 io.use(cookieParser())
 io.on('connection', function(socket){
@@ -91,7 +93,15 @@ io.on('connection', function(socket){
       callback("Message is not an object")
       throw "Message is not an object"
     }
-    const decodedToken = await auth.verifyToken(token)
+let decodedToken
+    if(testing){
+      decodedToken = {
+        name:"tester",
+        preferred_username:"tester@nushigh.edu.sg"
+      }
+    }else{
+      decodedToken = await auth.verifyToken(token)
+    }
     if(decodedToken){
       //Dont use name, use email. never use email or name as primary key.
       //Collisions like Cheng Yi may occur

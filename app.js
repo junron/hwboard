@@ -1,6 +1,6 @@
 //Very important for CSP
-const hostName = process.env.HOSTNAME || require("./config.json").HOSTNAME || "nushhwboard.tk" 
-
+const config = require("./loadConfig")
+const {HOSTNAME:hostName} = config
 //Utils
 const http = require('http')
 const express = require("express")

@@ -8,8 +8,8 @@ const websocket = require("../app").server
 let client
 describe("websocket",function(){
     before(function(done){
-        websocket.listen(3001)
-        done()
+      websocket.listen(3001)
+      done()
     })
     beforeEach(function(done){
         client = io("http://localhost:3001",{ 
@@ -20,11 +20,17 @@ describe("websocket",function(){
     done()
     })
     afterEach(function(done){
-        client.disconnect()
-        done()
+      client.disconnect()
+      done()
     })
-    after(function(){
-        websocket.close()
+    after(function(done){
+      websocket.close(function(){
+        done()
+        setTimeout(function(){
+          process.exit(0)
+        },500)
+        
+      })
     })
     it("Should be able to echo text messages",function(done){
         client.emit("textMessage","helloworld",function(err,response){
@@ -61,11 +67,11 @@ describe("websocket",function(){
         
     })
     it("Should be able to add homework",function(done){
-        const newHomework = {
-            "text":"hello",
-            token
-        }
-        client.emit("addReq",newHomework,function(err){
+      const newHomework = {
+        "text":"hello",
+        token
+      }
+      client.emit("addReq",newHomework,function(err){
         expect(err).to.equal(null)
         done()
     })
