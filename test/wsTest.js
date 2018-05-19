@@ -15,7 +15,7 @@ describe("websocket",function(){
         client = io("http://localhost:3001",{ 
         transports: ['websocket'], 
         forceNew: true,
-        reconnection: false
+        reconnection: false,
     })
     done()
     })
