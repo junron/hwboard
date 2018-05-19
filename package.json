@@ -7,7 +7,7 @@
     "test": "snyk test && mocha test",
     "start:dev": "nodemon ./bin/www"
   },
-    "repository":"https://gitlab.therealorange.com/Jro/hwboard2.git",
+  "repository": "https://gitlab.therealorange.com/Jro/hwboard2.git",
   "author": "junron",
   "license": "ISC",
   "dependencies": {
@@ -19,6 +19,7 @@
     "jwks-rsa": "^1.2.1",
     "morgan": "^1.9.0",
     "pg": "^7.4.3",
+    "request": "^2.86.0",
     "request-promise-native": "^1.0.5",
     "sequelize": "^4.37.7",
     "socket.io": "^2.1.0",
