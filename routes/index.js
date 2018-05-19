@@ -59,11 +59,11 @@ router.get('/', async (req, res, next) => {
       `redirect_uri=https://${hostname}/&`+
       "prompt=select_account&"+
       `response_mode=query`)
-    }else{
+}else{
       const code = req.query.code
       const options = {
-        method:"POST",
-        uri:"https://login.microsoftonline.com/common/oauth2/v2.0/token",
+          method:"POST",
+          uri:"https://login.microsoftonline.com/common/oauth2/v2.0/token",
         formData:{
           //grant_type:"id_token",
           grant_type:"authorization_code",

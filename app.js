@@ -1,7 +1,6 @@
 //Very important for CSP
 const config = require("./loadConfig")
 const {HOSTNAME:hostName} = config
-
 //Utils
 const http = require('http')
 const express = require("express")

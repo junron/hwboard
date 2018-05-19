@@ -72,8 +72,8 @@ describe("websocket",function(){
         token
       }
       client.emit("addReq",newHomework,function(err){
-      expect(err).to.equal(null)
-      done()
+        expect(err).to.equal(null)
+        done()
     })
 })
 })

@@ -93,7 +93,7 @@ io.on('connection', function(socket){
       callback("Message is not an object")
       throw "Message is not an object"
     }
-    let decodedToken
+let decodedToken
     if(testing){
       decodedToken = {
         name:"tester",
