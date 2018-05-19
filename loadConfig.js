@@ -8,7 +8,7 @@ try {
   //Could not load config
   console.log("Config file not found, using environment variables")
 }
-if(process.enc.CI=="true"){
+if(process.env.CI=="true"){
   //Auth credentials not needed for ci
   MS_CLIENTID="hello"
   MS_CLIENTSECRET="world"
