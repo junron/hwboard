@@ -3,6 +3,7 @@ const express = require('express');
 const request = require("request-promise-native")
 const renderer = require('../public/scripts/renderer')
 const Sugar = require("sugar-date")
+let dbInit = false
 const router = express.Router();
 const db = require("../database")
 const auth = require("../auth")
@@ -44,6 +45,11 @@ if(testing){
 }
 /* GET home page. */
 router.get('/', async (req, res, next) => {
+  if(! dbInit){
+    //Create tables and stuffs
+    await db.init()
+    dbInit = true
+  }
   //Check auth here
   //Temp var to store fresh token
   let tempToken

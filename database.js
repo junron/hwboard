@@ -49,11 +49,10 @@ const Homework = sequelize.define('homework', {
   createdAt: false,
   updatedAt: 'lastEditTime'
 })
-Homework.sync().then(()=>{
-  console.log("Table init complete")
-}).catch(function(err){
-  console.log(err)
-})
+
+async function init(){
+  return Homework.sync()
+}
 
 async function getHomework(){
   const data = await Homework.findAll({
@@ -84,4 +83,4 @@ async function deleteHomework(homeworkId){
     }
   })
 }
-module.exports={getHomework,addHomework,editHomework,deleteHomework}
+module.exports={getHomework,addHomework,editHomework,deleteHomework,init}
