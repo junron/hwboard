@@ -8,7 +8,10 @@ image: node:10-alpine
 # Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
 services:
   - postgres:latest
-
+variables:
+  POSTGRES_DB: hwboard
+  POSTGRES_USER: runner
+  POSTGRES_PASSWORD: "spaghett"
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
 cache:
@@ -21,5 +24,6 @@ build:
 test:
   variables:
     SNYK_TOKEN: "d76994fe-1f4f-4099-92bb-c4fc2081fa84"
+    CI: "true"
   script:
   - npm test

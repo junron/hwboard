@@ -6,8 +6,12 @@ try {
   ({POSTGRES_PASSWORD,POSTGRES_USER,POSTGRES_DB,HOSTNAME,MS_CLIENTID,MS_CLIENTSECRET} = require("./config.json"))
 } catch (error) {
   //Could not load config
-  console.log(error)
   console.log("Config file not found, using environment variables")
+}
+if(process.enc.CI=="true"){
+  //Auth credentials not needed for ci
+  MS_CLIENTID="hello"
+  MS_CLIENTSECRET="world"
 }
 const finalConfig = {POSTGRES_PASSWORD,POSTGRES_USER,POSTGRES_DB,HOSTNAME,MS_CLIENTID,MS_CLIENTSECRET}
 if(Object.values(finalConfig).includes(undefined)){
