@@ -24,7 +24,8 @@
     "sequelize": "^4.37.7",
     "socket.io": "^2.1.0",
     "socket.io-cookie-parser": "1.0.0",
-    "sugar-date": "^2.0.4"
+    "sugar-date": "^2.0.4",
+    "xss": "^0.3.8"
   },
   "devDependencies": {
     "chai": "^4.1.2",

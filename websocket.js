@@ -1,11 +1,25 @@
 //export so that accessible in app.js
 exports.createServer = function(server){
-const io = require('socket.io')(server);
+//Dangerous, allows bypass authentication, only use in CI environment
+const testing = (process.env.CI == 'true')
+
+const io = require('socket.io')(server)
+//Prevent CSRF sort of
+io.origins((origin,callback)=>{
+  const origins = ["https://"+require("./loadConfig").HOSTNAME,"localhost:3001"]
+  if(testing){
+    //Socket-io client origin is * for some reason,
+    //TODO, fix this
+    origins.push("*")
+  }
+  if(!origins.includes(origin)){
+    return callback("Not authorised",false)
+  }
+  callback(null,true)
+})
 const db = require("./database")
 const auth = require("./auth")
 const cookieParser = require('socket.io-cookie-parser')
-//Dangerous, allows bypass authentication, only use in CI environment
-const testing = (process.env.CI == 'true')
 io.set('transports', ['websocket'])
 io.use(cookieParser())
 io.on('connection', function(socket){
