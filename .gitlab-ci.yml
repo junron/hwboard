@@ -22,6 +22,7 @@ build:
   script:
    - npm install
    - npm install puppeteer --save-dev
+   - ls /builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668
 test:
   variables:
     SNYK_TOKEN: "d76994fe-1f4f-4099-92bb-c4fc2081fa84"
