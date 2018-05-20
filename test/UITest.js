@@ -5,7 +5,8 @@ const server = require("../app").server
 const options = {
     headless:true,
     args: ['--no-sandbox', '--disable-setuid-sandbox','--remote-debugging-port=9222'],
-    executablePath:"node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux/chrome"
+    executablePath:"node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux/chrome",
+    dumpio: true
 }
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
   console.log("Gitlab env")
