@@ -6,15 +6,17 @@ const testing = (process.env.CI == 'true')
 const io = require('socket.io')(server)
 //Prevent CSRF sort of
 io.origins((origin,callback)=>{
-  const origins = ["https://"+require("./loadConfig").HOSTNAME,"localhost:3001"]
+  const origins = ["https://"+require("./loadConfig").HOSTNAME,"http://localhost:3001"]
   if(testing){
     //Socket-io client origin is * for some reason,
     //TODO, fix this
     origins.push("*")
   }
   if(!origins.includes(origin)){
+    console.log("\033[0;31mOrigin "+origin+" was blocked\033[0m")
     return callback("Not authorised",false)
   }
+  console.log("\033[0;32mOrigin "+origin+" was authorised\033[0m")
   callback(null,true)
 })
 const db = require("./database")

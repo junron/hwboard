@@ -63,16 +63,19 @@
     //document.cookie="dev=true"
     if(!(document.cookie.includes("dev=true")||navigator.userAgent == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36")){
       //DoNt toUcHa my eRRor rePoTer
+      console.log("ok")
       Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
     }
-    const conn = io(document.domain,{transports: ['websocket'], upgrade: false, secure: true});
+    const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
     //Handle websocket connection errors
     //Standard code for all my websocket apps
     conn.on("connect_error",function(e){
+      console.log(Object.entries(e))
       if(navigator.onLine==undefined){
         //Some browsers may not support navigator.onLine
         //EDIT: appears that most browsers support but meh
         //https://caniuse.com/#feat=online-status
+        Raven.captureException(new Error("error checking connection status"))
         console.log(`Error checking connection state`)
         return
       }

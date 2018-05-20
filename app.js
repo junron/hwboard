@@ -26,7 +26,7 @@ app.set('view engine', 'ejs');
 let csp = "default-src 'self';"+
             "script-src 'self' 'unsafe-inline' https://cdn.ravenjs.com https://secure.aadcdn.microsoftonline-p.com;"+
             "style-src 'self' 'unsafe-inline';"+
-            `connect-src 'self' https://sentry.io wss://${hostName} https://login.microsoftonline.com/;` +
+            `connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:3001 https://login.microsoftonline.com/;` +
             "object-src 'none';"+
             "img-src 'self' data:;"
             if(!process.env.DEV){

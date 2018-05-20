@@ -24,13 +24,13 @@ describe("websocket",function(){
       done()
     })
     after(function(done){
-      websocket.close(function(){
+      this.timeout(0)
+      websocket.close()
         done()
         setTimeout(function(){
           process.exit(0)
         },500)
         
-      })
     })
     it("Should be able to echo text messages",function(done){
         client.emit("textMessage","helloworld",function(err,response){
