@@ -7,9 +7,10 @@ const options = {
     args: ['--no-sandbox', '--disable-setuid-sandbox','--remote-debugging-port=9222'],
     executablePath:"node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux/chrome"
 }
-//if(process.env.CI_PROJECT_NAME=="hwboard2"){
-//  options.executablePath = "/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux"
-//}
+if(process.env.CI_PROJECT_NAME=="hwboard2"){
+  console.log("Gitlab env")
+  options.executablePath = "/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux/chrome"
+}
 let browser
 let page
 const getHtml = async selector => {
