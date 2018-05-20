@@ -5,8 +5,7 @@ const server = require("../app").server
 const options = {
     headless:true,
     args: ['--no-sandbox', '--disable-setuid-sandbox','--remote-debugging-port=9222'],
-    //executablePath:"node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux/chrome",
-    dumpio: true
+    //executablePath:"node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux/chro
 }
 console.log(puppeteer.executablePath())
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
