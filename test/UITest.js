@@ -5,6 +5,7 @@ const server = require("../app").server
 const options = {
   headless:true,
   args: ['--no-sandbox', '--disable-setuid-sandbox','--remote-debugging-port=9222'],
+  executablePath:"/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668"
 }
 let browser
 let page
