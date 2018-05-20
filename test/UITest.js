@@ -8,7 +8,7 @@ const options = {
 
 }
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
-  options.executablePath = "/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome"
+  options.executablePath = "/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux"
 }
 let browser
 let page
