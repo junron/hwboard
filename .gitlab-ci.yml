@@ -32,5 +32,5 @@ test:
     SNYK_TOKEN: "d76994fe-1f4f-4099-92bb-c4fc2081fa84"
     CI: "true"
   script:
+  - apt install -y libx11-xcb-de
   - npm test
-  - apt install -y libx11-xcb-dev
