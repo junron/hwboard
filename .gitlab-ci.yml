@@ -25,7 +25,7 @@ build:
   - apt-get install -yq libx11-xcb-dev
   - npm install
   - npm install puppeteer --save-dev
-  - ls -r /builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linu
+  #- ls -r /builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linu
   - pwd
   - whoami
  
