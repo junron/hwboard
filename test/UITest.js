@@ -3,13 +3,13 @@ const mocha = require("mocha")
 const {expect} = require("chai")
 const server = require("../app").server
 const options = {
-    headless:false,
+    headless:true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
 }
 console.log(puppeteer.executablePath())
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
   console.log("Gitlab env")
-  options.executablePath = "/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux"
+  //options.executablePath = "/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux"
 }
 let browser
 let page
