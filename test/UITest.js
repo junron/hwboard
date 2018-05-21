@@ -28,7 +28,7 @@ async function init(){
   await page.goto('http://localhost:3001')
   console.log("pageloaad")
   //await page.waitFor(2000)
-  await page.screenshot({path: '../artifacts/initial.png'})
+  await page.screenshot({path: './artifacts/initial.png'})
 }
 async function showToolbar(){
   await page.click(".hwitem",{
@@ -46,7 +46,7 @@ async function remove(){
     $("button[onclick='deleteHomework()']").click()
   })
   await page.waitFor(300)
-  await page.screenshot({path: '../artifacts/delete.png'})
+  await page.screenshot({path: './artifacts/delete.png'})
 }
 async function info(){
   await page.waitFor(300)
@@ -55,7 +55,7 @@ async function info(){
     $("i:contains('')").click()
   })
   await page.waitFor(300)
-  await page.screenshot({path: '../artifacts/info.png'})
+  await page.screenshot({path: './artifacts/info.png'})
 }
 async function add(){
   await page.click(".app-fab--absolute")
@@ -71,7 +71,7 @@ async function add(){
   await page.waitFor(300)
   await page.type("#hwname","Add homework test")
   await page.waitFor(300)
-  await page.screenshot({path: '../artifacts/add.png'})
+  await page.screenshot({path: './artifacts/add.png'})
   await page.click("#updateBtn")
 }
 async function checkDate(date){
