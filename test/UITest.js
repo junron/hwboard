@@ -4,7 +4,7 @@ const {expect} = require("chai")
 const server = require("../app").server
 const options = {
     headless:false,
-    args: ['--no-sandbox', '--disable-setuid-sandbox','--remote-debugging-port=9222']
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
 }
 console.log(puppeteer.executablePath())
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
