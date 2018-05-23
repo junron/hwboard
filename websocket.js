@@ -31,7 +31,10 @@ io.on('connection', function(socket){
     if(typeof callback!="function"){
       return console.log("Callback is not a function")
     }
-    db.getHomework().then(function(data){
+    if(typeof msg !="boolean"){
+      msg=true
+    }
+    db.getHomework(msg).then(function(data){
       return callback(null,data)
     }).catch(function(error){
       return callback(error)

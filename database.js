@@ -54,14 +54,17 @@ const Homework = sequelize.define('homework', {
 async function init(){
   return Homework.sync()
 }
-
-async function getHomework(){
+async function getHomework(removeExpired=true){
   const data = await Homework.findAll({
     raw: true
   })
-  return data.filter((homework)=>{
-    return homework.dueDate >= new Date().getTime()
-  })
+  if(removeExpired){
+    return data.filter((homework)=>{
+      return homework.dueDate >= new Date().getTime()
+    })
+  }else{
+    return data
+  }
 }
 
 async function addHomework(newHomework){
