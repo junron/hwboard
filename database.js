@@ -2,7 +2,8 @@
 //If your db library return promises, they will be unwrapped automatically
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 const Sequelize = require('sequelize')
-
+//Prevent xss
+const xss = require('xss')
 //Same as docker env variables 
 //or use a config file
 const config = require("./loadConfig")
@@ -53,21 +54,26 @@ const Homework = sequelize.define('homework', {
 async function init(){
   return Homework.sync()
 }
-
-async function getHomework(){
+async function getHomework(removeExpired=true){
   const data = await Homework.findAll({
     raw: true
   })
-  return data.filter((homework)=>{
-    return homework.dueDate >= new Date().getTime()
-  })
+  if(removeExpired){
+    return data.filter((homework)=>{
+      return homework.dueDate >= new Date().getTime()
+    })
+  }else{
+    return data
+  }
 }
 
 async function addHomework(newHomework){
+  newHomework = await removeXss(newHomework)
   return Homework.create(newHomework)
 }
 
 async function editHomework(newHomework){
+  newHomework = await removeXss(newHomework)
   Homework.update(newHomework,
     {
     where:{
@@ -82,5 +88,14 @@ async function deleteHomework(homeworkId){
       id:homeworkId
     }
   })
+}
+//Mitigate XSS
+async function removeXss(object){
+  for (let property in object){
+    if(typeof object[property]=="string"){
+      object[property] = xss(object[property])
+    }
+  }
+  return object
 }
 module.exports={getHomework,addHomework,editHomework,deleteHomework,init}
