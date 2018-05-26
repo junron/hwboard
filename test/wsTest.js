@@ -69,9 +69,10 @@ describe("websocket",function(){
     })
     it("Should be able to add homework",function(done){
       const newHomework = {
-        "text":"hello",
+        text:"hello",
+        channel:"testing",
         subject:"add homework via websocket test",
-        dueDate:new Date().getTime()+100000,
+        dueDate:new Date().getTime()+10000000,
         isTest:true,
         token
       }
@@ -92,9 +93,10 @@ describe("websocket",function(){
       client.emit("dataReq",null,function(err,homeworks){
         const originalHomework = homeworks.find(homework => homework.subject =="add homework via websocket test")
         const newHomework = {
-          "text":"hello(edited)",
+          text:"hello(edited)",
+          channel:"testing",
           subject:"Edit homework via websocket test",
-          dueDate:new Date().getTime()+100000,
+          dueDate:new Date().getTime()+10000000,
           isTest:true,
           token,
           id:originalHomework.id
@@ -116,7 +118,7 @@ describe("websocket",function(){
         let homeworkCount = 0
         for(let homework of homeworks){
           const {id} = homework
-          client.emit("deleteReq",{id},function(err){
+          client.emit("deleteReq",{id,channel:"testing"},function(err){
               if(err) throw err;
               if(homeworkCount==homeworks.length-1){
                 client.emit("dataReq",false,async function(err,homeworks){

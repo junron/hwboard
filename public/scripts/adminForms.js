@@ -15,10 +15,12 @@ function reset(){
 //load form with options
 function load(subject,graded,text,dueDate,title){
   editDialog.show()
+  subject = subject.trim()
   setTimeout(function(){checkbox = new MDCCheckbox(document.querySelector('#gradedCheckbox'));},500)
   $("#edit-dialog-label").text(title)
   $("#subject-select").find(".mdc-select__label").addClass("mdc-select__label--float-above")
-  subjectSelect.selectedIndex = ["ADMIN", "ANNOUNCEMENTS", "Biology", "Chemistry","Chinese","CS",   "Da-vinci (D&E)", "Da-vinci (SP)", "English","French", "Geography", "Higher Chinese", "Hindi", "Humanities","Japanese", "Math", "Miscellaneous", "PE", "Physics"].indexOf(subject)
+  subjectSelect.selectedIndex = subjectSelectionList.indexOf(subject)
+  console.log(subject)
   $("#dueDate").val(Sugar.Date.format(new Date(dueDate),"{d}/{M}"))
   $("#hwname").val(text.trim())
   $("div").off("click")
@@ -60,12 +62,15 @@ function editHomework(){
 }
 
 function deleteHomework(){
-  const id = parseInt($(lastTouched).attr("sqlid"))
-  conn.emit('deleteReq',{
-    id
-  },(err)=>{
-    if (err) throw err;
-    //TODO: tell user that operation succeeded
+  getExistingInfo().then(homeworkData=>{
+    const {id,channel} = homeworkData
+    conn.emit('deleteReq',{
+      id,
+      channel
+    },(err)=>{
+      if (err) throw err;
+      //TODO: tell user that operation succeeded
+    })
   })
 }
 
@@ -75,10 +80,11 @@ async function getHomeworkData(id=false){
     alert("Please select a subject")
     throw new Error("No subject selected")
   }
-  const subject = subjectSelect.selectedOptions[0].textContent
+  const subject = subjectSelect.selectedOptions[0].textContent.trim()
   const isTest = checkbox.checked
   //Remove lines
-  const text = $("#hwname").val().split("\n").join("")
+  const text = $("#hwname").val().split("\n").join("").trim()
+  const channel = subjectSelect.selectedOptions[0].getAttribute("channel").trim()
   const date = parseDate()
   const dueDate = date.getTime()
   if(date==undefined){
@@ -96,13 +102,15 @@ async function getHomeworkData(id=false){
       text,
       isTest,
       id,
-      dueDate
+      dueDate,
+      channel
     }
   }
   return {
     subject,
     text,
     isTest,
-    dueDate
+    dueDate,
+    channel
   }
 }

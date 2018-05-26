@@ -73,7 +73,7 @@
       </header>
       <section class="mdc-dialog__body mdc-dialog__body--scrollable" style="max-height:50vh">
         <br>
-        <div id="subject-select" class="mdc-select" role="listbox">
+        <div id="subject-select" class="mdc-select" role="listbox" style="min-width: 163px;">
       <div class="mdc-select__surface" tabindex="0">
       <div class="mdc-select__label">Select subject</div>
       <div class="mdc-select__selected-text"></div>
@@ -81,25 +81,16 @@
       </div>
       <div class="mdc-menu mdc-select__menu">
       <ul class="mdc-list mdc-menu__items">
-        <li class="mdc-list-item" role="option" tabindex="0">ADMIN</li>
-        <li class="mdc-list-item" role="option" tabindex="0">ANNOUNCEMENTS</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Biology</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Chemistry</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Chinese</li>
-        <li class="mdc-list-item" role="option" tabindex="0">CS</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Da-vinci (D&E)</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Da-vinci (SP)</li>
-        <li class="mdc-list-item" role="option" tabindex="0">English</li>
-        <li class="mdc-list-item" role="option" tabindex="0">French</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Geography</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Higher Chinese</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Hindi</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Humanities</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Japanese</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Math</li>
-          <li class="mdc-list-item" role="option" tabindex="0">Miscellaneous</li>
-        <li class="mdc-list-item" role="option" tabindex="0">PE</li>
-        <li class="mdc-list-item" role="option" tabindex="0">Physics</li>
+      <%const subjectSelectionList = []%>
+      <% for (const channel in adminChannels){ %>
+      <li role="separator" class="mdc-list-divider"></li>
+        <%for (const subject of adminChannels[channel]){%>
+        <%subjectSelectionList.push(subject)%>
+        <li class="mdc-list-item" role="option" tabindex="0" channel="<%=channel%>">
+        <%= subject %>
+        </li>
+        <% } 
+      } %>
       </ul>
       </div>
       </div>
@@ -225,6 +216,7 @@
     </div>
   </div>
 <script>
+const subjectSelectionList = <%-JSON.stringify(subjectSelectionList)%>
 const MDCSelect = mdc.select.MDCSelect
 const sortParam = new MDCSelect(document.querySelector('#selectSortParam'));
 const sortOrder = new MDCSelect(document.querySelector('#selectSortOrder'));

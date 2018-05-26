@@ -3,7 +3,7 @@ const mocha = require("mocha")
 const {expect} = require("chai")
 const server = require("../app").server
 const options = {
-    headless:true,
+    headless:false,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
 }
 console.log(puppeteer.executablePath())
@@ -31,7 +31,7 @@ async function init(){
   await page.screenshot({path: './artifacts/initial.png'})
 }
 async function showToolbar(){
-  await page.click(".hwitem",{
+  await page.click("#hex6d617468",{
     delay:1080
   })
 }
@@ -62,7 +62,7 @@ async function add(){
   await page.click("#subject-select .mdc-select__surface")
   await page.waitFor(300)
   await page.evaluate(()=>{
-     $("li:contains('Math')").click()
+     $("li:contains('math')").click()
   })
   await page.waitFor(300)
   await page.click("#graded")
@@ -109,7 +109,7 @@ describe("Hwboard",async function(){
     await info()
     const name = await getHtml("#details-sheet-label")
     const subject = await getHtml("#detailSubject")
-    expect(subject).to.equal("Math")
+    expect(subject).to.equal("math")
     const dueDate = await getHtml("#detailDue")
     const graded = await getHtml("#detailGraded")
     expect(graded).to.equal("Yes")

@@ -1,13 +1,16 @@
 const chai = require("chai")
 const mocha = require("mocha")
 const expect = chai.expect
-const {getHomework,init,addHomework} = require("../database")
+const channels = [ {
+  name: 'testing',
+  permissions: 3 }]
+const {getHomeworkAll,init,addHomework} = require("../database")
 describe("database.js",function(){
   before(function(){
     return init()
   })
   it("Should be able to get homework in the correct format",function(done){
-    getHomework().then(function(homeworks){
+    getHomeworkAll(channels).then(function(homeworks){
       expect(homeworks).to.be.an("array")
       for (let homework of homeworks){
         expect(homework).to.be.an("object")
@@ -37,16 +40,14 @@ describe("database.js",function(){
       lastEditPerson:"tester@nushigh.edu.sg",
       token:"bleh"
     }
-    const output = await addHomework(payload)
-    setTimeout(async ()=>{
-      const homeworks = await getHomework()
-      expect(homeworks).to.be.an("array")
-      for (let homework of homeworks){
-        if(homework.subject=="XSSTest"){
-          expect(homework.text).to.equal("&lt;script&gt;alert('helloworld')&lt;/script&gt;")
-        }
+    const output = await addHomework(channels[0].name,payload)
+    const homeworks = await getHomeworkAll(channels)
+    expect(homeworks).to.be.an("array")
+    for (let homework of homeworks){
+      if(homework.subject=="XSSTest"){
+        expect(homework.text).to.equal("&lt;script&gt;alert('helloworld')&lt;/script&gt;")
       }
-    },10)
+    }
   })
   it("Should parameterize queries",async function(){
     //INSERT INTO "homework" ("id","text","subject","dueDate","isTest","lastEditPerson","lastEditTime") VALUES (DEFAULT,'Add homework test'--,'Math','2018-05-24 10:00:00.000 +00:00',true,'tester@nushigh.edu.sg','2018-05-23 05:05:04.327 +00:00') RETURNING *;
@@ -60,15 +61,13 @@ describe("database.js",function(){
       lastEditPerson:"tester@nushigh.edu.sg",
       token:"bleh"
     }
-    const output = await addHomework(payload)
-    setTimeout(async ()=>{
-      const homeworks = await getHomework()
-      expect(homeworks).to.be.an("array")
-      for (let homework of homeworks){
-        if(homework.subject=="SQLInjectionTest"){
-          expect(homework.text).to.equal(payload.text)
-        }
+    const output = await addHomework(channels[0].name,payload)
+    const homeworks = await getHomeworkAll(channels)
+    expect(homeworks).to.be.an("array")
+    for (let homework of homeworks){
+      if(homework.subject=="SQLInjectionTest"){
+        expect(homework.text).to.equal(payload.text)
       }
-    },10)
+    }
   })
 })

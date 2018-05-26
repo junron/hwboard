@@ -65,7 +65,7 @@ router.get('/', async (req, res, next) => {
       `redirect_uri=https://${hostname}/&`+
       "prompt=select_account&"+
       `response_mode=query`)
-}else{
+    }else{
       const code = req.query.code
       const options = {
           method:"POST",
@@ -93,19 +93,34 @@ router.get('/', async (req, res, next) => {
     }
   }
   const token = req.cookies.token || tempToken
-
-  //TODO actually check for admin
-  let admin = true
-  if(req.cookies.admin=="false"){
-    admin = false
-  }
-  
+  let decodedToken
   if(!testing){
     const decodedToken = await auth.verifyToken(token)
     if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
       throw new Error("You must log in with a NUSH email.")
     }
+  }else{
+    decodedToken = {
+      name:"tester",
+      preferred_username:"tester@nushigh.edu.sg"
+    }
   }
+  //Get authorised channels
+  const channelData = await db.getUserChannels(decodedToken.preferred_username)
+  //Yey my failed attempt at functional programming
+  const adminChannels =
+  channelData
+  .filter(channel=>
+    //Get admin permissions only
+    channel.permissions>=2
+  )
+  .reduce((subjects,channel)=>{
+    //Create object with channel names as keys and subject array as values
+    subjects[channel.name] = channel.subjects
+    return subjects
+  },{})
+  
+  const admin = true
   //Get sort options
   let {sortOrder,sortType} = req.cookies
   if(sortOrder){
@@ -115,8 +130,8 @@ router.get('/', async (req, res, next) => {
   res.header("Link",parsePushHeaders(pushFiles))
 
   //Get homework for rendering
-  let data = await db.getHomework()
+  let data = await db.getHomeworkAll(channelData)
   
-  res.render('index', {renderer,data,sortType,sortOrder,admin})
+  res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels})
 });
 module.exports = router;
