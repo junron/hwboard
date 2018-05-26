@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
 
+
 let config ={}
 if(gitlab){
   config = {
@@ -12,11 +13,13 @@ if(gitlab){
   }
   console.log("Using config:")
   console.log(config)
-  const db = require("./database")
-  db.addChannel(config).then(()=>{
+  (async()=>{
+    const {sequelize,Channels} = require("./models")
+    await sequelize.sync()
+    await Channels.create(config)
     console.log("channel created")
-    db.sequelize.close()
-  })
+    sequelize.close()
+  })()
 }else{
   const readline = require('readline')
   const r1 = readline.createInterface({
@@ -50,14 +53,14 @@ if(gitlab){
             }
             config.members = answer.split(",")
             console.log(config)
-            r1.question("Is this okay? (Yes/no)  ",answer=>{
+            r1.question("Is this okay? (Yes/no)  ",async answer=>{
               if(answer.toLowerCase()=="yes"){
-                const db = require("./database")
-                db.addChannel(config).then(()=>{
-                  db.sequelize.close()
-                  console.log("Channel added")
-                  r1.close()
-                })
+                const {sequelize,Channels} = require("./models")
+                await sequelize.sync()
+                await Channels.create(config)
+                console.log("channel created")
+                sequelize.close()
+                r1.close()
               }else{
                 console.log("operation cancelled")
                 r1.close()

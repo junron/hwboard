@@ -13,10 +13,7 @@ async function init(){
   await generateHomeworkTables()
   return sequelize.sync()
 }
-async function addChannel(channelData){
-  channelData = await removeXss(channelData)
-  return Channels.create(channelData)
-}
+
 async function generateHomeworkTables(){
   const channels = await getUserChannels("*")
   for (let channel of channels){
@@ -118,5 +115,4 @@ module.exports={
   init,
   getUserChannels,
   getHomeworkAll,
-  addChannel
 }
