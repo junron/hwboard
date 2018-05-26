@@ -1,5 +1,9 @@
-# Hwboard v2
-
+# Hwboard v2 
+Master Branch (stable)
+[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/master/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/master)
+ 
+ 
+Dev Branch:  
 [![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/dev/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/dev)
 ## Important files
 1. [`database.js`](database.js)   
