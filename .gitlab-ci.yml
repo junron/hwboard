@@ -25,6 +25,7 @@ build:
   - npm install puppeteer --save-dev
   - pwd
   - whoami
+  - ./cli.js
  
 
 test:
