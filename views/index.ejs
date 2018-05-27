@@ -94,7 +94,17 @@
     })
     //request homework data from server
     //syntax conn.emit(<eventName>,[<data>],[<callback>])
-    conn.emit("dataReq",null,function(err,data){
+    const channel = location.pathname.substring(1)
+    let channelSettings
+    if(channel==""){
+      channelSettings = {}
+    }else{
+      channelSettings = {
+        channel,
+        removeExpired:true
+      }
+    }
+    conn.emit("dataReq",channelSettings,function(err,data){
       //Always check if error occurred
       if(err) throw err;
       //Put data into client-side database for caching
@@ -108,6 +118,9 @@
 
     //Server pushes data, re-render
     conn.on("data",(data)=>{
+      data = data.filter(homework=>{
+        return location.pathname.substring(1) == "" || homework.channel == location.pathname.substring(1)
+      })
       reRender(data)
       //Add data into client-side db
       worker.postMessage({

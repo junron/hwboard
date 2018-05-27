@@ -33,7 +33,11 @@ async function init(){
   await page.screenshot({path: './artifacts/initial.png'})
 }
 async function showToolbar(){
-  await page.click("#hex6d617468",{
+  // "stain" homework so that we can identify it later
+  await page.evaluate(()=>{
+    return $(".hwitem:contains('Add homework test')").attr("id","targetHomework")
+  })
+  await page.click("#targetHomework",{
     delay:1080
   })
 }

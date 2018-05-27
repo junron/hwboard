@@ -58,19 +58,36 @@ io.on('connection', function(socket){
     })
   }
   //Get homework from database
-  socket.on("dataReq",function(msg,callback){
+  socket.on("dataReq",async function(msg,callback){
     if(typeof callback!="function"){
       return console.log("Callback is not a function")
     }
-    if(typeof msg !="boolean"){
-      msg=true
+    if(typeof msg !="object" || msg==null){
+      return callback("Msg is not an object")
     }
-    db.getHomeworkAll(socket.channels,msg).then(function(data){
-      return callback(null,data)
-    }).catch(function(error){
-      console.log(error)
-      return callback(error.toString())
-    })
+    if(typeof msg.removeExpired != "boolean"){
+      msg.removeExpired = true
+    }
+    if(msg.channel){
+      //Ensure that user is member of channel
+      if(socket.channels.find(channel=>{
+        return channel == msg.channel
+      })){
+      db.getHomework(msg.channel,msg.removeExpired).then(function(data){
+        return callback(null,data)
+      }).catch(function(error){
+        console.log(error)
+        return callback(error.toString())
+      })
+    }
+    }else{
+      db.getHomeworkAll(socket.channels,msg).then(function(data){
+        return callback(null,data)
+      }).catch(function(error){
+        console.log(error)
+        return callback(error.toString())
+      })
+    }
   })
 
   //Add homework
@@ -123,7 +140,6 @@ io.on('connection', function(socket){
 
   //Helper function to validate token and payload
   async function validatePayload(channelPermissions,msg,callback){
-    console.log(socket.channels)
     if(typeof callback!="function"){
       return -1
     }
