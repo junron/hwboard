@@ -13,7 +13,7 @@ if(gitlab){
   }
   console.log("Using config:")
   console.log(config)
-  (async()=>{
+  ;(async()=>{
     const {sequelize,Channels} = require("./models")
     await sequelize.sync()
     await Channels.create(config)
