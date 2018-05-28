@@ -44,7 +44,7 @@ if(testing){
   console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m")
 }
 
-//View only specific channel
+//View channel 
 router.get('/:channel', async (req, res, next) => {
   if(!dbInit){
     //Create tables and stuffs
@@ -54,7 +54,6 @@ router.get('/:channel', async (req, res, next) => {
   const channelName = req.params.channel
   const {channelData} = await authChannels(req,res)
   const channel = channelData.find(channel=>{
-    console.log(channel.name,channelName)
     return channel.name == channelName
   })
   if(channel){
@@ -78,6 +77,26 @@ router.get('/:channel', async (req, res, next) => {
     const admin = Object.keys(adminChannels).length > 0
 
     res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels})
+  }else{
+    res.status(404).end("Channel not found")
+  }
+})
+//View channel settings
+router.get('/:channel/settings', async (req, res, next) => {
+  if(!dbInit){
+    //Create tables and stuffs
+    await db.init()
+    dbInit = true
+  }
+  const channelName = req.params.channel
+  const {channelData,decodedToken} = await authChannels(req,res)
+  const channel = channelData.find(channel=>{
+    return channel.name == channelName
+  })
+  if(channel){
+    res.header("Link",parsePushHeaders(pushFiles))
+    const email = decodedToken.preferred_username
+    res.render('channelSettings', {channel,email})
   }else{
     res.status(404).end("Channel not found")
   }
@@ -183,7 +202,8 @@ async function authChannels(req,res){
   },{})
   return {
     channelData,
-    adminChannels
+    adminChannels,
+    decodedToken
   }
 }
 module.exports = router;

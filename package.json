@@ -11,7 +11,7 @@
   "author": "junron",
   "license": "ISC",
   "bin": {
-    "hwboard": "./cli.js"
+    "hwboard add channel": "./cli.js"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
