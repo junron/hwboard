@@ -5,14 +5,15 @@ const expect = chai.expect
 const token = `bleh`
 const io = require('socket.io-client')
 const websocket = require("../app").server
+const port = require("../loadConfig").PORT
 let client
 describe("websocket",function(){
     before(function(done){
-      websocket.listen(3001)
+      websocket.listen(port)
       done()
     })
     beforeEach(function(done){
-        client = io("http://localhost:3001",{ 
+        client = io("http://localhost:" + port,{ 
         transports: ['websocket'], 
         forceNew: true,
         reconnection: false,
