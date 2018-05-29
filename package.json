@@ -5,13 +5,14 @@
   "main": "app.js",
   "scripts": {
     "test": "snyk test && mocha test",
-    "start:dev": "nodemon ./bin/www"
+    "start:dev": "nodemon ./bin/www",
+    "hwboard": "node cli.js"
   },
   "repository": "https://gitlab.therealorange.com/Jro/hwboard2.git",
   "author": "junron",
   "license": "ISC",
   "bin": {
-    "hwboard add channel": "./cli.js"
+    "hwboard": "./cli.js"
   },
   "dependencies": {
     "body-parser": "^1.18.3",

@@ -7,6 +7,8 @@ let dbInit = false
 const router = express.Router();
 const db = require("../database")
 const auth = require("../auth")
+const config = require("../loadConfig")
+const {MS_CLIENTID:clientId,MS_CLIENTSECRET:clientSecret,HOSTNAME:hostname,CI:testing} = config
 //Files to HTTP2 push for quicker page loading
 //TODO: find a library to auto push required files
 
@@ -38,8 +40,7 @@ function parsePushHeaders(files){
   }
   return headers
 }
-//Dangerous, allows bypass authentication, only use in CI environment
-const testing = (process.env.CI == 'true')
+//Dangerous, allows bypass authentication, only use in CI/dev environment
 if(testing){
   console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m")
 }
@@ -135,8 +136,6 @@ async function authChannels(req,res){
   //Temp var to store fresh token
   let tempToken 
   //Auth settings
-  const config = require("../loadConfig")
-  const {MS_CLIENTID:clientId,MS_CLIENTSECRET:clientSecret,HOSTNAME:hostname} = config
   if(!req.cookies.token&&!testing){
     if(!req.query.code){
       return res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+

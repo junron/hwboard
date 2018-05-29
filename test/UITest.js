@@ -1,12 +1,12 @@
 const puppeteer = require("puppeteer")
 const mocha = require("mocha")
 const {expect} = require("chai")
+const port = require("../loadConfig").PORT
 const server = require("../app").server
 const options = {
     headless:false,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
 }
-console.log(puppeteer.executablePath())
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
   console.log("Gitlab env")
   //No display in CI
@@ -27,7 +27,7 @@ async function init(){
   page = await browser.newPage()
   console.log("pageopen")
   //await page.goto('https://nushhwboard.tk')
-  await page.goto('http://localhost:3001')
+  await page.goto('http://localhost:' + port)
   console.log("pageloaad")
   //await page.waitFor(2000)
   await page.screenshot({path: './artifacts/initial.png'})
@@ -105,7 +105,7 @@ function getDate(date){
 describe("Hwboard",async function(){
   this.timeout(0);
   before(async function(){
-    server.listen(3001)
+    server.listen(port)
     await init()
   })
   it("Should be able to add homework",async function(){

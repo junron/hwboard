@@ -1,15 +1,15 @@
 //export so that accessible in app.js
 exports.createServer = function(server){
-//Dangerous, allows bypass authentication, only use in CI environment
-const testing = (process.env.CI == 'true')
 
+const {CI:testing,HOSTNAME,PORT:port} = require("./loadConfig")
+console.log(HOSTNAME)
 const io = require('socket.io')(server)
 //Prevent CSRF sort of
 io.origins((origin,callback)=>{
-  const origins = ["https://"+require("./loadConfig").HOSTNAME,"http://localhost:3001"]
+  const origins = ["https://"+HOSTNAME,"http://localhost:"+port]
   if(testing){
     //Socket-io client origin is * for some reason,
-    //TODO, fix this
+    //TODO fix this
     origins.push("*")
   }
   if(!origins.includes(origin)){
