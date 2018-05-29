@@ -23,7 +23,6 @@ build:
   stage: build
   script:
   - npm install
-  - npm install -g
   - npm install puppeteer --save-dev
   - pwd
   - whoami
@@ -40,7 +39,7 @@ test:
   - export APT_CACHE_DIR=`pwd`/apt-cache && mkdir -pv $APT_CACHE_DIR
   - pwd
   - whoami
-  - hwboard add channel
+  - npm run hwboard add channel
   - mkdir artifacts
   - npm test
   artifacts:
