@@ -4,7 +4,7 @@ const Sequelize = require('sequelize')
 const config = require("../loadConfig")
 const {POSTGRES_PASSWORD:dbPasswd,POSTGRES_USER:dbUser,POSTGRES_DB:dbName="hwboard"} = config
 let POSTGRES_HOST = "localhost"
-if(process.env.CI_PROJECT_NAME=="hwboard2"){
+if(process.env.CI_PROJECT_NAME=="hwboard2"||process.env.IS_DOCKER=="true"){
   POSTGRES_HOST = "postgres"
 }
 const sequelize = new Sequelize(`postgres://${dbUser}:${dbPasswd}@${POSTGRES_HOST}:5432/${dbName}`)

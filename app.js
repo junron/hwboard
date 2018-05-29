@@ -2,6 +2,7 @@
 const config = require("./loadConfig")
 const {HOSTNAME:hostName,PORT:port} = config
 //Utils
+console.log(hostName)
 const http = require('http')
 const express = require("express")
 const app = express()

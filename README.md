@@ -15,6 +15,10 @@ Dev Branch:
 5. Run `npm run start:dev` to start hwboard.
 6. To run hwboard in the background, run `hwboard start --detached`
 
+## Running with  docker-compose  
+`docker-compose up`  
+
+
 ## Testing
 Hwboard uses [snyk](https://snyk.io) to ensure that dependencies are free of vulnerabilities  
 Snyk requires an authenticated account. Sign up [here](https://snyk.io/signup).

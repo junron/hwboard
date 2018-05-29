@@ -2,6 +2,7 @@
 exports.createServer = function(server){
 
 const {CI:testing,HOSTNAME,PORT:port} = require("./loadConfig")
+console.log(HOSTNAME)
 const io = require('socket.io')(server)
 //Prevent CSRF sort of
 io.origins((origin,callback)=>{

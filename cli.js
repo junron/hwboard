@@ -3,7 +3,7 @@ const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
 
 if(process.argv[2]+process.argv[3]=="addchannel"){
 let config ={}
-if(gitlab){
+if(gitlab||process.argv[4]=="default"){
   config = {
     name:"testing",
     subjects:["math","chemistry"],
@@ -16,6 +16,17 @@ if(gitlab){
   ;(async()=>{
     const {sequelize,Channels} = require("./models")
     await sequelize.sync()
+    const data = await Channels.findAll({
+      where:{
+        name:config.name
+      },
+      raw: true
+    })
+    if(data.length>0){
+      console.log("Channel already exists. Exiting.")
+      sequelize.close()
+      return
+    }
     await Channels.create(config)
     console.log("channel created")
     sequelize.close()
@@ -57,6 +68,17 @@ if(gitlab){
               if(answer.toLowerCase()=="yes"){
                 const {sequelize,Channels} = require("./models")
                 await sequelize.sync()
+                const data = await Channels.findAll({
+                  where:{
+                    name:config.name
+                  },
+                  raw: true
+                })
+                if(data.length>0){
+                  console.log("Channel already exists. Exiting.")
+                  sequelize.close()
+                  return
+                }
                 await Channels.create(config)
                 console.log("channel created")
                 sequelize.close()
@@ -74,7 +96,8 @@ if(gitlab){
 }
 }else if(process.argv[2]=="start"){
   const { spawn } = require('child_process')
-  const detached = (process.argv[3]=="--detach")
+console.log(process.argv)
+  const detached = (process.argv[3]=="detach")
   const options = {
     detached
   }
@@ -150,7 +173,7 @@ if(gitlab){
                     if(answer!="skip"){
                       config.HOSTNAME = answer
                     }else{
-                      console.log(`Please set the HOSTNAME environment variable`)
+                      console.log(`Please set the HWBOARD_HOSTNAME environment variable`)
                     }
                     r1.close()
                     const fs = require("fs")
@@ -166,7 +189,7 @@ if(gitlab){
                 if(answer!="skip"){
                   config.PORT = answer
                 }else{
-                  console.log(`Please set the PORT environment variable`)
+                  console.log(`Please set the HWBOARD_PORT environment variable`)
                 }
                 r1.close()
                 const fs = require("fs")
