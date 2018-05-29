@@ -150,7 +150,7 @@ if(gitlab){
                     if(answer!="skip"){
                       config.HOSTNAME = answer
                     }else{
-                      console.log(`Please set the HOSTNAME environment variable`)
+                      console.log(`Please set the HWBOARD_HOSTNAME environment variable`)
                     }
                     r1.close()
                     const fs = require("fs")
