@@ -1,9 +1,13 @@
+const db = require("./database")
+const auth = require("./auth")
+const cookieParser = require('socket.io-cookie-parser')
+
 //export so that accessible in app.js
 exports.createServer = function(server){
 
 const {CI:testing,HOSTNAME,PORT:port} = require("./loadConfig")
-console.log(HOSTNAME)
 const io = require('socket.io')(server)
+
 //Prevent CSRF sort of
 io.origins((origin,callback)=>{
   const origins = ["https://"+HOSTNAME,"http://localhost:"+port]
@@ -19,9 +23,7 @@ io.origins((origin,callback)=>{
   console.log("\033[0;32mOrigin "+origin+" was authorised\033[0m")
   callback(null,true)
 })
-const db = require("./database")
-const auth = require("./auth")
-const cookieParser = require('socket.io-cookie-parser')
+
 io.set('transports', ['websocket'])
 io.use(cookieParser())
 io.on('connection', function(socket){

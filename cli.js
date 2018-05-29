@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+
+
+//This file is very messy.
+//Please ignore it as it is only for the CLI
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
 
 if(process.argv[2]+process.argv[3]=="addchannel"){

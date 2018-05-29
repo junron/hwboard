@@ -1,8 +1,9 @@
 //Very important for CSP
 const config = require("./loadConfig")
 const {HOSTNAME:hostName,PORT:port} = config
+
+
 //Utils
-console.log(hostName)
 const http = require('http')
 const express = require("express")
 const app = express()
@@ -11,11 +12,14 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const websocket = require("./websocket")
+
 // create servers
 const server = http.createServer(app)
 const io = websocket.createServer(server)
+
 //routes
 const routes = require('./routes/index');
+app.use('/', routes);
 
 //Views
 app.set('views', path.join(__dirname, 'views'));
@@ -43,7 +47,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', routes);
+
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error('Not Found');

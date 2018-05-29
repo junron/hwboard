@@ -17,6 +17,7 @@ sequelize.authenticate()
 })
 
 //Export the model creator becos we may need to create tables later
+//Should i curry this?
 const Homework = require("./Homework")
 //We can export the created model cos we only need one
 const Channels = require("./Channels")(sequelize, Sequelize)

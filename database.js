@@ -8,7 +8,10 @@ const {sequelize,Sequelize,Channels,Homework} = require("./models")
 //Prevent xss
 const xss = require('xss')
 
+//Object to store hwboard channel tables
 const tables = {}
+
+//Generate tables
 async function init(){
   await generateHomeworkTables()
   return sequelize.sync()
@@ -17,6 +20,7 @@ async function init(){
 async function generateHomeworkTables(){
   const channels = await getUserChannels("*")
   for (let channel of channels){
+    //Could have curried but meh
     tables[channel.name] = Homework(sequelize,Sequelize,channel.name)
   }
 }
@@ -32,6 +36,7 @@ async function getUserChannels(userEmail,permissionLevel=1){
     if(channel.roots.includes(userEmail)){
       channel.permissions = 3
       authChannels.push(channel)
+      //We want the highest permissions
       continue
     }
     if(channel.admins.includes(userEmail)&&permissionLevel<=2){
@@ -48,6 +53,7 @@ async function getUserChannels(userEmail,permissionLevel=1){
   return authChannels
 }
 //Assumes that access has been granted
+//Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
   const Homework = tables[hwboardName]
   const data = await Homework.findAll({
@@ -70,10 +76,13 @@ async function getHomeworkAll(channels,removeExpired=true){
     homeworkPromises.push(getHomework(channel.name))
   }
   const homework2d = await Promise.all(homeworkPromises)
+  //Join array of array of homework into single array of homework
   return [].concat(...homework2d)
 }
+
 async function addHomework(hwboardName,newHomework){
   const Homework = tables[hwboardName]
+  //Very important step...
   newHomework = await removeXss(newHomework)
   return Homework.create(newHomework)
 }

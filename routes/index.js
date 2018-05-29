@@ -82,6 +82,8 @@ router.get('/:channel', async (req, res, next) => {
     res.status(404).end("Channel not found")
   }
 })
+
+
 //View channel settings
 router.get('/:channel/settings', async (req, res, next) => {
   if(!dbInit){
