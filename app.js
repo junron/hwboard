@@ -1,5 +1,5 @@
 //Load config
-const {HOSTNAME:hostName,PORT:port,CI:testing} = require("./loadConfig")
+const {HOSTNAME:hostName,PORT:port,CI:testing,COOKIE_SECRET:cookieSecret} = require("./loadConfig")
 
 
 //Utils
@@ -13,7 +13,7 @@ const bodyParser = require('body-parser');
 const websocket = require("./websocket")
 
 //Cookie parser must be before routes
-app.use(cookieParser());
+app.use(cookieParser(cookieSecret));
 
 // create servers
 const server = http.createServer(app)
