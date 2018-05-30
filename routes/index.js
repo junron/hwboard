@@ -40,10 +40,6 @@ function parsePushHeaders(files){
   }
   return headers
 }
-//Dangerous, allows bypass authentication, only use in CI/dev environment
-if(testing){
-  console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m")
-}
 
 //View channel 
 router.get('/:channel', async (req, res, next) => {
@@ -115,7 +111,8 @@ router.get('/', async (req, res, next) => {
     await db.init()
     dbInit = true
   }
-
+  //Check if user is admin in any channel
+  //This prevents us from sending the add hoemwrok form unnecessarily
   const admin = Object.keys(adminChannels).length > 0
   //Get sort options
   let {sortOrder,sortType} = req.cookies
@@ -134,66 +131,75 @@ router.get('/', async (req, res, next) => {
 
 //Authenticate user and get authorised channels
 async function authChannels(req,res){
-  //Check auth here
-  //Temp var to store fresh token
-  let tempToken 
-  //Auth settings
-  if(!req.cookies.token&&!testing){
-    if(!req.query.code){
-      return res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
-      "response_type=code&"+
-      "scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read%20openid%20profile&"+
-      `client_id=${clientId}&`+
-      `redirect_uri=https://${hostname}/&`+
-      "prompt=select_account&"+
-      `response_mode=query`)
-    }else{
-      const code = req.query.code
-      const options = {
-          method:"POST",
-          uri:"https://login.microsoftonline.com/common/oauth2/v2.0/token",
-        formData:{
-          //grant_type:"id_token",
-          grant_type:"authorization_code",
-          scope:"https://graph.microsoft.com/user.read openid profile",
-          client_id:clientId,
-          redirect_uri:"https://"+hostname+"/",
-          code,
-          client_secret:clientSecret
-        }
-      }
-      try{
-        const data = JSON.parse(await request(options))
-        res.cookie("token",data.id_token,{
-          httpOnly:true,
-          secure:true
-        })
-        tempToken = data.id_token
-      }catch(e){
-        console.log(e)
-      }
-    }
-  }
-  const token = req.cookies.token || tempToken
   let decodedToken
-  if(!testing){
-    decodedToken = await auth.verifyToken(token)
-    if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
-      throw new Error("You must log in with a NUSH email.")
-    }
-  }else{
+  //If in testing mode, bypass authentication
+  //See testing.md
+  if(testing){
     decodedToken = {
       name:"tester",
       preferred_username:"tester@nushigh.edu.sg"
     }
+  }else{
+    //Check auth here
+    //Temp var to store fresh token
+    let tempToken 
+    //Check if token stored in cookie, 
+    //if not, generate new token
+    if(!req.cookies.token){
+      //Check if authorization code is present
+      //Auth codes can be exchanged for id_tokens
+      if(!req.query.code){
+        return res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
+        "response_type=code&"+
+        "scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read%20openid%20profile&"+
+        `client_id=${clientId}&`+
+        `redirect_uri=https://${hostname}/&`+
+        "prompt=select_account&"+
+        `response_mode=query`)
+      }else{
+        //Get id_token from auth code
+        const code = req.query.code
+        const options = {
+            method:"POST",
+            uri:"https://login.microsoftonline.com/common/oauth2/v2.0/token",
+          formData:{
+            //grant_type:"id_token",
+            grant_type:"authorization_code",
+            scope:"https://graph.microsoft.com/user.read openid profile",
+            client_id:clientId,
+            redirect_uri:"https://"+hostname+"/",
+            code,
+            client_secret:clientSecret
+          }
+        }
+        try{
+          const data = JSON.parse(await request(options))
+          //Store token in cookie for easier login later
+          res.cookie("token",data.id_token,{
+            httpOnly:true,
+            secure:true
+          })
+          tempToken = data.id_token
+        }catch(e){
+          console.log(e)
+        }
+      }
+    }
+    const token = req.cookies.token || tempToken
+    //Verify token (check signature and decode)
+    decodedToken = await auth.verifyToken(token)
+    if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
+      throw new Error("You must log in with a NUSH email.")
+    }
   }
+
   //Get authorised channels
   const channelData = await db.getUserChannels(decodedToken.preferred_username)
   //Yey my failed attempt at functional programming
   const adminChannels =
   channelData
   .filter(channel=>
-    //Get admin permissions only
+    //Only users with at least admin permissions can edit homework
     channel.permissions>=2
   )
   .reduce((subjects,channel)=>{

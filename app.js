@@ -1,6 +1,5 @@
-//Very important for CSP
-const config = require("./loadConfig")
-const {HOSTNAME:hostName,PORT:port} = config
+//Load config
+const {HOSTNAME:hostName,PORT:port,CI:testing} = require("./loadConfig")
 
 
 //Utils
@@ -13,6 +12,9 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const websocket = require("./websocket")
 
+//Cookie parser must be before routes
+app.use(cookieParser());
+
 // create servers
 const server = http.createServer(app)
 const io = websocket.createServer(server)
@@ -24,6 +26,12 @@ app.use('/', routes);
 //Views
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+//Show warning for testing mode
+//See testing.md
+if(testing){
+  console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m")
+}
 
 //Content security policy settings
 //"unsafe-inline" for inline styles and scripts, aim to remove
@@ -45,7 +53,6 @@ app.use(function(req,res,next){
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // catch 404 and forward to error handler

@@ -1,5 +1,5 @@
 # Hwboard v2 
-Master Branch (stable)
+Master Branch (stable)  
 [![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/master/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/master)
  
  
@@ -13,7 +13,7 @@ Dev Branch:
 3. run `hwboard config` to start the config process
 4. Run `hwboard add channel` to add a channel
 5. Run `npm run start:dev` to start hwboard.
-6. To run hwboard in the background, run `hwboard start --detached`
+6. To run hwboard in the background, run `hwboard start detach`
 
 ## Running with  docker-compose  
 `docker-compose up`  

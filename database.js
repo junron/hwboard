@@ -17,6 +17,7 @@ async function init(){
   return sequelize.sync()
 }
 
+//Creates tables based on `Homework` model dynamically
 async function generateHomeworkTables(){
   const channels = await getUserChannels("*")
   for (let channel of channels){
@@ -25,6 +26,7 @@ async function generateHomeworkTables(){
   }
 }
 async function getUserChannels(userEmail,permissionLevel=1){
+  //Argh teach me how does one select only if value is in postgres array
   const data = await Channels.findAll({
     raw: true
   })
