@@ -1,63 +1,69 @@
 //All functions here should be async.
 //If your db library return promises, they will be unwrapped automatically
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
-const Sequelize = require('sequelize')
+
+//Load models and stuffs
+const {sequelize,Sequelize,Channels,Homework} = require("./models")
+
 //Prevent xss
 const xss = require('xss')
-//Same as docker env variables 
-//or use a config file
-const config = require("./loadConfig")
-const {POSTGRES_PASSWORD:dbPasswd,POSTGRES_USER:dbUser,POSTGRES_DB:dbName="hwboard"} = config
-let POSTGRES_HOST = "localhost"
-if(process.env.CI_PROJECT_NAME=="hwboard2"){
-  POSTGRES_HOST = "postgres"
-}
-const sequelize = new Sequelize(`postgres://${dbUser}:${dbPasswd}@${POSTGRES_HOST}:5432/${dbName}`)
-sequelize.authenticate()
-.then(() => {
-  console.log('Connection has been established successfully.');
-})
-.catch(err => {
-  console.error('Unable to connect to the database:', err);
-});
-const Homework = sequelize.define('homework', {
-  id :{
-    type: Sequelize.INTEGER,
-    autoIncrement: true,
-    allowNull: false,
-    primaryKey: true
-  },
-  text: {
-    type: Sequelize.STRING
-  },
-  subject: {
-    type: Sequelize.STRING
-  },
-  dueDate: {
-    type: Sequelize.DATE
-  },
-  isTest: {
-    type: Sequelize.BOOLEAN
-  },
-  lastEditPerson: {
-    type: Sequelize.STRING
-  },
-  lastEditTime: {
-    type: Sequelize.DATE
-  }
-},{
-  timestamps:true,
-  createdAt: false,
-  updatedAt: 'lastEditTime'
-})
 
+//Object to store hwboard channel tables
+const tables = {}
+
+//Generate tables
 async function init(){
-  return Homework.sync()
+  await generateHomeworkTables()
+  return sequelize.sync()
 }
-async function getHomework(removeExpired=true){
+
+//Creates tables based on `Homework` model dynamically
+async function generateHomeworkTables(){
+  const channels = await getUserChannels("*")
+  for (let channel of channels){
+    //Could have curried but meh
+    tables[channel.name] = Homework(sequelize,Sequelize,channel.name)
+  }
+}
+async function getUserChannels(userEmail,permissionLevel=1){
+  //Argh teach me how does one select only if value is in postgres array
+  const data = await Channels.findAll({
+    raw: true
+  })
+  if(userEmail=="*"){
+    return data
+  }
+  const authChannels = []
+  for(let channel of data){
+    if(channel.roots.includes(userEmail)){
+      channel.permissions = 3
+      authChannels.push(channel)
+      //We want the highest permissions
+      continue
+    }
+    if(channel.admins.includes(userEmail)&&permissionLevel<=2){
+      channel.permissions = 2
+      authChannels.push(channel)
+      continue
+    }
+    if((channel.members.includes(userEmail)||channel.members.includes("*"))&&permissionLevel<=1){
+      channel.permissions = 1
+      authChannels.push(channel)
+      continue
+    }
+  }
+  return authChannels
+}
+//Assumes that access has been granted
+//Check authorization before calling
+async function getHomework(hwboardName,removeExpired=true){
+  const Homework = tables[hwboardName]
   const data = await Homework.findAll({
     raw: true
   })
+  for(const homework of data){
+    homework.channel = hwboardName
+  }
   if(removeExpired){
     return data.filter((homework)=>{
       return homework.dueDate >= new Date().getTime()
@@ -66,23 +72,36 @@ async function getHomework(removeExpired=true){
     return data
   }
 }
+async function getHomeworkAll(channels,removeExpired=true){
+  const homeworkPromises = []
+  for (const channel of channels){
+    homeworkPromises.push(getHomework(channel.name))
+  }
+  const homework2d = await Promise.all(homeworkPromises)
+  //Join array of array of homework into single array of homework
+  return [].concat(...homework2d)
+}
 
-async function addHomework(newHomework){
+async function addHomework(hwboardName,newHomework){
+  const Homework = tables[hwboardName]
+  //Very important step...
   newHomework = await removeXss(newHomework)
   return Homework.create(newHomework)
 }
 
-async function editHomework(newHomework){
+async function editHomework(hwboardName,newHomework){
+  const Homework = tables[hwboardName]
   newHomework = await removeXss(newHomework)
-  Homework.update(newHomework,
+  return Homework.update(newHomework,
     {
     where:{
       id:newHomework.id
     }
   })
 }
-async function deleteHomework(homeworkId){
-  Homework.destroy(
+async function deleteHomework(hwboardName,homeworkId){
+  const Homework = tables[hwboardName]
+  return Homework.destroy(
     {
     where:{
       id:homeworkId
@@ -98,4 +117,13 @@ async function removeXss(object){
   }
   return object
 }
-module.exports={getHomework,addHomework,editHomework,deleteHomework,init}
+module.exports={
+  sequelize,
+  getHomework,
+  addHomework,
+  editHomework,
+  deleteHomework,
+  init,
+  getUserChannels,
+  getHomeworkAll,
+}

@@ -5,14 +5,15 @@ const expect = chai.expect
 const token = `bleh`
 const io = require('socket.io-client')
 const websocket = require("../app").server
+const port = require("../loadConfig").PORT
 let client
 describe("websocket",function(){
     before(function(done){
-      websocket.listen(3001)
+      websocket.listen(port)
       done()
     })
     beforeEach(function(done){
-        client = io("http://localhost:3001",{ 
+        client = io("http://localhost:" + port,{ 
         transports: ['websocket'], 
         forceNew: true,
         reconnection: false,
@@ -48,7 +49,7 @@ describe("websocket",function(){
         })
     })
     it("Should be able to get data in the right format",function(done){
-        client.emit("dataReq",null,function(err,homeworks){
+        client.emit("dataReq",{},function(err,homeworks){
             expect(err).to.equal(null)
             expect(homeworks).to.be.an("array")
            for (let homework of homeworks){
@@ -69,15 +70,16 @@ describe("websocket",function(){
     })
     it("Should be able to add homework",function(done){
       const newHomework = {
-        "text":"hello",
+        text:"hello",
+        channel:"testing",
         subject:"add homework via websocket test",
-        dueDate:new Date().getTime()+100000,
+        dueDate:new Date().getTime()+10000000,
         isTest:true,
         token
       }
       client.emit("addReq",newHomework,function(err){
         expect(err).to.equal(null)
-        client.emit("dataReq",null,function(err,homeworks){
+        client.emit("dataReq",{},function(err,homeworks){
           for(let homework of homeworks){
             if(homework.subject=="add homework via websocket test"){
               expect(homework.text).to.equal(newHomework.text)
@@ -89,19 +91,20 @@ describe("websocket",function(){
       })
     })
     it("Should be able to edit homework",function(done){
-      client.emit("dataReq",null,function(err,homeworks){
+      client.emit("dataReq",{},function(err,homeworks){
         const originalHomework = homeworks.find(homework => homework.subject =="add homework via websocket test")
         const newHomework = {
-          "text":"hello(edited)",
+          text:"hello(edited)",
+          channel:"testing",
           subject:"Edit homework via websocket test",
-          dueDate:new Date().getTime()+100000,
+          dueDate:new Date().getTime()+10000000,
           isTest:true,
           token,
           id:originalHomework.id
         }
         client.emit("editReq",newHomework,function(err){
           expect(err).to.equal(null)
-          client.emit("dataReq",null,function(err,homeworks){
+          client.emit("dataReq",{},function(err,homeworks){
             const editedHomework = homeworks.find(homework => homework.subject =="Edit homework via websocket test")
             expect(editedHomework.text).to.equal(newHomework.text)
             expect(editedHomework.id).to.equal(newHomework.id)
@@ -112,14 +115,14 @@ describe("websocket",function(){
     })
     it("Should be able to delete homework",function(done){
       const promises = []
-      client.emit("dataReq",false,async function(err,homeworks){
+      client.emit("dataReq",{removeExpired:false},async function(err,homeworks){
         let homeworkCount = 0
         for(let homework of homeworks){
           const {id} = homework
-          client.emit("deleteReq",{id},function(err){
+          client.emit("deleteReq",{id,channel:"testing"},function(err){
               if(err) throw err;
               if(homeworkCount==homeworks.length-1){
-                client.emit("dataReq",false,async function(err,homeworks){
+                client.emit("dataReq",{removeExpired:false},async function(err,homeworks){
                   expect(homeworks.length).to.equal(0)
                 })
                 done()

@@ -1,52 +1,27 @@
 # Hwboard v2 
-Master Branch (stable)
+Master Branch (stable)  
 [![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/master/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/master)
  
  
 Dev Branch:  
 [![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/dev/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/dev)
-## Important files
-1. [`database.js`](database.js)   
-  This file handles all the database logic, including getting, adding, deleting and editing homework in the database  
-  @therealorange
-
-2. [`websocket.js`](websocket.js)  
-  Handles all the websocket logic  
-  @Jro
-
-3. [`./views/index.ejs`](./views/index.ejs)  
-  Main ejs file to be served @owl10124
-  
-4. [`./views/templates/homework.ejs`](./views/templates/homework.ejs)  
-  A template for rendering homework  
-  Simple wrapper for [`./public/scripts/parse.js`](./public/scripts/parse.js)   
-  See [`./views/templates/homework.md`](./views/templates/homework.md) for documentation  
-  @owl10124
 
 ## Installation
-This would start hwboard on port 3001 by default. Set the `PORT` environment variable to use a different port
 1. Clone this repository
-2. `npm install`
-3. **Go to app.js and edit the hostname on line 2** This is important for CSP.  
-  Alternatively, set the `HOSTNAME` environment variable
-4. Configure your server to proxy HTTP and websocket connections from localhost:3001
-5. If you are using caddy, proceed to step 6
-    - NGINX users need to somehow setup HTTP2 and to push resources according to upstream `Link` headers
-6. npm run start:dev
-7. Navigate to your domain in a browser and run the following code:  
-`document.cookie="dev=true"`   
-This ensures that any accidental errors are not reported to Sentry. However, CSP violations will still be reported
+2. `npm install -g`
+  - If you choose not to install globally, replace `hwboard` with `npm run hwboard` in the following commands
+3. run `hwboard config` to start the config process
+4. Run `hwboard add channel` to add a channel
+5. Run `npm run start:dev` to start hwboard.
+6. To run hwboard in the background, run `hwboard start detach`
+
+## Running with  docker-compose  
+`docker-compose up`  
+
 
 ## Testing
-### TODO: implement in CI 
-@therealorange
-1. Dependency check    
-        i. Ensure dependencies are latest version  
-        `npm i -g npm-check-updates`  
-        `ncu -e 2`  
+Hwboard uses [snyk](https://snyk.io) to ensure that dependencies are free of vulnerabilities  
+Snyk requires an authenticated account. Sign up [here](https://snyk.io/signup).
 
-      ii. Check for vulnerabilities in dependencies  
-        `npm i -g snyk`  
-        `snyk test`
-2. Unit testing  
-`npm test`
+To run tests without checking dependencies, run `mocha test` instead of `npm test`.
+You may also like to run `npm audit` to check dependencies.

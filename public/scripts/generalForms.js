@@ -57,8 +57,8 @@ function getCookie(cname) {
 }
 //Re-render homework
 function reRender(data){
-  const sortType = sortOptions.type || getCookie("sortType")
-  const sortOrder = sortOptions.order || parseInt(getCookie("sortOrder"))
+  const sortType = sortOptions.type || getCookie("sortType") || "Due date"
+  const sortOrder = sortOptions.order || parseInt(getCookie("sortOrder")) || 0
   $(".mdc-list--two-line").html(renderer(data,sortType,sortOrder))
   applyHwEventHandlers()
 }

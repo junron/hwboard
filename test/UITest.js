@@ -1,14 +1,16 @@
 const puppeteer = require("puppeteer")
 const mocha = require("mocha")
 const {expect} = require("chai")
+const port = require("../loadConfig").PORT
 const server = require("../app").server
 const options = {
-    headless:true,
+    headless:false,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
 }
-console.log(puppeteer.executablePath())
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
   console.log("Gitlab env")
+  //No display in CI
+  options.headless=true
   //options.executablePath = "/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux"
 }
 let browser
@@ -25,13 +27,17 @@ async function init(){
   page = await browser.newPage()
   console.log("pageopen")
   //await page.goto('https://nushhwboard.tk')
-  await page.goto('http://localhost:3001')
+  await page.goto('http://localhost:' + port)
   console.log("pageloaad")
   //await page.waitFor(2000)
   await page.screenshot({path: './artifacts/initial.png'})
 }
 async function showToolbar(){
-  await page.click(".hwitem",{
+  // "stain" homework so that we can identify it later
+  await page.evaluate(()=>{
+    return $(".hwitem:contains('Add homework test')").attr("id","targetHomework")
+  })
+  await page.click("#targetHomework",{
     delay:1080
   })
 }
@@ -62,7 +68,7 @@ async function add(){
   await page.click("#subject-select .mdc-select__surface")
   await page.waitFor(300)
   await page.evaluate(()=>{
-     $("li:contains('Math')").click()
+     $("li:contains('math')").click()
   })
   await page.waitFor(300)
   await page.click("#graded")
@@ -99,7 +105,7 @@ function getDate(date){
 describe("Hwboard",async function(){
   this.timeout(0);
   before(async function(){
-    server.listen(3001)
+    server.listen(port)
     await init()
   })
   it("Should be able to add homework",async function(){
@@ -109,7 +115,7 @@ describe("Hwboard",async function(){
     await info()
     const name = await getHtml("#details-sheet-label")
     const subject = await getHtml("#detailSubject")
-    expect(subject).to.equal("Math")
+    expect(subject).to.equal("math")
     const dueDate = await getHtml("#detailDue")
     const graded = await getHtml("#detailGraded")
     expect(graded).to.equal("Yes")

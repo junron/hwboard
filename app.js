@@ -1,6 +1,7 @@
-//Very important for CSP
-const config = require("./loadConfig")
-const {HOSTNAME:hostName} = config
+//Load config
+const {HOSTNAME:hostName,PORT:port,CI:testing} = require("./loadConfig")
+
+
 //Utils
 const http = require('http')
 const express = require("express")
@@ -10,15 +11,27 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const websocket = require("./websocket")
+
+//Cookie parser must be before routes
+app.use(cookieParser());
+
 // create servers
 const server = http.createServer(app)
 const io = websocket.createServer(server)
+
 //routes
 const routes = require('./routes/index');
+app.use('/', routes);
 
 //Views
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+//Show warning for testing mode
+//See testing.md
+if(testing){
+  console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m")
+}
 
 //Content security policy settings
 //"unsafe-inline" for inline styles and scripts, aim to remove
@@ -26,7 +39,7 @@ app.set('view engine', 'ejs');
 let csp = "default-src 'self';"+
             "script-src 'self' 'unsafe-inline' https://cdn.ravenjs.com https://secure.aadcdn.microsoftonline-p.com;"+
             "style-src 'self' 'unsafe-inline';"+
-            `connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:3001 https://login.microsoftonline.com/;` +
+            `connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;` +
             "object-src 'none';"+
             "img-src 'self' data:;"
             if(!process.env.DEV){
@@ -40,9 +53,8 @@ app.use(function(req,res,next){
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', routes);
+
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error('Not Found');

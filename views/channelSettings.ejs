@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("partials/head") %>
+<link href="/styles/roboto.css" rel="stylesheet">
+<link rel="stylesheet" href = "/styles/material-components-web.min.css">
+<style>
+body {
+  background-color: #f2f2f2;
+  color:rgb(97,97,97);
+  text-align:center;
+}
+.mdc-elevation--z1 {
+  background-color:white;
+  width: 100%;
+}
+.settings-main {
+  width:80vh;
+  margin:auto;
+}
+.mdc-list-item__text {
+  white-space: initial;
+  font-size:14px;
+}
+.you {
+  text-align:left;
+}
+.mdc-typography--headline2 {
+  text-align:left;
+  font-size:18px;
+  padding:10px;
+  padding-bottom:0px;
+}
+.mdc-typography--headline3 {
+  white-space: initial;
+  text-align:left;
+  font-size:13px;
+  padding-left:10px;
+}
+</style>
+<body class="mdc-typography">
+  <div class="settings-main">
+    <h2 class="mdc-typography--headline2">Subjects</h2>
+    <div class="mdc-elevation--z1">
+      <ul class="mdc-list">
+      <% let n = 0%>
+      <% for(const subject of channel.subjects){ %>
+        <li class="mdc-list-item"><%=subject%></li>
+        <%n++%>
+        <% if(n != channel.subjects.length){ %>
+          <li role="separator" class="mdc-list-divider"></li>
+        <%}%>
+      <% } %>
+      </ul>
+    </div>
+    <% const descriptions = {roots:  "Root users can add or remove subjects and members",admins: "Admins can add, delete and modify homework", members:"Members can view homework"}%>
+    <% const permissionLevels = ["roots","admins","members"] %>
+    <% for(const level of permissionLevels){ %>
+    <br>
+    <h2 class="mdc-typography--headline2">
+    <%= level %>
+    <h3 class="mdc-typography--headline3 mdc-list-item__secondary-text">
+    <%=descriptions[level]%>
+    </h3>
+    </h2>
+    <div class="mdc-elevation--z1">
+      <ul class="mdc-list">
+      <% let n = 0%>
+      <% for(const user of channel[level]){ %>
+        <li class="mdc-list-item">
+          <span class="mdc-list-item__text">
+            <% if(user=="*"){ %>
+              Everyone is a <%=level.substring(0,level.length-1)%> of this channel
+            <%}else{%>
+              <%=user.trim()%> 
+              <span class="mdc-list-item__secondary-text you">
+                <% if(user==email) {%>
+                Its you
+                <%}%>
+              </span>
+            <%}%>
+          </span>
+        </li>
+        <%n++%>
+        <% if(n != channel[level].length){ %>
+          <li role="separator" class="mdc-list-divider"></li>
+        <%}%>
+      <% } %>
+      <% if(channel[level].length==0){%>
+      <li class="mdc-list-item">
+          <span class="mdc-list-item__text">
+          There are no <%=level%> in this channel
+          </span>
+        </li>
+      <%}%>
+      </ul>
+    </div>
+    <%}%>
+  </div>
+</body>
+</html>
