@@ -16,7 +16,7 @@ services:
       - "3001:3001"
     expose:
       - "3001"
-    command: "./wait-for-it.sh postgres:5432 -- /bin/bash -c 'npm run hwboard add channel default && npm run hwboard start'"
+    command: "./wait-for-it.sh postgres:5432 -- /bin/bash -c 'npm run hwboard config secret-only && npm run hwboard add channel default && npm run hwboard start'"
     environment:
       - IS_DOCKER=true
       - CI=true

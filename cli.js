@@ -120,8 +120,19 @@ console.log(process.argv)
     server.unref()
   }
 }else if(process.argv[2]=="config"){
-  if(gitlab){
-    console.log("Please use the environment variables in CI environment")
+  if(process.argv[3]=="secret-only"){
+    const config = {}
+    const crypto = require("crypto")
+    crypto.randomBytes(32,function(error,buffer){
+      if(error) throw error
+      config.COOKIE_SECRET = buffer.toString("base64")
+      console.log("Using 32 bytes (256 bits) of random data: \n",config.COOKIE_SECRET)
+    })
+    const fs = require("fs")
+    fs.writeFile("./config.json",JSON.stringify(config,null,2),err=>{
+      if(err) throw err
+      console.log("Config complete")
+    })
   }else{
     console.log(`\x1b[31m
       The data you input will be stored unencrypted in ./config.json.
@@ -140,14 +151,14 @@ console.log(process.argv)
       output: process.stdout
     })
     const config = {}
-    r1.question("Do you want to automatically generate a cookie secret? (yes/no)  ",(answer)=>{
+    r1.question("Do you want to automatically generate a cookie secret? (yes/no)  ",async (answer)=>{
       if(answer.toLowerCase()=="yes"){
         const crypto = require("crypto")
-        crypto.randomBytes(2048,function(error,buffer){
-          if(error) throw error
-          config.COOKIE_SECRET = buffer.toString("hex")
-          console.log("Using 2048 bytes of random data: \n",config.COOKIE_SECRET)
-        })
+        const util = require('util')
+        const randomBytes = util.promisify(crypto.randomBytes)
+        const secret = (await crypto.randomBytes(32)).toString("base64")
+        config.COOKIE_SECRET = secret
+        console.log("Using 32 bytes (256 bits) of random data: \n",config.COOKIE_SECRET)
       }else{
         console.log(`Please set the HWBOARD_COOKIE_SECRET environment variable`)
       }
