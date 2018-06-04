@@ -40,6 +40,31 @@ function parsePushHeaders(files){
   }
   return headers
 }
+router.get("/experiments/:experiment_name",async (req,res,next)=>{
+  if(req.params.experiment_name.includes(".js")){
+    return next()
+  }
+  const {channelData, adminChannels} = await authChannels(req,res)
+  if(!dbInit){
+    //Create tables and stuffs
+    await db.init()
+    dbInit = true
+  }
+  //Check if user is admin in any channel
+  //This prevents us from sending the add hoemwrok form unnecessarily
+  const admin = Object.keys(adminChannels).length > 0
+  //Get sort options
+  let {sortOrder,sortType} = req.cookies
+  if(sortOrder){
+    sortOrder = parseInt(sortOrder)
+  }
+  //Server push
+  res.header("Link",parsePushHeaders(pushFiles))
+
+  //Get homework for rendering
+  let data = await db.getHomeworkAll(channelData)
+  res.render("experiments/"+req.params.experiment_name,{renderer,data,sortType,sortOrder,admin,adminChannels})
+})
 
 //View channel 
 router.get('/:channel', async (req, res, next) => {
@@ -105,7 +130,6 @@ router.get('/:channel/settings', async (req, res, next) => {
 /* GET home page. */
 router.get('/', async (req, res, next) => {
   const {channelData, adminChannels} = await authChannels(req,res)
-
   if(!dbInit){
     //Create tables and stuffs
     await db.init()
@@ -145,7 +169,7 @@ async function authChannels(req,res){
     let tempToken 
     //Check if token stored in cookie, 
     //if not, generate new token
-    if(!req.cookies.token){
+    if(!req.signedCookies.token){
       //Check if authorization code is present
       //Auth codes can be exchanged for id_tokens
       if(!req.query.code){
@@ -175,9 +199,11 @@ async function authChannels(req,res){
         try{
           const data = JSON.parse(await request(options))
           //Store token in cookie for easier login later
+          //httpOnly, can be trusted
           res.cookie("token",data.id_token,{
             httpOnly:true,
-            secure:true
+            secure:true,
+            signed:true
           })
           tempToken = data.id_token
         }catch(e){
@@ -185,12 +211,16 @@ async function authChannels(req,res){
         }
       }
     }
-    const token = req.cookies.token || tempToken
+    const token = req.signedCookies.token || tempToken
     //Verify token (check signature and decode)
     decodedToken = await auth.verifyToken(token)
     if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
       throw new Error("You must log in with a NUSH email.")
     }
+    //Stored decoded signed token data in a cookie for future client-side use
+    //Perhaps for offline rendering
+    //Accessible via client side JS, so DO NOT trust!!!
+    res.cookie('decodedToken', decodedToken, {signed: true,secure:true})
   }
 
   //Get authorised channels

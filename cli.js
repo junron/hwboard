@@ -120,8 +120,19 @@ console.log(process.argv)
     server.unref()
   }
 }else if(process.argv[2]=="config"){
-  if(gitlab){
-    console.log("Please use the environment variables in CI environment")
+  if(process.argv[3]=="secret-only"){
+    const config = {}
+    const crypto = require("crypto")
+    crypto.randomBytes(32,function(error,buffer){
+      if(error) throw error
+      config.COOKIE_SECRET = buffer.toString("base64")
+      console.log("Using 32 bytes (256 bits) of random data: \n",config.COOKIE_SECRET)
+    })
+    const fs = require("fs")
+    fs.writeFile("./config.json",JSON.stringify(config,null,2),err=>{
+      if(err) throw err
+      console.log("Config complete")
+    })
   }else{
     console.log(`\x1b[31m
       The data you input will be stored unencrypted in ./config.json.
@@ -140,69 +151,81 @@ console.log(process.argv)
       output: process.stdout
     })
     const config = {}
-    r1.question("Postgresql username  ",(answer)=>{
-      if(answer!="skip"){
-        config.POSTGRES_USER = answer
+    r1.question("Do you want to automatically generate a cookie secret? (yes/no)  ",async (answer)=>{
+      if(answer.toLowerCase()=="yes"){
+        const crypto = require("crypto")
+        const util = require('util')
+        const randomBytes = util.promisify(crypto.randomBytes)
+        const secret = (await crypto.randomBytes(32)).toString("base64")
+        config.COOKIE_SECRET = secret
+        console.log("Using 32 bytes (256 bits) of random data: \n",config.COOKIE_SECRET)
       }else{
-        console.log(`Please set the POSTGRES_USER environment variable`)
+        console.log(`Please set the HWBOARD_COOKIE_SECRET environment variable`)
       }
-      r1.question("Postgresql database  ",(answer)=>{
+      r1.question("Postgresql username  ",(answer)=>{
         if(answer!="skip"){
-          config.POSTGRES_DB = answer
+          config.POSTGRES_USER = answer
         }else{
-          console.log(`Please set the POSTGRES_DB environment variable`)
+          console.log(`Please set the POSTGRES_USER environment variable`)
         }
-        r1.question("Postgresql password  ",(answer)=>{
+        r1.question("Postgresql database  ",(answer)=>{
           if(answer!="skip"){
-            config.POSTGRES_PASSWORD = answer
+            config.POSTGRES_DB = answer
           }else{
-            console.log(`Please set the POSTGRES_PASSWORD environment variable`)
+            console.log(`Please set the POSTGRES_DB environment variable`)
           }
-          r1.question("Do you want to run hwboard in dev/testing mode? This will skip the authentication process. (yes/no)",(answer)=>{
-            config.CI = answer=="yes"
-            if(!config.CI){
-              r1.question("Microsoft client id  ",(answer)=>{
-                if(answer!="skip"){
-                  config.MS_CLIENTID = answer
-                }else{
-                  console.log(`Please set the MS_CLIENTID environment variable`)
-                }
-                r1.question("Microsoft client secret  ",(answer)=>{
+          r1.question("Postgresql password  ",(answer)=>{
+            if(answer!="skip"){
+              config.POSTGRES_PASSWORD = answer
+            }else{
+              console.log(`Please set the POSTGRES_PASSWORD environment variable`)
+            }
+            r1.question("Do you want to run hwboard in dev/testing mode? This will skip the authentication process. (yes/no)",(answer)=>{
+              config.CI = answer=="yes"
+              if(!config.CI){
+                r1.question("Microsoft client id  ",(answer)=>{
                   if(answer!="skip"){
-                    config.MS_CLIENTSECRET = answer
+                    config.MS_CLIENTID = answer
                   }else{
-                    console.log(`Please set the MS_CLIENTSECRET environment variable`)
+                    console.log(`Please set the MS_CLIENTID environment variable`)
                   }
-                  r1.question("Hostname (omit protocol and path) eg nushwhboard.tk  ",(answer)=>{
+                  r1.question("Microsoft client secret  ",(answer)=>{
                     if(answer!="skip"){
-                      config.HOSTNAME = answer
+                      config.MS_CLIENTSECRET = answer
                     }else{
-                      console.log(`Please set the HWBOARD_HOSTNAME environment variable`)
+                      console.log(`Please set the MS_CLIENTSECRET environment variable`)
                     }
-                    r1.close()
-                    const fs = require("fs")
-                    fs.writeFile("./config.json",JSON.stringify(config,null,2),err=>{
-                      if(err) throw err
-                      console.log("Config complete")
+                    r1.question("Hostname (omit protocol and path) eg nushwhboard.tk  ",(answer)=>{
+                      if(answer!="skip"){
+                        config.HOSTNAME = answer
+                      }else{
+                        console.log(`Please set the HWBOARD_HOSTNAME environment variable`)
+                      }
+                      r1.close()
+                      const fs = require("fs")
+                      fs.writeFile("./config.json",JSON.stringify(config,null,2),err=>{
+                        if(err) throw err
+                        console.log("Config complete")
+                      })
                     })
                   })
                 })
-              })
-            }else{
-              r1.question("Port to run hwboard on  ",(answer)=>{
-                if(answer!="skip"){
-                  config.PORT = answer
-                }else{
-                  console.log(`Please set the HWBOARD_PORT environment variable`)
-                }
-                r1.close()
-                const fs = require("fs")
-                fs.writeFile("./config.json",JSON.stringify(config,null,2),err=>{
-                  if(err) throw err
-                  console.log("Config complete")
+              }else{
+                r1.question("Port to run hwboard on  ",(answer)=>{
+                  if(answer!="skip"){
+                    config.PORT = answer
+                  }else{
+                    console.log(`Please set the HWBOARD_PORT environment variable`)
+                  }
+                  r1.close()
+                  const fs = require("fs")
+                  fs.writeFile("./config.json",JSON.stringify(config,null,2),err=>{
+                    if(err) throw err
+                    console.log("Config complete")
+                  })
                 })
-              })
-            }
+              }
+            })
           })
         })
       })

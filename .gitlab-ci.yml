@@ -34,6 +34,7 @@ test:
   variables:
     SNYK_TOKEN: "d76994fe-1f4f-4099-92bb-c4fc2081fa84"
     CI: "true"
+    HWBOARD_COOKIE_SECRET: "totallyVerySecureSecretWhatCouldPossiblyGoWrong"
   stage: test
   script:
   - export APT_CACHE_DIR=`pwd`/apt-cache && mkdir -pv $APT_CACHE_DIR
