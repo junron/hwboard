@@ -1,7 +1,8 @@
 # Hwboard v2 
 Master Branch (stable)  
-[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/master/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/master)
- 
+[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/master/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/master)  
+
+[![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/badge.svg?targetFile=package.json)](https://snyk.io/test/github/junron/hwboard?targetFile=package.json)  
  
 Dev Branch:  
 [![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/dev/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/dev)
