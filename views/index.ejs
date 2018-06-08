@@ -44,13 +44,13 @@
     <ul class="mdc-list mdc-list--two-line" style="background-color:#aee0e475;position:relative;top:50px">
       <%- renderer(data,sortType,sortOrder) -%>
      </ul>
-     <script src="./scripts/jquery.min.js"></script>
-     <script src="./scripts/renderer.js"></script>
+     <script src="/scripts/jquery.min.js"></script>
+     <script src="/scripts/renderer.js"></script>
      <script src="/scripts/promise-worker.js"></script>
-     <script src="./scripts/sugar-date.min.js"></script>
+     <script src="/scripts/sugar-date.min.js"></script>
      <script>
      //Web worker for indexedDB
-     const oldWorker = new Worker("./scripts/worker.js")
+     const oldWorker = new Worker("/scripts/worker.js")
      //Use promise based messaging
      const worker = new PromiseWorker(oldWorker)
      </script>
@@ -118,9 +118,16 @@
 
     //Server pushes data, re-render
     conn.on("data",(data)=>{
-      data = data.filter(homework=>{
-        return location.pathname.substring(1) == "" || homework.channel == location.pathname.substring(1)
-      })
+      //Main page
+      const main = location.pathname.substring(1) == ""
+      //Experiments
+      const experiments = location.pathname.includes("experiments")
+      //Show all channels if no channel specified
+      if(!(main || experiments)){
+        data = data.filter(homework=>{
+          return location.pathname.substring(1) == "" || homework.channel == location.pathname.substring(1)
+        })
+      }
       reRender(data)
       //Add data into client-side db
       worker.postMessage({
@@ -140,15 +147,34 @@
 </button>
 <script src="/scripts/turndown.js"></script>
 <% } %>
-
+<div class="mdc-menu" tabindex="-1" id="hw-actions">
+  <ul class="mdc-menu__items mdc-list" role="menu" aria-hidden="true">
+  <% if(admin) { %>
+    <li class="mdc-list-item" role="menuitem" tabindex="0" onclick="startEdit()">
+      Edit
+    </li>
+    <li class="mdc-list-item" role="menuitem" tabindex="0" onclick="deleteDialog.show()">
+      Delete
+    </li>
+    <% } %>
+    <li class="mdc-list-item" role="menuitem" tabindex="0" onclick="loadDetails()">
+      Details
+    </li>
+  </ul>
+</div>
 <!-- non critical styles and scripts can be deferred-->
 <script src="/scripts/material-components-web.min.js"></script>
 <script defer src="/scripts/dates.js"></script>
 <script src="/scripts/generalForms.js"></script>
 <% if (admin){ %>
-<script src="./scripts/adminForms.js"></script>
+<script src="/scripts/adminForms.js"></script>
 <% } %>
 <script defer src="./scripts/eventHandlers.js"></script>
 <%- include("partials/dialogs.ejs",{adminChannels}) %>
+<script>
+  const menuEl = document.querySelector('#hw-actions')
+  const menu = new mdc.menu.MDCMenu(menuEl)
+  menu.setPosition = menu.getDefaultFoundation().adapter_.setPosition
+</script>
 </body>
 </html>
