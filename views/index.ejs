@@ -57,15 +57,14 @@
 
      <script src="/scripts/socket.io.js"></script>
      <!--DoNt toUcHa my eRRor rePoTer-->
+     <% if(reportErrors){ %>
      <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" crossorigin="anonymous"></script>
     <script>
-    //run the following line if in dev enviroment
-    //document.cookie="dev=true"
-    if(!(document.cookie.includes("dev=true")||navigator.userAgent == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36")){
       //DoNt toUcHa my eRRor rePoTer
-      console.log("ok")
       Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
-    }
+      </script>
+    <% } %>
+    <script>
     const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
     //Handle websocket connection errors
     //Standard code for all my websocket apps
@@ -75,14 +74,18 @@
         //Some browsers may not support navigator.onLine
         //EDIT: appears that most browsers support but meh
         //https://caniuse.com/#feat=online-status
-        Raven.captureException(new Error("error checking connection status"))
+        <% if(reportErrors){ %>
+          Raven.captureException(new Error("error checking connection status"))
+        <% } %>
         console.log(`Error checking connection state`)
         return
       }
       if(navigator.onLine){
         //Its a server problem, perhaps websocket server not started
         console.log(`Error connecting to server`)
-        Raven.captureException(e)
+        <% if(reportErrors){ %>
+          Raven.captureException(e)
+        <% } %>
       }else{
         console.log(`Offline`)
         //Load data from cache since user is offline
