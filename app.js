@@ -36,19 +36,25 @@ if(testing){
 //Content security policy settings
 //"unsafe-inline" for inline styles and scripts, aim to remove
 //https://developers.google.com/web/fundamentals/security/csp/
-let csp = "default-src 'self';"+
-            "script-src 'self' 'unsafe-inline' https://cdn.ravenjs.com https://secure.aadcdn.microsoftonline-p.com;"+
-            "style-src 'self' 'unsafe-inline';"+
-            `connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;` +
-            "object-src 'none';"+
-            "img-src 'self' data:;"
-            if(!process.env.DEV){
-              csp += "report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908;"
-            }
+let csp = 
+`default-src 'self';
+script-src 'self' 'unsafe-inline' https://cdn.ravenjs.com https://secure.aadcdn.microsoftonline-p.com;
+style-src 'self' 'unsafe-inline';
+connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
+object-src 'none';
+img-src 'self' data:;
+frame-ancestors 'none';`
+if(!process.env.DEV){
+  csp += "report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908;"
+}
 app.use(function(req,res,next){
   res.header("Content-Security-Policy",csp)
+  //Stop clickjacking
+  //https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Shee
+  res.header("X-Frame-Options","deny")
   next()
 })
+/usr/bin/git
 //express setup
 app.use(logger('dev'));
 app.use(bodyParser.json());
