@@ -4,14 +4,16 @@ const {expect} = require("chai")
 const port = require("../loadConfig").PORT
 const server = require("../app").server
 const options = {
-    headless:false,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  headless:false,
+  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  //Slow down so you can see whats happening
+  slowMo:30
 }
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
-  console.log("Gitlab env")
-  //No display in CI
-  options.headless=true
-  //options.executablePath = "/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux"
+console.log("Gitlab env")
+//No display in CI
+options.headless = true
+options.slowMo = 0
 }
 let browser
 let page
@@ -37,8 +39,9 @@ async function showToolbar(){
   await page.evaluate(()=>{
     return $(".hwitem:contains('Add homework test')").attr("id","targetHomework")
   })
+  //Show context menu by right click
   await page.click("#targetHomework",{
-    delay:1080
+    button:"right"
   })
 }
 async function remove(){

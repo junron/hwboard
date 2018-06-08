@@ -2,6 +2,7 @@ let timer
 //Required for all ppl, not just admins
 //Attach event listener to elements
 const handleStart = event => {
+  console.log("touched")
   //We dont want context menu to open on mobile
   for (const elem of document.getElementsByClassName("hwitem")){
     elem.removeEventListener("contextmenu",rightClick,false)
