@@ -18,7 +18,9 @@ variables:
 cache:
   paths:
   - hwboard2/
-before_script:
+build:
+  stage: build
+  script:
   # Install ssh-agent if not already installed, it is required by Docker.
   # (change apt-get to yum if you use a CentOS-based image)
   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -38,9 +40,6 @@ before_script:
   - rm -rf hwboard2
   - git clone git@gitlab.therealorange.com:Jro/hwboard2.git
   - cd hwboard2
-build:
-  stage: build
-  script:
   - npm install
   - npm install puppeteer --save-dev
   - pwd
