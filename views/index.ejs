@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include("partials/head") %>
-<body>
+<%- include("./partials/head") %>
+<style>
+.list, .md .list {
+  margin-top:0px !important;
+  margin-bottom:0px !important;
+}
+.mdc-text-field__input {
+  border-bottom-width: 1px;
+}
+</style>
+<link rel="stylesheet" href="/framework7/css/framework7.css">
+<body style="margin-left:0px;margin-right:0px">
     <div>
       <header class="mdc-toolbar mdc-toolbar--fixed mdc-toolbar--waterfall">
       <div id="normalToolbar">
@@ -41,9 +51,11 @@
     <link href="/styles/roboto.css" rel="stylesheet">
     <!--<link href="/styles/new.css" rel="stylesheet">-->
     <link rel="stylesheet" href = "/styles/icons.css">
+    <div id="app">
     <ul class="mdc-list mdc-list--two-line" style="background-color:#aee0e475;position:relative;top:50px">
       <%- renderer(data,sortType,sortOrder) -%>
      </ul>
+     </div>
      <script src="/scripts/jquery.min.js"></script>
      <script src="/scripts/renderer.js"></script>
      <script src="/scripts/promise-worker.js"></script>
@@ -97,7 +109,7 @@
     })
     //request homework data from server
     //syntax conn.emit(<eventName>,[<data>],[<callback>])
-    const channel = location.pathname.substring(1)
+    const channel = ""//location.pathname.substring(1)
     let channelSettings
     if(channel==""){
       channelSettings = {}
@@ -169,11 +181,15 @@
 <script src="/scripts/material-components-web.min.js"></script>
 <script defer src="/scripts/dates.js"></script>
 <script src="/scripts/generalForms.js"></script>
+
+<script type="text/javascript" src="/framework7/js/framework7.js"></script>
+
+<script type="text/javascript" src="/scripts/app.js"></script>
 <% if (admin){ %>
 <script src="/scripts/adminForms.js"></script>
 <% } %>
-<script defer src="./scripts/eventHandlers.js"></script>
-<%- include("partials/dialogs.ejs",{adminChannels}) %>
+<script defer src="/scripts/eventHandlers.js"></script>
+<%- include("./partials/dialogs.ejs",{adminChannels}) %>
 <script>
   const menuEl = document.querySelector('#hw-actions')
   const menu = new mdc.menu.MDCMenu(menuEl)

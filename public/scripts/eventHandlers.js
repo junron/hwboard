@@ -23,7 +23,10 @@ const rightClick = event =>{
   return false
 }
 function applyHwEventHandlers(){
-  for (let elem of document.getElementsByClassName("hwitem")){
+  const homeworkElems = document.getElementsByClassName("hwitem")
+  const arrayElems = Array.from(homeworkElems)
+  //HTMLCollection's symbol.iterator not implemented in safari yet
+  for (const elem of arrayElems){
     elem.addEventListener("touchstart",handleStart)
     elem.addEventListener("contextmenu",rightClick,false)
     elem.addEventListener("touchend",handleEnd)

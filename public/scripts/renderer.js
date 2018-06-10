@@ -39,8 +39,8 @@ parser.parseBySubject = function (data,order=0) {
     }
     html+=parser.parseHomeworkSubject(homework)
   }
-    if(html==""){     
-      return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"   
+    if(html==""){
+      return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
     }
     html+="</ul>"
     return html
@@ -84,7 +84,7 @@ parser.parseByDate = function(data,order=0) {
   let dates = []
   let html = ""
   const dateEnd = `</ul>
-  <li role="separator" class=" mdc-list-divider mdc-list-divider--inset"></li>
+  <li role="separator" class="mdc-list-divider mdc-list-divider--inset"></li>
   </li>
   </li>`
   for (let homework of data) {
@@ -96,7 +96,7 @@ parser.parseByDate = function(data,order=0) {
       html += `
       <li class="form mdc-elevation--z5" style="background-color:#ffffff">
       <h3 class="mdc-list-group__subheader" style="font-size:125%;"><span style="background-color:#ffffff">${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})</span></h3>
-      <ul style="padding: 0px" id="${daysLeft}">
+      <ul style="padding: 0px" id="${daysLeft}" class="list">
       `
       dates.push(displayDate)
     }
@@ -119,16 +119,32 @@ parser.parseHomeworkDate = function(homework) {
     extra
   } = parser.parseHomeworkMetaData(homework)
   return `
-  <li class="mdc-list-item hwitem" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
-  <span class="mdc-list-item__graphic" role="presentation">
-    <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
-  </span>
-  <span class="mdc-list-item__text" style="white-space: initial;">
-    ${text}  <span class="mdc-list-item__secondary-text">
-       ${subject}${extra}
-  </span>
-  </span>
-  </li>
+  <li class="hwitem swipeout" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
+  <div class="swipeout-content">
+    <div class="mdc-list-item item-content">
+      <div class="item-media">
+        <span class="mdc-list-item__graphic" role="presentation">
+          <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
+        </span>
+      </div>
+      <div class="item-inner">
+        <span class="mdc-list-item__text" style="white-space: initial;">
+          ${text}
+          <span class="mdc-list-item__secondary-text">
+              ${subject}${extra}
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="swipeout-actions-left">
+    <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
+  </div>
+  <div class="swipeout-actions-right">
+    <a onclick="lastTouched = this.parentElement.parentElement;startEdit()" class="swipeout-close" style="background-color:#ff9800">Edit</a>
+    <a onclick="lastTouched = this.parentElement.parentElement;deleteDialog.show()" class="swipeout-close" style="background-color:#f44336">Delete</a>
+  </div>
+</li>
   `
 }
 parser.toTitle = function(str)

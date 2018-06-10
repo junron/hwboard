@@ -1,4 +1,5 @@
 'use strict'
+const path = require("path")
 const express = require('express');
 const request = require("request-promise-native")
 const renderer = require('../public/scripts/renderer')
@@ -44,33 +45,6 @@ function parsePushHeaders(files){
   }
   return headers
 }
-router.get("/experiments/:experiment_name",async (req,res,next)=>{
-  if(req.params.experiment_name.includes(".js")){
-    return next()
-  }
-  const {channelData, adminChannels} = await authChannels(req,res)
-  if(!dbInit){
-    //Create tables and stuffs
-    await db.init()
-    dbInit = true
-  }
-  //Check if user is admin in any channel
-  //This prevents us from sending the add hoemwrok form unnecessarily
-  const admin = Object.keys(adminChannels).length > 0
-  //Get sort options
-  let {sortOrder,sortType} = req.cookies
-  if(sortOrder){
-    sortOrder = parseInt(sortOrder)
-  }
-  //Server push
-  res.header("Link",parsePushHeaders(pushFiles))
-
-  //Get homework for rendering
-  let data = await db.getHomeworkAll(channelData)
-  //Dun report errors in experiments, except if mobile
-  const mobile = isMobile(req.headers['user-agent'])
-  res.render("experiments/"+req.params.experiment_name,{renderer,data,sortType,sortOrder,admin,adminChannels,reportErrors:mobile})
-})
 
 //View channel 
 router.get('/:channel', async (req, res, next) => {
@@ -146,7 +120,7 @@ router.get('/', async (req, res, next) => {
     dbInit = true
   }
   //Check if user is admin in any channel
-  //This prevents us from sending the add hoemwrok form unnecessarily
+  //This prevents us from sending the add homework form unnecessarily
   const admin = Object.keys(adminChannels).length > 0
   //Get sort options
   let {sortOrder,sortType} = req.cookies
@@ -163,7 +137,6 @@ router.get('/', async (req, res, next) => {
   const mobile = isMobile(req.headers['user-agent'])
   res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,reportErrors:(reportErrors||mobile)})
 });
-
 
 
 //Authenticate user and get authorised channels
