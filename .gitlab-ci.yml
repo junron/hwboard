@@ -17,8 +17,7 @@ variables:
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
 cache:
   paths:
-  - node_modules/
-  - apt-cache/
+  - "*node_modules*"
 before_script:
   # Install ssh-agent if not already installed, it is required by Docker.
   # (change apt-get to yum if you use a CentOS-based image)
