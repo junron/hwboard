@@ -34,6 +34,7 @@ before_script:
   # you will overwrite your user's SSH config.
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  - cd ..
   - git clone git@gitlab.therealorange.com:Jro/hwboard2.git
   - cd hwboard2
 build:
