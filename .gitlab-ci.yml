@@ -43,7 +43,7 @@ build:
   - npm install puppeteer --save-dev
   - pwd
   - whoami
-
+  - ls -alh
  
 
 test:
