@@ -35,7 +35,7 @@ before_script:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   - git clone git@gitlab.therealorange.com:Jro/hwboard2.git
-  - cd hwboard2
+  - cd hwboard
 build:
   stage: build
   script:
@@ -52,9 +52,9 @@ test:
     SNYK_TOKEN: "d76994fe-1f4f-4099-92bb-c4fc2081fa84"
     CI: "true"
   stage: test
-  script:
-  - export APT_CACHE_DIR=`pwd`/apt-cache && mkdir -pv $APT_CACHE_DIR
+  script: 
   - pwd
+  - ls -alh
   - whoami
   - npm run hwboard add channel
   - mkdir artifacts
