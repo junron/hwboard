@@ -35,7 +35,7 @@ before_script:
   - mkdir -p ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   - git clone git@gitlab.therealorange.com:Jro/hwboard2.git
-  - cd hwboard
+  - cd hwboard2
 build:
   stage: build
   script:
