@@ -1,10 +1,10 @@
 # Hwboard v2 
 Master Branch (stable)  
-[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/master/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/master)
+![pipeline status](https://git-badge.chatbox2.tk/hwboard2/master)
  
  
 Dev Branch:  
-[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/dev/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/dev)
+![pipeline status](https://git-badge.chatbox2.tk/hwboard2/dev)
 
 ## Installation
 1. Clone this repository
