@@ -1,146 +1,105 @@
-function validate(date){
-  if(!Sugar.Date.isValid(date)){
-    $("#date").addClass("mdc-text-field--invalid")
-    $("#dateMsg").addClass("mdc-text-field-helper-text--validation-msg")
-    $("#dateMsg").text("Invalid date")
-      return
+const daysUntil = date =>{
+  const roundedDate = roundDate(date)
+  return Sugar.Date.daysUntil(Sugar.Date.create("Today"),roundedDate)
+}
+const roundDate = date => Sugar.Date.create(Sugar.Date.format(new Date(date),"{d}/{M}/{yy}"),"en-GB")
+
+async function parseDate(){
+  const dateString = $("#dueDate").val()
+  if(dateString.toLowerCase()=="next lesson"){
+    return getNextLesson()
   }
-  console.log(date)
-  if(Sugar.Date.isBefore(date, Sugar.Date.rewind(new Date(), '1 week', true))){
-    $("#date").addClass("mdc-text-field--invalid")
-    $("#dateMsg").addClass("mdc-text-field-helper-text--validation-msg")
-    $("#dateMsg").text("Date cannot be in past")
-      return
+  const validatedDate = await validate(dateString)
+  if(validatedDate.getHours()==0){
+    //Date was specified with "tomorrow" or "next wednesday"
+    //If is a school day, use release time
+    const dueDateDay = Sugar.Date.format(validatedDate,"{dow}")
+    const releaseTime = await endSchoolTime(dueDateDay)
+    if(releaseTime===-Infinity){
+      //Due date is on a weekend, use 23:59
+      validatedDate.setHours(23)
+      validatedDate.setMinutes(59)
+    }else{
+      validatedDate.setHours(Math.floor(releaseTime/100))
+      validatedDate.setMinutes(releaseTime%100)
+    }
   }
-  while (Sugar.Date.isBefore(date,Sugar.Date.create("today") )){
-    date = Sugar.Date.advance(date,{weeks:1})
-    console.log(date)
+  return validatedDate
+}
+
+//Ensures that date is not in the past
+async function validate(dateString){
+  // 
+  let date = Sugar.Date.create(dateString,"en-GB")
+  const days = daysUntil(date)
+  //Date is 1 week ago, throw error
+  if(days < (-6)){
+    throw new Error("Date cannot be in the past")
+  }
+  if(days < 0){
+    //If today is friday, typing tuesday would produce a date in the past
+    // Add 1 week to make it next tuesday
+    date = Sugar.Date.addWeeks(date,1)
   }
   return date
 }
-function lessonTime(day){
-  if(subjectSelect.selectedOptions[0]==undefined||subjectSelect.selectedOptions[0].textContent==undefined){
-    return
+const splitTime = time =>{
+  let hr = Math.floor(time / 100)
+  let min = time % 100
+  if(hr<10){
+    hr = "0" + hr.toString()
   }
-  const motherTongue = ["Chinese","Hindi","Higher Chinese"]
-  let subject = subjectSelect.selectedOptions[0].textContent;
-  if(motherTongue.indexOf(subject)>-1){
-    subject="mother tongue"
-  }else if(subject!="CS"){
-    subject = subject.toLowerCase()
+  if(min<10){
+    min = "0" + min.toString()
   }
-  let dayOfWeek = Sugar.Date.format(day, '{dow}')
-  let subjectData = timetable[subject]
-  let times
-  if(subjectData&&subjectData.time&&subjectData.time[dayOfWeek]){
-    times = subjectData.time[dayOfWeek][0]
-  }else{
-    return
-  }
-  if(isNaN(Math.max(...times))){
-    return
-  }
-  let time = Math.max(...times).toString()
-  let hr = time.substring(0,time.length-2)
-  let min = time.substring(time.length-2,4)
-  console.log(day)
-  console.log(`${Sugar.Date.format(day, "{d}/{M}")} ${hr}:${min}`)
-  return Sugar.Date.create(`${Sugar.Date.format(day, "{d}/{M}")} ${hr}:${min}`,"en-GB")
+  return [hr,min]
 }
-  function parseDate(){
-    if($("#dueDate").val().toLowerCase().indexOf("next lesson")>-1){
-      if(subjectSelect.selectedOptions[0]==undefined){
-        $("#date").addClass("mdc-text-field--invalid")
-        $("#dateMsg").addClass("mdc-text-field-helper-text--validation-msg")
-        $("#dateMsg").text("No subject selected")
-        return
+
+//Takes an object of {day:[[start,end],[start,end]]} and flattenss it into a 1d array of dates
+async function rankDays(daysObject){
+  const rankedTimings = []
+  for (const day in daysObject){
+    for(const timing of daysObject[day]){
+      //Take the end time, homework can still be submitted at the end of lesson?
+      const startTime = splitTime(timing[1]).join(":")
+      let date = Sugar.Date.create(`${day} ${startTime}`)
+      //If lesson is not in future,add 1 week
+      date = await validate(date)
+      if(Sugar.Date.isPast(date)){
+        date = Sugar.Date.addWeeks(date,1)
       }
-      let date = nextLesson()
-      let dateDay = Sugar.Date.create(Sugar.Date.format(new Date(date),"{d}/{M}"),"en-GB")
-      $("#outdate").text( "  "+Sugar.Date.medium(new Date(date))+",  In "+Sugar.Date.daysUntil(Sugar.Date.create("Today"),dateDay)+" days time")
-      $("#dateMsg").removeClass("mdc-text-field-helper-text--validation-msg ")
-      $("#date").removeClass("mdc-text-field--invalid")
-      $("#dateMsg").text(`Relative dates such as "next lesson" are accepted`)
-      return date
+      rankedTimings.push(date)
     }
-        let date =validate(Sugar.Date.create($("#dueDate").val(),"en-GB"))
-try{
-  console.log(date)
-  if(Sugar.Date.format(Sugar.Date.create($("#dueDate").val(),"en-GB"), '{hh}:{mm}')=="12:00"){
-      if(!lessonTime(new Date(date))){
-        date = endSchool(Sugar.Date.format(new Date(date), '{dow}'),Sugar.Date.medium(date))
+  }
+  return rankedTimings
+}
+async function getNextLesson(){
+  const subject = $("#subject-name").val()
+  if(!subjectSelectionList.includes(subject)){
+    throw new Error("Subject is not valid")
+  }
+  const subjectTimeData = timetable[subject].time
+  const times = await rankDays(subjectTimeData)
+  return new Date(Math.min(...times))
+}
+const getTimingsForDay = async targetDay=>{
+  const timings = []
+  for(const subject in timetable){
+    for (const day in timetable[subject].time){
+      if(day!=targetDay){
+        continue
       }else{
-        date = lessonTime(new Date(date))
-      }
-    }
-  let dateDay = Sugar.Date.create(Sugar.Date.format(new Date(date),"{d}/{M}"),"en-GB")
-  $("#outdate").text( "  "+Sugar.Date.medium(new Date(date))+",  In "+Sugar.Date.daysUntil(Sugar.Date.create("Today"),dateDay)+" days time")
-    $("#dateMsg").removeClass("mdc-text-field-helper-text--validation-msg ")
-    $("#date").removeClass("mdc-text-field--invalid")
-    $("#dateMsg").text(`Relative dates such as "next lesson" are accepted`)
-return date
-}catch(e){
-  console.log(e)
-  $("#date").addClass("mdc-text-field--invalid")
-  $("#dateMsg").addClass("mdc-text-field-helper-text--validation-msg")
-  $("#dateMsg").text("Invalid date")
-  return
-}
-  }
-  function nextLesson(){
-    const motherTongue = ["Chinese","Hindi","Higher Chinese"]
-    let subject = subjectSelect.selectedOptions[0].textContent;
-    if(motherTongue.indexOf(subject)>-1){
-      subject="mother tongue"
-    }else if(subject!="CS"){
-      subject = subject.toLowerCase()
-    }
-    let subjectData = timetable[subject]
-  let times = []
-  let minDate = Infinity
-for (let time in subjectData.time){
-  let endTime = subjectData.time[time][0][1].toString()
-  let hr = endTime.substring(0,endTime.length-2)
-  let min = endTime.substring(endTime.length-2,4)
-  let date = Sugar.Date.create(`${time} ${hr}:${min}`,"en-GB")
-  if(Sugar.Date.isFuture(date)&&date.getTime()<minDate){
-    minDate = date.getTime()
-  }
-}
-if(minDate==Infinity){
-  for (let time in subjectData.time){
-    let endTime = subjectData.time[time][0][1].toString()
-    let hr = endTime.substring(0,endTime.length-2)
-    let min = endTime.substring(endTime.length-2,4)
-    let date = Sugar.Date.advance(Sugar.Date.create(`${time} ${hr}:${min}`,"en-GB"),"1 week")
-    if(Sugar.Date.isFuture(date)&&date.getTime()<minDate){
-      minDate = date.getTime()
-    }
-  }
-}
-if(minDate==Infinity){
-  throw "Wtf"
-}
-  return minDate
-  }
-  function endSchool(day,actDay){
-    actDay = actDay||""
-    let maxTime =0
-    for (let subject in timetable){
-      for (let time in timetable[subject].time){
-        if(time==day){
-          for (let tim of timetable[subject].time[time]){
-            maxTime = Math.max(maxTime,...tim)
-          }
+        for(const timing of timetable[subject].time[day]){
+          //We want the end time
+          timings.push(timing[1])
         }
       }
     }
-    maxTime = maxTime.toString()
-    let hr = maxTime.substring(0,maxTime.length-2)
-    let min = maxTime.substring(maxTime.length-2,4)
-    day = actDay||day
-    console.log(Sugar.Date.create(`${day} ${hr}:${min}`,"en-GB"),day)
-    let date = validate(Sugar.Date.create(`${day} ${hr}:${min}`,"en-GB"))
-    return date
   }
+  return timings
+}
+async function endSchoolTime(day){
+  const timings = await getTimingsForDay(day)
+  return Math.max(...timings)
+}
   const timetable = { "english":{ "teacher":"Mr Selva", "code":"EL2131", "time":{"mon":[[930,1030]],"wed":[["1030","1130"]],"fri":[["1500","1600"]]} }, "math":{ "teacher":"Mrs Wong", "code":"MA2131", "time":{"mon":[[1030,1130]],"tue":[[1230,1330]],"wed":[[1130,1230]],"fri":[[1400,1500]]} }, "chemistry":{ "teacher":"Mrs Chong", "code":"CM2131", "time":{"wed":[[1500,1630]],"fri":[[1000,1130]]} }, "physics":{ "teacher":"Ms Kok", "code":"PC2131", "time":{"thu":[[1300,1430]],"fri":[[1130,1300]]} }, "biology":{ "teacher":"Mr Lee", "code":"BL2131", "time":{"mon":[[1230,1400]],"thu":[[800,930]]} }, "geography":{ "teacher":"Ms Lee", "code":"GE2131", "time":{"tue":[[1030,1230]]} }, "humanities":{ "teacher":"Mrs Yeo", "code":"HU2131", "time":{"fri":[[830,930]]} }, "mother tongue":{ "teacher":"", "code":"", "time":{"mon":[[800,900]],"tue":[[800,900]],"thu":[[1200,1300]]} }, "CS":{ "teacher":"Mr Low", "code":"CS2231", "time":{"thu":[[1500,1800]]} }, "da vinci":{ "teacher":"", "code":"DV2131", "time":{"wed":[[800,1000]]} }, "miscellaneous":{ "teacher":"Mr Selva", "code":"", "time":{"mon":[[1500,1600]],"wed":[[1300,1400]],"fri":[[800,830]]} } }

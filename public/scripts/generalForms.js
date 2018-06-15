@@ -26,17 +26,16 @@ async function loadDetails(){
   const data = await getExistingInfo()
   const {subject,isTest,text,dueDate,lastEditTime:editTime,lastEditPerson:editPerson} = data
   $("#detailLastEdit").text(Sugar.Date.format(new Date(editTime),"{d}/{M}")+" "+Sugar.Date.format(new Date(editTime),"%I:%M")+Sugar.Date.format(new Date(editTime),"%P")+" by "+editPerson)
-    $("#details-sheet-label").text(text)
+    $("#detailHomeworkName").text(text)
     $("#detailSubject").text(subject)
     if(isTest){
       $("#detailGraded").text("Yes")
     }else{
       $("#detailGraded").text("No")
     }
-
     const dateDay = Sugar.Date.create(Sugar.Date.format(new Date(dueDate),"{d}/{M}"),"en-GB")
     $("#detailDue").text(`${Sugar.Date.format(new Date(dueDate),"{d}/{M}")}, ${Sugar.Date.format(new Date(dueDate),"{Dow}")}, ${Sugar.Date.daysUntil(Sugar.Date.create("Today"),dateDay)} days left.`)
-    detailsSheet.show()
+    detailsSheet.open()
   }
 
 //Get cookies
@@ -58,7 +57,12 @@ function getCookie(cname) {
 //Re-render homework
 function reRender(data){
   const sortType = sortOptions.type || getCookie("sortType") || "Due date"
-  const sortOrder = sortOptions.order || parseInt(getCookie("sortOrder")) || 0
-  $(".mdc-list--two-line").html(renderer(data,sortType,sortOrder))
+  let sortOrder
+  if(getCookie("sortOrder")!=""){
+    sortOrder = parseInt(getCookie("sortOrder"))
+  }else{
+    sortOrder = sortOptions.order || 0
+  }
+  $("#hwboard-homework-list").html(renderer(data,sortType,sortOrder))
   applyHwEventHandlers()
 }

@@ -1,0 +1,105 @@
+<div class="popup" id="edit-popup">
+  <div class="view popup-view">
+  <div class="page">
+  <div class="page-content block">
+     <div class="list no-hairlines">
+        <ul class="md">
+          <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-floating-label">Subject</div>
+                <div class="item-input-wrap">
+                  <input id="subject-name" type="text">
+                </div>
+              </div>
+          </li>
+          <li class="item-content input-toggle">
+            <div class="item-inner">
+              <div class="item-title">Graded/test</div>
+              <div class="item-after">
+                <label class="toggle color-red toggle-init">
+                  <input type="checkbox" id="toggle-is-graded-checkbox">
+                  <span class="toggle-icon"></span>
+                </label>
+              </div>
+            </div>
+          </li>
+          <li class="item-content item-input date-input">
+              <div class="item-inner">
+                <div class="item-title item-floating-label">When is it due?</div>
+                <div class="item-input-wrap">
+                  <input id="dueDate" type="text">
+                  <div id="due-date-validation-err" class="item-input-error-message"></div>
+                  <div class="item-input-info" id="date-input-info"> Relative dates such as "next lesson" are accepted</div>
+                </div>
+              </div>
+          </li>
+          <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-floating-label">Enter homework name</div>
+                <div class="item-input-wrap">
+                  <input id="homework-name" type="text">
+                </div>
+              </div>
+          </li>
+        </ul>  
+        </div>
+        <div class="row md">
+          <button id="update-hwboard-button" class="button col">Update hwboard</button>
+          <button id="cancel-update-hwboard-button" class="button col">Cancel</button>
+        </div>
+        <br>
+          <br>
+          <br>
+    </div>
+    </div>
+    </div>
+  </div>
+<script>
+<%
+const subjectSelectionList = [] 
+const subjectChannelMapping = {}
+for (const channel in adminChannels){
+  for (const subject of adminChannels[channel]){
+    subjectSelectionList.push(subject)
+    subjectChannelMapping[subject]=channel
+  }
+}
+%>
+const subjectChannelMapping = <%-JSON.stringify(subjectChannelMapping)%>
+const subjectSelectionList = <%-JSON.stringify(subjectSelectionList)%>
+const options = {
+    shouldSort: true,
+    threshold: 0.4,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+  }
+  const indexToString = index => subjectSelectionList[index]
+  const fuse = new Fuse(subjectSelectionList,options)
+  const subjectDropdown= Framework7App.autocomplete.create({
+  openIn:"dropdown",
+  source:(query,render)=>{
+    if(query==""){
+      return render(subjectSelectionList)
+    }else{
+      const result = fuse.search(query).map(indexToString)
+      return render(result)
+    }
+  },
+  inputEl:"#subject-name",
+  on: {
+    opened: function () {
+      console.log('Autocomplete opened')
+    }
+  }
+})
+const editPopup = Framework7App.popup.create({
+  el: document.getElementById("edit-popup"),
+  on: {
+    opened: function () {
+      console.log('Popup opened')
+    }
+  }
+})
+</script>

@@ -17,28 +17,26 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
-    "ejs": "^2.6.1",
     "express": "^4.16.3",
-    "framework7": "^3.0.0-beta.7",
-    "jsonwebtoken": "^8.2.1",
+    "framework7": "^3.0.0-beta.9",
+    "fuse.js": "^3.2.1",
+    "jsonwebtoken": "^8.3.0",
     "jwks-rsa": "^1.2.1",
     "morgan": "^1.9.0",
-    "pg": "^7.4.3",
     "raven": "^2.6.2",
-    "request": "^2.86.0",
     "request-promise-native": "^1.0.5",
-    "sequelize": "^4.37.7",
-    "socket.io": "^2.1.0",
+    "sequelize": "^4.37.10",
+    "socket.io": "^2.1.1",
     "socket.io-cookie-parser": "1.0.0",
     "sugar-date": "^2.0.4",
-    "xss": "^0.3.8"
+    "xss": "^1.0.3"
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "mocha": "^5.1.1",
-    "nodemon": "^1.17.4",
-    "puppeteer": "^1.4.0",
-    "snyk": "^1.74.0",
-    "socket.io-client": "^2.1.0"
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.5",
+    "puppeteer": "^1.5.0",
+    "snyk": "^1.83.0",
+    "socket.io-client": "^2.1.1"
   }
 }
