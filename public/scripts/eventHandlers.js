@@ -1,66 +1,18 @@
 //Required for all ppl, not just admins
 //Attach event listener to elements
-const radios = Array.from(document.querySelectorAll("input[type='radio']"))
-for (const radio of radios){
-  radio.addEventListener("change",function(){
-    if(this.name in sortOptions){
-      console.log(this.name)
-      if(this.name=="order"){
-        sortOptions[this.name] = parseInt(this.value)
-      }else{
-        sortOptions[this.name] = this.value
-      }
+$(document).on("change","input[type='radio']",function(){
+  if(this.name in sortOptions){
+    if(this.name=="order"){
+      sortOptions[this.name] = parseInt(this.value)
+    }else{
+      sortOptions[this.name] = this.value
     }
-  })
-}
-
-let gradedCheckboxChecked = false
-document.getElementById("toggle-is-graded-checkbox").addEventListener("click",(e)=>{
-  gradedCheckboxChecked = !gradedCheckboxChecked
-})
-document.getElementsByClassName("toggle-icon")[0].addEventListener("touchstart",(e)=>{
-  gradedCheckboxChecked = !gradedCheckboxChecked
-})
-
-const entered = (event) => {
-  if(event.key=="Enter"){
-    $("#updateBtn").click()
-  }
-}
-$("#hwname").keypress(entered)
-
-$(document).on("click","#update-hwboard-button",()=>{
-  if($("#update-hwboard-button").hasClass("editing-homework")){
-    editHomework().then(_=>{
-      editPopup.close()
-      setTimeout(reset,100)
-    }).catch(e=>{
-      Framework7App.dialog.alert(e.message)
-    })
-  }else{
-    addHomework().then(()=>{
-      editPopup.close()
-      setTimeout(reset,100)
-    }).catch(e=>{
-      Framework7App.dialog.alert(e.message)
-    })
   }
 })
-$(document).on("click","#cancel-update-hwboard-button",_=>{
-  editPopup.close()
-  setTimeout(reset,100)
-})
-$(document).on("input","#dueDate",()=>{
-  parseDate().then(date=>{
-    $(".date-input").removeClass("item-input-invalid")
-    $("#due-date-validation-err").text("")
-    $("#date-input-info").text(`${Sugar.Date.format(date,"%d/%m/%Y %H:%M")}, ${daysUntil(date)} days time`)
-  }).catch(err=>{
-    $(".date-input").addClass("item-input-invalid")
-    $("#due-date-validation-err").text(err.message)
-  })
+//Edit button clicked
+//TODO put this in a admin only js file
+$(document).on("click",".swipeout-edit-button",function(){
+  lastTouched = this.parentElement.parentElement
+  mainView.router.navigate("/popups/edit/?edit=true")
 })
 
-$(document).on("click","#fab-add-homework",_=>{
-  editPopup.open()
-})

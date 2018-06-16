@@ -4,32 +4,36 @@
 <link rel="stylesheet" href="/framework7/css/framework7.css">
 <body style="margin-left:0px;margin-right:0px">
   <div id="app">
-    <div class="view">
-    <div class="navbar">
-          <div class="navbar-inner">
-              <div class="title">Homework Board</div>
-              <div class="right" onclick="sortPopup.open()"><i class="material-icons" style="color:#ffffff">&#xE164;</i></div>
-          </div>
-      </div>
+    <div class="view view-main">
     <link href="/styles/roboto.css" rel="stylesheet">
     <!--<link href="/styles/new.css" rel="stylesheet">-->
     <link rel="stylesheet" href = "/styles/icons.css">
-      <div class="page">
+      <div class="page page-current">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <div class="title">Homework Board</div>
+          <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
+        </div>
+      </div>
         <div class="page-content" style="padding-top:0px">
           <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
             <%- renderer(data,sortType,sortOrder) -%>
           </div>
         </div>
+        <!-- Floating App button
+        Clicking will cause the edit homework popup to appear
+        Only show for admins
+        -->
       <% if (admin){ %>
       <div class="fab fab-right-bottom admin-only color-green-blue" aria-label="Add homework">
-        <a id="fab-add-homework">
+        <a id="fab-add-homework" href="/popups/edit/">
         <i class="f7-icons icon material-icons">&#xe145;</i>
         </a>
       </div>
       <script src="/scripts/turndown.js"></script>
       <% } %>
       </div>
-    </div>
+      </div>
     </div>
      <script src="/scripts/jquery.min.js"></script>
      <script src="/scripts/renderer.js"></script>
@@ -131,18 +135,80 @@
 <!-- non critical styles and scripts can be deferred-->
 <script defer src="/scripts/dates.js"></script>
 <script defer src="/scripts/generalForms.js"></script>
-
+<script>
+//get cookies
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+</script>
 <script src="/framework7/js/framework7.js"></script>
 
 <script src="/scripts/app.js"></script>
 <% if (admin){ %>
+<!-- non admins wont need these -->
 <script src="/scripts/adminForms.js"></script>
+<script src="/scripts/edit-homework-eventHandlers.js"></script>
 <% } %>
 <script defer src="/scripts/eventHandlers.js"></script>
 <!-- defer when dialog code is moved -->
 <script src="../../fuse.js/dist/fuse.js"></script>
 <%- include("./partials/adminDialogs.ejs",{adminChannels}) %>
 <%- include("./partials/dialogs.ejs") %>
-</div>
+<script>
+const mainView = Framework7App.views.create('.view-main',{
+    routes:[
+      {
+        name:"sort",
+        path: "/popups/sort/",
+        url:"/routes/sort.html",
+        on :{
+          pageInit: _=>{
+            //Uncheck all
+            const radios = Array.from(document.querySelectorAll(`input[type=radio]`))
+            radios.forEach(radio => radio.checked=false)
+            const sortType = sortOptions.type || getCookie("sortType") || "Due date"
+            let sortOrder = sortOptions.order || 0
+            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true
+            document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
+          }
+        }
+      },
+      {
+        name:"edit-homework",
+        path: "/popups/edit/",
+        url:"/routes/edit-homework.html",
+        on :{
+          pageInit:function(e,page){
+            const edit = page.route.url.includes("?edit=true")
+            if(edit){
+              $("#edit-title").text("Edit homework")
+              startEdit()
+            }else{
+              $("#edit-title").text("Add homework")
+            }
+            initEditHomeworkEvents()
+          }
+        }
+      },
+      {
+        name:"home",
+        path: "/",
+        url:"/"
+      }
+    ]
+  })
+</script>
 </body>
 </html>

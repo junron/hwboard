@@ -26,35 +26,14 @@ async function loadDetails(){
     }else{
       $("#detailGraded").text("No")
     }
-    const dateDay = Sugar.Date.create(Sugar.Date.format(new Date(dueDate),"{d}/{M}"),"en-GB")
-    $("#detailDue").text(`${Sugar.Date.format(new Date(dueDate),"{d}/{M}")}, ${Sugar.Date.format(new Date(dueDate),"{Dow}")}, ${Sugar.Date.daysUntil(Sugar.Date.create("Today"),dateDay)} days left.`)
+    $("#detailDue").text(`${Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M")}, ${daysUntil(new Date(dueDate))} days left.`)
     detailsSheet.open()
   }
 
 //Get cookies
-function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
 //Re-render homework
 function reRender(data){
   const sortType = sortOptions.type || getCookie("sortType") || "Due date"
-  let sortOrder
-  if(getCookie("sortOrder")!=""){
-    sortOrder = parseInt(getCookie("sortOrder"))
-  }else{
-    sortOrder = sortOptions.order || 0
-  }
+  let sortOrder = sortOptions.order || 0
   $("#hwboard-homework-list").html(renderer(data,sortType,sortOrder))
 }

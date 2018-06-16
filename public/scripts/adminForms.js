@@ -82,12 +82,10 @@ function load(subject,graded,text,dueDate,title){
   }
   const textInputSelectors = ["#subject-name","#dueDate","#homework-name"]
   textInputSelectors.forEach(addFloating)
-  editPopup.open()
 }
 
 //Load edit dialog
 function startEdit(){
-  $("#update-hwboard-button").addClass("editing-homework")
   getExistingInfo().then(data =>{
     const {subject,isTest,text,dueDate} = data
     load(subject,isTest,text,dueDate,"Edit homework")

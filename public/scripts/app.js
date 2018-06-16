@@ -13,5 +13,5 @@ const theme = getParameterByName("theme") || "md"//"auto"
 const Framework7App = new Framework7({
   // App root element
   root: '#app',
-  theme
+  theme,
 })

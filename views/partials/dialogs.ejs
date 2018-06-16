@@ -1,78 +1,6 @@
-<div class="popup" id="sort-popup">
+<div class="popup" id="edit-popup">
   <div class="view popup-view">
-  <div class="page">
-  <div class="page-content block">
-      <div class="block-title">
-        Sort parameter
-      </div>
-     <div class="list">
-          <ul>
-            <li>
-              <label class="item-radio item-content">
-                <input type="radio" name="type" value="Due date" checked/>
-              <i class="icon icon-radio"></i>
-                <div class="item-inner">
-                  <div class="item-title">Due date</div>
-                </div>
-              </label>
-            </li>
-            <li>
-              <label class="item-radio item-content">
-                <input type="radio" name="type" value="Subject name"/>
-                <i class="icon icon-radio"></i>
-                <div class="item-inner">
-                  <div class="item-title">Subject name</div>
-                </div>
-              </label>
-            </li>
-          </ul>
-        </div>
-        <div class="block-title">
-          Sort order
-        </div>
-       <div class="list">
-            <ul>
-              <li>
-                <label class="item-radio item-content">
-                  <input type="radio" name="order" value="0" checked/>
-                <i class="icon icon-radio"></i>
-                  <div class="item-inner">
-                    <div class="item-title">Ascending</div>
-                  </div>
-                </label>
-              </li>
-              <li>
-                <label class="item-radio item-content">
-                  <input type="radio" name="order" value="1"/>
-                  <i class="icon icon-radio"></i>
-                  <div class="item-inner">
-                    <div class="item-title">Descending</div>
-                  </div>
-                </label>
-              </li>
-            </ul>
-          </div>
-          <div class="list">
-            <ul>
-              <li>
-                <label class="item-checkbox item-content">
-                <input type="checkbox" id="sort-set-default">
-                <i class="icon-checkbox"></i>
-                <div class="item-inner">
-                  <div class="item-title">Set as default</div>
-                </div>
-                </label>
-              </li>
-            </ul>
-          </div>
-    <div class="row">
-      <button onclick="rerenderSort()" class="button col popup-close">Ok</button>
-    </div>
-    <br>
-  </div>
-  </div>
-  </div>
-  </div>
+
   <div id="details-sheet" class="sheet-modal">
       <div class="sheet-modal-inner">
         <div class="block">
@@ -119,13 +47,9 @@
     </div>
 <script>
 const sortOptions = {
-  type:"Due date",
-  order:0
+  type:getCookie("sortType") || "Due date",
+  order:parseInt(getCookie("sortOrder")) || 0
 }
-//Sorting popup
-const sortPopup = Framework7App.popup.create({
-  el: document.getElementById("sort-popup"),
-})
 //Deatils bottom sheet
 const detailsSheet = Framework7App.sheet.create({
   el:".sheet-modal",

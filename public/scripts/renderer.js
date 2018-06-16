@@ -72,10 +72,10 @@ parser.parseHomeworkSubject = function(homework) {
         <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
       </div>
       <div class="swipeout-actions-right">
-        <a onclick="lastTouched = this.parentElement.parentElement;startEdit()" class="swipeout-close" style="background-color:#ff9800">Edit</a>
+        <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
         <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
       </div>
-    </li>
+    </li> 
   `
 }
 parser.parseByDate = function(data,order=0) {
@@ -142,12 +142,12 @@ parser.parseHomeworkDate = function(homework) {
     <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
   </div>
   <div class="swipeout-actions-right">
-    <a onclick="lastTouched = this.parentElement.parentElement;startEdit()" class="swipeout-close" style="background-color:#ff9800">Edit</a>
+    <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
     <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
   </div>
 </li>
   `
-}
+} 
 parser.toTitle = function(str)
 {
 return str.substring(0,1).toUpperCase()+str.substring(1,10000)
