@@ -13,13 +13,6 @@ async function getExistingInfo(){
   }
   return result
 }
-//Show toolbar
-function showEditToolbar(){
-  $(".mdc-toolbar").css("background-color","#018786")
-  $("#editMenu").css("display","initial")
-  $("#normalToolbar").css("display","none")
-}
-
 
 //Show info about homework
 async function loadDetails(){
@@ -64,5 +57,4 @@ function reRender(data){
     sortOrder = sortOptions.order || 0
   }
   $("#hwboard-homework-list").html(renderer(data,sortType,sortOrder))
-  applyHwEventHandlers()
 }

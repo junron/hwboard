@@ -1,53 +1,5 @@
-let timer
 //Required for all ppl, not just admins
 //Attach event listener to elements
-const handleStart = event => {
-  //We dont want context menu to open on mobile
-  const homeworkElems = Array.from(document.getElementsByClassName("hwitem"))
-  for (const elem of homeworkElems){
-    elem.removeEventListener("contextmenu",rightClick,false)
-  }
-  timer = setTimeout(function(){
-      lastTouched = event.target
-      showEditToolbar()
-    }, 1000)
-}
-const handleEnd = event =>{
-  clearTimeout(timer)
-}
-const rightClick = event =>{
-  event.preventDefault()
-  menu.setPosition({top:`${event.clientY}px`,left:`${event.clientX}px`})
-  menu.open = true
-  lastTouched = event.target
-  return false
-}
-function applyHwEventHandlers(){
-  const homeworkElems = document.getElementsByClassName("hwitem")
-  const arrayElems = Array.from(homeworkElems)
-  //HTMLCollection's symbol.iterator not implemented in safari yet
-  for (const elem of arrayElems){
-    elem.addEventListener("touchstart",handleStart)
-    elem.addEventListener("contextmenu",rightClick,false)
-    elem.addEventListener("touchend",handleEnd)
-  }
-}
-applyHwEventHandlers()
-
-//Hide toolbar/context menu when user clicks somewhere else
-//Requires jQuery, defer loading
-const touchedSomewhereElse = event =>{
-  if(!($(event.target).closest('#editMenu').length + $(event.target).closest('#hw-actions').length)) {
-    if($('#editMenu').css("display")=="block" || menu.open) {
-      $('#editMenu').css("display","none")
-      $('#normalToolbar').css("display","initial")
-      $(".mdc-toolbar").css("background-color","#6200ee")
-      menu.open = false
-    }
-  }
-}
-$(document).on("mousedown",touchedSomewhereElse)
-
 const radios = Array.from(document.querySelectorAll("input[type='radio']"))
 for (const radio of radios){
   radio.addEventListener("change",function(){
