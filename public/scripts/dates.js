@@ -4,8 +4,8 @@ const daysUntil = date =>{
 }
 const roundDate = date => Sugar.Date.create(Sugar.Date.format(new Date(date),"{d}/{M}/{yy}"),"en-GB")
 
-async function parseDate(){
-  const dateString = $("#dueDate").val()
+async function parseDate(dateString){
+  dateString = dateString ||$("#dueDate").val()
   if(dateString.toLowerCase()=="next lesson"){
     return getNextLesson()
   }
