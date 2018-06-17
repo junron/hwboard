@@ -5,7 +5,7 @@ const {expect} = require("chai")
 const port = require("../loadConfig").PORT
 const server = require("../app").server
 const options = {
-  headless:false,
+  headless:true,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
   //Slow down so you can see whats happening
   slowMo:10
@@ -24,6 +24,7 @@ const getHtml = async selector => {
   },selector)
 }
 const getCoords = async elem =>{
+  console.log(elem)
   return page.evaluate((header) => {
     const {top, left, bottom, right} = header.getBoundingClientRect()
     return {top, left, bottom, right}
@@ -41,7 +42,13 @@ async function init(){
 
 async function remove(){
   const mouse = page.mouse
-  const elem = await page.$(".targetHomework")
+  let elem = await page.$(".targetHomework")
+  while(!elem){
+    await page.waitForFunction(()=>{
+      return $($(".hwitem:contains('Add homework test')")[0]).addClass("targetHomework")
+    })
+    elem = await page.$(".targetHomework")
+  }
   const backdrop = await page.$(".sheet-backdrop")
   const coords = await getCoords(elem)
   //Close info dialog
@@ -64,7 +71,7 @@ async function remove(){
 async function info(){
   const mouse = page.mouse
   let elem = await page.$(".targetHomework")
-  if(!elem){
+  while(!elem){
     await page.waitForFunction(()=>{
       return $($(".hwitem:contains('Add homework test')")[0]).addClass("targetHomework")
     })
