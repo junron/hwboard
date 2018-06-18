@@ -17,7 +17,6 @@ variables:
 cache:
   paths:
   - node_modules/
-  - apt-cache/
 
 build:
   stage: build

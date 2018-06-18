@@ -5,7 +5,7 @@ const {expect} = require("chai")
 const port = require("../loadConfig").PORT
 const server = require("../app").server
 const options = {
-  headless:true,
+  headless:false,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
   //Slow down so you can see whats happening
   slowMo:10
@@ -24,7 +24,6 @@ const getHtml = async selector => {
   },selector)
 }
 const getCoords = async elem =>{
-  console.log(elem)
   return page.evaluate((header) => {
     const {top, left, bottom, right} = header.getBoundingClientRect()
     return {top, left, bottom, right}
@@ -78,9 +77,12 @@ async function info(){
     elem = await page.$(".targetHomework")
   }
   const coords = await getCoords(elem)
+  console.log(coords)
+  await page.screenshot({path: './artifacts/info-before.png'})
   mouse.move(coords.left,coords.top)
   mouse.down()
   mouse.move(coords.left+200,coords.top)
+  await page.screenshot({path: './artifacts/info-middle.png'})
   mouse.up()
   await page.screenshot({path: './artifacts/info.png'})
 }
@@ -135,8 +137,8 @@ describe("Hwboard",async function(){
     const graded = await getHtml("#detailGraded")
     expect(graded).to.equal("Yes")
     const lastEdit = await getHtml("#detailLastEdit")
-    console.log("Data:")
-    console.log({name,subject,dueDate,graded,lastEdit})
+    console.table = console.table || console.log
+      console.table({name,subject,dueDate,graded,lastEdit})
   })
   it("Should be able to remove homework",async function(){
     return await remove()
@@ -158,7 +160,7 @@ describe("Hwboard",async function(){
   //   expect(JSON.stringify(results)).to.equal(JSON.stringify(expectedResults))
   // })
   after(async ()=>{
-    // await browser.close()
-    // return server.close()
+    await browser.close()
+    return server.close()
   })
 })
