@@ -5,7 +5,7 @@ const {expect} = require("chai")
 const port = require("../loadConfig").PORT
 const server = require("../app").server
 const options = {
-  headless:false,
+  headless:true,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
   //Slow down so you can see whats happening
   slowMo:10
@@ -62,6 +62,7 @@ async function remove(){
   await mouse.down()
   await mouse.move(coords.left+300,coords.top)
   await mouse.up()
+  await page.tracing.stop();
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
   await deleteBtn.click()
   await page.screenshot({path: './artifacts/delete-before.png'})
@@ -97,7 +98,6 @@ async function add(){
   console.log("Waiting for checkbox to be checked")
   //await page.waitFor("#toggle-is-graded-checkbox:checked")
   await page.waitFor(500)
-  await page.tracing.stop();
   await page.type("#dueDate","tomorrow")
   await page.type("#homework-name","Add homework test")
   await page.screenshot({path: './artifacts/add.png'})
