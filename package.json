@@ -4,7 +4,7 @@
   "description": "version 2 of homeworkboard",
   "main": "app.js",
   "scripts": {
-    "test": "snyk test && mocha test/dbtest.js test/UITest.js test/wsTest.js",
+    "test": "snyk test && mocha test/dbtest.js test/wsTest.js",
     "start:dev": "nodemon ./bin/www",
     "hwboard": "node cli.js"
   },
