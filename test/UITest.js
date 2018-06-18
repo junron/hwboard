@@ -51,17 +51,12 @@ async function remove(){
   }
   const backdrop = await page.$(".sheet-backdrop")
   const coords = await getCoords(elem)
-  //Close info dialog
-  //X can be anything
-  //20 is safe for Y because it is definitely in the backdrop
-  await mouse.click(coords.left+500,20)
-  await page.screenshot({path: './artifacts/close-backdrop.png'})
-  await page.waitFor(1000)
-  //Swipe
+  //We dont need to close info dialog anymore cos page reload
   await mouse.move(coords.left+500,coords.top)
   await mouse.down()
   await mouse.move(coords.left+300,coords.top)
   await mouse.up()
+  await page.tracing.stop();
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
   await deleteBtn.click()
   await page.screenshot({path: './artifacts/delete-before.png'})
@@ -97,7 +92,6 @@ async function add(){
   console.log("Waiting for checkbox to be checked")
   //await page.waitFor("#toggle-is-graded-checkbox:checked")
   await page.waitFor(500)
-  await page.tracing.stop();
   await page.type("#dueDate","tomorrow")
   await page.type("#homework-name","Add homework test")
   await page.screenshot({path: './artifacts/add.png'})
@@ -130,6 +124,9 @@ describe("Hwboard",async function(){
   before(async function(){
     server.listen(port)
     await init()
+  })
+  afterEach(async ()=>{
+    return page.reload()
   })
   it("Should be able to add homework",async function(){
     return await add()
