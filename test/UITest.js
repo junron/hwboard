@@ -5,7 +5,7 @@ const {expect} = require("chai")
 const port = require("../loadConfig").PORT
 const server = require("../app").server
 const options = {
-  headless:true,
+  headless:false,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
   //Slow down so you can see whats happening
   slowMo:10
@@ -51,13 +51,7 @@ async function remove(){
   }
   const backdrop = await page.$(".sheet-backdrop")
   const coords = await getCoords(elem)
-  //Close info dialog
-  //X can be anything
-  //20 is safe for Y because it is definitely in the backdrop
-  await mouse.click(coords.left+500,20)
-  await page.screenshot({path: './artifacts/close-backdrop.png'})
-  await page.waitFor(1000)
-  //Swipe
+  //We dont need to close info dialog anymore cos page reload
   await mouse.move(coords.left+500,coords.top)
   await mouse.down()
   await mouse.move(coords.left+300,coords.top)
@@ -130,6 +124,9 @@ describe("Hwboard",async function(){
   before(async function(){
     server.listen(port)
     await init()
+  })
+  afterEach(async ()=>{
+    return page.reload()
   })
   it("Should be able to add homework",async function(){
     return await add()
