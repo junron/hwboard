@@ -1,0 +1,61 @@
+<div class="page">
+  <div class="navbar">
+    <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          </a>
+        </div>
+      <div class="title" id="edit-title"></div>
+    </div>
+  </div>
+  <div class="page-content block">
+      <div class="list no-hairlines">
+          <ul class="md">
+            <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Subject</div>
+                  <div class="item-input-wrap">
+                    <input id="subject-name" type="text">
+                  </div>
+                </div>
+            </li>
+            <li class="item-content input-toggle">
+              <div class="item-inner">
+                <div class="item-title">Graded/test</div>
+                <div class="item-after">
+                  <label class="toggle color-red toggle-init">
+                    <input type="checkbox" id="toggle-is-graded-checkbox">
+                    <span class="toggle-icon"></span>
+                  </label>
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input date-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">When is it due?</div>
+                  <div class="item-input-wrap">
+                    <input id="dueDate" type="text">
+                    <div id="due-date-validation-err" class="item-input-error-message"></div>
+                    <div class="item-input-info" id="date-input-info"> Relative dates such as "next lesson" are accepted</div>
+                  </div>
+                </div>
+            </li>
+            <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Enter homework name</div>
+                  <div class="item-input-wrap">
+                    <input id="homework-name" type="text">
+                  </div>
+                </div>
+            </li>
+          </ul>  
+          </div>
+          <div class="row md">
+            <button id="update-hwboard-button" class="button col">Update hwboard</button>
+          </div>
+          <br>
+            <br>
+            <br>
+  </div>
+  </div>

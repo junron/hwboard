@@ -1,17 +1,19 @@
+'use strict'
 const puppeteer = require("puppeteer")
 const mocha = require("mocha")
 const {expect} = require("chai")
 const port = require("../loadConfig").PORT
 const server = require("../app").server
 const options = {
-    headless:false,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  headless:false,
+  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  //Slow down so you can see whats happening
+  slowMo:10
 }
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
   console.log("Gitlab env")
   //No display in CI
-  options.headless=true
-  //options.executablePath = "/builds/Jro/hwboard2/node_modules/puppeteer/.local-chromium/linux-555668/chrome-linux"
+  options.headless = true
 }
 let browser
 let page
@@ -21,80 +23,101 @@ const getHtml = async selector => {
     return document.querySelector(selector).innerHTML
   },selector)
 }
+const getCoords = async elem =>{
+  return page.evaluate((header) => {
+    const {top, left, bottom, right} = header.getBoundingClientRect()
+    return {top, left, bottom, right}
+  }, elem)
+}
 async function init(){
   browser = await puppeteer.launch(options)
   console.log("browser launch")
   page = await browser.newPage()
+  await page.tracing.start({path: 'artifacts/trace.json', screenshots: true});
   console.log("pageopen")
-  //await page.goto('https://nushhwboard.tk')
   await page.goto('http://localhost:' + port)
   console.log("pageloaad")
-  //await page.waitFor(2000)
   await page.screenshot({path: './artifacts/initial.png'})
 }
-async function showToolbar(){
-  // "stain" homework so that we can identify it later
-  await page.evaluate(()=>{
-    return $(".hwitem:contains('Add homework test')").attr("id","targetHomework")
-  })
-  await page.click("#targetHomework",{
-    delay:1080
-  })
-}
+
 async function remove(){
-  await page.waitFor(300)
-  await showToolbar()
-  await page.evaluate(()=>{
-    $("i:contains('')").click()
-  })
-  await page.waitFor(300)
-  await page.evaluate(()=>{
-    $("button[onclick='deleteHomework()']").click()
-  })
-  await page.waitFor(300)
+  const mouse = page.mouse
+  let elem = await page.$(".targetHomework")
+  while(!elem){
+    await page.waitForFunction(()=>{
+      return $($(".hwitem:contains('Add homework test')")[0]).addClass("targetHomework")
+    })
+    elem = await page.$(".targetHomework")
+  }
+  const backdrop = await page.$(".sheet-backdrop")
+  const coords = await getCoords(elem)
+  //Close info dialog
+  //X can be anything
+  //20 is safe for Y because it is definitely in the backdrop
+  await mouse.click(coords.left+500,20)
+  await page.screenshot({path: './artifacts/close-backdrop.png'})
+  await page.waitFor(1000)
+  //Swipe
+  await mouse.move(coords.left+500,coords.top)
+  await mouse.down()
+  await mouse.move(coords.left+300,coords.top)
+  await mouse.up()
+  const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
+  await deleteBtn.click()
+  await page.screenshot({path: './artifacts/delete-before.png'})
+  const okBtn = await page.$("span.dialog-button.dialog-button-bold")
+  await okBtn.click()
+  await page.waitFor(500)
   await page.screenshot({path: './artifacts/delete.png'})
 }
 async function info(){
-  await page.waitFor(300)
-  await showToolbar()
-  await page.evaluate(()=>{
-    $("i:contains('')").click()
-  })
-  await page.waitFor(300)
+  const mouse = page.mouse
+  let elem = await page.$(".targetHomework")
+  while(!elem){
+    await page.waitForFunction(()=>{
+      return $($(".hwitem:contains('Add homework test')")[0]).addClass("targetHomework")
+    })
+    elem = await page.$(".targetHomework")
+  }
+  const coords = await getCoords(elem)
+  console.log(coords)
+  await page.screenshot({path: './artifacts/info-before.png'})
+  mouse.move(coords.left,coords.top)
+  mouse.down()
+  mouse.move(coords.left+200,coords.top)
+  await page.screenshot({path: './artifacts/info-middle.png'})
+  mouse.up()
   await page.screenshot({path: './artifacts/info.png'})
 }
 async function add(){
-  await page.click(".app-fab--absolute")
-  await page.click("#subject-select .mdc-select__surface")
-  await page.waitFor(300)
-  await page.evaluate(()=>{
-     $("li:contains('math')").click()
-  })
-  await page.waitFor(300)
-  await page.click("#graded")
-  await page.waitFor(300)
+  await page.click("#fab-add-homework")
+  await page.type("#subject-name","math")
+  await page.click(".item-radio.item-content[data-value=math]")
+  await page.click(".toggle.color-red.toggle-init")
+  console.log("Waiting for checkbox to be checked")
+  //await page.waitFor("#toggle-is-graded-checkbox:checked")
+  await page.waitFor(500)
+  await page.tracing.stop();
   await page.type("#dueDate","tomorrow")
-  await page.waitFor(300)
-  await page.type("#hwname","Add homework test")
-  await page.waitFor(300)
+  await page.type("#homework-name","Add homework test")
   await page.screenshot({path: './artifacts/add.png'})
-  await page.click("#updateBtn")
+  await page.click("#update-hwboard-button")
+  await page.waitFor(100)
+  return await page.waitForFunction(()=>{
+    return $($(".hwitem:contains('Add homework test')")[0]).addClass("targetHomework")
+  })
 }
 async function checkDate(date){
-  await page.click(".app-fab--absolute")
-  await page.waitFor(200)
-  const dateInput = await page.$('#dueDate')
-  await dateInput.type(date)
-  await page.waitFor(1000)
-  return page.evaluate(async ()=>{
-    const date = parseDate()
-    if(date){
-      return date.toString()
-    }else{
+  console.log(date)
+  return page.evaluate(async (date)=>{
+    try{
+      console.log(date)
+      const parsedDate = await parseDate(date)
+      return parsedDate.toString()
+    }catch(e){
       return "error"
     }
-    
-  })
+  },date)
 }
 function getDate(date){
   if(date=="error"){
@@ -109,22 +132,22 @@ describe("Hwboard",async function(){
     await init()
   })
   it("Should be able to add homework",async function(){
-    await add()
+    return await add()
   })
   it("Should be able to show info dialog",async function(){
     await info()
-    const name = await getHtml("#details-sheet-label")
+    const name = await getHtml("#detailHomeworkName")
     const subject = await getHtml("#detailSubject")
     expect(subject).to.equal("math")
     const dueDate = await getHtml("#detailDue")
     const graded = await getHtml("#detailGraded")
     expect(graded).to.equal("Yes")
     const lastEdit = await getHtml("#detailLastEdit")
-    console.log("Data:")
-    console.log({name,subject,dueDate,graded,lastEdit})
+    console.table = console.table || console.log
+      console.table({name,subject,dueDate,graded,lastEdit})
   })
   it("Should be able to remove homework",async function(){
-    await remove()
+    return await remove()
   })
   // it("Should detect dates properly",async ()=>{
   //   const today = new Date()

@@ -1,71 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include("partials/head") %>
-<body>
-    <div>
-      <header class="mdc-toolbar mdc-toolbar--fixed mdc-toolbar--waterfall">
-      <div id="normalToolbar">
-      <div class="mdc-toolbar__row">
-      <span>
-      <button class="mdc-button" onclick="dialog.show();setTimeout(function(){setDefaultcheckbox = new MDCCheckbox(document.querySelector('#setDefaultCheckBox'));},500)"> <i class="material-icons" style="color:white">&#xE164;</i></button>
-      </span>
-      <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-      <div class="mdc-toolbar__title">
-      <span onclick="location.href='/'">207 Homework Board</span><br>
-      <div class="mdc-list-item__secondary-text" style="color:#fff" id="networkStatus">
-      </div>
-      </div>
-      </section>
-      </div>
-      </div>
-      <div id="editMenu" style="display:none">
-      <div class="mdc-toolbar__row">
-      <% if(admin) { %>
-      <span>
-      <button style="float:right" class="admin-only mdc-button" onclick="startEdit()"><i  style="color:white" class="material-icons">&#xE254;</i></button>
-      </span>
-      <span>
-      <button style="float:right" class="admin-only mdc-button" onclick="deleteDialog.show()"><i  style="color:white" class="material-icons">&#xE872;</i></button>
-      </span>
-      <% } %>
-
-      <span>
-      <button class="mdc-button" onclick="loadDetails()"> <i style="color:white" class="material-icons">&#xE88F;</i></button>
-      </span>
-      <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-      </section>
-      </div>
-      </div>
-      </header>
-    </div>
+<%- include("./partials/head") %>
+<link rel="stylesheet" href="/framework7/css/framework7.css">
+<body style="margin-left:0px;margin-right:0px">
+  <div id="app">
+    <div class="view view-main">
     <link href="/styles/roboto.css" rel="stylesheet">
     <!--<link href="/styles/new.css" rel="stylesheet">-->
     <link rel="stylesheet" href = "/styles/icons.css">
-    <ul class="mdc-list mdc-list--two-line" style="background-color:#aee0e475;position:relative;top:50px">
-      <%- renderer(data,sortType,sortOrder) -%>
-     </ul>
-     <script src="./scripts/jquery.min.js"></script>
-     <script src="./scripts/renderer.js"></script>
+      <div class="page page-current">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <div class="title">Homework Board</div>
+          <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
+        </div>
+      </div>
+        <div class="page-content" style="padding-top:0px">
+          <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
+            <%- renderer(data,sortType,sortOrder) -%>
+          </div>
+        </div>
+        <!-- Floating App button
+        Clicking will cause the edit homework popup to appear
+        Only show for admins
+        -->
+      <% if (admin){ %>
+      <div class="fab fab-right-bottom admin-only color-green-blue" aria-label="Add homework">
+        <a id="fab-add-homework" href="/popups/edit/">
+        <i class="f7-icons icon material-icons">&#xe145;</i>
+        </a>
+      </div>
+      <script src="/scripts/turndown.js"></script>
+      <% } %>
+      </div>
+      </div>
+    </div>
+     <script src="/scripts/jquery.min.js"></script>
+     <script src="/scripts/renderer.js"></script>
      <script src="/scripts/promise-worker.js"></script>
-     <script src="./scripts/sugar-date.min.js"></script>
+     <script src="/scripts/sugar-date.min.js"></script>
      <script>
      //Web worker for indexedDB
-     const oldWorker = new Worker("./scripts/worker.js")
+     const oldWorker = new Worker("/scripts/worker.js")
      //Use promise based messaging
      const worker = new PromiseWorker(oldWorker)
      </script>
 
      <script src="/scripts/socket.io.js"></script>
      <!--DoNt toUcHa my eRRor rePoTer-->
+     <% if(reportErrors){ %>
      <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" crossorigin="anonymous"></script>
     <script>
-    //run the following line if in dev enviroment
-    //document.cookie="dev=true"
-    if(!(document.cookie.includes("dev=true")||navigator.userAgent == "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36")){
       //DoNt toUcHa my eRRor rePoTer
-      console.log("ok")
       Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
-    }
+      </script>
+    <% } %>
+    <script>
     const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
     //Handle websocket connection errors
     //Standard code for all my websocket apps
@@ -75,14 +65,18 @@
         //Some browsers may not support navigator.onLine
         //EDIT: appears that most browsers support but meh
         //https://caniuse.com/#feat=online-status
-        Raven.captureException(new Error("error checking connection status"))
+        <% if(reportErrors){ %>
+          Raven.captureException(new Error("error checking connection status"))
+        <% } %>
         console.log(`Error checking connection state`)
         return
       }
       if(navigator.onLine){
         //Its a server problem, perhaps websocket server not started
         console.log(`Error connecting to server`)
-        Raven.captureException(e)
+        <% if(reportErrors){ %>
+          Raven.captureException(e)
+        <% } %>
       }else{
         console.log(`Offline`)
         //Load data from cache since user is offline
@@ -94,7 +88,7 @@
     })
     //request homework data from server
     //syntax conn.emit(<eventName>,[<data>],[<callback>])
-    const channel = location.pathname.substring(1)
+    const channel = ""//location.pathname.substring(1)
     let channelSettings
     if(channel==""){
       channelSettings = {}
@@ -118,9 +112,16 @@
 
     //Server pushes data, re-render
     conn.on("data",(data)=>{
-      data = data.filter(homework=>{
-        return location.pathname.substring(1) == "" || homework.channel == location.pathname.substring(1)
-      })
+      //Main page
+      const main = location.pathname.substring(1) == ""
+      //Experiments
+      const experiments = location.pathname.includes("experiments")
+      //Show all channels if no channel specified
+      if(!(main || experiments)){
+        data = data.filter(homework=>{
+          return location.pathname.substring(1) == "" || homework.channel == location.pathname.substring(1)
+        })
+      }
       reRender(data)
       //Add data into client-side db
       worker.postMessage({
@@ -131,24 +132,83 @@
       localStorage.setItem("data",JSON.stringify(data))
     })
     </script>
-    <link rel="stylesheet" href = "/styles/material-components-web.min.css">
-  <% if (admin){ %>
-    <button class="app-fab--absolute mdc-fab admin-only" style="position:fixed" onclick="reset();editDialog.show();setTimeout(function(){checkbox = new MDCCheckbox(document.querySelector('#gradedCheckbox'));},500)" aria-label="Favorite">
-  <span class="mdc-fab__icon material-icons">
-      &#xe145;
-  </span>
-</button>
-<script src="/scripts/turndown.js"></script>
-<% } %>
-
 <!-- non critical styles and scripts can be deferred-->
-<script src="/scripts/material-components-web.min.js"></script>
 <script defer src="/scripts/dates.js"></script>
-<script src="/scripts/generalForms.js"></script>
+<script defer src="/scripts/generalForms.js"></script>
+<script>
+//get cookies
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+</script>
+<script src="/framework7/js/framework7.js"></script>
+
+<script src="/scripts/app.js"></script>
 <% if (admin){ %>
-<script src="./scripts/adminForms.js"></script>
+<!-- non admins wont need these -->
+<script src="/scripts/adminForms.js"></script>
+<script src="/scripts/edit-homework-eventHandlers.js"></script>
 <% } %>
-<script defer src="./scripts/eventHandlers.js"></script>
-<%- include("partials/dialogs.ejs",{adminChannels}) %>
+<script defer src="/scripts/eventHandlers.js"></script>
+<!-- defer when dialog code is moved -->
+<script src="../../fuse.js/dist/fuse.js"></script>
+<%- include("./partials/adminDialogs.ejs",{adminChannels}) %>
+<%- include("./partials/dialogs.ejs") %>
+<script>
+const mainView = Framework7App.views.create('.view-main',{
+    routes:[
+      {
+        name:"sort",
+        path: "/popups/sort/",
+        url:"/routes/sort.html",
+        on :{
+          pageInit: _=>{
+            //Uncheck all
+            const radios = Array.from(document.querySelectorAll(`input[type=radio]`))
+            radios.forEach(radio => radio.checked=false)
+            const sortType = sortOptions.type || getCookie("sortType") || "Due date"
+            let sortOrder = sortOptions.order || 0
+            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true
+            document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
+          }
+        }
+      },
+      {
+        name:"edit-homework",
+        path: "/popups/edit/",
+        url:"/routes/edit-homework.html",
+        on :{
+          pageInit:function(e,page){
+            const edit = page.route.url.includes("?edit=true")
+            if(edit){
+              $("#edit-title").text("Edit homework")
+              startEdit()
+            }else{
+              $("#edit-title").text("Add homework")
+            }
+            initEditHomeworkEvents()
+          }
+        }
+      },
+      {
+        name:"home",
+        path: "/",
+        url:"/"
+      }
+    ]
+  })
+</script>
 </body>
 </html>
