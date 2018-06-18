@@ -1,11 +1,10 @@
 # Hwboard v2 
 Master Branch (stable)  
-[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/master/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/master)  
-
-[![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/badge.svg?targetFile=package.json)](https://snyk.io/test/github/junron/hwboard?targetFile=package.json)  
+![pipeline status](https://git-badge.chatbox2.tk/hwboard2/master)
+ 
  
 Dev Branch:  
-[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/dev/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/dev)
+![pipeline status](https://git-badge.chatbox2.tk/hwboard2/dev)
 
 ## Installation
 1. Clone this repository
