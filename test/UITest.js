@@ -33,6 +33,7 @@ async function init(){
   browser = await puppeteer.launch(options)
   console.log("browser launch")
   page = await browser.newPage()
+  await page.tracing.start({path: 'artifacts/trace.json', screenshots: true});
   console.log("pageopen")
   await page.goto('http://localhost:' + port)
   console.log("pageloaad")
@@ -93,7 +94,10 @@ async function add(){
   await page.type("#subject-name","math")
   await page.click(".item-radio.item-content[data-value=math]")
   await page.click(".toggle.color-red.toggle-init")
-  await page.waitFor("#toggle-is-graded-checkbox:checked")
+  console.log("Waiting for checkbox to be checked")
+  //await page.waitFor("#toggle-is-graded-checkbox:checked")
+  await page.waitFor(500)
+  await page.tracing.stop();
   await page.type("#dueDate","tomorrow")
   await page.type("#homework-name","Add homework test")
   await page.screenshot({path: './artifacts/add.png'})

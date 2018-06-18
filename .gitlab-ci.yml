@@ -22,7 +22,6 @@ build:
   stage: build
   script:
   - npm install
-  - npm install puppeteer --save-dev
   - pwd
   - whoami
 
