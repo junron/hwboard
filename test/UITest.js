@@ -52,8 +52,8 @@ async function remove(){
   const coords = await getCoords(elem)
   //Close info dialog
   //X can be anything
-  //100 is safe for Y because it is definitely in the backdrop
-  await mouse.click(coords.left+500,100)
+  //20 is safe for Y because it is definitely in the backdrop
+  await mouse.click(coords.left+500,20)
   await page.waitFor(1000)
   //Swipe
   await mouse.move(coords.left+500,coords.top)
