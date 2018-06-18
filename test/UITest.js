@@ -54,6 +54,7 @@ async function remove(){
   //X can be anything
   //20 is safe for Y because it is definitely in the backdrop
   await mouse.click(coords.left+500,20)
+  await page.screenshot({path: './artifacts/close-backdrop.png'})
   await page.waitFor(1000)
   //Swipe
   await mouse.move(coords.left+500,coords.top)
