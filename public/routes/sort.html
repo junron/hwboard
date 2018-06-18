@@ -1,0 +1,81 @@
+<div class="page">
+  <div class="navbar">
+    <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          </a>
+        </div>
+      <div class="title">Sort options</div>
+    </div>
+  </div>
+  <div class="page-content block">
+      <div class="block-title">
+        Sort parameter
+      </div>
+     <div class="list">
+          <ul>
+            <li>
+              <label class="item-radio item-content">
+                <input type="radio" name="type" value="Due date"/>
+              <i class="icon icon-radio"></i>
+                <div class="item-inner">
+                  <div class="item-title">Due date</div>
+                </div>
+              </label>
+            </li>
+            <li>
+              <label class="item-radio item-content">
+                <input type="radio" name="type" value="Subject name"/>
+                <i class="icon icon-radio"></i>
+                <div class="item-inner">
+                  <div class="item-title">Subject name</div>
+                </div>
+              </label>
+            </li>
+          </ul>
+        </div>
+        <div class="block-title">
+          Sort order
+        </div>
+       <div class="list">
+            <ul>
+              <li>
+                <label class="item-radio item-content">
+                  <input type="radio" name="order" value="0"/>
+                <i class="icon icon-radio"></i>
+                  <div class="item-inner">
+                    <div class="item-title">Ascending</div>
+                  </div>
+                </label>
+              </li>
+              <li>
+                <label class="item-radio item-content">
+                  <input type="radio" name="order" value="1"/>
+                  <i class="icon icon-radio"></i>
+                  <div class="item-inner">
+                    <div class="item-title">Descending</div>
+                  </div>
+                </label>
+              </li>
+            </ul>
+          </div>
+          <div class="list">
+            <ul>
+              <li>
+                <label class="item-checkbox item-content">
+                <input type="checkbox" id="sort-set-default">
+                <i class="icon-checkbox"></i>
+                <div class="item-inner">
+                  <div class="item-title">Set as default</div>
+                </div>
+                </label>
+              </li>
+            </ul>
+          </div>
+    <div class="row">
+      <a href="#" onclick="rerenderSort()" class="button col link back">Ok</a>
+    </div>
+    <br>
+  </div>
+  </div>

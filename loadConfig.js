@@ -3,7 +3,7 @@ try {
   //TODO find better way to do destructuring assignment
   //My ES6 sucks
   //Assignment expression
-  ({POSTGRES_PASSWORD,POSTGRES_USER,POSTGRES_DB,HOSTNAME,MS_CLIENTID,MS_CLIENTSECRET,HWBOARD_PORT:PORT,CI,COOKIE_SECRET} = require("./config.json"))
+  ({POSTGRES_PASSWORD,POSTGRES_USER,POSTGRES_DB,HOSTNAME,MS_CLIENTID,MS_CLIENTSECRET,PORT,CI,COOKIE_SECRET} = require("./config.json"))
 } catch (error) {
   //Could not load config
   console.log("Config file not found, using environment variables")

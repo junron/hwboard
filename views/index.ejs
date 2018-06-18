@@ -1,61 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include("./partials/head") %>
-<style>
-.list, .md .list {
-  margin-top:0px !important;
-  margin-bottom:0px !important;
-}
-.mdc-text-field__input {
-  border-bottom-width: 1px;
-}
-</style>
 <link rel="stylesheet" href="/framework7/css/framework7.css">
 <body style="margin-left:0px;margin-right:0px">
-    <div>
-      <header class="mdc-toolbar mdc-toolbar--fixed mdc-toolbar--waterfall">
-      <div id="normalToolbar">
-      <div class="mdc-toolbar__row">
-      <span>
-      <button class="mdc-button" onclick="dialog.show();setTimeout(function(){setDefaultcheckbox = new MDCCheckbox(document.querySelector('#setDefaultCheckBox'));},500)"> <i class="material-icons" style="color:white">&#xE164;</i></button>
-      </span>
-      <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-      <div class="mdc-toolbar__title">
-      <span onclick="location.href='/'">207 Homework Board</span><br>
-      <div class="mdc-list-item__secondary-text" style="color:#fff" id="networkStatus">
-      </div>
-      </div>
-      </section>
-      </div>
-      </div>
-      <div id="editMenu" style="display:none">
-      <div class="mdc-toolbar__row">
-      <% if(admin) { %>
-      <span>
-      <button style="float:right" class="admin-only mdc-button" onclick="startEdit()"><i  style="color:white" class="material-icons">&#xE254;</i></button>
-      </span>
-      <span>
-      <button style="float:right" class="admin-only mdc-button" onclick="deleteDialog.show()"><i  style="color:white" class="material-icons">&#xE872;</i></button>
-      </span>
-      <% } %>
-
-      <span>
-      <button class="mdc-button" onclick="loadDetails()"> <i style="color:white" class="material-icons">&#xE88F;</i></button>
-      </span>
-      <section class="mdc-toolbar__section mdc-toolbar__section--align-start">
-      </section>
-      </div>
-      </div>
-      </header>
-    </div>
+  <div id="app">
+    <div class="view view-main">
     <link href="/styles/roboto.css" rel="stylesheet">
     <!--<link href="/styles/new.css" rel="stylesheet">-->
     <link rel="stylesheet" href = "/styles/icons.css">
-    <div id="app">
-    <ul class="mdc-list mdc-list--two-line" style="background-color:#aee0e475;position:relative;top:50px">
-      <%- renderer(data,sortType,sortOrder) -%>
-     </ul>
-     </div>
+      <div class="page page-current">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <div class="title">Homework Board</div>
+          <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
+        </div>
+      </div>
+        <div class="page-content" style="padding-top:0px">
+          <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
+            <%- renderer(data,sortType,sortOrder) -%>
+          </div>
+        </div>
+        <!-- Floating App button
+        Clicking will cause the edit homework popup to appear
+        Only show for admins
+        -->
+      <% if (admin){ %>
+      <div class="fab fab-right-bottom admin-only color-green-blue" aria-label="Add homework">
+        <a id="fab-add-homework" href="/popups/edit/">
+        <i class="f7-icons icon material-icons">&#xe145;</i>
+        </a>
+      </div>
+      <script src="/scripts/turndown.js"></script>
+      <% } %>
+      </div>
+      </div>
+    </div>
      <script src="/scripts/jquery.min.js"></script>
      <script src="/scripts/renderer.js"></script>
      <script src="/scripts/promise-worker.js"></script>
@@ -153,47 +132,83 @@
       localStorage.setItem("data",JSON.stringify(data))
     })
     </script>
-    <link rel="stylesheet" href = "/styles/material-components-web.min.css">
-  <% if (admin){ %>
-    <button class="app-fab--absolute mdc-fab admin-only" style="position:fixed" onclick="reset();editDialog.show();setTimeout(function(){checkbox = new MDCCheckbox(document.querySelector('#gradedCheckbox'));},500)" aria-label="Favorite">
-  <span class="mdc-fab__icon material-icons">
-      &#xe145;
-  </span>
-</button>
-<script src="/scripts/turndown.js"></script>
-<% } %>
-<div class="mdc-menu" tabindex="-1" id="hw-actions">
-  <ul class="mdc-menu__items mdc-list" role="menu" aria-hidden="true">
-  <% if(admin) { %>
-    <li class="mdc-list-item" role="menuitem" tabindex="0" onclick="startEdit()">
-      Edit
-    </li>
-    <li class="mdc-list-item" role="menuitem" tabindex="0" onclick="deleteDialog.show()">
-      Delete
-    </li>
-    <% } %>
-    <li class="mdc-list-item" role="menuitem" tabindex="0" onclick="loadDetails()">
-      Details
-    </li>
-  </ul>
-</div>
 <!-- non critical styles and scripts can be deferred-->
-<script src="/scripts/material-components-web.min.js"></script>
 <script defer src="/scripts/dates.js"></script>
-<script src="/scripts/generalForms.js"></script>
+<script defer src="/scripts/generalForms.js"></script>
+<script>
+//get cookies
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+</script>
+<script src="/framework7/js/framework7.js"></script>
 
-<script type="text/javascript" src="/framework7/js/framework7.js"></script>
-
-<script type="text/javascript" src="/scripts/app.js"></script>
+<script src="/scripts/app.js"></script>
 <% if (admin){ %>
+<!-- non admins wont need these -->
 <script src="/scripts/adminForms.js"></script>
+<script src="/scripts/edit-homework-eventHandlers.js"></script>
 <% } %>
 <script defer src="/scripts/eventHandlers.js"></script>
-<%- include("./partials/dialogs.ejs",{adminChannels}) %>
+<!-- defer when dialog code is moved -->
+<script src="../../fuse.js/dist/fuse.js"></script>
+<%- include("./partials/adminDialogs.ejs",{adminChannels}) %>
+<%- include("./partials/dialogs.ejs") %>
 <script>
-  const menuEl = document.querySelector('#hw-actions')
-  const menu = new mdc.menu.MDCMenu(menuEl)
-  menu.setPosition = menu.getDefaultFoundation().adapter_.setPosition
+const mainView = Framework7App.views.create('.view-main',{
+    routes:[
+      {
+        name:"sort",
+        path: "/popups/sort/",
+        url:"/routes/sort.html",
+        on :{
+          pageInit: _=>{
+            //Uncheck all
+            const radios = Array.from(document.querySelectorAll(`input[type=radio]`))
+            radios.forEach(radio => radio.checked=false)
+            const sortType = sortOptions.type || getCookie("sortType") || "Due date"
+            let sortOrder = sortOptions.order || 0
+            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true
+            document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
+          }
+        }
+      },
+      {
+        name:"edit-homework",
+        path: "/popups/edit/",
+        url:"/routes/edit-homework.html",
+        on :{
+          pageInit:function(e,page){
+            const edit = page.route.url.includes("?edit=true")
+            if(edit){
+              $("#edit-title").text("Edit homework")
+              startEdit()
+            }else{
+              $("#edit-title").text("Add homework")
+            }
+            initEditHomeworkEvents()
+          }
+        }
+      },
+      {
+        name:"home",
+        path: "/",
+        url:"/"
+      }
+    ]
+  })
 </script>
 </body>
 </html>

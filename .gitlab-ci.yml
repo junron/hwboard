@@ -17,13 +17,11 @@ variables:
 cache:
   paths:
   - node_modules/
-  - apt-cache/
 
 build:
   stage: build
   script:
   - npm install
-  - npm install puppeteer --save-dev
   - pwd
   - whoami
 
@@ -47,4 +45,4 @@ test:
     paths: 
     - artifacts
     expire_in: 1 week
- 
+    when: always

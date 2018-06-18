@@ -19,10 +19,7 @@ parser.parseBySubject = function (data,order=0) {
   }
   let subjects = []
   let html = ""
-  const subjectEnd = `</ul>
-  <li role="separator" class=" mdc-list-divider mdc-list-divider--inset"></li>
-  </li>
-  </li>`
+  const subjectEnd = `</ul></div>`
   for (let homework of data) {
     let subject = homework.subject
     if (subjects.indexOf(subject) == -1) {
@@ -31,9 +28,9 @@ parser.parseBySubject = function (data,order=0) {
       }
       const subjectId = "hex" + parser.toHex(subject)
       html += `
-      <li  class="form mdc-elevation--z5" style="background-color:#ffffff">
-      <h3 class="mdc-list-group__subheader" style="font-size:125%;"><span style="background-color:#ffffff">${subject}</span></h3>
-      <ul style="padding: 0px" id="${subjectId}">
+      <div class="list-group">
+        <ul id="${subjectId}">
+          <li class="list-group-title">${subject}</li>
       `
       subjects.push(subject)
     }
@@ -42,7 +39,7 @@ parser.parseBySubject = function (data,order=0) {
     if(html==""){
       return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
     }
-    html+="</ul>"
+    html+="</div></ul>"
     return html
 }
 parser.parseHomeworkSubject = function(homework) {
@@ -57,17 +54,28 @@ parser.parseHomeworkSubject = function(homework) {
     extra
   } = parser.parseHomeworkMetaData(homework)
   return `
-  <li class="mdc-list-item hwitem" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
-  <span class="mdc-list-item__graphic" role="presentation">
-    <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
-  </span>
-  <span class="mdc-list-item__text" style="white-space: initial;">
-    ${text}
-    <span class="mdc-list-item__secondary-text">
-     ${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})${extra}
-    </span>
-  </span>
-  </li>
+  <li class="hwitem swipeout" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
+  <div class="swipeout-content item-content">
+    <div class="item-media">
+        <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
+    </div>
+    <div class="item-inner">
+      <div class="item-title">
+        ${text}
+        <div class="item-footer">
+          ${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})${extra}
+        </div>
+        </div>
+        </div>
+      </div>
+      <div class="swipeout-actions-left">
+        <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
+      </div>
+      <div class="swipeout-actions-right">
+        <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
+        <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
+      </div>
+    </li> 
   `
 }
 parser.parseByDate = function(data,order=0) {
@@ -83,10 +91,7 @@ parser.parseByDate = function(data,order=0) {
   }
   let dates = []
   let html = ""
-  const dateEnd = `</ul>
-  <li role="separator" class="mdc-list-divider mdc-list-divider--inset"></li>
-  </li>
-  </li>`
+  const dateEnd = `</ul></div>`
   for (let homework of data) {
     let {displayDate,dueDate2,daysLeft} = parser.parseHomeworkMetaData(homework)
     if (dates.indexOf(displayDate) == -1) {
@@ -94,9 +99,9 @@ parser.parseByDate = function(data,order=0) {
         html += dateEnd
       }
       html += `
-      <li class="form mdc-elevation--z5" style="background-color:#ffffff">
-      <h3 class="mdc-list-group__subheader" style="font-size:125%;"><span style="background-color:#ffffff">${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})</span></h3>
-      <ul style="padding: 0px" id="${daysLeft}" class="list">
+      <div class="list-group">
+        <ul style="padding: 0px" id="${daysLeft}">
+          <li class="list-group-title">${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})</li>
       `
       dates.push(displayDate)
     }
@@ -105,7 +110,7 @@ parser.parseByDate = function(data,order=0) {
   if(html==""){
     return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
   }
-  html+="</ul>"
+  html+="</div></ul>"
   return html
 }
 parser.parseHomeworkDate = function(homework) {
@@ -120,20 +125,16 @@ parser.parseHomeworkDate = function(homework) {
   } = parser.parseHomeworkMetaData(homework)
   return `
   <li class="hwitem swipeout" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
-  <div class="swipeout-content">
-    <div class="mdc-list-item item-content">
-      <div class="item-media">
-        <span class="mdc-list-item__graphic" role="presentation">
-          <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
-        </span>
-      </div>
-      <div class="item-inner">
-        <span class="mdc-list-item__text" style="white-space: initial;">
-          ${text}
-          <span class="mdc-list-item__secondary-text">
-              ${subject}${extra}
-          </span>
-        </span>
+  <div class="swipeout-content item-content">
+    <div class="item-media">
+        <i class="material-icons" style="color:${iconColor}" aria-hidden="true">${icon}</i>
+    </div>
+    <div class="item-inner">
+      <div class="item-title">
+        ${text}
+        <div class="item-footer">
+          ${subject}${extra}
+        </div>
       </div>
     </div>
   </div>
@@ -141,12 +142,12 @@ parser.parseHomeworkDate = function(homework) {
     <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
   </div>
   <div class="swipeout-actions-right">
-    <a onclick="lastTouched = this.parentElement.parentElement;startEdit()" class="swipeout-close" style="background-color:#ff9800">Edit</a>
-    <a onclick="lastTouched = this.parentElement.parentElement;deleteDialog.show()" class="swipeout-close" style="background-color:#f44336">Delete</a>
+    <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
+    <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
   </div>
 </li>
   `
-}
+} 
 parser.toTitle = function(str)
 {
 return str.substring(0,1).toUpperCase()+str.substring(1,10000)
