@@ -54,7 +54,7 @@ async function remove(){
   //X can be anything
   //100 is safe for Y because it is definitely in the backdrop
   await mouse.click(coords.left+500,100)
-  await page.waitFor(500)
+  await page.waitFor(1000)
   //Swipe
   await mouse.move(coords.left+500,coords.top)
   await mouse.down()
@@ -62,6 +62,7 @@ async function remove(){
   await mouse.up()
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
   await deleteBtn.click()
+  await page.screenshot({path: './artifacts/delete-before.png'})
   const okBtn = await page.$("span.dialog-button.dialog-button-bold")
   await okBtn.click()
   await page.waitFor(500)
