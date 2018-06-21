@@ -6,6 +6,10 @@ const studentsByMG = {}
 const studentsById = {}
 let students
 async function getData(dataPath,cache=false){
+  if(students){
+    //Already fetched data
+    return students
+  }
   let data
   if(node && commonJS){
     data = require(dataPath)

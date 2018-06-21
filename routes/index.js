@@ -54,9 +54,7 @@ router.get('/:channel', async (req, res, next) => {
   }
   const channelName = req.params.channel
   const {channelData} = await authChannels(req,res)
-  const channel = channelData.find(channel=>{
-    return channel.name == channelName
-  })
+  const channel = channelData[channelName]
   if(channel){
     let {sortOrder,sortType} = req.cookies
     if(sortOrder){
@@ -95,9 +93,7 @@ router.get('/:channel/settings', async (req, res, next) => {
   }
   const channelName = req.params.channel
   const {channelData,decodedToken} = await authChannels(req,res)
-  const channel = channelData.find(channel=>{
-    return channel.name == channelName
-  })
+  const channel = channelData[channelName]
   if(channel){
     res.header("Link",parsePushHeaders(pushFiles))
     const email = decodedToken.preferred_username
@@ -209,10 +205,14 @@ async function authChannels(req,res){
   }
 
   //Get authorised channels
-  const channelData = await db.getUserChannels(decodedToken.preferred_username)
+  const channelData = {}
+  const channels = await db.getUserChannels(decodedToken.preferred_username)
+  for (let channel of channels){
+    channelData[channel.name] = channel
+  }
   //Yey my failed attempt at functional programming
   const adminChannels =
-  channelData
+  channels
   .filter(channel=>
     //Only users with at least admin permissions can edit homework
     channel.permissions>=2

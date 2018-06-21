@@ -5,20 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <body style="margin-left:0px;margin-right:0px">
   <style>
+    #app .md li li:last-child .item-inner:after, .md li:last-child li .item-inner:after {
+      width: 100vw;
+    }
     .accordion-item-content {
       padding-left:16px;
     }
-     .list > ul > li.item-divider {
-    height: 40px;
-    background: #fff;
-    margin-right: 16px;
-    margin-top: 12px;
-    line-height: 24px;
-    font-size: 20px;
-    font-weight:normal;
-    color: #000000de;
-    letter-spacing: 0.8px;
-} 
+    #app .list .swipeout .item-inner {
+      padding-left:8px;
+    }
+    #app .list .swipeout.item-content {
+      padding-left:0px;
+    }
+    .list > ul > li.item-divider {
+      height: 40px;
+      background: #fff;
+      margin-right: 16px;
+      margin-top: 12px;
+      line-height: 24px;
+      font-size: 20px;
+      font-weight:normal;
+      color: #000000de;
+      letter-spacing: 0.8px;
+    } 
     .accordion-item > .item-link.item-content {
       font-size:19px;
     }
@@ -60,52 +69,12 @@
                       </a>
                       <div class="accordion-item-content">
                       <div class="list no-hairlines">
-                          <ul>
-                            <li class="item-content item-divider">
-                              <div class="item-inner">
-                                <div class="item-title">
-                                    Roots
-                                    <div class="item-footer">
-                                      Roots can add and remove subjects and members
-                                    </div>
-                                </div>
-                                </div>
-                            </li>
-                            <li class="item-content">
-                              <div class="item-inner">
-                                <div class="item-title person-name">
-                                    Tester
-                                    <div class="item-footer person-email">
-                                        tester@nushigh.edu.sg
-                                    </div>
-                                </div>
-                            </div>
-                            </li>
-                            <br>
-                            <li class="item-content item-divider">
-                                <div class="item-inner">
-                                  <div class="item-title">
-                                      Admins
-                                      <div class="item-footer">
-                                        Admins can add, edit and remove homework
-                                      </div>
-                                  </div>
-                                  </div>
-                              </li>
-                              <li class="item-content">
-                                <div class="item-inner">
-                                  <div class="item-title person-name">
-                                      Tester
-                                      <div class="item-footer person-email">
-                                          tester@nushigh.edu.sg
-                                      </div>
-                                  </div>
-                              </div>
-                              </li>
+                          <ul id="member-list">
+
                           </ul>
                         </div>
                         <div class="row md">
-                          <button class="button col"><a href="/popups/add-member/">Add member</a></button>
+                          <a href="/popups/add-member/" class="button col">Add member</a>
                         </div>
                     </div>
                   </li>
@@ -122,6 +91,51 @@
 <script>
   const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
   const channel = "testing"
+</script>
+<script type="module">
+  import {render} from "/routes/scripts/render-admins.js"
+  conn.emit("channelDataReq",{channel},async function(err,data){
+    if(err) throw new Error(err)
+    console.log(data)
+    document.getElementById("member-list").innerHTML = await render(data)
+  })
+  conn.on("channelData",async function(data){
+    const thisChannelData = data[channel]
+    console.log(thisChannelData)
+    document.getElementById("member-list").innerHTML = await render(thisChannelData)
+  })
+</script>
+<script>
+  function deleteMember(memberElem){
+    const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
+    const memberId = memberEmail.replace("@nushigh.edu.sg","")
+    Framework7App.dialog.confirm("Are you sure you want to remove "+memberEmail +"?",function(){
+      conn.emit("removeMember",{channel,student:memberId},function(err){
+        if(err) throw err
+        console.log("done")
+      })
+    })
+  }
+  function promoteMember(memberElem){
+    const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
+    const memberId = memberEmail.replace("@nushigh.edu.sg","")
+    Framework7App.dialog.confirm("Are you sure you want to promote " + memberEmail + "?",function(){
+      conn.emit("promoteMember",{channel,student:memberId},function(err){
+        if(err) throw err
+        console.log("done")
+      })
+    })
+  }
+  function demoteMember(memberElem){
+    const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
+    const memberId = memberEmail.replace("@nushigh.edu.sg","")
+    Framework7App.dialog.confirm("Are you sure you want to demote " + memberEmail + "?",function(){
+      conn.emit("demoteMember",{channel,student:memberId},function(err){
+        if(err) throw err
+        console.log("done")
+      })
+    })
+  }
   const mainView = Framework7App.views.create('.view-main',{
     routes:[
       {
@@ -129,7 +143,8 @@
         path: "/popups/add-member/",
         url:"/routes/add-member.html",
         on:{
-          pageInit:e=>{
+          pageAfterIn:e=>{
+            console.log(e)
             const scriptTag = document.createElement("script")
             scriptTag.src = "/routes/scripts/add-member.js"
             scriptTag.type = "module"
