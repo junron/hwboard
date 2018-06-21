@@ -104,12 +104,12 @@ document.getElementById("add-member").addEventListener("click",()=>{
   getResult().then(data=>{
     //send data to websocket
     console.log(data)
+    data.permissions = data.permissions.toLowerCase()
     data.channel = channel
-    /*
     conn.emit("addMember",data,(err)=>{
       if(err) throw new Error(err)
+      mainView.router.back()
     })
-    */
   }).catch(e=>{
     console.log(e)
     Framework7App.dialog.alert(e.message)
