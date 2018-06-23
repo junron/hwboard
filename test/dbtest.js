@@ -1,9 +1,9 @@
 const chai = require("chai")
 const mocha = require("mocha")
 const expect = chai.expect
-const channels = [ {
+const channels = {testing:{
   name: 'testing',
-  permissions: 3 }]
+  permissions: 3 }}
 const {getHomeworkAll,init,addHomework} = require("../database")
 describe("database.js",function(){
   before(function(){

@@ -194,8 +194,6 @@ exports.createServer = async function(server){
         await db.removeMember(channel,student)
         await db.addMember(channel,[student],numberToPermission(currentPermissionLvl - 1))
         updateChannels(db.arrayToObject(await db.getUserChannels("*")))
-        console.log(socket.channels)
-        console.log(socket.channels.M18207===globalChannels.M18207)
         const thisChannel = globalChannels[channel]
         io.to(channel).emit("channelData",{[channel]:thisChannel})
         return callback(null)
