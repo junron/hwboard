@@ -36,6 +36,7 @@ if(gitlab||process.argv[4]=="default"){
     sequelize.close()
   })()
 }else{
+  const notEmpty = string => string.length > 0
   const readline = require('readline')
   const r1 = readline.createInterface({
     input: process.stdin,
@@ -46,11 +47,9 @@ if(gitlab||process.argv[4]=="default"){
       answer ="testing"
     }
     config.name = answer
-    r1.question("Subjects (seperate with comma): (math,chemistry)  ",(answer="math,chemistry")=>{
-      if(answer==""){
-        answer ="math,chemistry"
-      }
-      config.subjects = answer.split(",")
+    r1.question("Subjects (seperate with comma): ()  ",(answer)=>{
+      console.log(typeof answer)
+      config.subjects = answer.split(",").filter(notEmpty)
       r1.question("Root users (seperate with comma): (tester@nushigh.edu.sg)  ",(answer="tester@nushigh.edu.sg")=>{
         if(answer==""){
           answer ="tester@nushigh.edu.sg"
@@ -62,11 +61,8 @@ if(gitlab||process.argv[4]=="default"){
           }else{
             config.admins = answer.split(",")
           }
-          r1.question("Normal users (seperate with comma): (*)  ",(answer="*")=>{
-            if(answer==""){
-              answer ="*"
-            }
-            config.members = answer.split(",")
+          r1.question("Normal users (seperate with comma): ()  ",(answer="*")=>{
+            config.members = answer.split(",").filter(notEmpty)
             console.log(config)
             r1.question("Is this okay? (Yes/no)  ",async answer=>{
               if(answer.toLowerCase()=="yes"){

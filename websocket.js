@@ -4,12 +4,19 @@ const cookieParser = require('socket.io-cookie-parser')
 
 //export so that accessible in app.js
 //server param is a http server
-exports.createServer = function(server){
+exports.createServer = async function(server){
+  let globalChannels = {}
+
+  const globalChannelData = await db.getUserChannels("*")
+  for(const channel of globalChannelData){
+    globalChannels[channel.name] = channel
+    delete channel.name
+  }
   //Create websocker server from http server
   const io = require('socket.io')(server)
 
   //Load hwboard configuration
-  const {CI:testing,HOSTNAME,PORT:port} = require("./loadConfig")
+  const {CI:testing,HOSTNAME,PORT:port,COOKIE_SECRET:cookieSecret} = require("./loadConfig")
 
   //Prevent CSRF (sort of) by only allowing specific origins
   //Could origin spoofing be possible?
@@ -30,45 +37,48 @@ exports.createServer = function(server){
 
   io.set('transports', ['websocket'])
   //For cookies
-  io.use(cookieParser())
-  io.on('connection', function(socket){
+  io.use(cookieParser(cookieSecret))
+  io.on('connection', async function(socket){
     //Start socket.io code here
     //Authenticate user on connection
     //You can access cookies in websockets too!
-    const token = socket.request.cookies.token
+    const token = socket.request.signedCookies.token
     if(testing){
       socket.userData = {
         name:"tester",
         preferred_username:"tester@nushigh.edu.sg"
       }
-      socket.channels = [ {
-        name: 'testing',
-        permissions: 3 }]
-      db.getUserChannels(socket.userData.preferred_username).then(function(channels){
-        socket.channels = channels
+      const {testing} = globalChannels
+      socket.channels = {testing}
+      const channels = await db.getUserChannels(socket.userData.preferred_username)
+      for (const channel of channels){
+        socket.join(channel.name)
+      }
+    }else{
+      try{
+        const tokenClaims = await auth.verifyToken(token)
+        socket.userData = tokenClaims
+        const channels = await db.getUserChannels(socket.userData.preferred_username)
+        //Client cannot access socket object, so authorization data is safe and trustable.
+        socket.channels = {}
         for (let channel of channels){
+          //Add user to rooms
+          //Client will receive relevant events emitted to these rooms,
+          //but not others
+          socket.channels[channel.name] = globalChannels[channel.name]
+          console.log("Authed")
           socket.join(channel.name)
         }
-      })
-    }else{
-      auth.verifyToken(token).then(function(tokenClaims){
-        socket.userData = tokenClaims
-        db.getUserChannels(socket.userData.preferred_username).then(function(channels){
-          //Client cannot access socket object, so authorization data is safe and trustable.
-          socket.channels = channels
-          for (let channel of channels){
-            //Add user to rooms
-            //Client will receive relevant events emitted to these rooms,
-            //but not others
-            socket.join(channel.name)
-          }
-        })
-      }).catch(function(e){
+      }catch(e){
         //Problem with token, perhaps spoofed token?
         //Anyway get rid of this socket
+        console.log("Forced disconnect")
         socket.disconnect()
-      })
+      }
     }
+    socket.on('disconnect', function(){
+      console.log('user disconnected');
+    });
     //Get homework from database
     socket.on("dataReq",async function(msg,callback){
       if(typeof callback!="function"){
@@ -83,16 +93,16 @@ exports.createServer = function(server){
       //User only requested specific channel
       if(msg.channel){
         //Ensure that user is member of channel
-        if(socket.channels.find(channel=>{
-          return channel == msg.channel
-        })){
-        db.getHomework(msg.channel,msg.removeExpired).then(function(data){
-          return callback(null,data)
-        }).catch(function(error){
-          console.log(error)
-          return callback(error.toString())
-        })
-      }
+        if(socket.channel[msg.channel]){
+          db.getHomework(msg.channel,msg.removeExpired).then(function(data){
+            return callback(null,data)
+          }).catch(function(error){
+            console.log(error)
+            return callback(error.toString())
+          })
+        }else{
+          return callback("You are not a member of this channel")
+        }
       }else{
         db.getHomeworkAll(socket.channels,msg.removeExpired).then(function(data){
           return callback(null,data)
@@ -102,7 +112,113 @@ exports.createServer = function(server){
         })
       }
     })
+    //Add subject
+    socket.on("addSubject",function(msg,callback){
+      validatePayload(socket.channels,msg,callback,3).then(async msg =>{
+        const {channel} = msg
+        await db.addSubject(msg)
+        updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+        const thisChannel = globalChannels[channel]
+        io.to(channel).emit("channelData",{[channel]:thisChannel})
+        return callback(null)
+      }).catch((error) => {
+        console.log(error)
+        return callback(error.toString())
+      })
+    })
+    //Add member
+      socket.on("addMember",function(msg,callback){
+	  console.log(msg,"attempt to add member")
 
+      validatePayload(socket.channels,msg,callback,3).then(async msg =>{
+        const {channel,students,permissions} = msg
+        await db.addMember(channel,students,permissions)
+        updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+        const thisChannel = globalChannels[channel]
+        io.to(channel).emit("channelData",{[channel]:thisChannel})
+        return callback(null)
+      }).catch((error) => {
+        console.log(error)
+        return callback(error.toString())
+      })
+    })
+    //Remove member
+    socket.on("removeMember",function(msg,callback){
+      validatePayload(socket.channels,msg,callback,3).then(async msg =>{
+        const {channel,student} = msg
+        await db.removeMember(channel,student)
+        updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+        const thisChannel = globalChannels[channel]
+        io.to(channel).emit("channelData",{[channel]:thisChannel})
+        return callback(null)
+      }).catch((error) => {
+        console.log(error)
+        return callback(error.toString())
+      })
+    })
+    //Promote member
+    socket.on("promoteMember",function(msg,callback){
+      validatePayload(socket.channels,msg,callback,3).then(async msg =>{
+        const numberToPermission = number => ["member","admin","root"][number-1]
+        const {channel,student} = msg
+        const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",globalChannels[channel])
+        if(currentPermissionLvl==3){
+          throw new Error("Can't promote root")
+        }
+        if(currentPermissionLvl==0){
+          throw new Error("Not a member")
+        }
+        await db.removeMember(channel,student)
+        await db.addMember(channel,[student],numberToPermission(currentPermissionLvl + 1))
+        updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+        const thisChannel = globalChannels[channel]
+        io.to(channel).emit("channelData",{[channel]:thisChannel})
+        return callback(null)
+      }).catch((error) => {
+        console.log(error)
+        return callback(error.toString())
+      })
+    })
+    //Promote member
+    socket.on("demoteMember",function(msg,callback){
+      validatePayload(socket.channels,msg,callback,3).then(async msg =>{
+        const numberToPermission = number => ["member","admin","root"][number-1]
+        const {channel,student} = msg
+        const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",globalChannels[channel])
+        if(currentPermissionLvl==1){
+          throw new Error("Can't demote member")
+        }
+        if(currentPermissionLvl==0){
+          throw new Error("Not a member")
+        }
+        await db.removeMember(channel,student)
+        await db.addMember(channel,[student],numberToPermission(currentPermissionLvl - 1))
+        updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+        console.log(socket.channels)
+        console.log(socket.channels.M18207===globalChannels.M18207)
+        const thisChannel = globalChannels[channel]
+        io.to(channel).emit("channelData",{[channel]:thisChannel})
+        return callback(null)
+      }).catch((error) => {
+        console.log(error)
+        return callback(error.toString())
+      })
+    })
+    socket.on("channelDataReq",function(msg,callback){
+      console.log("request received")
+      validatePayload(socket.channels,msg,callback,1).then(async msg =>{
+        console.log("Request authed")
+        const {channel} = msg
+        //Update cos why not
+        updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+        console.log({globalChannels})
+        const thisChannel = globalChannels[channel]
+        return callback(null,thisChannel)
+      }).catch((error) => {
+        console.log(error)
+        return callback(error.toString())
+      })
+    })
     //Add homework
     socket.on("addReq",function(msg,callback){
       validatePayload(socket.channels,msg,callback).then(async msg =>{
@@ -150,9 +266,28 @@ exports.createServer = function(server){
       const text = msg.toString()
       return callback(null,Buffer.from(text+"received","utf8"))
     })
-
+    //Function to update globalChannels
+    const updateChannels = channels=>{
+      for(const channel in channels){
+        for(const property in channels[channel]){
+          globalChannels[channel][property] = channels[channel][property]
+        }
+      }
+    }
+    //Function to get permission level
+    const getPermissionLvl = (email,channelData) => {
+      if(channelData.roots.includes(email)){
+        return 3
+      }else if(channelData.admins.includes(email)){
+        return 2
+      }else if(channelData.members.includes(email)){
+        return 1
+      }else{
+        return 0
+      }
+    }
     //Function to validate payload and permissions
-    async function validatePayload(channelPermissions,msg,callback){
+    async function validatePayload(channelPermissions,msg,callback,minPermissionLevel=2){
       //type checking
       if(typeof callback!="function"){
         return -1
@@ -166,15 +301,13 @@ exports.createServer = function(server){
         throw "Channel is not a string" 
       }
       const channelName = msg.channel
-      //Check if permission level is 2 or higher
-      const channel = channelPermissions.find(channel=>{
-        return channel.name==channelName
-      })
+      //Check if user is authorised
+      const channel = channelPermissions[channelName]
       if(!channel){
         callback("Channel does not exist")
         throw "Channel does not exist"
       }
-      if(channel.permissions<2){
+      if(channel.permissions < minPermissionLevel){
         callback("403: Forbidden")
         throw "403: Forbidden"
       }

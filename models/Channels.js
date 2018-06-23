@@ -12,6 +12,9 @@ module.exports = (sequelize, Sequelize) => {
     subjects: {
       type: Sequelize.ARRAY(Sequelize.STRING)
     },
+    timetable: {
+      type: Sequelize.JSON
+    },
     roots: {
       type: Sequelize.ARRAY(Sequelize.STRING)
     },

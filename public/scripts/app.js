@@ -14,4 +14,7 @@ const Framework7App = new Framework7({
   // App root element
   root: '#app',
   theme,
+  dialog:{
+    title: 'Hwboard',
+  }
 })
