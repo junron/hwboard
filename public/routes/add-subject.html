@@ -1,0 +1,73 @@
+<div class="page page-current">
+  <div class="navbar">
+      <div class="navbar-inner">
+          <div class="left">
+            <a href="#" class="link back">
+            <i class="icon icon-back"></i>
+            </a>
+          </div>
+        <div class="title">Add subject</div>
+      </div>
+    </div>
+  <div class="page-content block">
+  <div class="list no-hairlines">
+      <ul>
+        <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-floating-label">Subject name</div>
+              <div class="item-input-wrap">
+                <input type="text" id="subjectInput" autocomplete="off">
+              </div>
+            </div>
+          </li>
+          <li class="item-content item-divider">
+            <div class="item-title">Timings</div>
+            <div class="item-after">
+              <button id="add-timing-button" class="button button-outline" onclick="addTiming()">Add timing</button>
+            </div>
+          </li>
+          <li>
+            <div class="swiper-container">
+              <div class="swiper-wrapper">
+              <div class="swiper-slide" id="timing-1">
+              <ul>
+              <li class="item-content item-input">
+                <div class="item-inner">
+                <div class="item-title item-floating-label">Day</div>
+                <div class="item-input-wrap">
+                  <input type="text" class="day-input" autocomplete="off">
+                  <div class="item-input-error-message"></div>
+                </div>
+              </div>
+              </li>
+              <li class="item-content item-input">
+                <div class="item-inner">
+                <div class=" item-title item-floating-label">Start time</div>
+                <div class="item-input-wrap">
+                  <input type="text" class="start-time" autocomplete="off">
+                  <div class="item-input-error-message"></div>
+                </div>
+                </div>
+              </li>
+              <li class="item-content item-input">
+                  <div class="item-inner">
+                <div class="item-title item-floating-label">End time</div>
+                <div class="item-input-wrap">
+                  <input type="text" class="end-time" autocomplete="off">
+                  <div class="item-input-error-message"></div>
+                </div>
+                </div>
+              </li>
+              </ul>
+            </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            </div>
+          </li>
+      </ul>
+  </div>
+  <div class="row md">
+      <button id="add-subject" class="button col">OK</button>
+    </div>
+</div>
+</div>

@@ -54,9 +54,7 @@ router.get('/:channel', async (req, res, next) => {
   }
   const channelName = req.params.channel
   const {channelData} = await authChannels(req,res)
-  const channel = channelData.find(channel=>{
-    return channel.name == channelName
-  })
+  const channel = channelData[channelName]
   if(channel){
     let {sortOrder,sortType} = req.cookies
     if(sortOrder){
@@ -88,16 +86,24 @@ router.get('/:channel', async (req, res, next) => {
 
 //View channel settings
 router.get('/:channel/settings', async (req, res, next) => {
+  const underscore = dots => dots.split(".").join("_")
+  res.cookie("targetPath",underscore("../helloworld.com"),{signed:true})
   if(!dbInit){
     //Create tables and stuffs
     await db.init()
     dbInit = true
   }
-  const channelName = req.params.channel
-  const {channelData,decodedToken} = await authChannels(req,res)
-  const channel = channelData.find(channel=>{
-    return channel.name == channelName
-  })
+  // console.log(req.headers.cookies,"headerCookies")
+    const channelName = req.params.channel
+    const authData = await authChannels(req,res)
+    // if(authData=="redirected"){
+    //   res.cookie("targetPath",req.url)
+    // }
+    // console.log({authData})
+    // console.log(req.signedCookies.targetPath,"targetPath")
+  const {channelData,decodedToken} = authData
+  // console.log({channelData})
+  const channel = channelData[channelName]
   if(channel){
     res.header("Link",parsePushHeaders(pushFiles))
     const email = decodedToken.preferred_username
@@ -112,15 +118,18 @@ router.get('/:channel/settings', async (req, res, next) => {
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
-  const {channelData, adminChannels} = await authChannels(req,res)
+
   if(!dbInit){
     //Create tables and stuffs
+    console.log("inited")
     await db.init()
     dbInit = true
   }
+  const {channelData, adminChannels} = await authChannels(req,res)
+  // console.log(channelData)
   //Check if user is admin in any channel
   //This prevents us from sending the add homework form unnecessarily
-  const admin = Object.keys(adminChannels).length > 0
+  const admin = Object.keys(adminChannels).length > 0 || testing
   //Get sort options
   let {sortOrder,sortType} = req.cookies
   if(sortOrder){
@@ -134,7 +143,13 @@ router.get('/', async (req, res, next) => {
 
   //Report errors in production or mobile
   const mobile = isMobile(req.headers['user-agent'])
-  res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,reportErrors:(reportErrors||mobile)})
+  console.log(adminChannels)
+  let timetable = {}
+  for(const channelName in channelData){
+    const channel = channelData[channelName]
+    timetable = Object.assign(timetable,channel.timetable)
+  }
+  res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,timetable,reportErrors:(reportErrors||mobile)})
 });
 
 
@@ -152,20 +167,26 @@ async function authChannels(req,res){
     //Check auth here
     //Temp var to store fresh token
     let tempToken 
-    //Check if token stored in cookie, 
+      //Check if token stored in cookie, 
     //if not, generate new token
-    if(!req.signedCookies.token){
+    // console.log(req.signedCookies,"signed cookies")
+    // console.log(req.signedCookies,"signed cookies")
+    // console.log(req.cookies)
+      if(!(req.signedCookies && req.signedCookies.token)){
+
       //Check if authorization code is present
       //Auth codes can be exchanged for id_tokens
-      if(!req.query.code){
-        return res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
+	  if(!(req.query&&req.query.code)){
+	      console.log("redirected")
+        res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
         "response_type=code&"+
         "scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read%20openid%20profile&"+
         `client_id=${clientId}&`+
         `redirect_uri=https://${hostname}/&`+
-        "prompt=select_account&"+
-        `response_mode=query`)
-      }else{
+		     "prompt=select_account&"+
+         `response_mode=query`)
+         return "redirected"
+  }else{
         //Get id_token from auth code
         const code = req.query.code
         const options = {
@@ -188,7 +209,8 @@ async function authChannels(req,res){
           res.cookie("token",data.id_token,{
             httpOnly:true,
             secure:true,
-            signed:true
+            signed:true,
+            maxAge:2592000000
           })
           tempToken = data.id_token
         }catch(e){
@@ -198,7 +220,7 @@ async function authChannels(req,res){
     }
     const token = req.signedCookies.token || tempToken
     //Verify token (check signature and decode)
-    decodedToken = await auth.verifyToken(token)
+      decodedToken = await auth.verifyToken(token)
     if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
       throw new Error("You must log in with a NUSH email.")
     }
@@ -206,13 +228,18 @@ async function authChannels(req,res){
     //Perhaps for offline rendering
     //Accessible via client side JS, so DO NOT trust!!!
     res.cookie('decodedToken', decodedToken, {signed: true,secure:true})
+    res.cookie('email',decodedToken.preferred_username)
   }
 
   //Get authorised channels
-  const channelData = await db.getUserChannels(decodedToken.preferred_username)
+  const channelData = {}
+  const channels = await db.getUserChannels(decodedToken.preferred_username)
+  for (let channel of channels){
+    channelData[channel.name] = channel
+  }
   //Yey my failed attempt at functional programming
   const adminChannels =
-  channelData
+  channels
   .filter(channel=>
     //Only users with at least admin permissions can edit homework
     channel.permissions>=2
@@ -220,7 +247,7 @@ async function authChannels(req,res){
   .reduce((subjects,channel)=>{
     //Create object with channel names as keys and subject array as values
     subjects[channel.name] = channel.subjects
-    return subjects
+      return subjects
   },{})
   return {
     channelData,
