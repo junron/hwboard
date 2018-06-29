@@ -39,20 +39,22 @@ exports.createServer = async function(server){
   //For cookies
   io.use(cookieParser(cookieSecret))
   io.on('connection', async function(socket){
+    try{
     //Start socket.io code here
     //Authenticate user on connection
     //You can access cookies in websockets too!
     const token = socket.request.signedCookies.token
+    const email = socket.request.signedCookies.username || "tester@nushigh.edu.sg"
     if(testing){
       socket.userData = {
         name:"tester",
-        preferred_username:"tester@nushigh.edu.sg"
+        preferred_username:email
       }
-      const {testing} = globalChannels
-      socket.channels = {testing}
+      socket.channels = {}
       const channels = await db.getUserChannels(socket.userData.preferred_username)
       for (const channel of channels){
         socket.join(channel.name)
+        socket.channels[channel.name] = globalChannels[channel.name]
       }
     }else{
       try{
@@ -257,6 +259,9 @@ exports.createServer = async function(server){
     })
 
     //For tests
+    socket.on("whoami",function(msg,callback){
+      return callback(null,socket.userData.preferred_username)
+    })
     socket.on("textMessage",function(msg,callback){
       return callback(null,msg+"received")
     })
@@ -305,7 +310,8 @@ exports.createServer = async function(server){
         callback("Channel does not exist")
         throw "Channel does not exist"
       }
-      if(channel.permissions < minPermissionLevel){
+      const permission = getPermissionLvl(socket.userData.preferred_username,channel)
+      if(permission < minPermissionLevel){
         callback("403: Forbidden")
         throw "403: Forbidden"
       }
@@ -320,6 +326,9 @@ exports.createServer = async function(server){
       return msg
     }
       //All socket.io code should end here
+  }catch(e){
+    console.log(e)
+  }
     })
   return io
 }

@@ -1,6 +1,9 @@
-let swiper = Framework7App.swiper.create(".swiper-container",{
-  speed:400,
-  spaceBetween:0
+swiper = Framework7App.swiper.create(".swiper-container",{
+  speed:100,
+  spaceBetween:0,
+  pagination: {
+    el: '.swiper-pagination',
+  }
 })
 const canAddTiming = id =>{
   let can = true
@@ -89,10 +92,7 @@ function addTiming(){
     input.parentElement.parentElement.parentElement.classList.remove("item-input-with-value")
     input.value = ""
   }
-  swiper = Framework7App.swiper.create(".swiper-container",{
-    speed:400,
-    spaceBetween:0
-  })
+  swiper.appendSlide(clone)
   swiper.slideNext()
   changeStatus()
 }

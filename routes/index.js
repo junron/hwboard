@@ -53,7 +53,11 @@ router.get('/:channel', async (req, res, next) => {
     dbInit = true
   }
   const channelName = req.params.channel
-  const {channelData} = await authChannels(req,res)
+  const authData = await authChannels(req,res)
+  if(authData=="redirected"){
+    return
+  }
+  const {channelData} = authData
   const channel = channelData[channelName]
   if(channel){
     let {sortOrder,sortType} = req.cookies
@@ -75,9 +79,15 @@ router.get('/:channel', async (req, res, next) => {
     },{})
     const admin = Object.keys(adminChannels).length > 0
 
+    let timetable = {}
+    for(const channelName in channelData){
+      const channel = channelData[channelName]
+      timetable = Object.assign(timetable,channel.timetable)
+    }
+
     //Report errors in production or mobile
     const mobile = isMobile(req.headers['user-agent'])
-    res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,reportErrors:(reportErrors||mobile)})
+    res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,timetable,reportErrors:(reportErrors||mobile)})
   }else{
     res.status(404).end("Channel not found")
   }
@@ -86,21 +96,23 @@ router.get('/:channel', async (req, res, next) => {
 
 //View channel settings
 router.get('/:channel/settings', async (req, res, next) => {
-  const underscore = dots => dots.split(".").join("_")
-  res.cookie("targetPath",underscore("../helloworld.com"),{signed:true})
+  if(testing && req.cookies.username){
+    const email = req.cookies.username
+    res.cookie("username",email,{
+      signed:true,
+      httpOnly:true
+    })
+  }
   if(!dbInit){
     //Create tables and stuffs
     await db.init()
     dbInit = true
   }
-  // console.log(req.headers.cookies,"headerCookies")
-    const channelName = req.params.channel
-    const authData = await authChannels(req,res)
-    // if(authData=="redirected"){
-    //   res.cookie("targetPath",req.url)
-    // }
-    // console.log({authData})
-    // console.log(req.signedCookies.targetPath,"targetPath")
+  const channelName = req.params.channel
+  const authData = await authChannels(req,res)
+  if(authData=="redirected"){
+    return
+  }
   const {channelData,decodedToken} = authData
   // console.log({channelData})
   const channel = channelData[channelName]
@@ -109,7 +121,8 @@ router.get('/:channel/settings', async (req, res, next) => {
     const email = decodedToken.preferred_username
     //Report errors in production or mobile
     const mobile = isMobile(req.headers['user-agent'])
-    res.render('channelSettings', {channel,email,reportErrors:(reportErrors||mobile)})
+    const root = channel.roots.includes(email)
+    res.render('channelSettings', {root,reportErrors:(reportErrors||mobile)})
   }else{
     res.status(404).end("Channel not found")
   }
@@ -125,7 +138,14 @@ router.get('/', async (req, res, next) => {
     await db.init()
     dbInit = true
   }
-  const {channelData, adminChannels} = await authChannels(req,res)
+  const authData = await authChannels(req,res)
+  if(authData=="redirected"){
+    return
+  }
+  if(req.query.code && req.signedCookies.redirPath){
+    return res.redirect(req.signedCookies.redirPath)
+  }
+  const {channelData, adminChannels} = authData
   // console.log(channelData)
   //Check if user is admin in any channel
   //This prevents us from sending the add homework form unnecessarily
@@ -143,7 +163,6 @@ router.get('/', async (req, res, next) => {
 
   //Report errors in production or mobile
   const mobile = isMobile(req.headers['user-agent'])
-  console.log(adminChannels)
   let timetable = {}
   for(const channelName in channelData){
     const channel = channelData[channelName]
@@ -159,9 +178,11 @@ async function authChannels(req,res){
   //If in testing mode, bypass authentication
   //See testing.md
   if(testing){
+    console.log(req.signedCookies)
+    const email = req.signedCookies.username || "tester@nushigh.edu.sg"
     decodedToken = {
       name:"tester",
-      preferred_username:"tester@nushigh.edu.sg"
+      preferred_username:email
     }
   }else{
     //Check auth here
@@ -172,21 +193,26 @@ async function authChannels(req,res){
     // console.log(req.signedCookies,"signed cookies")
     // console.log(req.signedCookies,"signed cookies")
     // console.log(req.cookies)
-      if(!(req.signedCookies && req.signedCookies.token)){
+    if(!(req.signedCookies && req.signedCookies.token)){
 
       //Check if authorization code is present
       //Auth codes can be exchanged for id_tokens
-	  if(!(req.query&&req.query.code)){
-	      console.log("redirected")
-        res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
-        "response_type=code&"+
-        "scope=https%3A%2F%2Fgraph.microsoft.com%2Fuser.read%20openid%20profile&"+
-        `client_id=${clientId}&`+
-        `redirect_uri=https://${hostname}/&`+
-		     "prompt=select_account&"+
-         `response_mode=query`)
-         return "redirected"
-  }else{
+      const scopes = ["user.read","openid","profile"]
+      res.cookie("redirPath",req.url,{
+        maxAge:10*60*60*1000,
+        signed:true,
+      })
+      if(!(req.query&&req.query.code)){
+          console.log("redirected")
+          res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
+          "response_type=code&"+
+          `scope=https%3A%2F%2Fgraph.microsoft.com%2F${scopes.join("%20")}&`+
+          `client_id=${clientId}&`+
+          `redirect_uri=https://${hostname}/&`+
+          "prompt=select_account&"+
+          `response_mode=query`)
+          return "redirected"
+      }else{
         //Get id_token from auth code
         const code = req.query.code
         const options = {
@@ -195,7 +221,7 @@ async function authChannels(req,res){
           formData:{
             //grant_type:"id_token",
             grant_type:"authorization_code",
-            scope:"https://graph.microsoft.com/user.read openid profile",
+            scope:`https://graph.microsoft.com/${scopes.join(" ")}`,
             client_id:clientId,
             redirect_uri:"https://"+hostname+"/",
             code,

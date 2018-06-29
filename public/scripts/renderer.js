@@ -234,10 +234,13 @@ parser.parseHomeworkMetaData =  function(homework){
   }
 }
 const renderer = function(data,sortType="Due date",sortOrder=0,adminChannels){
-  console.log(adminChannels)
-  for (const channel in adminChannels){
-    for (const subject of adminChannels[channel]){
-      subjectChannelMap[subject]=channel
+  if(typeof adminChannels =="undefined"){
+    subjectChannelMap = subjectChannelMapping
+  }else{
+    for (const channel in adminChannels){
+      for (const subject of adminChannels[channel]){
+        subjectChannelMap[subject]=channel
+      }
     }
   }
   if(sortType=="Due date"){

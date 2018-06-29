@@ -2,7 +2,6 @@
 <html lang="en">
 <%- include("partials/head") %>
 <link href="/styles/roboto.css" rel="stylesheet"> 
-<link rel="stylesheet" href="/framework7/css/framework7.css"> 
 <meta name="viewport" content="width=device-width, initial-scale=1"> 
 <body style="margin-left:0px;margin-right:0px"> 
 
@@ -17,6 +16,9 @@
     </script>
 
   <style>
+    .md #app .list .item-content {
+      width: 100%;
+    }
     #app .md li li:last-child .item-inner:after, .md li:last-child li .item-inner:after {
       width: 100vw;
     }
@@ -77,12 +79,14 @@
                       <div class="accordion-item-content">
                         <div class="list no-hairlines">
                         <ul id="subject-list">
-
+                          <li>Loading...</li>
                         </ul>
                       </div>
+                      <% if (root){ %>
                       <div class="row md">
                           <a href="/popups/add-subject/" class="button col">Add subject</a>
-                        </div>
+                      </div>
+                      <% } %>
                     </div>
                   </li>
                   <li class="accordion-item">
@@ -94,12 +98,14 @@
                       <div class="accordion-item-content">
                       <div class="list no-hairlines">
                           <ul id="member-list">
-
+                            <li>Loading...</li>
                           </ul>
                         </div>
+                        <% if (root){ %>
                         <div class="row md">
                           <a href="/popups/add-member/" class="button col">Add member</a>
                         </div>
+                        <% } %>
                     </div>
                   </li>
               </ul>
@@ -108,10 +114,11 @@
         </div>
     </div>
   </div>
-  <script src="/fuse.js/dist/fuse.js"></script>
+  <link rel="stylesheet" href="/styles/channelSettings.css"> 
+  <script defer src="/fuse.js/dist/fuse.js"></script>
   <script src="/framework7/js/framework7.js"></script>
   <script src="/scripts/app.js"></script>
-  <script src="/scripts/sugar-date.min.js"></script>
+  <script defer src="/scripts/sugar-date.min.js"></script>
   <script src="/scripts/socket.io.js"></script>
 <script>
   const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
@@ -144,16 +151,20 @@
 <script type="module">
   import {render} from "/routes/scripts/render-admins.js"
   import {renderSubjects} from "/routes/scripts/render-subjects.js"
-  conn.emit("channelDataReq",{channel},async function(err,data){
-      if(err){
-       Framework7App.dialog.alert(err.toString())
-       throw new Error(err)
-      }
-      console.log(data)
-      document.getElementById("member-list").innerHTML = await render(data)
-      document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
+  function getChannelData(){
+    conn.emit("channelDataReq",{channel},async function(err,data){
+        if(err){
+        Framework7App.dialog.alert(err.toString())
+        throw new Error(err)
+        }
+        console.log(data)
+        document.getElementById("member-list").innerHTML = await render(data)
+        document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
     })
-  
+  }
+  getChannelData()
+  setTimeout(getChannelData,500)
+  setTimeout(getChannelData,600)
   conn.on("channelData",async function(data){
     const thisChannelData = data[channel]
     console.log(thisChannelData)
@@ -235,5 +246,6 @@
     ]
     })
 </script>
+<link rel="stylesheet" href="/framework7/css/framework7.css"> 
 </body>
 </html>

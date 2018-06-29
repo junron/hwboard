@@ -11,7 +11,12 @@
       <div class="page page-current">
       <div class="navbar">
         <div class="navbar-inner">
-          <div class="title">Homework Board</div>
+        <div class="item-content title">
+          <div class="item-inner item-title">
+            <div>Homework Board</div>
+            <div class="item-footer" id="connection-status" style="font-size:16px">Not connected</div>
+          </div>
+        </div>
           <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
         </div>
       </div>
@@ -61,7 +66,6 @@
     //Handle websocket connection errors
     //Standard code for all my websocket apps
     conn.on("connect_error",function(e){
-      console.log(Object.entries(e))
       if(navigator.onLine==undefined){
         //Some browsers may not support navigator.onLine
         //EDIT: appears that most browsers support but meh
@@ -69,25 +73,25 @@
         <% if(reportErrors){ %>
           Raven.captureException(new Error("error checking connection status"))
         <% } %>
-        console.log(`Error checking connection state`)
+        $("#connection-status").text(`Error checking connection state`)
         return
       }
       if(navigator.onLine){
         //Its a server problem, perhaps websocket server not started
-        console.log(`Error connecting to server`)
+        $("#connection-status").text(`Error connecting to server`)
         <% if(reportErrors){ %>
           Raven.captureException(e)
         <% } %>
       }else{
-        console.log(`Offline`)
+        $("#connection-status").text(`Offline`)
         //Load data from cache since user is offline
       }
     })
     conn.on("disconnect",function(){
-      console.log("DIsconnected")
+      $("#connection-status").text("Disconnected")
     })
     conn.on("connect",function(){
-      console.log("Connected to server!")
+      $("#connection-status").text("Connected")
     })
     //request homework data from server
     //syntax conn.emit(<eventName>,[<data>],[<callback>])
