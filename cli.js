@@ -48,11 +48,10 @@ if(gitlab||process.argv[4]=="default"){
     }
     config.name = answer
     r1.question("Subjects (seperate with comma): ()  ",(answer)=>{
-      console.log(typeof answer)
       config.subjects = answer.split(",").filter(notEmpty)
-      r1.question("Root users (seperate with comma): (tester@nushigh.edu.sg)  ",(answer="tester@nushigh.edu.sg")=>{
+      r1.question("Root users (seperate with comma): (h1710074@nushigh.edu.sg)  ",(answer="h1710074@nushigh.edu.sg")=>{
         if(answer==""){
-          answer ="tester@nushigh.edu.sg"
+          answer ="h1710074@nushigh.edu.sg"
         }
         config.roots = answer.split(",")
         r1.question("Admin users (seperate with comma): ()  ",(answer)=>{
@@ -66,6 +65,7 @@ if(gitlab||process.argv[4]=="default"){
             console.log(config)
             r1.question("Is this okay? (Yes/no)  ",async answer=>{
               if(answer.toLowerCase()=="yes"){
+                const {init} = require("./database")
                 const {sequelize,Channels} = require("./models")
                 await sequelize.sync()
                 const data = await Channels.findAll({
@@ -80,6 +80,7 @@ if(gitlab||process.argv[4]=="default"){
                   return
                 }
                 await Channels.create(config)
+                await init()
                 console.log("channel created")
                 sequelize.close()
                 r1.close()

@@ -6,6 +6,7 @@ const studentsByMG = {}
 const studentsById = {}
 let students
 async function getData(dataPath,cache=false){
+  console.log(students,studentsByMG)
   if(students){
     //Already fetched data
     return students
@@ -20,6 +21,10 @@ async function getData(dataPath,cache=false){
     })
   }
   students = data
+  if(Object.keys(studentsByMG).length){
+    console.log(studentsByMG)
+    return
+  }
   for (const student of data){
     if(typeof studentsByMG[student.mentorGrp]=="undefined"){
       studentsByMG[student.mentorGrp] = [student.id]
