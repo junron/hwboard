@@ -5,7 +5,7 @@ swiper = Framework7App.swiper.create(".swiper-container",{
     el: '.swiper-pagination',
   }
 })
-const canAddTiming = id =>{
+function canAddTiming(id){
   let can = true
   const currentId = id || document.querySelector(".swiper-slide.swiper-slide-active").id
   const inputs = Array.from(document.querySelectorAll(`#${currentId} input`))
@@ -35,11 +35,6 @@ function changeStatus(){
     button.classList.remove("color-gray","disabled")
   }
 }
-const inputs = Array.from(document.querySelectorAll(`#timing-1 input`))
-for(const input of inputs){
-  input.addEventListener("input",changeStatus)
-}
-changeStatus()
 function getTimingData(timingId){
   const data = {}
   let day
@@ -71,15 +66,6 @@ function getData(){
   return data
 }
 
-document.getElementById("add-subject").addEventListener("click",()=>{
-  const data = getData()
-  data.channel = channel
-  console.log(data)
-  conn.emit("addSubject",data,(err)=>{
-    if(err) throw new Error(err)
-    mainView.router.back()
-  })
-})
 function addTiming(){
   const newId = "timing-" + (swiper.slides.length + 1)
   const clone = document.getElementById("timing-1").cloneNode(true)
@@ -96,3 +82,20 @@ function addTiming(){
   swiper.slideNext()
   changeStatus()
 }
+function init(){
+  const inputs = Array.from(document.querySelectorAll(`#timing-1 input`))
+  for(const input of inputs){
+    input.addEventListener("input",changeStatus)
+  }
+  document.getElementById("add-subject").addEventListener("click",()=>{
+    const data = getData()
+    data.channel = channel
+    console.log(data)
+    conn.emit("addSubject",data,(err)=>{
+      if(err) throw new Error(err)
+      mainView.router.back()
+    })
+  })
+  changeStatus()
+}
+init()

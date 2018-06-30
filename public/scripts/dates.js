@@ -12,16 +12,21 @@ async function parseDate(dateString){
   const validatedDate = await validate(dateString)
   if(validatedDate.getHours()==0){
     //Date was specified with "tomorrow" or "next wednesday"
-    //If is a school day, use release time
+    //If is a school day 
+    //and there is lesson for a subject on that day, use lesson time
     const dueDateDay = Sugar.Date.format(validatedDate,"{dow}")
-    const releaseTime = await endSchoolTime(dueDateDay)
-    if(releaseTime===-Infinity){
+    const subject = $("#subject-name").val()
+    let lessonTime = await lessonOnDay(subject,dueDateDay)
+    if(!lessonTime){
+      lessonTime = await endSchoolTime(dueDateDay)
+    }
+    if(lessonTime===-Infinity){
       //Due date is on a weekend, use 23:59
       validatedDate.setHours(23)
       validatedDate.setMinutes(59)
     }else{
-      validatedDate.setHours(Math.floor(releaseTime/100))
-      validatedDate.setMinutes(releaseTime%100)
+      validatedDate.setHours(Math.floor(lessonTime/100))
+      validatedDate.setMinutes(lessonTime%100)
     }
   }
   return validatedDate
@@ -101,4 +106,10 @@ const getTimingsForDay = async targetDay=>{
 async function endSchoolTime(day){
   const timings = await getTimingsForDay(day)
   return Math.max(...timings)
+}
+
+async function lessonOnDay(lesson,day){
+  if(timetable[lesson] && timetable[lesson][day]){
+    return Math.max(...([].concat(...timetable[lesson][day])))
+  }
 }

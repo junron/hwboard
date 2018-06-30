@@ -1,4 +1,4 @@
-export function renderSubjects(subjects){
+function renderSubjects(subjects){
   let html = ""
   for(const subject of subjects){
     html+=`<li class="item-content">

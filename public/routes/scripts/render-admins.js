@@ -1,11 +1,5 @@
-import 
-{
-  getData,
-  getStudentByIdSync
-
-} from "/scripts/students.js"
-
-const newRole = role => `<li class="item-content item-divider">
+const renderAdmins = (()=>{
+  const newRole = role => `<li class="item-content item-divider">
   <div class="item-inner">
     <div class="item-title">
       ${role}
@@ -41,7 +35,7 @@ const newPerson = (name,email,permission,isRoot)=>{
   return person
 }
 
-export async function render(channelData){
+async function render(channelData){
   console.log(channelData)
   const currentPerson = getCookie("email")
   const isRoot = channelData.roots.includes(currentPerson)
@@ -66,3 +60,7 @@ export async function render(channelData){
   }
   return html
 }
+  return Object.freeze({
+    render
+  })
+})()

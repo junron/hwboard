@@ -115,6 +115,9 @@
     </div>
   </div>
   <link rel="stylesheet" href="/styles/channelSettings.css"> 
+  <script src="/scripts/students.js"></script>
+  <script src="/routes/scripts/render-admins.js"></script>
+  <script src="/routes/scripts/render-subjects.js"></script>
   <script defer src="/fuse.js/dist/fuse.js"></script>
   <script src="/framework7/js/framework7.js"></script>
   <script src="/scripts/app.js"></script>
@@ -148,9 +151,8 @@
     console.log("Conne")
   })
 </script>
-<script type="module">
-  import {render} from "/routes/scripts/render-admins.js"
-  import {renderSubjects} from "/routes/scripts/render-subjects.js"
+<script>
+  const {render} = renderAdmins
   function getChannelData(){
     conn.emit("channelDataReq",{channel},async function(err,data){
         if(err){
@@ -223,7 +225,6 @@
             console.log(e)
             const scriptTag = document.createElement("script")
             scriptTag.src = "/routes/scripts/add-member.js"
-            scriptTag.type = "module"
             const target = e.currentTarget
             target.appendChild(scriptTag)
           }

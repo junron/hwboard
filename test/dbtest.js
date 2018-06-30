@@ -40,7 +40,7 @@ describe("database.js",function(){
       lastEditPerson:"tester@nushigh.edu.sg",
       token:"bleh"
     }
-    const output = await addHomework(channels[0].name,payload)
+    const output = await addHomework("testing",payload)
     const homeworks = await getHomeworkAll(channels)
     expect(homeworks).to.be.an("array")
     for (let homework of homeworks){
@@ -61,7 +61,7 @@ describe("database.js",function(){
       lastEditPerson:"tester@nushigh.edu.sg",
       token:"bleh"
     }
-    const output = await addHomework(channels[0].name,payload)
+    const output = await addHomework("testing",payload)
     const homeworks = await getHomeworkAll(channels)
     expect(homeworks).to.be.an("array")
     for (let homework of homeworks){

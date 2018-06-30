@@ -64,8 +64,8 @@ async function getStudentByName2(studentName){
   return students.find(student => student.name == studentName)
 }
 
-//Yuck
-export {
+
+const studentsExport = Object.freeze({
   getData,
   getStudentById,
   getStudentByName,
@@ -74,7 +74,7 @@ export {
   getStudentByName2,
   getStudentByIdSync,
   getClassesSync
-}
+})
 //commonJS pro
 if(commonJS){
   module.exports = Object.freeze({

@@ -1,31 +1,28 @@
-const options = {
-  shouldSort: true,
-  threshold: 0.4,
-  includeScore: true,
-  location: 0,
-  distance: 100,
-  maxPatternLength: 32,
-  minMatchCharLength: 3,
-  keys: [
-    "id",
-    "name"
-  ]
-}
-const permissionOptions = {
-  shouldSort: true,
-  threshold: 0.4,
-  location: 0,
-  distance: 100,
-  maxPatternLength: 32,
-  minMatchCharLength: 3
-}
-const permissionLvls = ["Root","Admin","Member"]
-
-
-import * as students from '/scripts/students.js'
 ;(async ()=>{
-  const studentData = await students.getData("/scripts/data.json")
-  const mentorGrps = students.getClassesSync()
+  const options = {
+    shouldSort: true,
+    threshold: 0.4,
+    includeScore: true,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 3,
+    keys: [
+      "id",
+      "name"
+    ]
+  }
+  const permissionOptions = {
+    shouldSort: true,
+    threshold: 0.4,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 3
+  }
+  const permissionLvls = ["Root","Admin","Member"]
+  const studentData = await studentsExport.getData("/scripts/data.json")
+  const mentorGrps = studentsExport.getClassesSync()
   let studentIds
   const getName = object => object.item.name
   const getId = object => object.item.id
@@ -43,13 +40,13 @@ import * as students from '/scripts/students.js'
     limit: 3,
     renderItem:(item,index)=>{
       if(item.value.toUpperCase().substring(0,3)==mgPrefix){
-        const numStudents = students.getStudentsByClassNameSync(item.value).length
+        const numStudents = studentsExport.getStudentsByClassNameSync(item.value).length
         return "\n        <li>\n          <label class=\"item-radio item-content\" data-value=\"" + item.value + "\">\n            <div class=\"item-inner\">\n              <div class=\"item-title\">" + (item.text) +"<div class=\"item-footer\">" + numStudents +" students</div>\n </div>\n            </div>\n          </label>\n        </li>\n      ";
       }
       //Must not return a promise
       const studentId = studentIds[index]
       //Had to specially make a synchronous version
-      const {mentorGrp} = students.getStudentByIdSync(studentId)
+      const {mentorGrp} = studentsExport.getStudentByIdSync(studentId)
       //Very long rendering string, dun care
       return "\n        <li>\n          <label class=\"item-radio item-content\" data-value=\"" + item.value + "\">\n            <div class=\"item-inner\">\n              <div class=\"item-title\">" + (item.text) +"<div class=\"item-footer\"><span class=\"studentId\">" + studentId +"</span>, " + mentorGrp+ "</div>\n </div>\n            </div>\n          </label>\n        </li>\n      ";
     },
@@ -82,18 +79,18 @@ import * as students from '/scripts/students.js'
 })()
 
 
-export async function getResult(){
+async function getResult(){
   const idOnly = student => student.id
   let studentsArray
   let permissionLevel
-  const mentorGrps = students.getClassesSync()
+  const mentorGrps = studentsExport.getClassesSync()
   const mgPrefix = mentorGrps[0].substring(0,3)
   const input = document.getElementById("searchInput").value
   const permissionLvl = document.getElementById("permissionLvlInput").value
   if(input.toUpperCase().substring(0,3)==mgPrefix){
-    studentsArray = await students.getStudentsByClassName(input.toUpperCase())
+    studentsArray = await studentsExport.getStudentsByClassName(input.toUpperCase())
   }else{
-    studentsArray = [await students.getStudentByName(input)].map(idOnly)
+    studentsArray = [await studentsExport.getStudentByName(input)].map(idOnly)
   }
   if(!permissionLvls.includes(permissionLvl)){
     throw new Error("Permission level invalid")
