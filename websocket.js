@@ -39,6 +39,7 @@ exports.createServer = async function(server){
   //For cookies
   io.use(cookieParser(cookieSecret))
   io.on('connection', async function(socket){
+    console.log("User connected")
     try{
     //Start socket.io code here
     //Authenticate user on connection
@@ -56,6 +57,7 @@ exports.createServer = async function(server){
         socket.join(channel.name)
         socket.channels[channel.name] = globalChannels[channel.name]
       }
+      console.log(socket.userData)
     }else{
       try{
         const tokenClaims = await auth.verifyToken(token)
@@ -263,6 +265,7 @@ exports.createServer = async function(server){
       return callback(null,socket.userData.preferred_username)
     })
     socket.on("textMessage",function(msg,callback){
+      console.log(msg)
       return callback(null,msg+"received")
     })
     socket.on("binaryMessage",function(msg,callback){
