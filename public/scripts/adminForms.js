@@ -1,3 +1,4 @@
+let previousAddedHomework
 function reset(){
   //Reset all edit dialog options to default
   //$("#edit-dialog-label").text("Add homework")
@@ -95,18 +96,31 @@ function startEdit(){
 async function addHomework(){
   $("#update-hwboard-button").removeClass("editing-homework")
   const homework = await getHomeworkData()
-  conn.emit('addReq',homework,function(err){
-    if(err) throw err
-    //TODO: tell user that operation succeeded
+  if(JSON.stringify(previousAddedHomework)==JSON.stringify(homework)){
+    console.log("Repeated request rejected")
+    return
+  }
+  previousAddedHomework = homework
+  const promise = new Promise(function(resolve,reject){
+    conn.emit('addReq',homework,function(err){
+      if(err) return reject(err)
+      //TODO: tell user that operation succeeded
+      return resolve()
+    })
   })
+  return promise
 }
 async function editHomework(){
   $("#update-hwboard-button").removeClass("editing-homework")
   const homework = await getHomeworkData(true)
-  conn.emit('editReq',homework,function(err){
-    if(err) throw err
-    //TODO: tell user that operation succeeded
+  const promise = new Promise(function(resolve,reject){
+    conn.emit('editReq',homework,function(err){
+      if(err) return reject(err)
+      //TODO: tell user that operation succeeded
+      return resolve()
+    })
   })
+  return promise
 }
 function startDelete(){
   Framework7App.dialog.confirm("Are you sure you want to delete this homework?","Deletion confirmation",()=>{
@@ -116,12 +130,15 @@ function startDelete(){
 function deleteHomework(){
   getExistingInfo().then(homeworkData=>{
     const {id,channel} = homeworkData
-    conn.emit('deleteReq',{
-      id,
-      channel
-    },(err)=>{
-      if (err) throw err;
-      //TODO: tell user that operation succeeded
+    const promise = new Promise(function(resolve,reject){
+      conn.emit('deleteReq',{
+        id,
+        channel
+      },(err)=>{
+        if(err) return reject(err)
+        //TODO: tell user that operation succeeded
+        return resolve()
+      })
     })
   })
 }

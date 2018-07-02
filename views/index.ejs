@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include("./partials/head") %>
-<link rel="stylesheet" href="/framework7/css/framework7.css">
 <body style="margin-left:0px;margin-right:0px">
   <div id="app">
     <div class="view view-main">
@@ -11,13 +10,18 @@
       <div class="page page-current">
       <div class="navbar">
         <div class="navbar-inner">
-          <div class="title">Homework Board</div>
+        <div class="item-content title">
+          <div class="item-inner item-title">
+            <div>Homework Board</div>
+            <div class="item-footer" id="connection-status" style="font-size:16px">Not connected</div>
+          </div>
+        </div>
           <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
         </div>
       </div>
         <div class="page-content" style="padding-top:0px">
           <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
-            <%- renderer(data,sortType,sortOrder) -%>
+            <%- renderer(data,sortType,sortOrder,adminChannels) -%>
           </div>
         </div>
         <!-- Floating App button
@@ -30,20 +34,21 @@
         <i class="f7-icons icon material-icons">&#xe145;</i>
         </a>
       </div>
-      <script src="/scripts/turndown.js"></script>
+      <!-- No markdown yet
+      <script src="/scripts/turndown.js"></script>-->
       <% } %>
       </div>
       </div>
     </div>
-     <script src="/scripts/jquery.min.js"></script>
-     <script src="/scripts/renderer.js"></script>
-     <script src="/scripts/promise-worker.js"></script>
-     <script src="/scripts/sugar-date.min.js"></script>
-     <script>
+    <link rel="stylesheet" href="/framework7/css/framework7.css">
+    <script src="/scripts/jquery.min.js"></script>
+    <script src="/scripts/renderer.js"></script>
+    <script src="/scripts/promise-worker.js"></script>
+    <script src="/scripts/sugar-date.min.js"></script>
+    <script>
      //Web worker for indexedDB
-     const oldWorker = new Worker("/scripts/worker.js")
      //Use promise based messaging
-     const worker = new PromiseWorker(oldWorker)
+     const worker = new PromiseWorker(new Worker("/scripts/worker.js"))
      </script>
 
      <script src="/scripts/socket.io.js"></script>
@@ -56,11 +61,11 @@
       </script>
     <% } %>
     <script>
+    const timetable = <%-JSON.stringify(timetable) -%>;
     const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
     //Handle websocket connection errors
     //Standard code for all my websocket apps
     conn.on("connect_error",function(e){
-      console.log(Object.entries(e))
       if(navigator.onLine==undefined){
         //Some browsers may not support navigator.onLine
         //EDIT: appears that most browsers support but meh
@@ -68,23 +73,25 @@
         <% if(reportErrors){ %>
           Raven.captureException(new Error("error checking connection status"))
         <% } %>
-        console.log(`Error checking connection state`)
+        $("#connection-status").text(`Error checking connection state`)
         return
       }
       if(navigator.onLine){
         //Its a server problem, perhaps websocket server not started
-        console.log(`Error connecting to server`)
+        $("#connection-status").text(`Error connecting to server`)
         <% if(reportErrors){ %>
           Raven.captureException(e)
         <% } %>
       }else{
-        console.log(`Offline`)
+        $("#connection-status").text(`Offline`)
         //Load data from cache since user is offline
       }
     })
-
+    conn.on("disconnect",function(){
+      $("#connection-status").text("Disconnected")
+    })
     conn.on("connect",function(){
-      console.log("Connected to server!")
+      $("#connection-status").text("Connected")
     })
     //request homework data from server
     //syntax conn.emit(<eventName>,[<data>],[<callback>])
@@ -163,7 +170,7 @@ function getCookie(cname) {
 <% } %>
 <script defer src="/scripts/eventHandlers.js"></script>
 <!-- defer when dialog code is moved -->
-<script src="../../fuse.js/dist/fuse.js"></script>
+<script src="/fuse.js/dist/fuse.js"></script>
 <%- include("./partials/adminDialogs.ejs",{adminChannels}) %>
 <%- include("./partials/dialogs.ejs") %>
 <script>
