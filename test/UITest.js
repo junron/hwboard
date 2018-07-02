@@ -161,8 +161,8 @@ describe("Hwboard",async function(){
   //   }
   //   expect(JSON.stringify(results)).to.equal(JSON.stringify(expectedResults))
   // })
-  // after(async ()=>{
-  //   await browser.close()
-  //   return server.close()
-  // })
+  after(async ()=>{
+    await browser.close()
+    return server.close()
+  })
 })
