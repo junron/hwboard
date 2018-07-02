@@ -1,7 +1,7 @@
 # Hwboard v2 
 Master Branch (stable)  
-![pipeline status](https://git-badge.chatbox2.tk/hwboard2/master)
- 
+![pipeline status](https://git-badge.chatbox2.tk/hwboard2/master)  
+[![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/badge.svg?targetFile=package.json)](https://snyk.io/test/github/junron/hwboard?targetFile=package.json)  
  
 Dev Branch:  
 ![pipeline status](https://git-badge.chatbox2.tk/hwboard2/dev)
