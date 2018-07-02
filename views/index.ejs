@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include("./partials/head") %>
-<link rel="stylesheet" href="/framework7/css/framework7.css">
 <body style="margin-left:0px;margin-right:0px">
   <div id="app">
     <div class="view view-main">
@@ -35,20 +34,21 @@
         <i class="f7-icons icon material-icons">&#xe145;</i>
         </a>
       </div>
-      <script src="/scripts/turndown.js"></script>
+      <!-- No markdown yet
+      <script src="/scripts/turndown.js"></script>-->
       <% } %>
       </div>
       </div>
     </div>
-     <script src="/scripts/jquery.min.js"></script>
-     <script src="/scripts/renderer.js"></script>
-     <script src="/scripts/promise-worker.js"></script>
-     <script src="/scripts/sugar-date.min.js"></script>
-     <script>
+    <link rel="stylesheet" href="/framework7/css/framework7.css">
+    <script src="/scripts/jquery.min.js"></script>
+    <script src="/scripts/renderer.js"></script>
+    <script src="/scripts/promise-worker.js"></script>
+    <script src="/scripts/sugar-date.min.js"></script>
+    <script>
      //Web worker for indexedDB
-     const oldWorker = new Worker("/scripts/worker.js")
      //Use promise based messaging
-     const worker = new PromiseWorker(oldWorker)
+     const worker = new PromiseWorker(new Worker("/scripts/worker.js"))
      </script>
 
      <script src="/scripts/socket.io.js"></script>
