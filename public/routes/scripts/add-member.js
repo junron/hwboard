@@ -80,6 +80,7 @@
 
 
 async function getResult(){
+  const permissionLvls = ["Root","Admin","Member"]
   const idOnly = student => student.id
   let studentsArray
   let permissionLevel

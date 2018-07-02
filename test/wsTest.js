@@ -11,15 +11,18 @@ describe("websocket",function(){
     this.timeout(0000)
     before(function(done){
       websocket.listen(port)
-      console.log("http://localhost:" + port)
-      client = io("http://localhost:" + port)
-      client.on("disconnect",()=>{
-        console.log("Disconnect")
-      })
-      client.on("error",console.log)
-      client.on("connect",()=>{
-        console.log("connected")
-        done()
+      console.log(websocket)
+      setTimeout(()=>{
+        console.log("http://localhost:" + port)
+        client = io("http://localhost:" + port)
+        client.on("disconnect",()=>{
+          console.log("Disconnect")
+        })
+        client.on("error",console.log)
+        client.on("connect",()=>{
+          console.log("connected")
+          done()
+        },1000)
       })
     })
     after(function(done){
