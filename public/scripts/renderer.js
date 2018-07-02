@@ -1,4 +1,5 @@
 let parser ={}
+let subjectChannelMap ={}
 if(typeof Sugar =="undefined"){
   if(typeof navigator=="undefined"){
     Sugar = require("sugar-date")
@@ -51,9 +52,10 @@ parser.parseHomeworkSubject = function(homework) {
     text,
     displayDate,
     dueDate2,
-    extra
+    extra,
+    subject
   } = parser.parseHomeworkMetaData(homework)
-  return `
+  let rendered = `
   <li class="hwitem swipeout" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
   <div class="swipeout-content item-content">
     <div class="item-media">
@@ -70,13 +72,16 @@ parser.parseHomeworkSubject = function(homework) {
       </div>
       <div class="swipeout-actions-left">
         <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
-      </div>
-      <div class="swipeout-actions-right">
-        <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
-        <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
-      </div>
-    </li> 
-  `
+      </div>`
+      if(subjectChannelMap[subject]){
+        rendered += `<div class="swipeout-actions-right">
+          <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
+          <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
+        </div>
+      </li> 
+    `
+      }
+    return rendered
 }
 parser.parseByDate = function(data,order=0) {
   data = data.sort(function(a,b){
@@ -123,7 +128,7 @@ parser.parseHomeworkDate = function(homework) {
     text,
     extra
   } = parser.parseHomeworkMetaData(homework)
-  return `
+  let rendered = `
   <li class="hwitem swipeout" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
   <div class="swipeout-content item-content">
     <div class="item-media">
@@ -140,13 +145,16 @@ parser.parseHomeworkDate = function(homework) {
   </div>
   <div class="swipeout-actions-left">
     <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
-  </div>
-  <div class="swipeout-actions-right">
-    <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
-    <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
-  </div>
-</li>
-  `
+  </div>`
+  if(subjectChannelMap[subject]){
+  rendered += `<div class="swipeout-actions-right">
+      <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
+      <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
+    </div>
+  </li>
+    `
+  }
+  return rendered
 } 
 parser.toTitle = function(str)
 {
@@ -221,15 +229,25 @@ parser.parseHomeworkMetaData =  function(homework){
     text,
     displayDate,
     dueDate2,
-    extra
+    extra,
+    subject
   }
 }
-const renderer = function(data,sortType="Due date",sortOrder=0){
-if(sortType=="Due date"){
-  return parser.parseByDate(data,sortOrder)
-}else{
-  return parser.parseBySubject(data,sortOrder)
-}
+const renderer = function(data,sortType="Due date",sortOrder=0,adminChannels){
+  if(typeof adminChannels =="undefined"){
+    subjectChannelMap = subjectChannelMapping
+  }else{
+    for (const channel in adminChannels){
+      for (const subject of adminChannels[channel]){
+        subjectChannelMap[subject]=channel
+      }
+    }
+  }
+  if(sortType=="Due date"){
+    return parser.parseByDate(data,sortOrder)
+  }else{
+    return parser.parseBySubject(data,sortOrder)
+  }
 }
 if(typeof navigator=="undefined"){
   module.exports =  renderer

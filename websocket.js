@@ -2,6 +2,13 @@ const db = require("./database")
 const auth = require("./auth")
 const cookieParser = require('socket.io-cookie-parser')
 
+
+const globalChannels = {}
+db.getUserChannels("*").then(globalChannelData=>{
+  for(const channel of globalChannelData){
+    globalChannels[channel.name] = channel
+  }
+})
 //export so that accessible in app.js
 //server param is a http server
 exports.createServer = function(server){
@@ -9,7 +16,7 @@ exports.createServer = function(server){
   const io = require('socket.io')(server)
 
   //Load hwboard configuration
-  const {CI:testing,HOSTNAME,PORT:port} = require("./loadConfig")
+  const {CI:testing,HOSTNAME,PORT:port,COOKIE_SECRET:cookieSecret} = require("./loadConfig")
 
   //Prevent CSRF (sort of) by only allowing specific origins
   //Could origin spoofing be possible?
@@ -28,167 +35,95 @@ exports.createServer = function(server){
     callback(null,true)
   })
 
-  io.set('transports', ['websocket'])
+ // io.set('transports', ['websocket'])
   //For cookies
-  io.use(cookieParser())
-  io.on('connection', function(socket){
+  io.use(cookieParser(cookieSecret))
+  io.on('connection',function(socket){
+    console.log("User connected")
     //Start socket.io code here
-    //Authenticate user on connection
-    //You can access cookies in websockets too!
-    const token = socket.request.cookies.token
-    if(testing){
-      socket.userData = {
-        name:"tester",
-        preferred_username:"tester@nushigh.edu.sg"
-      }
-      socket.channels = [ {
-        name: 'testing',
-        permissions: 3 }]
-      db.getUserChannels(socket.userData.preferred_username).then(function(channels){
-        socket.channels = channels
-        for (let channel of channels){
-          socket.join(channel.name)
+    ;(async ()=>{
+      //Authenticate user on connection
+      //You can access cookies in websockets too!
+      const token = socket.request.signedCookies.token
+      const email = socket.request.signedCookies.username || "tester@nushigh.edu.sg"
+      if(Object.keys(globalChannels).length ==0){
+        const globalChannelData = await db.getUserChannels("*").then
+        for(const channel of globalChannelData){
+          globalChannels[channel.name] = channel
         }
-      })
-    }else{
-      auth.verifyToken(token).then(function(tokenClaims){
-        socket.userData = tokenClaims
-        db.getUserChannels(socket.userData.preferred_username).then(function(channels){
+      }
+      if(testing){
+        //In testing mode
+        socket.userData = {
+          name:"tester",
+          preferred_username:email
+        }
+        socket.channels = {}
+        db.getUserChannels(socket.userData.preferred_username).then(channels=>{
+          for (const channel of channels){
+            socket.join(channel.name)
+            socket.channels[channel.name] = globalChannels[channel.name]
+          }
+        })
+      }else{
+        //In production, verify token
+        try{
+          const tokenClaims = await auth.verifyToken(token)
+          socket.userData = tokenClaims
+          const channels = await db.getUserChannels(socket.userData.preferred_username)
           //Client cannot access socket object, so authorization data is safe and trustable.
-          socket.channels = channels
+          socket.channels = {}
           for (let channel of channels){
             //Add user to rooms
             //Client will receive relevant events emitted to these rooms,
             //but not others
+            socket.channels[channel.name] = globalChannels[channel.name]
+            console.log("Authed")
             socket.join(channel.name)
           }
-        })
-      }).catch(function(e){
-        //Problem with token, perhaps spoofed token?
-        //Anyway get rid of this socket
-        socket.disconnect()
-      })
-    }
-    //Get homework from database
-    socket.on("dataReq",async function(msg,callback){
-      if(typeof callback!="function"){
-        return console.log("Callback is not a function")
+        }catch(e){
+          //Problem with token, perhaps spoofed token?
+          //Anyway get rid of this socket
+          console.log("Forced disconnect")
+          socket.disconnect()
+        }
       }
-      if(typeof msg !="object" || msg==null){
-        return callback("Msg is not an object")
-      }
-      if(typeof msg.removeExpired != "boolean"){
-        msg.removeExpired = true
-      }
-      //User only requested specific channel
-      if(msg.channel){
-        //Ensure that user is member of channel
-        if(socket.channels.find(channel=>{
-          return channel == msg.channel
-        })){
-        db.getHomework(msg.channel,msg.removeExpired).then(function(data){
-          return callback(null,data)
-        }).catch(function(error){
-          console.log(error)
-          return callback(error.toString())
-        })
-      }
-      }else{
-        db.getHomeworkAll(socket.channels,msg.removeExpired).then(function(data){
-          return callback(null,data)
-        }).catch(function(error){
-          console.log(error)
-          return callback(error.toString())
-        })
-      }
-    })
-
-    //Add homework
-    socket.on("addReq",function(msg,callback){
-      validatePayload(socket.channels,msg,callback).then(async msg =>{
-        const {channel} = msg
-        await db.addHomework(channel,msg)
-        const data = await db.getHomeworkAll(socket.channels)
-        io.to(channel).emit("data",data)
-        return callback(null)
-      }).catch((error) => {
-        return callback(error.toString())
-      })
-    })
-
-    //Edit homework
-    socket.on("editReq",function(msg,callback){
-      validatePayload(socket.channels,msg,callback).then(async msg =>{
-        const {channel} = msg
-        await db.editHomework(channel,msg)
-        const data = await db.getHomeworkAll(socket.channels)
-        io.to(channel).emit("data",data)
-        return callback(null)
-      }).catch((error) => {
-        return callback(error.toString())
-      })
-    })
+    })()
+    //Optionally tell user that authed.
+    .then()
+    .catch(console.log)
     
-    //Delete homework
-    socket.on("deleteReq",function(msg,callback){
-      validatePayload(socket.channels,msg,callback).then(async msg =>{
-        const {channel} = msg
-        await db.deleteHomework(channel,msg.id)
-        const data = await db.getHomeworkAll(socket.channels)
-        io.to(channel).emit("data",data)
-        return callback(null)
-      }).catch((error) => { 
-        return callback(error.toString())
-      })
-    })
-
     //For tests
-    socket.on("textMessage",function(msg,callback){
-      return callback(null,msg+"received")
-    })
-    socket.on("binaryMessage",function(msg,callback){
-      const text = msg.toString()
-      return callback(null,Buffer.from(text+"received","utf8"))
-    })
+    require("./websocket-routes/tests")(socket)
+    //Administration
+    require("./websocket-routes/admin")(socket,io,db)
+    //Homework ops
+    require("./websocket-routes/homework")(socket,io,db)
 
-    //Function to validate payload and permissions
-    async function validatePayload(channelPermissions,msg,callback){
-      //type checking
-      if(typeof callback!="function"){
-        return -1
-      }
-      if(typeof msg!="object"){
-        callback("Message is not an object")
-        throw "Message is not an object"
-      }
-      if(typeof msg.channel!="string"){
-        callback("Channel is not a string")
-        throw "Channel is not a string" 
-      }
-      const channelName = msg.channel
-      //Check if permission level is 2 or higher
-      const channel = channelPermissions.find(channel=>{
-        return channel.name==channelName
-      })
-      if(!channel){
-        callback("Channel does not exist")
-        throw "Channel does not exist"
-      }
-      if(channel.permissions<2){
-        callback("403: Forbidden")
-        throw "403: Forbidden"
-      }
-      //Dont use name, use email. never use email or name as primary key.
-      //Collisions like Cheng Yi may occur
-      msg.lastEditPerson = socket.userData.preferred_username
-      msg.isTest = msg.isTest||false
-      if(Object.values(msg).indexOf(null)>-1){
-        callback("Params cannot be null")
-        throw "Params cannot be null"
-      }
-      return msg
-    }
-      //All socket.io code should end here
+    socket.on('disconnect', function(){
+      console.log('user disconnected')
     })
+  })
   return io
+}
+
+//Function to update globalChannels
+module.exports.updateChannels = channels=>{
+  for(const channel in channels){
+    for(const property in channels[channel]){
+      globalChannels[channel][property] = channels[channel][property]
+    }
+  }
+}
+//Function to get permission level
+module.exports.getPermissionLvl = (email,channelData) => {
+  if(channelData.roots.includes(email)){
+    return 3
+  }else if(channelData.admins.includes(email)){
+    return 2
+  }else if(channelData.members.includes(email)){
+    return 1
+  }else{
+    return 0
+  }
 }
