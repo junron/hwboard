@@ -11,7 +11,6 @@ describe("websocket",function(){
     this.timeout(0000)
     before(function(done){
       websocket.listen(port)
-      console.log(websocket)
       setTimeout(()=>{
         console.log("http://localhost:" + port)
         client = io("http://localhost:" + port)
