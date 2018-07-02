@@ -69,7 +69,7 @@ module.exports = (socket,io,db)=>{
     ;(async ()=>{
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
-      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",globalChannels[channel])
+      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel])
       if(currentPermissionLvl==3){
         throw new Error("Can't promote root")
       }
@@ -93,7 +93,7 @@ module.exports = (socket,io,db)=>{
     ;(async ()=>{
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
-      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",globalChannels[channel])
+      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel])
       if(currentPermissionLvl==3){
         throw new Error("Can't promote root")
       }
