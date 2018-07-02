@@ -21,7 +21,7 @@ exports.createServer = function(server){
   //Prevent CSRF (sort of) by only allowing specific origins
   //Could origin spoofing be possible?
   io.origins((origin,callback)=>{
-    const origins = ["https://"+HOSTNAME,"http://localhost:"+port]
+    const origins = ["https://"+HOSTNAME+"/","https://"+HOSTNAME,"http://localhost:"+port]
     if(testing){
       //Socket-io client origin is * for some reason
       //TODO find out why and avoid if possible
@@ -35,7 +35,6 @@ exports.createServer = function(server){
     callback(null,true)
   })
 
- // io.set('transports', ['websocket'])
   //For cookies
   io.use(cookieParser(cookieSecret))
   io.on('connection',function(socket){
@@ -47,7 +46,7 @@ exports.createServer = function(server){
       const token = socket.request.signedCookies.token
       const email = socket.request.signedCookies.username || "tester@nushigh.edu.sg"
       if(Object.keys(globalChannels).length ==0){
-        const globalChannelData = await db.getUserChannels("*").then
+        const globalChannelData = await db.getUserChannels("*")
         for(const channel of globalChannelData){
           globalChannels[channel.name] = channel
         }

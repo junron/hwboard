@@ -124,7 +124,7 @@
   <script defer src="/scripts/sugar-date.min.js"></script>
   <script src="/scripts/socket.io.js"></script>
 <script>
-  const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
+  const conn = io(location.origin,{secure: true})
   conn.on("connect_error",function(err){
   Raven.captureException(err)
   })

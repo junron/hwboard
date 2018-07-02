@@ -13,9 +13,6 @@ const {isObject} = require("../utils")
 
 module.exports = (socket,io,db)=>{
 
-  socket.on("echo",function(msg,callback){
-    return callback(msg)
-  })
   //Get homework from database
   socket.on("dataReq",function(msg,callback){
     console.log("received")
