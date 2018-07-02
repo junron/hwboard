@@ -22,6 +22,7 @@ async function generateHomeworkTables(){
   const channels = await getUserChannels("*")
   for (let channel of channels){
     //Could have curried but meh
+    console.log(channel.name,"channel")
     tables[channel.name] = Homework(sequelize,Sequelize,channel.name)
   }
 }
@@ -29,7 +30,7 @@ async function getUserChannels(userEmail,permissionLevel=1){
   //Argh teach me how does one select only if value is in postgres array
   const data = await Channels.findAll({
     raw: true
-  })
+  }) 
   if(userEmail=="*"){
     return data
   }
@@ -57,6 +58,8 @@ async function getUserChannels(userEmail,permissionLevel=1){
 //Assumes that access has been granted
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
+  console.log(hwboardName,"helloworld")
+  console.log(Object.keys(tables))
   const Homework = tables[hwboardName]
   const data = await Homework.findAll({
     raw: true
@@ -72,10 +75,146 @@ async function getHomework(hwboardName,removeExpired=true){
     return data
   }
 }
+async function addSubject(channelData){
+  let {channel,data,subject} = channelData
+  const days = ["mon","tue","wed","thu","fri"]
+  subject = xss(subject)
+  const isValidTime = time => parseInt(time) === time && time >= 0 && time < 2400
+  //Validation
+  const timetableDays = Object.keys(data)
+  for(const day of timetableDays){
+    if(!days.includes(day)){
+      throw new Error(`${day} is invalid`)
+    }
+    const times = data[day]
+    for(const timing of times){
+      if(!(timing.every(isValidTime))){
+        throw new Error(`${timing} is invalid`)
+      }
+    }
+  }
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }))
+  if(originalDataArray.length==0){
+    throw new Error("Channel does not exist")
+  }
+  const originalData = originalDataArray[0]
+  originalData.timetable = (originalData.timetable || {})
+  originalData.timetable[subject] = data
+  originalData.subjects.push(subject)
+  return Channels.update(originalData,{
+    where:{
+      name:channel
+    }
+  })
+}
+async function removeMember(channel,member){
+  member += "@nushigh.edu.sg"
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }))
+  if(originalDataArray.length==0){
+    throw new Error("Channel does not exist")
+  }
+  const originalData = originalDataArray[0]
+  const remove = (array,value) =>{
+    const index = array.indexOf(value)
+    if(index==-1){
+      throw new Error("Member does not exist")
+    }
+    array.splice(index,1)
+    return array
+  }
+  if(originalData.roots.includes(member)){
+    originalData.roots = remove(originalData.roots,member)
+  }else if(originalData.admins.includes(member)){
+    originalData.admins = remove(originalData.admins,member)
+  }else if(originalData.members.includes(member)){
+    console.log(originalData.members,member)
+    originalData.members = remove(originalData.members,member)
+  }else{
+    throw new Error("Member does not exist")
+  }
+  return Channels.update(originalData,{
+    where:{
+      name:originalData.name
+    }
+  })
+}
+async function addMember(channel,members,permissionLevel){
+  const permissionToNumber = lvl => {
+    const index = ["member","admin","root"].indexOf(lvl)
+    if(index==-1){
+      throw new Error("Permission level invalid")
+    }
+    return index+1
+  }
+  const numberToPermission = number => ["members","admins","roots"][number-1]
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }))
+  if(originalDataArray.length==0){
+    throw new Error("Channel does not exist")
+  }
+  const originalData = originalDataArray[0]
+  const getPermissionLvl = email => {
+    if(originalData.roots.includes(email)){
+      return 3
+    }else if(originalData.admins.includes(email)){
+      return 2
+    }else if(originalData.members.includes(email)){
+      return 1
+    }else{
+      return 0
+    }
+  }
+  const targetRole = originalData[permissionLevel+"s"]
+  //The target permission level
+  const permissionLvl = permissionToNumber(permissionLevel)
+  for(let member of members){
+    //Input does not contain emails
+    member = member + "@nushigh.edu.sg"
+    const currentPermissionLvl = getPermissionLvl(member)
+    //Member is not in channel yet
+    if(currentPermissionLvl==0){
+      targetRole.push(member)
+      continue
+    }
+    //Member already in target role
+    if(targetRole.includes(member)){
+      continue
+    }
+    const currentPermissionLvlArray = originalData[numberToPermission(currentPermissionLvl)]
+    //Target permission lvl > existing permission lvl
+    //Remove from existing and add to new
+    if(permissionLvl > currentPermissionLvl ){
+      const index = currentPermissionLvlArray.indexOf(member)
+      currentPermissionLvlArray.splice(index,1)
+      targetRole.push(member)
+      continue
+    }
+  }
+  return Channels.update(originalData,{
+    where:{
+      name:originalData.name
+    }
+  })
+}
 async function getHomeworkAll(channels,removeExpired=true){
   const homeworkPromises = []
-  for (const channel of channels){
-    homeworkPromises.push(getHomework(channel.name))
+  const channelNames = Object.keys(channels)
+  for (const name of channelNames){
+    homeworkPromises.push(getHomework(name))
   }
   const homework2d = await Promise.all(homeworkPromises)
   //Join array of array of homework into single array of homework
@@ -117,6 +256,13 @@ async function removeXss(object){
   }
   return object
 }
+const arrayToObject = channelArrays => {
+  const result = {}
+  for (const channel of channelArrays){
+    result[channel.name] = channel
+  }
+  return result
+}
 module.exports={
   sequelize,
   getHomework,
@@ -126,4 +272,8 @@ module.exports={
   init,
   getUserChannels,
   getHomeworkAll,
+  addMember,
+  arrayToObject,
+  removeMember,
+  addSubject
 }

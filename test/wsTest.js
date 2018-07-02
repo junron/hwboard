@@ -8,32 +8,31 @@ const websocket = require("../app").server
 const port = require("../loadConfig").PORT
 let client
 describe("websocket",function(){
+    this.timeout(0000)
     before(function(done){
       websocket.listen(port)
-      done()
-    })
-    beforeEach(function(done){
-        client = io("http://localhost:" + port,{ 
-        transports: ['websocket'], 
-        forceNew: true,
-        reconnection: false,
-    })
-    done()
-    })
-    afterEach(function(done){
-      client.disconnect()
-      done()
+      setTimeout(()=>{
+        console.log("http://localhost:" + port)
+        client = io("http://localhost:" + port)
+        client.on("disconnect",()=>{
+          console.log("Disconnect")
+        })
+        client.on("error",console.log)
+        client.on("connect",()=>{
+          console.log("connected")
+          done()
+        },1000)
+      })
     })
     after(function(done){
-      this.timeout(0)
       websocket.close()
-        done()
-        setTimeout(function(){
-          process.exit(0)
-        },500)
-        
+      done()
+      setTimeout(function(){
+        process.exit(0)
+      },500)
     })
     it("Should be able to echo text messages",function(done){
+      console.log(client.connected)
         client.emit("textMessage","helloworld",function(err,response){
             expect(err).to.equal(null)
             expect(response).to.equal("helloworldreceived")

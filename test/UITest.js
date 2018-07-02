@@ -87,11 +87,10 @@ async function info(){
 async function add(){
   await page.click("#fab-add-homework")
   await page.type("#subject-name","math")
-  await page.click(".item-radio.item-content[data-value=math]")
+  await page.click(".item-content.input-toggle")
   await page.click(".toggle.color-red.toggle-init")
   console.log("Waiting for checkbox to be checked")
   //await page.waitFor("#toggle-is-graded-checkbox:checked")
-  await page.waitFor(500)
   await page.type("#dueDate","tomorrow")
   await page.type("#homework-name","Add homework test")
   await page.screenshot({path: './artifacts/add.png'})
