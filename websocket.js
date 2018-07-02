@@ -21,7 +21,7 @@ exports.createServer = function(server){
   //Prevent CSRF (sort of) by only allowing specific origins
   //Could origin spoofing be possible?
   io.origins((origin,callback)=>{
-    const origins = ["https://"+HOSTNAME+"/","https://"+HOSTNAME,"http://localhost:"+port]
+    const origins = ["https://"+HOSTNAME+"/","https://"+HOSTNAME,"http://localhost:"+port,"http://localhost:"+port+"/"]
     if(testing){
       //Socket-io client origin is * for some reason
       //TODO find out why and avoid if possible
