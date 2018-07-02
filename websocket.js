@@ -21,18 +21,23 @@ exports.createServer = function(server){
   //Prevent CSRF (sort of) by only allowing specific origins
   //Could origin spoofing be possible?
   io.origins((origin,callback)=>{
-    const origins = ["https://"+HOSTNAME+"/","https://"+HOSTNAME,"http://localhost:"+port,"http://localhost:"+port+"/"]
+    const origins = ["https://"+HOSTNAME,"http://localhost:"+port]
     if(testing){
       //Socket-io client origin is * for some reason
       //TODO find out why and avoid if possible
-      origins.push("*")
+      if(origin=="*"){
+        console.log("\033[0;32mOrigin "+origin+" was authorised\033[0m")
+        return callback(null,true)
+      }
     }
-    if(!origins.includes(origin)){
-      console.log("\033[0;31mOrigin "+origin+" was blocked\033[0m")
-      return callback("Not authorised",false)
+    for (const authOrigin of origins){
+      if(origin.startsWith(authOrigin)){
+        console.log("\033[0;32mOrigin "+origin+" was authorised\033[0m")
+        return callback(null,true)
+      }
     }
-    console.log("\033[0;32mOrigin "+origin+" was authorised\033[0m")
-    callback(null,true)
+    console.log("\033[0;31mOrigin "+origin+" was blocked\033[0m")
+    return callback("Not authorised",false)
   })
 
   //For cookies
