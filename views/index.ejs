@@ -62,7 +62,7 @@
     <% } %>
     <script>
     const timetable = <%-JSON.stringify(timetable) -%>;
-    const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
+    const conn = io(location.origin,{secure: true});
     //Handle websocket connection errors
     //Standard code for all my websocket apps
     conn.on("connect_error",function(e){

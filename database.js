@@ -59,7 +59,9 @@ async function getUserChannels(userEmail,permissionLevel=1){
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
   console.log(hwboardName,"helloworld")
-  console.log(Object.keys(tables))
+  if(Object.keys(tables).length==0){
+    await init()
+  }
   const Homework = tables[hwboardName]
   const data = await Homework.findAll({
     raw: true
