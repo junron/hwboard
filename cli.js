@@ -118,17 +118,24 @@ console.log(process.argv)
   }
 }else if(process.argv[2]=="config"){
   if(process.argv[3]=="secret-only"){
-    const config = {}
+    const fs = require("fs")
+    let config
+    try{
+      config = JSON.parse(fs.readFileSync("./config.json"))
+    }catch(e){
+      config = {}
+    }
+    console.log(config)
     const crypto = require("crypto")
     crypto.randomBytes(32,function(error,buffer){
       if(error) throw error
       config.COOKIE_SECRET = buffer.toString("base64")
       console.log("Using 32 bytes (256 bits) of random data: \n",config.COOKIE_SECRET)
-    })
-    const fs = require("fs")
-    fs.writeFile("./config.json",JSON.stringify(config,null,2),err=>{
-      if(err) throw err
-      console.log("Config complete")
+      console.log(JSON.stringify(config,null,2))
+      fs.writeFile("./config.json",JSON.stringify(config,null,2),err=>{
+        if(err) throw err
+        console.log("Config complete")
+      })
     })
   }else{
     console.log(`\x1b[31m
