@@ -275,11 +275,12 @@ async function authChannels(req,res){
     if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
       throw new Error("You must log in with a NUSH email.")
     }
-    //Stored decoded signed token data in a cookie for future client-side use
-    //Perhaps for offline rendering
-    //Accessible via client side JS, so DO NOT trust!!!
-    res.cookie('decodedToken', decodedToken, {signed: true,secure:true})
-    res.cookie('email',decodedToken.preferred_username)
+
+    //Accessible and modifiable via client side JS\
+    //DO NOT trust!!!
+    //Just for analytics
+    res.cookie('email',decodedToken.preferred_username,{maxAge:2592000000})
+    res.cookie('name',decodedToken.name,{maxAge:2592000000})
   }
 
   //Get authorised channels
