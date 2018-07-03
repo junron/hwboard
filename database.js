@@ -22,7 +22,6 @@ async function generateHomeworkTables(){
   const channels = await getUserChannels("*")
   for (let channel of channels){
     //Could have curried but meh
-    console.log(channel.name,"channel")
     tables[channel.name] = Homework(sequelize,Sequelize,channel.name)
   }
 }
@@ -58,10 +57,6 @@ async function getUserChannels(userEmail,permissionLevel=1){
 //Assumes that access has been granted
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
-  console.log(hwboardName,"helloworld")
-  if(Object.keys(tables).length==0){
-    await init()
-  }
   const Homework = tables[hwboardName]
   const data = await Homework.findAll({
     raw: true
@@ -265,6 +260,9 @@ const arrayToObject = channelArrays => {
   }
   return result
 }
+const getNumTables = () => {
+  return Object.keys(tables).length
+}
 module.exports={
   sequelize,
   getHomework,
@@ -277,5 +275,6 @@ module.exports={
   addMember,
   arrayToObject,
   removeMember,
-  addSubject
+  addSubject,
+  getNumTables
 }

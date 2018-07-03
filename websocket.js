@@ -45,6 +45,8 @@ exports.createServer = function(server){
   io.on('connection',function(socket){
     console.log("User connected")
     //Start socket.io code here
+
+    //Authentication
     ;(async ()=>{
       //Authenticate user on connection
       //You can access cookies in websockets too!
@@ -93,16 +95,22 @@ exports.createServer = function(server){
         }
       }
     })()
-    //Optionally tell user that authed.
-    .then()
+    .then(async ()=>{
+      //Administration
+      require("./websocket-routes/admin")(socket,io,db)
+
+      //Homework ops
+      require("./websocket-routes/homework")(socket,io,db)
+
+      //For tests
+      require("./websocket-routes/tests")(socket)
+
+      if(db.getNumTables()==0){
+        await db.init()
+      }
+      return socket.emit("ready")
+    })
     .catch(console.log)
-    
-    //For tests
-    require("./websocket-routes/tests")(socket)
-    //Administration
-    require("./websocket-routes/admin")(socket,io,db)
-    //Homework ops
-    require("./websocket-routes/homework")(socket,io,db)
 
     socket.on('disconnect', function(){
       console.log('user disconnected')
