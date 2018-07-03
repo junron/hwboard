@@ -161,9 +161,15 @@
         document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
     })
   }
+  //Db inited, can get data
   conn.on("ready",()=>{
     console.log("ready")
     getChannelData()
+  })
+  //Uncaught error that could not be handled via callback etc
+  conn.on("uncaughtError",error=>{
+    Framework7App.dialog.alert(error)
+    throw new Error(error)
   })
   conn.on("channelData",async function(data){
     const thisChannelData = data[channel]
