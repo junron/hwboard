@@ -9,6 +9,7 @@ db.getUserChannels("*").then(globalChannelData=>{
     globalChannels[channel.name] = channel
   }
 })
+
 //export so that accessible in app.js
 //server param is a http server
 exports.createServer = function(server){
@@ -45,6 +46,9 @@ exports.createServer = function(server){
   io.on('connection',function(socket){
     console.log("User connected")
     //Start socket.io code here
+
+    //Send uncaught errors, eg `callback is not a function` to client
+    const uncaughtErrorHandler = require("./websocket-routes/error")(socket)
 
     //Authentication
     ;(async ()=>{
@@ -110,7 +114,7 @@ exports.createServer = function(server){
       }
       return socket.emit("ready")
     })
-    .catch(console.log)
+    .catch(uncaughtErrorHandler)
 
     socket.on('disconnect', function(){
       console.log('user disconnected')

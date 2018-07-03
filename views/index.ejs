@@ -119,7 +119,11 @@
       localStorage.setItem("data",JSON.stringify(data))
     })
     })
-
+    //Uncaught error that could not be handled via callback etc
+    conn.on("uncaughtError",error=>{
+      Framework7App.dialog.alert(error)
+      throw new Error(error)
+    })
     //Server pushes data, re-render
     conn.on("data",(data)=>{
       //Main page
