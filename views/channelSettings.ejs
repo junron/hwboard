@@ -126,10 +126,7 @@
 <script>
   const conn = io(location.origin,{secure: true})
   conn.on("connect_error",function(err){
-  Raven.captureException(err)
-  })
-  conn.on("error",function(e){
-  alert(e)
+    Raven.captureException(err)
   })
   function getCookie(cname) {
   var name = cname + "=";
@@ -164,12 +161,12 @@
         document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
     })
   }
-  getChannelData()
-  setTimeout(getChannelData,500)
-  setTimeout(getChannelData,600)
+  conn.on("ready",()=>{
+    console.log("ready")
+    getChannelData()
+  })
   conn.on("channelData",async function(data){
     const thisChannelData = data[channel]
-    console.log(thisChannelData)
     document.getElementById("member-list").innerHTML = await render(thisChannelData)
     document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData.subjects)
   })
