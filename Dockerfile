@@ -1,12 +1,15 @@
-FROM node:10
+FROM node:10-alpine
 
-RUN apt-get update
-RUN apt-get upgrade -y
+RUN apk update
+RUN apk upgrade
+RUN apk add bash
 
 RUN mkdir -p /hwboard2
 WORKDIR /hwboard2
 COPY . .
 
+# Remove useless devDependencies
 RUN npm install
+RUN npm uninstall puppeteer
 
 EXPOSE 3001
