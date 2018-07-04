@@ -1,13 +1,40 @@
-let {POSTGRES_PASSWORD,POSTGRES_USER,POSTGRES_DB,HWBOARD_HOSTNAME:HOSTNAME,MS_CLIENTID,MS_CLIENTSECRET,HWBOARD_PORT:PORT,CI,HWBOARD_COOKIE_SECRET:COOKIE_SECRET} = process.env
+function or(obj1,obj2){
+  const result = {}
+  for (const key in obj1){
+    if(!obj1[key]){
+      result[key] = obj2[key]
+    }else{
+      result[key] = obj1[key]
+    }
+  }
+  for (const key in obj2){
+    if(!result[key]){
+      result[key] = obj2[key]
+    }
+  }
+  return result
+}
+
+let finalSettings
+let configFileSettings
+const envVarSettings = Object.assign({},process.env)
+
+envVarSettings.HOSTNAME = envVarSettings.HWBOARD_HOSTNAME
+delete envVarSettings.HWBOARD_HOSTNAME
+envVarSettings.PORT = envVarSettings.HWBOARD_PORT
+delete envVarSettings.HWBOARD_PORT
+envVarSettings.COOKIE_SECRET = envVarSettings.HWBOARD_COOKIE_SECRET
+delete envVarSettings.HWBOARD_COOKIE_SECRET
+
 try {
-  //TODO find better way to do destructuring assignment
-  //My ES6 sucks
-  //Assignment expression
-  ({POSTGRES_PASSWORD,POSTGRES_USER,POSTGRES_DB,HOSTNAME,MS_CLIENTID,MS_CLIENTSECRET,PORT,CI,COOKIE_SECRET} = require("./config.json"))
+  configFileSettings = require("./config.json")
+  finalSettings = or(envVarSettings,configFileSettings)
 } catch (error) {
   //Could not load config
   console.log("Config file not found, using environment variables")
+  finalSettings = envVarSettings
 }
+let {POSTGRES_PASSWORD,POSTGRES_USER,POSTGRES_DB,HOSTNAME,MS_CLIENTID,MS_CLIENTSECRET,PORT,CI,COOKIE_SECRET} = finalSettings
 CI = (CI=="true") || CI || (process.env.CI=="true") || false
 if(CI==true){
   //Auth credentials not needed for ci
