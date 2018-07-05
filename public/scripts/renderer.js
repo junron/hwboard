@@ -212,9 +212,9 @@ parser.parseHomeworkMetaData =  function(homework){
     default:
       displayDate = `${daysLeft} days left`
   }
-  if (isTest) {
-    displayDate = parser.toTitle(displayDate.replace("Due ", ""))
-  }
+  //if (isTest) {
+  //  displayDate = parser.toTitle(displayDate.replace("Due ", ""))
+  //}
   return {
     dueDate,
     editTime,
