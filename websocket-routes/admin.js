@@ -15,6 +15,10 @@ const {updateChannels,getPermissionLvl} = require("../websocket")
 
 
 module.exports = (socket,io,db)=>{
+
+  //Send uncaught errors, eg `callback is not a function` to client
+  const uncaughtErrorHandler = require("./error")(socket)
+
   //Add subject
   socket.on("addSubject",function(msg,callback){
     ;(async ()=>{
@@ -29,7 +33,7 @@ module.exports = (socket,io,db)=>{
     .then(callback)
     .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
   //Add member
   socket.on("addMember",function(msg,callback){
@@ -46,7 +50,7 @@ module.exports = (socket,io,db)=>{
     .then(callback)
     .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
   //Remove members
   socket.on("removeMember",function(msg,callback){
@@ -62,14 +66,14 @@ module.exports = (socket,io,db)=>{
     .then(callback)
     .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
   //Promote member
   socket.on("promoteMember",function(msg,callback){
     ;(async ()=>{
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
-      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",globalChannels[channel])
+      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel])
       if(currentPermissionLvl==3){
         throw new Error("Can't promote root")
       }
@@ -86,14 +90,14 @@ module.exports = (socket,io,db)=>{
     .then(callback)
     .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
   //Demote member
   socket.on("demoteMember",function(msg,callback){
     ;(async ()=>{
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
-      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",globalChannels[channel])
+      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel])
       if(currentPermissionLvl==3){
         throw new Error("Can't promote root")
       }
@@ -110,7 +114,7 @@ module.exports = (socket,io,db)=>{
     .then(callback)
     .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
 
   //Get channel data
@@ -129,6 +133,6 @@ module.exports = (socket,io,db)=>{
     .then(returnVals => callback(...returnVals))
     .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
 }

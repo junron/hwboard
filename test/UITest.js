@@ -95,7 +95,7 @@ async function add(){
   await page.type("#homework-name","Add homework test")
   await page.screenshot({path: './artifacts/add.png'})
   await page.click("#update-hwboard-button")
-  await page.waitFor(100)
+  await page.waitFor(500)
   return await page.waitForFunction(()=>{
     return $($(".hwitem:contains('Add homework test')")[0]).addClass("targetHomework")
   })

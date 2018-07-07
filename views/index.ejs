@@ -46,10 +46,27 @@
     <script src="/scripts/promise-worker.js"></script>
     <script src="/scripts/sugar-date.min.js"></script>
     <script>
-     //Web worker for indexedDB
-     //Use promise based messaging
-     const worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-     </script>
+      //Web worker for indexedDB
+      //Use promise based messaging
+      const worker = new PromiseWorker(new Worker("/scripts/worker.js"))
+
+      //get cookies
+      function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+    </script>
 
      <script src="/scripts/socket.io.js"></script>
      <!--DoNt toUcHa my eRRor rePoTer-->
@@ -58,11 +75,15 @@
     <script>
       //DoNt toUcHa my eRRor rePoTer
       Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
-      </script>
+      Raven.setUserContext({
+        name: getCookie("name"),
+        email: getCookie("email"),
+      })
+    </script>
     <% } %>
     <script>
     const timetable = <%-JSON.stringify(timetable) -%>;
-    const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
+    const conn = io(location.origin,{secure: true});
     //Handle websocket connection errors
     //Standard code for all my websocket apps
     conn.on("connect_error",function(e){
@@ -105,7 +126,9 @@
         removeExpired:true
       }
     }
-    conn.emit("dataReq",channelSettings,function(err,data){
+    //Db is init and user is authed
+    conn.on("ready",()=>{
+      conn.emit("dataReq",channelSettings,function(err,data){
       //Always check if error occurred
       if(err) throw err;
       //Put data into client-side database for caching
@@ -116,7 +139,12 @@
       //Add to localstorage as a fallback
       localStorage.setItem("data",JSON.stringify(data))
     })
-
+    })
+    //Uncaught error that could not be handled via callback etc
+    conn.on("uncaughtError",error=>{
+      Framework7App.dialog.alert(error)
+      throw new Error(error)
+    })
     //Server pushes data, re-render
     conn.on("data",(data)=>{
       //Main page
@@ -142,24 +170,7 @@
 <!-- non critical styles and scripts can be deferred-->
 <script defer src="/scripts/dates.js"></script>
 <script defer src="/scripts/generalForms.js"></script>
-<script>
-//get cookies
-function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
-</script>
+
 <script src="/framework7/js/framework7.js"></script>
 
 <script src="/scripts/app.js"></script>

@@ -2,7 +2,7 @@ version: '3'
 services:
   postgres:
     restart: always
-    image: postgres:10
+    image: postgres:10-alpine
     ports:
       - "5432"
     environment:
@@ -16,14 +16,12 @@ services:
       - "3001:3001"
     expose:
       - "3001"
-    command: "./wait-for-it.sh postgres:5432 -- /bin/bash -c 'npm run hwboard config secret-only && npm run hwboard add channel default && npm run hwboard start'"
+    command: "./wait-for-it.sh postgres:5432 -- /bin/bash -c 'npm run hwboard config secret-only && npm run hwboard add channel default && npm run start:dev'"
     environment:
       - IS_DOCKER=true
-      - CI=true
-      - PORT=3001
+      - HWBOARD_PORT=3001
       - POSTGRES_DB=hwboard
       - POSTGRES_PASSWORD=incorrect_spaghett
       - POSTGRES_USER=hwboard
-      - HWBOARD_HOSTNAME=nushhwboard.tk
     depends_on:
       - "postgres"

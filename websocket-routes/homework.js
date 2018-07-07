@@ -13,9 +13,9 @@ const {isObject} = require("../utils")
 
 module.exports = (socket,io,db)=>{
 
-  socket.on("echo",function(msg,callback){
-    return callback(msg)
-  })
+  //Send uncaught errors, eg `callback is not a function` to client
+  const uncaughtErrorHandler = require("./error")(socket)
+
   //Get homework from database
   socket.on("dataReq",function(msg,callback){
     console.log("received")
@@ -41,14 +41,9 @@ module.exports = (socket,io,db)=>{
         return callback(null,data)
       }
     })()
-    //Log error
-    .catch(e => {
-      console.log(e)
-      throw e
-    })
     .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
     
   //Add homework
@@ -62,9 +57,9 @@ module.exports = (socket,io,db)=>{
       io.to(channel).emit("data",data)
       return callback(null)
     })()
-    //.catch(e => callback(e.toString()))
+    .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
   //Edit homework
   socket.on("editReq",function(msg,callback){
@@ -78,7 +73,7 @@ module.exports = (socket,io,db)=>{
     })()
     .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
 
   //Delete homework
@@ -93,6 +88,6 @@ module.exports = (socket,io,db)=>{
     })()
     .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(e => console.log(e.toString()))
+    .catch(uncaughtErrorHandler)
   })
 }
