@@ -55,18 +55,28 @@ exports.createServer = function(server){
       //Authenticate user on connection
       //You can access cookies in websockets too!
       const token = socket.request.signedCookies.token
-      const email = socket.request.signedCookies.username || "tester@nushigh.edu.sg"
       if(Object.keys(globalChannels).length ==0){
         const globalChannelData = await db.getUserChannels("*")
         for(const channel of globalChannelData){
           globalChannels[channel.name] = channel
         }
       }
-      if(testing){
+      if(socket.request.signedCookies.username){
+        socket.userData = {
+          preferred_username:socket.request.signedCookies.username
+        }
+        socket.channels = {}
+        db.getUserChannels(socket.userData.preferred_username).then(channels=>{
+          for (const channel of channels){
+            socket.join(channel.name)
+            socket.channels[channel.name] = globalChannels[channel.name]
+          }
+        })
+      }else if(testing){
         //In testing mode
         socket.userData = {
           name:"tester",
-          preferred_username:email
+          preferred_username:"tester@nushigh.edu.sg"
         }
         socket.channels = {}
         db.getUserChannels(socket.userData.preferred_username).then(channels=>{
