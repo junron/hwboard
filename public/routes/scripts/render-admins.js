@@ -36,7 +36,6 @@ const newPerson = (name,email,permission,isRoot)=>{
 }
 
 async function render(channelData){
-  console.log(channelData)
   const currentPerson = getCookie("email")
   const isRoot = channelData.roots.includes(currentPerson)
   await getData("/scripts/data.json")

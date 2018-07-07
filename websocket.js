@@ -9,6 +9,7 @@ db.getUserChannels("*").then(globalChannelData=>{
     globalChannels[channel.name] = channel
   }
 })
+
 //export so that accessible in app.js
 //server param is a http server
 exports.createServer = function(server){
@@ -25,38 +26,57 @@ exports.createServer = function(server){
     if(testing){
       //Socket-io client origin is * for some reason
       //TODO find out why and avoid if possible
-      origins.push("*")
+      if(origin=="*"){
+        console.log("\033[0;32mOrigin "+origin+" was authorised\033[0m")
+        return callback(null,true)
+      }
     }
-    if(!origins.includes(origin)){
-      console.log("\033[0;31mOrigin "+origin+" was blocked\033[0m")
-      return callback("Not authorised",false)
+    for (const authOrigin of origins){
+      if(origin.startsWith(authOrigin)){
+        console.log("\033[0;32mOrigin "+origin+" was authorised\033[0m")
+        return callback(null,true)
+      }
     }
-    console.log("\033[0;32mOrigin "+origin+" was authorised\033[0m")
-    callback(null,true)
+    console.log("\033[0;31mOrigin "+origin+" was blocked\033[0m")
+    return callback("Not authorised",false)
   })
 
- // io.set('transports', ['websocket'])
   //For cookies
   io.use(cookieParser(cookieSecret))
   io.on('connection',function(socket){
     console.log("User connected")
     //Start socket.io code here
+
+    //Send uncaught errors, eg `callback is not a function` to client
+    const uncaughtErrorHandler = require("./websocket-routes/error")(socket)
+
+    //Authentication
     ;(async ()=>{
       //Authenticate user on connection
       //You can access cookies in websockets too!
       const token = socket.request.signedCookies.token
-      const email = socket.request.signedCookies.username || "tester@nushigh.edu.sg"
       if(Object.keys(globalChannels).length ==0){
-        const globalChannelData = await db.getUserChannels("*").then
+        const globalChannelData = await db.getUserChannels("*")
         for(const channel of globalChannelData){
           globalChannels[channel.name] = channel
         }
       }
-      if(testing){
+      if(socket.request.signedCookies.username){
+        socket.userData = {
+          preferred_username:socket.request.signedCookies.username
+        }
+        socket.channels = {}
+        db.getUserChannels(socket.userData.preferred_username).then(channels=>{
+          for (const channel of channels){
+            socket.join(channel.name)
+            socket.channels[channel.name] = globalChannels[channel.name]
+          }
+        })
+      }else if(testing){
         //In testing mode
         socket.userData = {
           name:"tester",
-          preferred_username:email
+          preferred_username:"tester@nushigh.edu.sg"
         }
         socket.channels = {}
         db.getUserChannels(socket.userData.preferred_username).then(channels=>{
@@ -89,16 +109,22 @@ exports.createServer = function(server){
         }
       }
     })()
-    //Optionally tell user that authed.
-    .then()
-    .catch(console.log)
-    
-    //For tests
-    require("./websocket-routes/tests")(socket)
-    //Administration
-    require("./websocket-routes/admin")(socket,io,db)
-    //Homework ops
-    require("./websocket-routes/homework")(socket,io,db)
+    .then(async ()=>{
+      //Administration
+      require("./websocket-routes/admin")(socket,io,db)
+
+      //Homework ops
+      require("./websocket-routes/homework")(socket,io,db)
+
+      //For tests
+      require("./websocket-routes/tests")(socket)
+
+      if(db.getNumTables()==0){
+        await db.init()
+      }
+      return socket.emit("ready")
+    })
+    .catch(uncaughtErrorHandler)
 
     socket.on('disconnect', function(){
       console.log('user disconnected')

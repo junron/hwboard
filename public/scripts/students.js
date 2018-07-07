@@ -6,7 +6,6 @@ const studentsByMG = {}
 const studentsById = {}
 let students
 async function getData(dataPath,cache=false){
-  console.log(students,studentsByMG)
   if(students){
     //Already fetched data
     return students

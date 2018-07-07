@@ -5,16 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"> 
 <body style="margin-left:0px;margin-right:0px"> 
 
-  <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" crossorigin="anonymous"></script>
-    <script>
-      //DoNt toUcHa my eRRor rePoTer
-      try{
- Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
-      }catch(e){
-      alert(e.toString())
-      }
-    </script>
-
   <style>
     .md #app .list .item-content {
       width: 100%;
@@ -123,29 +113,37 @@
   <script src="/scripts/app.js"></script>
   <script defer src="/scripts/sugar-date.min.js"></script>
   <script src="/scripts/socket.io.js"></script>
+  <script>
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+  </script>
+  <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" crossorigin="anonymous"></script>
+  <script>
+    //DoNt toUcHa my eRRor rePoTer
+    Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
+    Raven.setUserContext({
+      name: getCookie("name"),
+      email: getCookie("email"),
+    })
+  </script>
 <script>
-  const conn = io(location.origin,{transports: ['websocket'], upgrade: false, secure: true});
+  const conn = io(location.origin,{secure: true})
   conn.on("connect_error",function(err){
-  Raven.captureException(err)
+    Raven.captureException(err)
   })
-  conn.on("error",function(e){
-  alert(e)
-  })
-  function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
   const channel = location.pathname.substring(1).replace("/settings","")
   conn.on("connect",function(){
     console.log("Conne")
@@ -164,12 +162,18 @@
         document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
     })
   }
-  getChannelData()
-  setTimeout(getChannelData,500)
-  setTimeout(getChannelData,600)
+  //Db inited, can get data
+  conn.on("ready",()=>{
+    console.log("ready")
+    getChannelData()
+  })
+  //Uncaught error that could not be handled via callback etc
+  conn.on("uncaughtError",error=>{
+    Framework7App.dialog.alert(error)
+    throw new Error(error)
+  })
   conn.on("channelData",async function(data){
     const thisChannelData = data[channel]
-    console.log(thisChannelData)
     document.getElementById("member-list").innerHTML = await render(thisChannelData)
     document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData.subjects)
   })

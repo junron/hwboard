@@ -8,11 +8,15 @@ const {sequelize,Sequelize,Channels,Homework} = require("./models")
 //Prevent xss
 const xss = require('xss')
 
+//Map emails to names
+const {getData,getStudentById} = require("./public/scripts/students")
+
 //Object to store hwboard channel tables
 const tables = {}
 
 //Generate tables
 async function init(){
+  await getData("./data.json")
   await generateHomeworkTables()
   return sequelize.sync()
 }
@@ -22,7 +26,6 @@ async function generateHomeworkTables(){
   const channels = await getUserChannels("*")
   for (let channel of channels){
     //Could have curried but meh
-    console.log(channel.name,"channel")
     tables[channel.name] = Homework(sequelize,Sequelize,channel.name)
   }
 }
@@ -58,20 +61,29 @@ async function getUserChannels(userEmail,permissionLevel=1){
 //Assumes that access has been granted
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
-  console.log(hwboardName,"helloworld")
-  console.log(Object.keys(tables))
   const Homework = tables[hwboardName]
   const data = await Homework.findAll({
     raw: true
   })
-  for(const homework of data){
-    homework.channel = hwboardName
-  }
   if(removeExpired){
-    return data.filter((homework)=>{
-      return homework.dueDate >= new Date().getTime()
+    return await filter(data,async homework=>{
+      if(homework.dueDate >= new Date().getTime()){
+        homework.channel = hwboardName
+        let studentName = homework.lastEditPerson
+        try{
+          const student = await getStudentById(homework.lastEditPerson.replace("@nushigh.edu.sg",""))
+          studentName = student.name
+        }catch(e){
+        }
+        homework.lastEditPerson = studentName
+        return true
+      }
+      return false
     })
   }else{
+    for(const homework of data){
+      homework.channel = hwboardName
+    }
     return data
   }
 }
@@ -263,6 +275,15 @@ const arrayToObject = channelArrays => {
   }
   return result
 }
+const getNumTables = () => {
+  return Object.keys(tables).length
+}
+
+//async filter
+async function filter(arr, callback) {
+  const fail = Symbol()
+  return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i=>i!==fail)
+}
 module.exports={
   sequelize,
   getHomework,
@@ -275,5 +296,6 @@ module.exports={
   addMember,
   arrayToObject,
   removeMember,
-  addSubject
+  addSubject,
+  getNumTables
 }
