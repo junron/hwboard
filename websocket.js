@@ -4,11 +4,6 @@ const cookieParser = require('socket.io-cookie-parser')
 
 
 const globalChannels = {}
-db.getUserChannels("*").then(globalChannelData=>{
-  for(const channel of globalChannelData){
-    globalChannels[channel.name] = channel
-  }
-})
 
 //export so that accessible in app.js
 //server param is a http server
@@ -55,9 +50,16 @@ exports.createServer = function(server){
       //Authenticate user on connection
       //You can access cookies in websockets too!
       const token = socket.request.signedCookies.token
+      if(db.getNumTables()==0){
+        await db.init()
+      }
       if(Object.keys(globalChannels).length ==0){
         const globalChannelData = await db.getUserChannels("*")
         for(const channel of globalChannelData){
+          await db.whenHomeworkExpires(channel.name,async()=>{
+            const data = await db.getHomework(channel.name)
+            io.to(channel.name).emit("data",data)
+          })
           globalChannels[channel.name] = channel
         }
       }
@@ -119,9 +121,6 @@ exports.createServer = function(server){
       //For tests
       require("./websocket-routes/tests")(socket)
 
-      if(db.getNumTables()==0){
-        await db.init()
-      }
       return socket.emit("ready")
     })
     .catch(uncaughtErrorHandler)

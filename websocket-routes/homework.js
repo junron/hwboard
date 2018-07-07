@@ -55,6 +55,11 @@ module.exports = (socket,io,db)=>{
       await db.addHomework(channel,msg)
       const data = await db.getHomeworkAll(socket.channels)
       io.to(channel).emit("data",data)
+      //Notifiy user when homework expores
+      await db.whenHomeworkExpires(channel,async()=>{
+        const data = await db.getHomework(channel)
+        io.to(channel).emit("data",data)
+      })
       return callback(null)
     })()
     .catch(e => callback(e.toString()))
@@ -69,6 +74,10 @@ module.exports = (socket,io,db)=>{
       await db.editHomework(channel,msg)
       const data = await db.getHomeworkAll(socket.channels)
       io.to(channel).emit("data",data)
+      await db.whenHomeworkExpires(channel,async()=>{
+        const data = await db.getHomework(channel)
+        io.to(channel).emit("data",data)
+      })
       return callback(null)
     })()
     .catch(e => callback(e.toString()))

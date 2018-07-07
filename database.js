@@ -259,6 +259,30 @@ async function deleteHomework(hwboardName,homeworkId){
     }
   })
 }
+
+const {testing} = require("./loadConfig")
+const expiryTimers = {}
+//Get notified when homework expires
+async function whenHomeworkExpires(channel,callback){
+  let channelData = await getHomework(channel)
+  //We do not want to remove homework that is due when testing
+  if(channelData.length==0 || testing){
+    return
+  }
+  channelData = channelData.sort(function(a,b){
+    if(a.dueDate>b.dueDate){
+      return -1
+    }else{
+      return 1
+    }
+  })
+  const dueDate = channelData.pop().dueDate
+  console.log({dueDate},dueDate - new Date())
+  if(expiryTimers[channel]){
+    clearTimeout(expiryTimers[channel])
+  }
+  expiryTimers[channel] = setTimeout(callback,dueDate - new Date())
+}
 //Mitigate XSS
 async function removeXss(object){
   for (let property in object){
@@ -297,5 +321,6 @@ module.exports={
   arrayToObject,
   removeMember,
   addSubject,
-  getNumTables
+  getNumTables,
+  whenHomeworkExpires
 }
