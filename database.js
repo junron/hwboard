@@ -69,7 +69,7 @@ async function getHomework(hwboardName,removeExpired=true){
     return await filter(data,async homework=>{
       if(homework.dueDate >= new Date().getTime()){
         homework.channel = hwboardName
-        let studentName 
+        let studentName = homework.lastEditPerson
         try{
           const student = await getStudentById(homework.lastEditPerson.replace("@nushigh.edu.sg",""))
           studentName = student.name
