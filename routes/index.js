@@ -200,24 +200,24 @@ router.get('/', async (req, res, next) => {
 //Authenticate user and get authorised channels
 async function authChannels(req,res){
   let decodedToken
+  if(req.signedCookies.username){
+    decodedToken = {
+      preferred_username:req.signedCookies.username
+    }
+  }else
   //If in testing mode, bypass authentication
   //See testing.md
   if(testing){
-    console.log(req.signedCookies)
-    const email = req.signedCookies.username || "tester@nushigh.edu.sg"
     decodedToken = {
       name:"tester",
-      preferred_username:email
+      preferred_username:"tester@nushigh.edu.sg"
     }
   }else{
     //Check auth here
     //Temp var to store fresh token
     let tempToken 
-      //Check if token stored in cookie, 
+    //Check if token stored in cookie, 
     //if not, generate new token
-    // console.log(req.signedCookies,"signed cookies")
-    // console.log(req.signedCookies,"signed cookies")
-    // console.log(req.cookies)
     if(!(req.signedCookies && req.signedCookies.token)){
 
       //Check if authorization code is present
