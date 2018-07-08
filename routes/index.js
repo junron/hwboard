@@ -72,6 +72,9 @@ function parsePushHeaders(files){
 
 //View channel 
 router.get('/:channel', async (req, res, next) => {
+  if(req.params.channel.includes(".")){
+    return next()
+  }
   if(!dbInit){
     //Create tables and stuffs
     await db.init()

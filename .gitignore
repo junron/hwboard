@@ -1,7 +1,6 @@
 node_modules
 .vscode
 *config.json
-*.png
 !docker.config.json
 artifacts
 *~
