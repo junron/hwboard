@@ -125,7 +125,7 @@ describe("Hwboard",async function(){
     await init()
   })
   afterEach(async ()=>{
-    return page.goto('http://localhost:' + port)
+    return await page.goto('http://localhost:' + port)
   })
   it("Should be able to add homework",async function(){
     return await add()
