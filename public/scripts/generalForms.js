@@ -21,12 +21,14 @@ async function updateChannelHomework(channel,channelData){
   if(!existingData || existingData.length==0){
     existingData = JSON.parse(localStorage.getItem("data"))
   }
+  const otherChannelHomework = []
   for(const homework of existingData){
-    if(homework.channel==channel){
-      existingData.splice(existingData.indexOf(homework),1)
+    if(homework.channel!=channel){
+      otherChannelHomework.push(homework)
     }
   }
-  const newData = [...existingData,...channelData]
+  console.log(otherChannelHomework,channelData,channel)
+  const newData = [...otherChannelHomework,...channelData]
   //Put data into client-side database for caching
   worker.postMessage({
     type:"set",
