@@ -14,6 +14,29 @@ async function getExistingInfo(){
   return result
 }
 
+async function updateChannelHomework(channel,channelData){
+  let existingData = await worker.postMessage({
+    type:"get",
+  })
+  if(!existingData || existingData.length==0){
+    existingData = JSON.parse(localStorage.getItem("data"))
+  }
+  for(const homework of existingData){
+    if(homework.channel==channel){
+      existingData.splice(existingData.indexOf(homework),1)
+    }
+  }
+  const newData = [...existingData,...channelData]
+  //Put data into client-side database for caching
+  worker.postMessage({
+    type:"set",
+    data:newData
+  })
+  //Add to localstorage as a fallback
+  localStorage.setItem("data",JSON.stringify(newData))
+  return newData
+}
+
 //Show info about homework
 async function loadDetails(){
   const data = await getExistingInfo()

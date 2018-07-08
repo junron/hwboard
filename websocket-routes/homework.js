@@ -53,12 +53,13 @@ module.exports = (socket,io,db)=>{
       msg = await checkPayloadAndPermissions(socket,msg)
       const {channel} = msg
       await db.addHomework(channel,msg)
-      const data = await db.getHomeworkAll(socket.channels)
-      io.to(channel).emit("data",data)
-      //Notifiy user when homework expores
+      //Notify users
+      const data = await db.getHomework(channel)
+      io.to(channel).emit("data",{channel,data})
+      //Notifiy user when homework expires
       await db.whenHomeworkExpires(channel,async()=>{
         const data = await db.getHomework(channel)
-        io.to(channel).emit("data",data)
+        io.to(channel).emit("data",{channel,data})
       })
       return callback(null)
     })()
@@ -72,11 +73,13 @@ module.exports = (socket,io,db)=>{
       msg = await checkPayloadAndPermissions(socket,msg)
       const {channel} = msg
       await db.editHomework(channel,msg)
-      const data = await db.getHomeworkAll(socket.channels)
-      io.to(channel).emit("data",data)
+      //Notify users
+      const data = await db.getHomework(channel)
+      io.to(channel).emit("data",{channel,data})
+      //Notifiy user when homework expires
       await db.whenHomeworkExpires(channel,async()=>{
         const data = await db.getHomework(channel)
-        io.to(channel).emit("data",data)
+        io.to(channel).emit("data",{channel,data})
       })
       return callback(null)
     })()
@@ -91,8 +94,9 @@ module.exports = (socket,io,db)=>{
       msg = await checkPayloadAndPermissions(socket,msg)
       const {channel} = msg
       await db.deleteHomework(channel,msg.id)
-      const data = await db.getHomeworkAll(socket.channels)
-      io.to(channel).emit("data",data)
+      //Notify users
+      const data = await db.getHomework(channel)
+      io.to(channel).emit("data",{channel,data})
       return callback(null)
     })()
     .catch(e => callback(e.toString()))
