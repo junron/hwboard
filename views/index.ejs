@@ -71,7 +71,7 @@
      <script src="/scripts/socket.io.js"></script>
      <!--DoNt toUcHa my eRRor rePoTer-->
      <% if(reportErrors){ %>
-     <script src="https://cdn.ravenjs.com/3.24.1/raven.min.js" crossorigin="anonymous"></script>
+     <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
     <script>
       //DoNt toUcHa my eRRor rePoTer
       Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
@@ -216,6 +216,17 @@ const mainView = Framework7App.views.create('.view-main',{
       }
     ]
   })
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js', {scope: '/'}).then
+    (reg=>{
+      reg.update()
+      console.log('Registration succeeded. Scope is ' + reg.scope)
+    }).catch(function(error) {
+      console.log('Registration failed with ' + error)
+    })
+  }
 </script>
 </body>
 </html>
