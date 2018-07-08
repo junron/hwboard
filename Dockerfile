@@ -8,8 +8,6 @@ RUN mkdir -p /hwboard2
 WORKDIR /hwboard2
 COPY . .
 
-# Remove useless devDependencies
-RUN npm install
-RUN npm uninstall puppeteer
+RUN npm install --production
 
 EXPOSE 3001
