@@ -119,13 +119,13 @@ function getDate(date){
   return date.getDate()+"/"+date.getMonth()+1+"/"+date.getFullYear()
 }
 describe("Hwboard",async function(){
-  this.timeout(0);
+  this.timeout(20000);
   before(async function(){
     server.listen(port)
     await init()
   })
   afterEach(async ()=>{
-    return page.reload()
+    return page.goto('http://localhost:' + port)
   })
   it("Should be able to add homework",async function(){
     return await add()
