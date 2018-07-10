@@ -54,7 +54,7 @@ if(testing){
 //https://developers.google.com/web/fundamentals/security/csp/
 const csp = 
 `default-src 'self';
-script-src 'self' 'unsafe-inline' https://cdn.ravenjs.com https://secure.aadcdn.microsoftonline-p.com;
+script-src 'self' 'unsafe-inline' https://cdn.ravenjs.com;
 style-src 'self' 'unsafe-inline';
 connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
 object-src 'none';
