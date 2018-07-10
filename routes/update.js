@@ -38,10 +38,11 @@ router.get("/cd/update",(req, res) => {
     const promiseArr = [simpleGit.revparse(["--abbrev-ref","HEAD"]),auth(),simpleGit.fetch(),pm2.connect()]
     let [branch,,fetchRes] = await Promise.all(promiseArr)
     branch = branch.trim()
+    res.status(200).end(branch)
     const resetResult = await simpleGit.reset(["--hard","origin/"+branch])
     const reloadResult = await pm2.reload("hwboard2-web")
     await pm2.disconnect()
-    res.status(200).end(branch)
+    console.log("Done")
   })()
   .catch((e)=>{
     const code = e.code || 500
