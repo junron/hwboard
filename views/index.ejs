@@ -139,6 +139,7 @@
         type:"set",
         data
       })
+      reRender(data)
       //Add to localstorage as a fallback
       localStorage.setItem("data",JSON.stringify(data))
     })
