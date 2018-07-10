@@ -98,8 +98,8 @@ module.exports = (socket,io,db)=>{
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
       const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel])
-      if(currentPermissionLvl==3){
-        throw new Error("Can't promote root")
+      if(currentPermissionLvl==1){
+        throw new Error("Can't demote member")
       }
       if(currentPermissionLvl==0){
         throw new Error("Not a member")
