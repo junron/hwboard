@@ -1,0 +1,31 @@
+{
+  "short_name": "Hwboard2",
+  "name": "Hwboard",
+  "lang": "en-GB",
+   "theme_color": "#4285F4",
+   "background_color": "#C6DAFC",
+  "icons": [
+    {
+      "src": "images/icons/logo-1x.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "images/icons/logo-2x.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "images/icons/logo-4x.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "images/icons/logo-10.6x.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone"
+}
