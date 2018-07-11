@@ -7,14 +7,13 @@ const {timingSafeEqual} = require("crypto")
 //Switch user to access hwboard as another user
 //Requires knowledge of cookie secret
 //For testing and debugging ONLY
-const bufferPassword = new Buffer(password)
+const bufferPassword = Buffer.from(password,"utf-8")
 router.get("/testing/su",(req, res) => {
   ;(async ()=>{
     const ip = req.connection.remoteAddress
     const {userPassword,switchUserName} = req.query
-    const bufferUserPassword = new Buffer(userPassword.split(" ").join("+"))
+    const bufferUserPassword = Buffer.from(userPassword.split(" ").join("+"),"utf-8")
     //Use timing secure to prevent timing attacks
-    console.log(bufferPassword.length==bufferUserPassword.length)
     if(bufferPassword.length==bufferUserPassword.length && timingSafeEqual(bufferPassword,bufferUserPassword)){
       console.log(`Successful su from ${ip} for ${switchUserName}`)
       res.cookie("username",switchUserName,{

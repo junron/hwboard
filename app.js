@@ -36,8 +36,10 @@ const io = websocket.createServer(server)
 //routes
 const routes = require('./routes/index');
 const su = require('./routes/su');
+const update = require('./routes/update');
 app.use('/', routes);
 app.use('/', su);
+app.use('/', update);
 
 //Views
 app.set('views', path.join(__dirname, 'views'));

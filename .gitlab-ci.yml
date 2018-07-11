@@ -45,3 +45,8 @@ test:
     - artifacts
     expire_in: 1 week
     when: always
+auto_update:
+  stage: deploy
+  script:
+  - apk add curl
+  - curl https://nushhwboard.tk/cd/update
