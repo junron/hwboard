@@ -42,6 +42,7 @@ if(CI==true){
   MS_CLIENTSECRET="world"
   HOSTNAME = HOSTNAME || "not_required"
 }
+GITLAB_SECRET_TOKEN = GITLAB_SECRET_TOKEN || ""
 PORT = PORT || 3001
 //Cant see errors easily in docker or CI
 const isRemote = ((process.env.CI_PROJECT_NAME=="hwboard2") || process.env.IS_DOCKER=="true")
