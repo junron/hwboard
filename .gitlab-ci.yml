@@ -51,5 +51,5 @@ auto_update:
   - apk add curl
   - curl https://nushhwboard.tk/cd/update
   environment:
-    name: production
+    name: hwboard-jro-server
     url: https://nushhwboard.tk
