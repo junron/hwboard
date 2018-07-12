@@ -16,13 +16,18 @@ pm2.reload = promisify(reload)
 const {GITLAB_SECRET_TOKEN:gitlabToken} = require("../loadConfig")
 const {timingSafeEqual} = require("crypto")
 
-
+ 
 async function auth(req){
   if(!gitlabToken){
     return
   }
   const bufferToken = Buffer.from(gitlabToken,"utf-8")
   const {headers} = req
+  if(!headers["X-Gitlab-Token"]){
+    const error = new Error("Gitlab token missing")
+    error.code = 403
+    throw error
+  }
   const bufferUserToken = Buffer.from(headers["X-Gitlab-Token"],"utf-8")
   //Use timing secure to prevent timing attacks
   if(bufferToken.length==bufferUserToken.length && timingSafeEqual(bufferToken,bufferUserToken)){
@@ -35,11 +40,15 @@ async function auth(req){
 }
 router.get("/cd/update",(req, res) => {
   ;(async ()=>{
-    const promiseArr = [simpleGit.revparse(["--abbrev-ref","HEAD"]),auth(),simpleGit.fetch(),pm2.connect()]
-    let [branch,,fetchRes] = await Promise.all(promiseArr)
+    const {commitSHA} = req.query
+    const promiseArr = [simpleGit.revparse(["--abbrev-ref","HEAD"]),auth(req),simpleGit.fetch(),pm2.connect()]
+    let [branch] = await Promise.all(promiseArr)
     branch = branch.trim()
-    res.end(branch)
-    const resetResult = await simpleGit.reset(["--hard","origin/"+branch])
+    const resetResult = await simpleGit.reset(["--hard",commitSHA])
+    res.end(`
+    Resetting branch ${branch}
+    To commit ${commitSHA}
+    `)
     const reloadResult = await pm2.reload("hwboard2-web")
     await pm2.disconnect()
     console.log("Done")
@@ -47,7 +56,7 @@ router.get("/cd/update",(req, res) => {
   .catch((e)=>{
     const code = e.code || 500
     res.status(code).end(e.toString())
-    console.log(e)
+    console.log(e.message)
   })
 })
 
