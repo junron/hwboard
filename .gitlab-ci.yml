@@ -50,3 +50,6 @@ auto_update:
   script:
   - apk add curl
   - curl https://nushhwboard.tk/cd/update
+  environment:
+    name: production
+    url: https://nushhwboard.tk
