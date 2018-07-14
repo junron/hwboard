@@ -1,6 +1,6 @@
 //This is a service worker
-//It handles cacheing and PWA
-const version = "1.0.2"
+//It handles caching and PWA
+const version = "1.0.3"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
