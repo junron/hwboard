@@ -87,7 +87,7 @@ async function info(){
 async function add(){
   await page.click("#fab-add-homework")
   await page.waitFor("#subject-name")
-  await page.type("#subject-name","math")
+  await page.type("#subject-name","Math")
   await page.click(".item-content.input-toggle")
   await page.click(".toggle.color-red.toggle-init")
   console.log("Waiting for checkbox to be checked")
@@ -132,17 +132,21 @@ describe("Hwboard",async function(){
   it("Should be able to add homework",async function(){
     return await add()
   })
-  it("Should be able to show info dialog",async function(){
-    await info()
-    const name = await getHtml("#detailHomeworkName")
-    const subject = await getHtml("#detailSubject")
-    expect(subject).to.equal("math")
-    const dueDate = await getHtml("#detailDue")
-    const graded = await getHtml("#detailGraded")
-    expect(graded).to.equal("Yes")
-    const lastEdit = await getHtml("#detailLastEdit")
-    console.table = console.table || console.log
+  it("Should be able to show info dialog",function(){
+    return (async ()=>{
+      await info()
+      const name = await getHtml("#detailHomeworkName")
+      const subject = await getHtml("#detailSubject")
+      expect(subject).to.equal("Math")
+      const dueDate = await getHtml("#detailDue")
+      const graded = await getHtml("#detailGraded")
+      expect(graded).to.equal("Yes")
+      const lastEdit = await getHtml("#detailLastEdit")
+      console.table = console.table || console.log
       console.table({name,subject,dueDate,graded,lastEdit})
+    })().catch(e=>{
+      throw e
+    })
   })
   it("Should be able to remove homework",async function(){
     return await remove()
