@@ -86,6 +86,7 @@ async function info(){
 }
 async function add(){
   await page.click("#fab-add-homework")
+  await page.waitFor("#subject-name")
   await page.type("#subject-name","math")
   await page.click(".item-content.input-toggle")
   await page.click(".toggle.color-red.toggle-init")
