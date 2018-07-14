@@ -16,11 +16,11 @@ const gradedFirst = (a,b) => {
 }
 
 const dueEarlierFirst = (a,b) => {
-  const daysLeftA = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(a.dueDate, "{d}/{M}"), "en-GB"))
-  const daysLeftB = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(b.dueDate, "{d}/{M}"), "en-GB"))
-  if(daysLeftA.dueDate > daysLeftB.dueDate){
+  const daysLeftA = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(a.dueDate), "{d}/{M}"), "en-GB"))
+  const daysLeftB = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(b.dueDate), "{d}/{M}"), "en-GB"))
+  if(daysLeftA > daysLeftB){
     return 1
-  }else if(daysLeftA.dueDate < daysLeftB.dueDate){
+  }else if(daysLeftA < daysLeftB){
     return -1
   }
   return 0
