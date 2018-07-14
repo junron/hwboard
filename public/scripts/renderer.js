@@ -5,19 +5,50 @@ if(typeof Sugar =="undefined"){
     Sugar = require("sugar-date")
   }
 }
+
+const gradedFirst = (a,b) => {
+  if(a.isTest > b.isTest){
+    return -1
+  }else if(a.isTest < b.isTest){
+    return 1
+  }
+  return 0
+}
+
+const dueEarlierFirst = (a,b) => {
+  if(a.dueDate > b.dueDate){
+    return 1
+  }else if(a.dueDate < b.dueDate){
+    return -1
+  }
+  return 0
+}
+
+const subjectFirst = (a,b) => {
+  if(a.subject > b.subject){
+    return 1
+  }else if(a.subject < b.subject){
+    return -1
+  }
+  return 0
+}
 parser.parseBySubject = function (data,order=0) {
   data = data.sort(function(a,b){
-    if(a.subject>b.subject){
-      return -1
-    }else if(a.subject<b.subject){
-      return 1
+    const returnValue = subjectFirst(a,b)
+    if(returnValue){
+      if(!order){
+        return returnValue
+      }else{
+        return returnValue * -1
+      }
+    }
+    const graded = gradedFirst(a,b)
+    if(graded){
+      return graded
     }else{
-      return 0
+      return dueEarlierFirst(a,b)
     }
   })
-  if(!order){
-    data = data.reverse()
-  }
   let subjects = []
   let html = ""
   const subjectEnd = `</ul></div>`
@@ -85,15 +116,21 @@ parser.parseHomeworkSubject = function(homework) {
 }
 parser.parseByDate = function(data,order=0) {
   data = data.sort(function(a,b){
-    if(a.dueDate>b.dueDate){
-      return -1
+    const returnValue = dueEarlierFirst(a,b)
+    if(returnValue){
+      if(!order){
+        return returnValue
+      }else{
+        return returnValue * -1
+      }
+    }
+    const graded = gradedFirst(a,b)
+    if(graded){
+      return graded
     }else{
-      return 1
+      return subjectFirst(a,b)
     }
   })
-  if(!order){
-    data = data.reverse()
-  }
   let dates = []
   let html = ""
   const dateEnd = `</ul></div>`
