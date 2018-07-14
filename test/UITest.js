@@ -132,8 +132,8 @@ describe("Hwboard",async function(){
   it("Should be able to add homework",async function(){
     return await add()
   })
-  it("Should be able to show info dialog",function(){
-    return (async ()=>{
+  it("Should be able to show info dialog",function(done){
+    (async ()=>{
       await info()
       const name = await getHtml("#detailHomeworkName")
       const subject = await getHtml("#detailSubject")
@@ -146,7 +146,7 @@ describe("Hwboard",async function(){
       console.table({name,subject,dueDate,graded,lastEdit})
     })().catch(e=>{
       throw e
-    })
+    }).then(done)
   })
   it("Should be able to remove homework",async function(){
     return await remove()
