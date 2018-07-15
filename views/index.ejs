@@ -54,6 +54,10 @@
       worker.postMessage({
         type:"get",
       }).then(data=>{
+        if(!data.length){
+          //IndexedDB is empty, perhaps is first page load
+          return
+        }
         reRender(data)
       })
       //get cookies
