@@ -87,7 +87,7 @@ async function info(){
 async function add(){
   await page.click("#fab-add-homework")
   await page.waitFor("#subject-name")
-  await page.type("#subject-name","Math")
+  await page.type("#subject-name","math")
   await page.click(".item-content.input-toggle")
   await page.click(".toggle.color-red.toggle-init")
   console.log("Waiting for checkbox to be checked")
@@ -141,7 +141,7 @@ describe("Hwboard",async function(){
       await info()
       const name = await getHtml("#detailHomeworkName")
       const subject = await getHtml("#detailSubject")
-      expect(subject).to.equal("Math")
+      expect(subject).to.equal("math")
       const dueDate = await getHtml("#detailDue")
       const graded = await getHtml("#detailGraded")
       expect(graded).to.equal("Yes")
