@@ -23,12 +23,12 @@ async function auth(req){
   }
   const bufferToken = Buffer.from(gitlabToken,"utf-8")
   const {headers} = req
-  if(!headers["X-Gitlab-Token"]){
+  if(!headers["x-gitlab-token"]){
     const error = new Error("Gitlab token missing")
     error.code = 403
     throw error
   }
-  const bufferUserToken = Buffer.from(headers["X-Gitlab-Token"],"utf-8")
+  const bufferUserToken = Buffer.from(headers["x-gitlab-token"],"utf-8")
   //Use timing secure to prevent timing attacks
   if(bufferToken.length==bufferUserToken.length && timingSafeEqual(bufferToken,bufferUserToken)){
     return
