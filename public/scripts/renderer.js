@@ -64,7 +64,7 @@ parser.parseBySubject = function (data,order=0) {
       html += `
       <div class="list-group">
         <ul id="${subjectId}">
-          <li class="list-group-title">${subject}</li>
+          <li style="padding-top:5px" class="list-group-title">${subject}</li>
       `
       subjects.push(subject)
     }
@@ -144,8 +144,8 @@ parser.parseByDate = function(data,order=0) {
       }
       html += `
       <div class="list-group">
-        <ul style="padding: 0px" id="${daysLeft}">
-          <li class="list-group-title">${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})</li>
+        <ul id="${daysLeft}">
+          <li style="padding-top:5px" class="list-group-title">${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})</li>
       `
       dates.push(displayDate)
     }
