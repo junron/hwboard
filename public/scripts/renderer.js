@@ -6,6 +6,8 @@ if(typeof Sugar =="undefined"){
   }
 }
 
+const filterDue = a => new Date(a.dueDate) >= (new Date() - 3600000)
+
 const gradedFirst = (a,b) => {
   if(a.isTest > b.isTest){
     return -1
@@ -35,6 +37,7 @@ const subjectFirst = (a,b) => {
   return 0
 }
 parser.parseBySubject = function (data,order=0) {
+  data = data.filter(filterDue)
   data = data.sort(function(a,b){
     const returnValue = subjectFirst(a,b)
     if(returnValue){
@@ -117,6 +120,7 @@ parser.parseHomeworkSubject = function(homework) {
     return rendered
 }
 parser.parseByDate = function(data,order=0) {
+  data = data.filter(filterDue)
   data = data.sort(function(a,b){
     const returnValue = dueEarlierFirst(a,b)
     if(returnValue){
