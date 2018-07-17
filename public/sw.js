@@ -1,6 +1,6 @@
 //This is a service worker
 //It handles caching and PWA
-const version = "1.0.3"
+const version = "1.1.0"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -8,7 +8,7 @@ self.addEventListener('install', function(e) {
   self.skipWaiting()
   e.waitUntil(
     caches.open('cache1').then(function(cache) {
-      return cache.addAll([
+      const cacheArray = [
         "/styles/roboto.css",
         "/styles/icons.css",
         "/scripts/socket.io.js",
@@ -25,7 +25,8 @@ self.addEventListener('install', function(e) {
         "/fonts/material.ttf",
         "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
         "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf"
-      ]);
+      ]
+      return cache.addAll(cacheArray);
     })
   );
 });
@@ -60,9 +61,14 @@ self.addEventListener('fetch', function(event) {
             if(event.request.url.includes("transport=polling") || event.request.url.includes("/cd/")){
               return networkResponse;
             }
-            cache.put(event.request, networkResponse.clone());
-            console.log(`Cached ${event.request.url}`)
-            return networkResponse;
+            if(networkResponse.ok){
+              cache.put(event.request, networkResponse.clone());
+              console.log(`Cached ${event.request.url}`)
+              return networkResponse;
+            }else{
+              console.log(`Failed to fetch from network ${event.request.url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
+              return response
+            }
           })
           return response || fetchPromise;
         })
