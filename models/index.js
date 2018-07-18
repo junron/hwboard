@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
+
 //Same as docker env variables 
 //or use a config file
-
 const {POSTGRES_PASSWORD:dbPasswd,POSTGRES_USER:dbUser,POSTGRES_DB:dbName="hwboard"} = require("../loadConfig")
 
 
@@ -12,7 +12,11 @@ let POSTGRES_HOST = "localhost"
 if(process.env.CI_PROJECT_NAME=="hwboard2"||process.env.IS_DOCKER=="true"){
   POSTGRES_HOST = "postgres"
 }
-const sequelize = new Sequelize(`postgres://${dbUser}:${dbPasswd}@${POSTGRES_HOST}:5432/${dbName}`)
+const sequelize = new Sequelize(dbName,dbUser,dbPasswd,{
+  host:POSTGRES_HOST,
+  dialect: "postgres",
+  operatorsAliases: Sequelize.Op
+})
 sequelize.authenticate()
 .then(() => {
   console.log('Connection has been established successfully.')

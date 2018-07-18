@@ -86,6 +86,7 @@ async function info(){
 }
 async function add(){
   await page.click("#fab-add-homework")
+  await page.waitFor("#subject-name")
   await page.type("#subject-name","math")
   await page.click(".item-content.input-toggle")
   await page.click(".toggle.color-red.toggle-init")
@@ -125,22 +126,31 @@ describe("Hwboard",async function(){
     await init()
   })
   afterEach(async ()=>{
-    return await page.goto('http://localhost:' + port)
+    await page.goto('http://localhost:' + port)
+    return await page.waitFor(2000)
+  })
+  beforeEach(async ()=>{
+    await page.goto('http://localhost:' + port)
+    return await page.waitFor(2000)
   })
   it("Should be able to add homework",async function(){
     return await add()
   })
-  it("Should be able to show info dialog",async function(){
-    await info()
-    const name = await getHtml("#detailHomeworkName")
-    const subject = await getHtml("#detailSubject")
-    expect(subject).to.equal("math")
-    const dueDate = await getHtml("#detailDue")
-    const graded = await getHtml("#detailGraded")
-    expect(graded).to.equal("Yes")
-    const lastEdit = await getHtml("#detailLastEdit")
-    console.table = console.table || console.log
+  it("Should be able to show info dialog",function(done){
+    (async ()=>{
+      await info()
+      const name = await getHtml("#detailHomeworkName")
+      const subject = await getHtml("#detailSubject")
+      expect(subject).to.equal("math")
+      const dueDate = await getHtml("#detailDue")
+      const graded = await getHtml("#detailGraded")
+      expect(graded).to.equal("Yes")
+      const lastEdit = await getHtml("#detailLastEdit")
+      console.table = console.table || console.log
       console.table({name,subject,dueDate,graded,lastEdit})
+    })().catch(e=>{
+      throw e
+    }).then(done)
   })
   it("Should be able to remove homework",async function(){
     return await remove()

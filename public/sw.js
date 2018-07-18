@@ -1,6 +1,6 @@
 //This is a service worker
-//It handles cacheing and PWA
-const version = "1.0.1"
+//It handles caching and PWA
+const version = "1.1.0"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -8,12 +8,12 @@ self.addEventListener('install', function(e) {
   self.skipWaiting()
   e.waitUntil(
     caches.open('cache1').then(function(cache) {
-      return cache.addAll([
+      const cacheArray = [
         "/styles/roboto.css",
         "/styles/icons.css",
         "/scripts/socket.io.js",
-        "/framework7/css/framework7.css",
-        "/framework7/js/framework7.js",
+        "/framework7/css/framework7.min.css",
+        "/framework7/js/framework7.min.js",
         "/scripts/promise-worker.js",
         "/scripts/jquery.min.js",
         "/scripts/app.js",
@@ -25,7 +25,8 @@ self.addEventListener('install', function(e) {
         "/fonts/material.ttf",
         "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
         "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf"
-      ]);
+      ]
+      return cache.addAll(cacheArray);
     })
   );
 });
@@ -54,9 +55,20 @@ self.addEventListener('fetch', function(event) {
           if((event.request.url.endsWith(".css")||event.request.url.endsWith(".ttf")||event.request.url.indexOf("min")>-1||event.request.url.indexOf("io")>-1)&&response){
             return addCacheHeader(response)
           }
+          console.log(`Loading ${event.request.url}`)
           var fetchPromise = fetch(event.request).then(function(networkResponse) {
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
+            //Dont cache socket io
+            if(event.request.url.includes("transport=polling") || event.request.url.includes("/cd/")){
+              return networkResponse;
+            }
+            if(networkResponse.ok){
+              cache.put(event.request, networkResponse.clone());
+              console.log(`Cached ${event.request.url}`)
+              return networkResponse;
+            }else{
+              console.log(`Failed to fetch from network ${event.request.url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
+              return response
+            }
           })
           return response || fetchPromise;
         })

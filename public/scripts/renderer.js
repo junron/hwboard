@@ -5,19 +5,55 @@ if(typeof Sugar =="undefined"){
     Sugar = require("sugar-date")
   }
 }
+
+const filterDue = a => new Date(a.dueDate) >= (new Date() - 3600000)
+
+const gradedFirst = (a,b) => {
+  if(a.isTest > b.isTest){
+    return -1
+  }else if(a.isTest < b.isTest){
+    return 1
+  }
+  return 0
+}
+
+const dueEarlierFirst = (a,b) => {
+  const daysLeftA = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(a.dueDate), "{d}/{M}"), "en-GB"))
+  const daysLeftB = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(b.dueDate), "{d}/{M}"), "en-GB"))
+  if(daysLeftA > daysLeftB){
+    return 1
+  }else if(daysLeftA < daysLeftB){
+    return -1
+  }
+  return 0
+}
+
+const subjectFirst = (a,b) => {
+  if(a.subject > b.subject){
+    return 1
+  }else if(a.subject < b.subject){
+    return -1
+  }
+  return 0
+}
 parser.parseBySubject = function (data,order=0) {
+  data = data.filter(filterDue)
   data = data.sort(function(a,b){
-    if(a.subject>b.subject){
-      return -1
-    }else if(a.subject<b.subject){
-      return 1
+    const returnValue = subjectFirst(a,b)
+    if(returnValue){
+      if(!order){
+        return returnValue
+      }else{
+        return returnValue * -1
+      }
+    }
+    const graded = gradedFirst(a,b)
+    if(graded){
+      return graded
     }else{
-      return 0
+      return dueEarlierFirst(a,b)
     }
   })
-  if(!order){
-    data = data.reverse()
-  }
   let subjects = []
   let html = ""
   const subjectEnd = `</ul></div>`
@@ -31,7 +67,7 @@ parser.parseBySubject = function (data,order=0) {
       html += `
       <div class="list-group">
         <ul id="${subjectId}">
-          <li class="list-group-title">${subject}</li>
+          <li style="padding-top:5px" class="list-group-title">${subject}</li>
       `
       subjects.push(subject)
     }
@@ -84,16 +120,23 @@ parser.parseHomeworkSubject = function(homework) {
     return rendered
 }
 parser.parseByDate = function(data,order=0) {
+  data = data.filter(filterDue)
   data = data.sort(function(a,b){
-    if(a.dueDate>b.dueDate){
-      return -1
+    const returnValue = dueEarlierFirst(a,b)
+    if(returnValue){
+      if(!order){
+        return returnValue
+      }else{
+        return returnValue * -1
+      }
+    }
+    const graded = gradedFirst(a,b)
+    if(graded){
+      return graded
     }else{
-      return 1
+      return subjectFirst(a,b)
     }
   })
-  if(!order){
-    data = data.reverse()
-  }
   let dates = []
   let html = ""
   const dateEnd = `</ul></div>`
@@ -105,8 +148,8 @@ parser.parseByDate = function(data,order=0) {
       }
       html += `
       <div class="list-group">
-        <ul style="padding: 0px" id="${daysLeft}">
-          <li class="list-group-title">${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})</li>
+        <ul id="${daysLeft}">
+          <li style="padding-top:5px" class="list-group-title">${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})</li>
       `
       dates.push(displayDate)
     }
