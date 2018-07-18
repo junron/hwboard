@@ -2,18 +2,38 @@ const express = require('express')
 const router = express.Router()
 const simpleGit = require('simple-git')()
 const {promisify} = require("util")
-const {fetch,revparse} = simpleGit
+const {fetch,revparse,show,log} = simpleGit
 
 simpleGit.revparse = promisify(revparse)
 simpleGit.fetch = promisify(fetch)
+simpleGit.show = promisify(show)
+simpleGit.log = promisify(log)
 
 router.get("/cd/version",(req, res) => {
   ;(async ()=>{
-    const promiseArr = [simpleGit.revparse(["--abbrev-ref","HEAD"]),simpleGit.revparse(["HEAD"])]
-    let [branch,commitSha] = await Promise.all(promiseArr)
+    await simpleGit.fetch()
+    const promiseArr = [
+      simpleGit.revparse(["--abbrev-ref","HEAD"]),
+      simpleGit.revparse(["HEAD"]),
+      simpleGit.show(["-s","--format=%ci","HEAD"])
+    ]
+    let [branch,commitSha,lastUpdate] = await Promise.all(promiseArr)
+    branch = branch.trim()
+    const latestCommits = await simpleGit.log(["HEAD^..origin/"+branch])
+    const latest = JSON.stringify(latestCommits.all[0],null,2)
+    const thisCommit = JSON.stringify(latestCommits.all[latestCommits.all.length-1],null,2)
     res.end(`
     Branch: ${branch}
     Commit SHA: ${commitSha}
+    Last updated: ${lastUpdate}
+
+    Latest commit: 
+
+${latest}
+
+    This commit:
+
+${thisCommit}
     `)
   })()
   .catch((e)=>{
