@@ -19,7 +19,7 @@
           <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
         </div>
       </div>
-        <div class="page-content" style="padding-top:0px">
+        <div class="page-content" style="padding-top:0px" role="main">
           <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
             <%- renderer(data,sortType,sortOrder,adminChannels) -%>
           </div>
@@ -40,7 +40,7 @@
       </div>
       </div>
     </div>
-    <link rel="stylesheet" href="/framework7/css/framework7.css">
+    <link rel="stylesheet" href="/framework7/css/framework7.min.css">
     <script src="/scripts/jquery.min.js"></script>
     <script src="/scripts/renderer.js"></script>
     <script src="/scripts/promise-worker.js"></script>
@@ -49,7 +49,17 @@
       //Web worker for indexedDB
       //Use promise based messaging
       const worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-
+      //Load cached data before websocket connects
+      //Allows for faster loading of updated data
+      worker.postMessage({
+        type:"get",
+      }).then(data=>{
+        if(!data.length){
+          //IndexedDB is empty, perhaps is first page load
+          return
+        }
+        reRender(data)
+      })
       //get cookies
       function getCookie(cname) {
         var name = cname + "=";
@@ -161,7 +171,7 @@
 <script defer src="/scripts/dates.js"></script>
 <script defer src="/scripts/generalForms.js"></script>
 
-<script src="/framework7/js/framework7.js"></script>
+<script src="/framework7/js/framework7.min.js"></script>
 
 <script src="/scripts/app.js"></script>
 <% if (admin){ %>
