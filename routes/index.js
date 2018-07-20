@@ -156,6 +156,38 @@ router.get('/:channel/settings', async (req, res, next) => {
   }
 })
 
+//View channel stats
+router.get('/:channel/analytics', async (req, res, next) => {
+  if(testing && req.cookies.username){
+    const email = req.cookies.username
+    res.cookie("username",email,{
+      signed:true,
+      httpOnly:true
+    })
+  }
+  if(!dbInit){
+    //Create tables and stuffs
+    await db.init()
+    dbInit = true
+  }
+  const channelName = req.params.channel
+  const authData = await authChannels(req,res)
+  if(authData=="redirected"){
+    return
+  }
+  const {channelData,decodedToken} = authData
+  // console.log({channelData})
+  const channel = channelData[channelName]
+  if(channel){
+    res.header("Link",parsePushHeaders(basePushFiles))
+    const email = decodedToken.preferred_username
+    //Report errors in production or mobile
+    const mobile = isMobile(req.headers['user-agent'])
+    res.render('analytics', {reportErrors:(reportErrors||mobile)})
+  }else{
+    res.status(404).end("Channel not found")
+  }
+})
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
