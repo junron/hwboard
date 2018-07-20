@@ -107,6 +107,20 @@ async function getHomework(hwboardName,removeExpired=true){
     return data
   }
 }
+async function getNumHomework({channel,subject,startDate=Infinity,endDate=Infinity}){
+  const Homework = tables[channel]
+  const Op = Sequelize.Op
+  const where = {
+    subject,
+  }
+  if(startDate!=Infinity && startDate != endDate){
+    where.dueDate = {
+      [Op.lte]:endDate,
+      [Op.gt]:startDate,
+    }
+  }
+  return Homework.count({where})
+}
 async function addSubject(channelData){
   let {channel,data,subject} = channelData
   const days = ["mon","tue","wed","thu","fri"]
@@ -342,5 +356,6 @@ module.exports={
   removeMember,
   addSubject,
   getNumTables,
-  whenHomeworkExpires
+  whenHomeworkExpires,
+  getNumHomework
 }
