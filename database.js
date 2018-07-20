@@ -30,33 +30,53 @@ async function generateHomeworkTables(){
   }
 }
 async function getUserChannels(userEmail,permissionLevel=1){
-  //Argh teach me how does one select only if value is in postgres array
+  if(userEmail=="*"){
+    return Channels.findAll({
+      raw: true,
+    })
+  }
+  const Op = Sequelize.Op
   const data = await Channels.findAll({
-    raw: true
+    raw: true,
+    where:{
+      [Op.or]:[
+        {
+          roots:{
+            [Op.contains]:[userEmail]
+          }
+        },
+        {
+          admins:{
+            [Op.contains]:[userEmail]
+          }
+        },
+        {
+          members:{
+            [Op.contains]:[userEmail]
+          }
+        }
+      ]
+    }
   }) 
   if(userEmail=="*"){
     return data
   }
-  const authChannels = []
   for(let channel of data){
     if(channel.roots.includes(userEmail)){
       channel.permissions = 3
-      authChannels.push(channel)
       //We want the highest permissions
       continue
     }
     if(channel.admins.includes(userEmail)&&permissionLevel<=2){
       channel.permissions = 2
-      authChannels.push(channel)
       continue
     }
-    if((channel.members.includes(userEmail)||channel.members.includes("*"))&&permissionLevel<=1){
+    if(channel.members.includes(userEmail)&&permissionLevel<=1){
       channel.permissions = 1
-      authChannels.push(channel)
       continue
     }
   }
-  return authChannels
+  return data
 }
 //Assumes that access has been granted
 //Check authorization before calling
