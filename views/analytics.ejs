@@ -81,25 +81,6 @@
   <script defer src="/scripts/Chart.bundle.min.js"></script>
   <script src="/scripts/socket.io.js"></script>
   <script>
-    function hashCode(str) { // java String#hashCode
-      var hash = 0;
-      for (var i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      return hash;
-    } 
-
-    function intToRGB(i){
-        var c = (i & 0x00FFFFFF)
-            .toString(16)
-            .toUpperCase();
-
-        return "00000".substring(0, 6 - c.length) + c;
-    }
-    function toColor(string){
-      console.log(string)
-      return "#"+intToRGB(hashCode(string))
-    }
     function getCookie(cname) {
       var name = cname + "=";
       var decodedCookie = decodeURIComponent(document.cookie);
@@ -151,6 +132,8 @@
     }
     return sum
   }
+  const default_colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC']
+  const getColors = array => default_colors.slice(0,array.length)
   function renderHomeworkSubjectChart(data){
     const canvas = document.getElementById("homework-subject-chart")
     const chart = new Chart(canvas,{
@@ -159,7 +142,7 @@
         labels:Object.keys(data),
         datasets:[{
           data:Object.values(data),
-          backgroundColor:Object.keys(data).map(toColor)
+          backgroundColor:getColors(Object.keys(data))
         }]
       },
       options:{
