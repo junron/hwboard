@@ -119,7 +119,7 @@ exports.createServer = function(server){
       require("./websocket-routes/homework")(socket,io,db)
 
       //Stats
-      require("./websocket-routes/analytics")(socket,io,db)
+      require("./websocket-routes/analytics")(socket,db)
 
       //For tests
       require("./websocket-routes/tests")(socket)
