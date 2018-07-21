@@ -144,6 +144,13 @@
     })
   })
 
+  const sumArr = arr =>{
+    let sum = 0
+    for(const val of arr){
+      sum += val
+    }
+    return sum
+  }
   function renderHomeworkSubjectChart(data){
     const canvas = document.getElementById("homework-subject-chart")
     const chart = new Chart(canvas,{
@@ -157,7 +164,28 @@
       },
       options:{
         legend:{
-          position:"right"
+          position:"right",
+          labels:{
+            generateLabels:chart=>{
+              const {data} = chart
+              const values = data.datasets[0].data
+              const total = sumArr(values)
+              const colors = data.datasets[0].backgroundColor
+              const labels = data.labels
+              const res = []
+              for(const label of labels){
+                const labelObj = {}
+                const num = res.length
+                const value = values[num]
+                const percentage = Math.floor((value/total)*100)
+                labelObj.text = label + ` (${percentage}%)`
+                labelObj.fillStyle = colors[num]
+                res.push(labelObj)
+              }
+              console.log(res)
+              return res
+            }
+          }
         }
       }
     })
