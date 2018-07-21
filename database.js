@@ -107,11 +107,18 @@ async function getHomework(hwboardName,removeExpired=true){
     return data
   }
 }
-async function getNumHomework({channel,subject,startDate=Infinity,endDate=Infinity}){
+async function getNumHomework({channel,subject,graded=0,startDate=Infinity,endDate=Infinity}){
   const Homework = tables[channel]
   const Op = Sequelize.Op
   const where = {
     subject,
+  }
+  if(graded){
+    if(graded==-1){
+      where.isTest = false
+    }else{
+      where.isTest = true
+    }
   }
   if(startDate!=Infinity && startDate != endDate){
     where.dueDate = {
