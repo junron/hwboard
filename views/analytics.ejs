@@ -8,6 +8,12 @@
     .md #app .list ul ul {
       padding-left: 0px;
     }
+    .chart-container {
+      position: relative;
+      margin: auto;
+      height: 40vh;
+      width: 80vw;
+    }
   </style>
   <div id="app">
     <div class="view view-main">
@@ -54,6 +60,8 @@
                     <div class="item-content">
                       <div class="chart-container" style="position: relative;">
                        <canvas id="homework-date-chart" height=350px width=350px></canvas>
+                       <br>
+                       <br>
                       </div>
                     </div>
                   </li>
@@ -234,9 +242,18 @@
         }]
       },
       options:{
+        responsive:true,
+        maintainAspectRatio: false,
         legend:{
           position:"right",
           labels:{
+            boxWidth:20,
+            filter: (legend,chart)=>{
+              if(legend.text.endsWith("(0%)")){
+                return false
+              }
+              return true
+            },
             generateLabels:chart=>{
               const {data} = chart
               const values = data.datasets[0].data
@@ -290,6 +307,8 @@
         }]
       },
       options:{
+        responsive:true,
+        maintainAspectRatio: false,
         scales: {
           yAxes: [{
             display: true,
