@@ -94,12 +94,12 @@
   </script>
   <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
   <script>
-    // //DoNt toUcHa my eRRor rePoTer
-    // Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
-    // Raven.setUserContext({
-    //   name: getCookie("name"),
-    //   email: getCookie("email"),
-    // })
+    //DoNt toUcHa my eRRor rePoTer
+    Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
+    Raven.setUserContext({
+      name: getCookie("name"),
+      email: getCookie("email"),
+    })
   </script>
 <script>
   let homeworkSubjectChart
@@ -294,7 +294,6 @@
       homeworkDateChart.update()
       return homeworkDateChart
     }
-    console.log(data)
     const canvas = document.getElementById("homework-date-chart")
     const chart = new Chart(canvas,{
       type:"line",
