@@ -4,6 +4,10 @@
 <link href="/styles/roboto.css" rel="stylesheet"> 
 <meta name="viewport" content="width=device-width, initial-scale=1"> 
 <body style="margin-left:0px;margin-right:0px"> 
+  <style>
+    .md #app .list ul ul {
+      padding-left: 0px;
+    }
   </style>
   <div id="app">
     <div class="view view-main">
@@ -111,7 +115,7 @@
     })
     conn.emit("homeworkDayData",{channel},(err,data)=>{
       if(err) throw err
-      homeworkDateChart = renderHomeworkDateChart(fillInDays(data))
+      homeworkDateChart = renderHomeworkDateChart(filterOutWeekends(fillInDays(data)))
     })
   })
 
@@ -176,6 +180,14 @@
     return sum
   }
 
+  const filterOutWeekends = data =>{
+    for(let day in data){
+      if(!notWeekend(parseInt(day))){
+        delete data[day]
+      }
+    }
+    return data
+  }
   const fillInDays = homeworkData =>{
     let thisDay 
     for(let day in homeworkData){
@@ -251,6 +263,7 @@
   }
 
   const toDate = int => new Date(int*24*60*60*1000).toString().slice(4,10)
+  const notWeekend = int => !(new Date(int*24*60*60*1000).getDay() == 6 || new Date(int*24*60*60*1000).getDay() == 0)
 
   function renderHomeworkDateChart(data){
     if(homeworkDateChart){
@@ -264,6 +277,7 @@
       homeworkDateChart.update()
       return homeworkDateChart
     }
+    console.log(data)
     const canvas = document.getElementById("homework-date-chart")
     const chart = new Chart(canvas,{
       type:"line",
