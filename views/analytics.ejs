@@ -288,7 +288,12 @@
         labels:Object.keys(data),
         datasets:[{
           data:Object.values(data),
-          backgroundColor:getColors(Object.keys(data))
+          backgroundColor:getColors(Object.keys(data)),
+          backgroundColor:"rgb(138,43,226,0.2)",
+          borderColor:"rgb(138,43,226)",
+          pointRadius:0,
+          pointStyle:"cross",
+          lineTension:0,
         }]
       }
       homeworkDateChart.update()
@@ -300,9 +305,12 @@
       data:{
         labels:Object.keys(data).map(toDate),
         datasets:[{
+          lineTension:0,
           data:Object.values(data),
           backgroundColor:"rgb(138,43,226,0.2)",
-          borderColor:"rgb(138,43,226)"
+          borderColor:"rgb(138,43,226)",
+          pointRadius:0,
+          pointStyle:"cross"
         }]
       },
       options:{
