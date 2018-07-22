@@ -59,4 +59,30 @@ module.exports = (socket,db)=>{
     //Error in handling error
     .catch(uncaughtErrorHandler)
   })
+
+  //Get homework statistics/day
+  socket.on("homeworkDayData",function(msg,callback){
+    ;(async ()=>{
+      msg = await checkPayloadAndPermissions(socket,msg,1)
+      const {channel} = msg
+
+      const data = await db.getHomework(channel,false)
+      const result = {}
+
+      for (const homework of data){
+        const date = Math.floor(homework.dueDate.getTime()/(24*60*60*1000))
+        if(result[date]){
+          result[date]++
+        }else{
+          result[date]=1
+        }
+      }
+      callback(null,result)
+      return null
+    })()
+    .then(callback)
+    .catch(e => callback(e.toString()))
+    //Error in handling error
+    .catch(uncaughtErrorHandler)
+  })
 }

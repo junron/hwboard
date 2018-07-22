@@ -4,57 +4,10 @@
 <link href="/styles/roboto.css" rel="stylesheet"> 
 <meta name="viewport" content="width=device-width, initial-scale=1"> 
 <body style="margin-left:0px;margin-right:0px"> 
-
-  <style>
-    .md #app .list .item-content {
-      width: 100%;
-    }
-    #app .md li li:last-child .item-inner:after, .md li:last-child li .item-inner:after {
-      width: 100vw;
-    }
-    .md #app .list ul ul {
-      padding-left: 0px;
-    }
-    .accordion-item-content {
-      padding-left:16px;
-    }
-    #app .list .swipeout .item-inner {
-      padding-left:8px;
-    }
-    #app .list .swipeout.item-content {
-      padding-left:0px;
-    }
-    .list > ul > li.item-divider {
-      height: 40px;
-      background: #fff;
-      margin-right: 16px;
-      margin-top: 12px;
-      line-height: 24px;
-      font-size: 20px;
-      font-weight:normal;
-      color: #000000de;
-      letter-spacing: 0.8px;
-    } 
-    .accordion-item > .item-link.item-content {
-      font-size:19px;
-    }
-    .accordion-item .list .item-content .person-name {
-      font-weight: 300;
-    }
-    .accordion-item-content .block-title {
-      margin-top:0px;
-      font-size: 18px;
-      color: black;
-    }
-    .accordion-item-content .item-footer {
-      font-size: 16px;
-      color: black;
-    }
   </style>
   <div id="app">
     <div class="view view-main">
     <link href="/styles/roboto.css" rel="stylesheet">
-    <!--<link href="/styles/new.css" rel="stylesheet">-->
     <link rel="stylesheet" href = "/styles/icons.css">
       <div class="page page-current">
           <div class="page-content block">
@@ -87,6 +40,16 @@
                         </li>
                       <div class="chart-container" style="position: relative;">
                        <canvas id="homework-subject-chart" height=350px width=350px></canvas>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-item">
+                    <div class="item-inner">
+                        <div class="item-title">Homework by date</div>
+                    </div>
+                    <div class="item-content">
+                      <div class="chart-container" style="position: relative;">
+                       <canvas id="homework-date-chart" height=350px width=350px></canvas>
                       </div>
                     </div>
                   </li>
@@ -128,6 +91,7 @@
   </script>
 <script>
   let homeworkSubjectChart
+  let homeworkDateChart
   let gradedMode = 0
   const conn = io(location.origin,{secure: true})
   conn.on("connect_error",function(err){
@@ -144,6 +108,10 @@
     conn.emit("homeworkSubjectData",{channel},(err,data)=>{
       if(err) throw err
       homeworkSubjectChart = renderHomeworkSubjectChart(data)
+    })
+    conn.emit("homeworkDayData",{channel},(err,data)=>{
+      if(err) throw err
+      homeworkDateChart = renderHomeworkDateChart(fillInDays(data))
     })
   })
 
@@ -207,6 +175,25 @@
     }
     return sum
   }
+
+  const fillInDays = homeworkData =>{
+    let thisDay 
+    for(let day in homeworkData){
+      day = parseInt(day)
+      if(!thisDay){
+        thisDay = day
+      }else{
+        if(thisDay<(day-1)){
+          //There are days with 0 homework
+          for(let i = thisDay+1;i<day;i++){
+            homeworkData[i] = 0
+          }
+        }
+        thisDay = day
+      }
+    }
+    return homeworkData
+  }
   const default_colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC']
   const getColors = array => default_colors.slice(0,array.length)
   function renderHomeworkSubjectChart(data){
@@ -254,10 +241,52 @@
                 labelObj.fillStyle = colors[num]
                 res.push(labelObj)
               }
-              console.log(res)
               return res
             }
           }
+        }
+      }
+    })
+    return chart
+  }
+
+  const toDate = int => new Date(int*24*60*60*1000).toString().slice(4,10)
+
+  function renderHomeworkDateChart(data){
+    if(homeworkDateChart){
+      homeworkDateChart.data = {
+        labels:Object.keys(data),
+        datasets:[{
+          data:Object.values(data),
+          backgroundColor:getColors(Object.keys(data))
+        }]
+      }
+      homeworkDateChart.update()
+      return homeworkDateChart
+    }
+    const canvas = document.getElementById("homework-date-chart")
+    const chart = new Chart(canvas,{
+      type:"line",
+      data:{
+        labels:Object.keys(data).map(toDate),
+        datasets:[{
+          data:Object.values(data),
+          backgroundColor:"rgb(138,43,226,0.2)",
+          borderColor:"rgb(138,43,226)"
+        }]
+      },
+      options:{
+        scales: {
+          yAxes: [{
+            display: true,
+            ticks: {
+                suggestedMax: 10,    
+                beginAtZero: true
+            }
+          }]
+        },
+        legend:{
+          display:false
         }
       }
     })
