@@ -47,7 +47,8 @@ test:
     when: always
 auto_update:
   stage: deploy
-  only: master
+  only: 
+  - master
   script:
   - apk add curl
   - curl --header "X-Gitlab-Token:$GITLAB_TOKEN" https://nushhwboard.tk/cd/update/?commitSHA=$CI_COMMIT_SHA
