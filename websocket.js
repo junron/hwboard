@@ -139,6 +139,9 @@ exports.createServer = function(server){
 module.exports.updateChannels = channels=>{
   for(const channel in channels){
     for(const property in channels[channel]){
+      if(!globalChannels[channel]){
+        globalChannels[channel] = {}
+      }
       globalChannels[channel][property] = channels[channel][property]
     }
   }

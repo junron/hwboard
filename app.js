@@ -34,10 +34,12 @@ const server = http.createServer(app)
 const io = websocket.createServer(server)
 
 //routes
+const addChannel = require('./routes/addChannel');
 const routes = require('./routes/index');
 const su = require('./routes/su');
 const update = require('./routes/update');
 const version = require('./routes/version');
+app.use('/', addChannel);
 app.use('/', routes);
 app.use('/', su);
 app.use('/', update);
