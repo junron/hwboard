@@ -30,7 +30,7 @@ module.exports = (socket,io,db)=>{
       //User only requested specific channel
       if(msg.channel){
         //Ensure that user is member of channel
-        if(socket.channel[msg.channel]){
+        if(socket.channels[msg.channel]){
           const data = await db.getHomework(msg.channel,msg.removeExpired)
           return callback(null,data)
         }else{
@@ -41,6 +41,10 @@ module.exports = (socket,io,db)=>{
         return callback(null,data)
       }
     })()
+    .catch(e=>{
+      console.log(e)
+      throw e
+    })
     .catch(e => callback(e.toString()))
     //Error in handling error
     .catch(uncaughtErrorHandler)
