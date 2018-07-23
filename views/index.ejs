@@ -46,6 +46,7 @@
     <script src="/scripts/promise-worker.js"></script>
     <script src="/scripts/sugar-date.min.js"></script>
     <script>
+      const channel = location.pathname.substring(1)
       //Web worker for indexedDB
       //Use promise based messaging
       const worker = new PromiseWorker(new Worker("/scripts/worker.js"))
@@ -54,6 +55,10 @@
       worker.postMessage({
         type:"get",
       }).then(data=>{
+        if(channel!=""){
+          //Only show homework for current channel
+          data = data.filter(a=>a.channel == channel)
+        }
         if(!data.length){
           //IndexedDB is empty, perhaps is first page load
           return
@@ -129,7 +134,6 @@
     })
     //request homework data from server
     //syntax conn.emit(<eventName>,[<data>],[<callback>])
-    const channel = ""//location.pathname.substring(1)
     let channelSettings
     if(channel==""){
       channelSettings = {}
@@ -145,13 +149,17 @@
       //Always check if error occurred
       if(err) throw err;
       //Put data into client-side database for caching
-      worker.postMessage({
-        type:"set",
-        data
-      })
+      //But only for main page
+      if(channel==""){
+        worker.postMessage({
+          type:"set",
+          data
+        })
+        //Add to localstorage as a fallback
+        localStorage.setItem("data",JSON.stringify(data))
+      }
+
       reRender(data)
-      //Add to localstorage as a fallback
-      localStorage.setItem("data",JSON.stringify(data))
     })
     })
     //Uncaught error that could not be handled via callback etc
