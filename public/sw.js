@@ -1,6 +1,6 @@
 //This is a service worker
 //It handles caching and PWA
-const version = "1.1.0"
+const version = "1.1.1"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -67,7 +67,7 @@ self.addEventListener('fetch', function(event) {
               return networkResponse;
             }else{
               console.log(`Failed to fetch from network ${event.request.url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
-              return response
+              return response || networkResponse
             }
           })
           return response || fetchPromise;
