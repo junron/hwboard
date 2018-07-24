@@ -70,6 +70,31 @@ function parsePushHeaders(files){
   return headers
 }
 
+//Channel lists
+router.get("/channels", async (req, res) => {
+  const renderer = require("../public/scripts/render-channels")
+  if(testing && req.cookies.username){
+    const email = req.cookies.username
+    res.cookie("username",email,{
+      signed:true,
+      httpOnly:true
+    })
+  }
+  const authData = await authChannels(req,res)
+  if(authData=="redirected"){
+    return
+  }
+  if(req.query.code && req.signedCookies.redirPath){
+    return res.redirect(req.signedCookies.redirPath)
+  }
+  const {channelData} = authData
+  res.header("Link",parsePushHeaders(basePushFiles))
+  return res.render("channels",{
+    channels:channelData,
+    renderer
+  })
+})
+
 //View channel 
 router.get('/:channel', async (req, res, next) => {
   if(req.params.channel.includes(".")){
