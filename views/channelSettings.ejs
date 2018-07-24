@@ -4,7 +4,6 @@
 <link href="/styles/roboto.css" rel="stylesheet"> 
 <meta name="viewport" content="width=device-width, initial-scale=1"> 
 <body style="margin-left:0px;margin-right:0px"> 
-
   <style>
     .md #app .list .item-content {
       width: 100%;
@@ -57,6 +56,16 @@
     <!--<link href="/styles/new.css" rel="stylesheet">-->
     <link rel="stylesheet" href = "/styles/icons.css">
       <div class="page page-current">
+      <div class="navbar">
+        <div class="navbar-inner">
+        <div class="left">
+          <a href="/channels" class="link">
+            <i class="icon icon-back"></i>
+          </a>
+          </div>
+              <div class="title">Settings</div>
+            </div>
+          </div>
           <div class="page-content block">
           <div class="list accordion-list no-hairlines">
               <ul>
@@ -219,7 +228,7 @@
     })
   }
   const mainView = Framework7App.views.create('.view-main',{
-    routes:[
+    routesAdd:[
       {
         name:"add-member",
         path: "/popups/add-member/",
