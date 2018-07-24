@@ -16,7 +16,6 @@ channelRenderer.renderer = channelData =>{
     </div>
   </li>`
   }
-  console.log(html)
   return html
 }
 

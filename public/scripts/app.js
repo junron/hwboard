@@ -18,15 +18,28 @@ const Framework7App = new Framework7({
   view: {
     pushState: true,
   },
-  routes:[ 
+  routes:[
     {
       name:"channels",
       path:"/channels",
-      url:"/channels"
+      url:"/channels",
+      animate:false,
+      on:{
+        pageAfterIn:e=>{
+          if(typeof channelScriptLoaded != "undefined"){
+            return
+          }
+          const scriptTag = document.createElement("script")
+          scriptTag.src = "/routes/scripts/channels.js"
+          const target = e.currentTarget
+          target.appendChild(scriptTag)
+        }
+      }
     },
     {
       name:"home",
       path:"/",
+      animate:false,
       url:"/"
     }
   ],
