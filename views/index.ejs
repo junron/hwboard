@@ -19,6 +19,18 @@
           <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
         </div>
       </div>
+      <div class="toolbar tabbar toolbar-bottom-md">
+      <div class="toolbar-inner">
+        <a href="/" class="tab-link tab-link-active">
+          <i class="icon demo-icon-1"></i>
+          <span class="tabbar-label">Homework</span>
+        </a>
+        <a href="/channels" class="tab-link">
+          <i class="icon demo-icon-2"></i>
+          <span class="tabbar-label">Channels</span>
+        </a>
+      </div>
+      </div>
         <div class="page-content" style="padding-top:0px" role="main">
           <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
             <%- renderer(data,sortType,sortOrder,adminChannels) -%>
@@ -194,7 +206,7 @@
 <%- include("./partials/dialogs.ejs") %>
 <script>
 const mainView = Framework7App.views.create('.view-main',{
-    routes:[
+    routesAdd:[
       {
         name:"sort",
         path: "/popups/sort/",

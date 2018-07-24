@@ -18,6 +18,18 @@ const Framework7App = new Framework7({
   view: {
     pushState: true,
   },
+  routes:[ 
+    {
+      name:"channels",
+      path:"/channels",
+      url:"/channels"
+    },
+    {
+      name:"home",
+      path:"/",
+      url:"/"
+    }
+  ],
   dialog:{
     title: 'Hwboard',
   }
