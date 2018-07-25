@@ -1,265 +1,56 @@
-<!DOCTYPE html> 
-<html lang="en">
-<%- include("partials/head") %>
-<link href="/styles/roboto.css" rel="stylesheet"> 
-<meta name="viewport" content="width=device-width, initial-scale=1"> 
-<body style="margin-left:0px;margin-right:0px"> 
-  <style>
-    .md #app .list .item-content {
-      width: 100%;
-    }
-    #app .md li li:last-child .item-inner:after, .md li:last-child li .item-inner:after {
-      width: 100vw;
-    }
-    .md #app .list ul ul {
-      padding-left: 0px;
-    }
-    .accordion-item-content {
-      padding-left:16px;
-    }
-    #app .list .swipeout .item-inner {
-      padding-left:8px;
-    }
-    #app .list .swipeout.item-content {
-      padding-left:0px;
-    }
-    .list > ul > li.item-divider {
-      height: 40px;
-      background: #fff;
-      margin-right: 16px;
-      margin-top: 12px;
-      line-height: 24px;
-      font-size: 20px;
-      font-weight:normal;
-      color: #000000de;
-      letter-spacing: 0.8px;
-    } 
-    .accordion-item > .item-link.item-content {
-      font-size:19px;
-    }
-    .accordion-item .list .item-content .person-name {
-      font-weight: 300;
-    }
-    .accordion-item-content .block-title {
-      margin-top:0px;
-      font-size: 18px;
-      color: black;
-    }
-    .accordion-item-content .item-footer {
-      font-size: 16px;
-      color: black;
-    }
-  </style>
-  <div id="app">
-    <div class="view view-main">
-    <link href="/styles/roboto.css" rel="stylesheet">
-    <!--<link href="/styles/new.css" rel="stylesheet">-->
-    <link rel="stylesheet" href = "/styles/icons.css">
-      <div class="page page-current">
-      <div class="navbar">
-        <div class="navbar-inner">
-        <div class="left">
-          <a href="/channels" class="link">
-            <i class="icon icon-back"></i>
-          </a>
-          </div>
-              <div class="title">Settings</div>
-            </div>
-          </div>
-          <div class="page-content block">
-          <div class="list accordion-list no-hairlines">
-              <ul>
-                  <li class="accordion-item">
-                      <a href="" class="item-link item-content">
-                          <div class="item-inner">
-                              <div class="item-title">Subjects</div>
-                          </div>
-                      </a>
-                      <div class="accordion-item-content">
-                        <div class="list no-hairlines">
-                        <ul id="subject-list">
-                          <li>Loading...</li>
-                        </ul>
-                      </div>
-                      <% if (root){ %>
-                      <div class="row md">
-                          <a href="/popups/add-subject/" class="button col">Add subject</a>
-                      </div>
-                      <% } %>
+<div class="page page-current">
+<div class="navbar">
+  <div class="navbar-inner">
+  <div class="left">
+    <a href="/channels" class="link">
+      <i class="icon icon-back"></i>
+    </a>
+    </div>
+        <div class="title">Settings</div>
+      </div>
+    </div>
+    <div class="page-content block">
+    <div class="list accordion-list no-hairlines">
+        <ul>
+            <li class="accordion-item">
+                <a href="" class="item-link item-content">
+                    <div class="item-inner">
+                        <div class="item-title">Subjects</div>
                     </div>
-                  </li>
-                  <li class="accordion-item">
-                      <a href="" class="item-link item-content">
-                          <div class="item-inner">
-                              <div class="item-title">Members</div>
-                          </div>
-                      </a>
-                      <div class="accordion-item-content">
-                      <div class="list no-hairlines">
-                          <ul id="member-list">
-                            <li>Loading...</li>
-                          </ul>
-                        </div>
-                        <% if (root){ %>
-                        <div class="row md">
-                          <a href="/popups/add-member/" class="button col">Add member</a>
-                        </div>
-                        <% } %>
+                </a>
+                <div class="accordion-item-content">
+                  <div class="list no-hairlines">
+                  <ul id="subject-list">
+                    <li>Loading...</li>
+                  </ul>
+                </div>
+                <% if (root){ %>
+                <div class="row md">
+                    <a href="/channels/<%=channel.name%>/settings/popups/add-subject/" class="button col">Add subject</a>
+                </div>
+                <% } %>
+              </div>
+            </li>
+            <li class="accordion-item">
+                <a href="" class="item-link item-content">
+                    <div class="item-inner">
+                        <div class="item-title">Members</div>
                     </div>
-                  </li>
-              </ul>
-          </div>
-        </div>
-        </div>
+                </a>
+                <div class="accordion-item-content">
+                <div class="list no-hairlines">
+                    <ul id="member-list">
+                      <li>Loading...</li>
+                    </ul>
+                  </div>
+                  <% if (root){ %>
+                  <div class="row md">
+                    <a href="/channels/<%=channel.name%>/settings/popups/add-member/" class="button col">Add member</a>
+                  </div>
+                  <% } %>
+              </div>
+            </li>
+        </ul>
     </div>
   </div>
-  <link rel="stylesheet" href="/styles/channelSettings.css"> 
-  <script src="/scripts/students.js"></script>
-  <script src="/routes/scripts/render-admins.js"></script>
-  <script src="/routes/scripts/render-subjects.js"></script>
-  <script defer src="/fuse.js/dist/fuse.js"></script>
-  <script src="/framework7/js/framework7.min.js"></script>
-  <script src="/scripts/app.js"></script>
-  <script defer src="/scripts/sugar-date.min.js"></script>
-  <script src="/scripts/socket.io.js"></script>
-  <script>
-    function getCookie(cname) {
-      var name = cname + "=";
-      var decodedCookie = decodeURIComponent(document.cookie);
-      var ca = decodedCookie.split(';');
-      for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-          c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-          return c.substring(name.length, c.length);
-        }
-      }
-      return "";
-    }
-  </script>
-  <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
-  <script>
-    //DoNt toUcHa my eRRor rePoTer
-    Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
-    Raven.setUserContext({
-      name: getCookie("name"),
-      email: getCookie("email"),
-    })
-  </script>
-<script>
-  const conn = io(location.origin,{secure: true})
-  conn.on("connect_error",function(err){
-    Raven.captureException(err)
-  })
-  const channel = location.pathname.substring(1).replace("/settings","")
-  conn.on("connect",function(){
-    console.log("Conne")
-  })
-</script>
-<script>
-  const {render} = renderAdmins
-  function getChannelData(){
-    conn.emit("channelDataReq",{channel},async function(err,data){
-        if(err){
-        Framework7App.dialog.alert(err.toString())
-        throw new Error(err)
-        }
-        console.log(data)
-        document.getElementById("member-list").innerHTML = await render(data)
-        document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
-    })
-  }
-  //Db inited, can get data
-  conn.on("ready",()=>{
-    console.log("ready")
-    getChannelData()
-  })
-  //Uncaught error that could not be handled via callback etc
-  conn.on("uncaughtError",error=>{
-    Framework7App.dialog.alert(error)
-    throw new Error(error)
-  })
-  conn.on("channelData",async function(data){
-    const thisChannelData = data[channel]
-    document.getElementById("member-list").innerHTML = await render(thisChannelData)
-    document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData.subjects)
-  })
-</script>
-<script>
-  function deleteMember(memberElem){
-    const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
-    const memberId = memberEmail.replace("@nushigh.edu.sg","")
-    Framework7App.dialog.confirm("Are you sure you want to remove "+memberEmail +"?",function(){
-      conn.emit("removeMember",{channel,student:memberId},function(err){
-    if(err){
-     Framework7App.dialog.alert(err.toString())
-     throw new Error(err)
-    }
-        console.log("done")
-      })
-    })
-  }
-  function promoteMember(memberElem){
-    const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
-    const memberId = memberEmail.replace("@nushigh.edu.sg","")
-    Framework7App.dialog.confirm("Are you sure you want to promote " + memberEmail + "?",function(){
-      conn.emit("promoteMember",{channel,student:memberId},function(err){
-         if(err){
-     Framework7App.dialog.alert(err.toString())
-     throw new Error(err)
-    }
-        console.log("done")
-      })
-    })
-  }
-  function demoteMember(memberElem){
-    const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
-    const memberId = memberEmail.replace("@nushigh.edu.sg","")
-    Framework7App.dialog.confirm("Are you sure you want to demote " + memberEmail + "?",function(){
-      conn.emit("demoteMember",{channel,student:memberId},function(err){
-    if(err){
-     Framework7App.dialog.alert(err.toString())
-     throw new Error(err)
-    }
-        console.log("done")
-      })
-    })
-  }
-  const mainView = Framework7App.views.create('.view-main',{
-    routesAdd:[
-      {
-        name:"add-member",
-        path: "/popups/add-member/",
-        url:"/routes/add-member.html",
-        on:{
-          pageAfterIn:e=>{
-            console.log(e)
-            const scriptTag = document.createElement("script")
-            scriptTag.src = "/routes/scripts/add-member.js"
-            const target = e.currentTarget
-            target.appendChild(scriptTag)
-          }
-        }
-      },
-      {
-        name:"add-subject",
-        path: "/popups/add-subject/",
-        url:"/routes/add-subject.html",
-        on:{
-          pageAfterIn:e=>{
-            console.log(e)
-            const scriptTag = document.createElement("script")
-            scriptTag.src = "/routes/scripts/add-subject.js"
-            const target = e.currentTarget
-            target.appendChild(scriptTag)
-          }
-        }
-      }
-    ]
-    })
-</script>
-<link rel="stylesheet" href="/framework7/css/framework7.min.css"> 
-</body>
-</html>
+  </div>

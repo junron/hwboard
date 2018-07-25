@@ -1,0 +1,44 @@
+.md #app .list .item-content {
+  width: 100%;
+}
+#app .md li li:last-child .item-inner:after, .md li:last-child li .item-inner:after {
+  width: 100vw;
+}
+.md #app .list ul ul {
+  padding-left: 0px;
+}
+.accordion-item-content {
+  padding-left:16px;
+}
+#app .list .swipeout .item-inner {
+  padding-left:8px;
+}
+#app .list .swipeout.item-content {
+  padding-left:0px;
+}
+.list > ul > li.item-divider {
+  height: 40px;
+  background: #fff;
+  margin-right: 16px;
+  margin-top: 12px;
+  line-height: 24px;
+  font-size: 20px;
+  font-weight:normal;
+  color: #000000de;
+  letter-spacing: 0.8px;
+} 
+.accordion-item > .item-link.item-content {
+  font-size:19px;
+}
+.accordion-item .list .item-content .person-name {
+  font-weight: 300;
+}
+.accordion-item-content .block-title {
+  margin-top:0px;
+  font-size: 18px;
+  color: black;
+}
+.accordion-item-content .item-footer {
+  font-size: 16px;
+  color: black;
+}
