@@ -1,0 +1,9 @@
+.md #app .list ul ul {
+  padding-left: 0px;
+}
+.chart-container {
+  position: relative;
+  margin: auto;
+  height: 40vh;
+  width: 80vw;
+}

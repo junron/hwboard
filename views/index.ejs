@@ -58,7 +58,7 @@
     <script src="/scripts/promise-worker.js"></script>
     <script src="/scripts/sugar-date.min.js"></script>
     <script>
-      const channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+      let channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
       //Web worker for indexedDB
       //Use promise based messaging
       const worker = new PromiseWorker(new Worker("/scripts/worker.js"))

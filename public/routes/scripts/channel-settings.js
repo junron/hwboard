@@ -1,11 +1,12 @@
+  channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
   conn.on("connect_error",function(err){
     Raven.captureException(err)
   })
   conn.on("connect",function(){
     console.log("Conne")
   })
-  const {render} = renderAdmins
   function getChannelData(){
+    const {render} = renderAdmins
     conn.emit("channelDataReq",{channel},async function(err,data){
         if(err){
         Framework7App.dialog.alert(err.toString())
@@ -21,12 +22,16 @@
     console.log("ready")
     getChannelData()
   })
+  //Timeout after 2 seconds
+  setTimeout(getChannelData,2000)
+
   //Uncaught error that could not be handled via callback etc
   conn.on("uncaughtError",error=>{
     Framework7App.dialog.alert(error)
     throw new Error(error)
   })
   conn.on("channelData",async function(data){
+    const {render} = renderAdmins
     const thisChannelData = data[channel]
     document.getElementById("member-list").innerHTML = await render(thisChannelData)
     document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData.subjects)

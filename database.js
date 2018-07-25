@@ -9,14 +9,14 @@ const {sequelize,Sequelize,Channels,Homework} = require("./models")
 const xss = require('xss')
 
 //Map emails to names
-const {getData,getStudentById} = require("./public/scripts/students")
+const {loadJSONData,getStudentById} = require("./public/scripts/students")
 
 //Object to store hwboard channel tables
 const tables = {}
 
 //Generate tables
 async function init(){
-  await getData("./data.json")
+  await loadJSONData("./data.json")
   await generateHomeworkTables()
   return sequelize.sync()
 }
