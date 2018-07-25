@@ -21,7 +21,7 @@
     minMatchCharLength: 3
   }
   const permissionLvls = ["Root","Admin","Member"]
-  const studentData = await studentsExport.getData("/scripts/data.json")
+  const studentData = await studentsExport.loadJSONData("/scripts/data.json")
   const mentorGrps = studentsExport.getClassesSync()
   let studentIds
   const getName = object => object.item.name

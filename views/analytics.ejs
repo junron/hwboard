@@ -1,351 +1,61 @@
-<!DOCTYPE html> 
-<html lang="en">
-<%- include("partials/head") %>
-<link href="/styles/roboto.css" rel="stylesheet"> 
-<meta name="viewport" content="width=device-width, initial-scale=1"> 
-<body style="margin-left:0px;margin-right:0px"> 
-  <style>
-    .md #app .list ul ul {
-      padding-left: 0px;
-    }
-    .chart-container {
-      position: relative;
-      margin: auto;
-      height: 40vh;
-      width: 80vw;
-    }
-  </style>
-  <div id="app">
-    <div class="view view-main">
-    <link href="/styles/roboto.css" rel="stylesheet">
-    <link rel="stylesheet" href = "/styles/icons.css">
-      <div class="page page-current">
-      <div class="navbar">
-        <div class="navbar-inner">
-        <div class="left">
-          <a href="/channels" class="link">
-            <i class="icon icon-back"></i>
-          </a>
-          </div>
-              <div class="title">Statistics</div>
-            </div>
-          </div>
-          <div class="page-content block">
-            <div class="list no-hairlines">
-              <ul>
-                  <li class="list-item">
-                    <div class="item-inner">
-                        <div class="item-title">Homework by subject</div>
-                    </div>
-                    <div class="item-content">
-                    <div class="list no-hairlines">
-                      <ul>
-                        <li>
-                          <label class="item-checkbox item-content">
-                            <input type="checkbox" name="homework-type" value="tests" checked/>
-                            <i class="icon icon-checkbox"></i>
-                            <div class="item-inner">
-                              <div class="item-title">Tests/graded homework</div>
-                            </div>
-                          </label>
-                        </li>
-                        <li>
-                          <label class="item-checkbox item-content">
-                            <input type="checkbox" name="homework-type" value="regular" checked/>
-                            <i class="icon icon-checkbox"></i>
-                            <div class="item-inner">
-                              <div class="item-title">Regular homework</div>
-                            </div>
-                          </label>
-                        </li>
-                      <div class="chart-container" style="position: relative;">
-                       <canvas id="homework-subject-chart" height=350px width=350px></canvas>
+<div class="page page-current">
+<div class="navbar">
+  <div class="navbar-inner">
+  <div class="left">
+    <a href="/channels" class="link">
+      <i class="icon icon-back"></i>
+    </a>
+    </div>
+        <div class="title">Statistics</div>
+      </div>
+    </div>
+    <div class="page-content block">
+      <div class="list no-hairlines">
+        <ul>
+            <li class="list-item">
+              <div class="item-inner">
+                  <div class="item-title">Homework by subject</div>
+              </div>
+              <div class="item-content">
+              <div class="list no-hairlines">
+                <ul>
+                  <li>
+                    <label class="item-checkbox item-content">
+                      <input type="checkbox" name="homework-type" value="tests" checked/>
+                      <i class="icon icon-checkbox"></i>
+                      <div class="item-inner">
+                        <div class="item-title">Tests/graded homework</div>
                       </div>
-                    </div>
+                    </label>
                   </li>
-                  <li class="list-item">
-                    <div class="item-inner">
-                        <div class="item-title">Homework by date</div>
-                    </div>
-                    <div class="item-content">
-                      <div class="chart-container" style="position: relative;">
-                       <canvas id="homework-date-chart" height=350px width=350px></canvas>
-                       <br>
-                       <br>
+                  <li>
+                    <label class="item-checkbox item-content">
+                      <input type="checkbox" name="homework-type" value="regular" checked/>
+                      <i class="icon icon-checkbox"></i>
+                      <div class="item-inner">
+                        <div class="item-title">Regular homework</div>
                       </div>
-                    </div>
+                    </label>
                   </li>
-                </ul>
-            </div>
-          </div>
-        </div>
+                <div class="chart-container" style="position: relative;">
+                  <canvas id="homework-subject-chart" height=350px width=350px></canvas>
+                </div>
+              </div>
+            </li>
+            <li class="list-item">
+              <div class="item-inner">
+                  <div class="item-title">Homework by date</div>
+              </div>
+              <div class="item-content">
+                <div class="chart-container" style="position: relative;">
+                  <canvas id="homework-date-chart" height=350px width=350px></canvas>
+                  <br>
+                  <br>
+                </div>
+              </div>
+            </li>
+          </ul>
+      </div>
     </div>
   </div>
-  <script src="/framework7/js/framework7.min.js"></script>
-  <script src="/scripts/app.js"></script>
-  <script defer src="/scripts/Chart.bundle.min.js"></script>
-  <script src="/scripts/socket.io.js"></script>
-  <script>
-    function getCookie(cname) {
-      var name = cname + "=";
-      var decodedCookie = decodeURIComponent(document.cookie);
-      var ca = decodedCookie.split(';');
-      for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-          c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-          return c.substring(name.length, c.length);
-        }
-      }
-      return "";
-    }
-  </script>
-  <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
-  <script>
-    //DoNt toUcHa my eRRor rePoTer
-    Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
-    Raven.setUserContext({
-      name: getCookie("name"),
-      email: getCookie("email"),
-    })
-  </script>
-<script>
-  let homeworkSubjectChart
-  let homeworkDateChart
-  let gradedMode = 0
-  const conn = io(location.origin,{secure: true})
-  conn.on("connect_error",function(err){
-    Raven.captureException(err)
-  })
-  const channel = location.pathname.substring(1).replace("/analytics","")
-  conn.on("connect",function(){
-    console.log("Conne")
-  })
-
-  //Db inited, can get data
-  conn.on("ready",()=>{
-    console.log("ready")
-    conn.emit("homeworkSubjectData",{channel},(err,data)=>{
-      if(err) throw err
-      homeworkSubjectChart = renderHomeworkSubjectChart(data)
-    })
-    conn.emit("homeworkDayData",{channel},(err,data)=>{
-      if(err) throw err
-      homeworkDateChart = renderHomeworkDateChart(filterOutWeekends(fillInDays(data)))
-    })
-  })
-
-  const test = document.querySelector("input[type=checkbox][value=tests]")
-  const regular = document.querySelector("input[type=checkbox][value=regular]")
-  regular
-  .addEventListener("change",e=>{
-    const checked = e.target.checked
-    if(checked){
-      if(test.checked){
-        gradedMode =0
-      }else{
-        gradedMode = -1
-      }
-    }else{
-      if(test.checked){
-        gradedMode = 1
-      }else{
-        gradedMode = 0
-      }
-    }
-    conn.emit("homeworkSubjectData",{channel,graded:gradedMode},(err,data)=>{
-      if(err) throw err
-      homeworkSubjectChart = renderHomeworkSubjectChart(data)
-    })
-  })
-  test
-  .addEventListener("change",e=>{
-    const checked = e.target.checked
-    if(checked){
-      if(regular.checked){
-        gradedMode = 0
-      }else{
-        gradedMode = 1
-      }
-    }else{
-      if(regular.checked){
-        gradedMode = -1
-      }else{
-        gradedMode = 0
-      }
-    }
-    conn.emit("homeworkSubjectData",{channel,graded:gradedMode},(err,data)=>{
-      if(err) throw err
-      homeworkSubjectChart = renderHomeworkSubjectChart(data)
-    })
-  })
-
-  const getKeysAndValues = array =>{
-    const result = [[],[]]
-    for(const elem of array){
-      result[0].push(elem[0])
-      result[1].push(elem[1])
-    }
-    return result
-  }
-  const sumArr = arr =>{
-    let sum = 0
-    for(const val of arr){
-      sum += val
-    }
-    return sum
-  }
-
-  const filterOutWeekends = data =>{
-    for(let day in data){
-      if(!notWeekend(parseInt(day))){
-        delete data[day]
-      }
-    }
-    return data
-  }
-  const fillInDays = homeworkData =>{
-    let thisDay 
-    for(let day in homeworkData){
-      day = parseInt(day)
-      if(!thisDay){
-        thisDay = day
-      }else{
-        if(thisDay<(day-1)){
-          //There are days with 0 homework
-          for(let i = thisDay+1;i<day;i++){
-            homeworkData[i] = 0
-          }
-        }
-        thisDay = day
-      }
-    }
-    return homeworkData
-  }
-  const default_colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC']
-  const getColors = array => default_colors.slice(0,array.length)
-  function renderHomeworkSubjectChart(data){
-    const split = getKeysAndValues(data)
-    const keys = split[0]
-    const values = split[1]
-    if(homeworkSubjectChart){
-      homeworkSubjectChart.data = {
-        labels:keys,
-        datasets:[{
-          data:values,
-          backgroundColor:getColors(keys)
-        }]
-      }
-      homeworkSubjectChart.update()
-      return homeworkSubjectChart
-    }
-    const canvas = document.getElementById("homework-subject-chart")
-    const chart = new Chart(canvas,{
-      type:"pie",
-      data:{
-        labels:keys,
-        datasets:[{
-          data:values,
-          backgroundColor:getColors(keys)
-        }]
-      },
-      options:{
-        responsive:true,
-        maintainAspectRatio: false,
-        legend:{
-          position:"right",
-          labels:{
-            boxWidth:20,
-            filter: (legend,chart)=>{
-              if(legend.text.endsWith("(0%)")){
-                return false
-              }
-              return true
-            },
-            generateLabels:chart=>{
-              const {data} = chart
-              const values = data.datasets[0].data
-              const total = sumArr(values)
-              const colors = data.datasets[0].backgroundColor
-              const labels = data.labels
-              const res = []
-              for(const label of labels){
-                const labelObj = {}
-                const num = res.length
-                const value = values[num]
-                const percentage = Math.floor((value/total)*100)
-                labelObj.text = label + ` (${percentage}%)`
-                labelObj.fillStyle = colors[num]
-                res.push(labelObj)
-              }
-              return res
-            }
-          }
-        }
-      }
-    })
-    return chart
-  }
-
-  const toDate = int => new Date(int*24*60*60*1000).toString().slice(4,10)
-  const notWeekend = int => !(new Date(int*24*60*60*1000).getDay() == 6 || new Date(int*24*60*60*1000).getDay() == 0)
-
-  function renderHomeworkDateChart(data){
-    if(homeworkDateChart){
-      homeworkDateChart.data = {
-        labels:Object.keys(data),
-        datasets:[{
-          data:Object.values(data),
-          backgroundColor:getColors(Object.keys(data)),
-          backgroundColor:"rgb(138,43,226,0.2)",
-          borderColor:"rgb(138,43,226)",
-          pointRadius:0,
-          pointStyle:"cross",
-          lineTension:0,
-        }]
-      }
-      homeworkDateChart.update()
-      return homeworkDateChart
-    }
-    const canvas = document.getElementById("homework-date-chart")
-    const chart = new Chart(canvas,{
-      type:"line",
-      data:{
-        labels:Object.keys(data).map(toDate),
-        datasets:[{
-          lineTension:0,
-          data:Object.values(data),
-          backgroundColor:"rgb(138,43,226,0.2)",
-          borderColor:"rgb(138,43,226)",
-          pointRadius:0,
-          pointStyle:"cross"
-        }]
-      },
-      options:{
-        responsive:true,
-        maintainAspectRatio: false,
-        scales: {
-          yAxes: [{
-            display: true,
-            ticks: {
-                suggestedMax: 10,    
-                beginAtZero: true
-            }
-          }]
-        },
-        legend:{
-          display:false
-        }
-      }
-    })
-    return chart
-  }
-</script>
-<script>
-  const mainView = Framework7App.views.create('.view-main')
-</script>
-<link rel="stylesheet" href="/framework7/css/framework7.min.css"> 
-</body>
-</html>
+</div>

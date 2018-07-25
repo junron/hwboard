@@ -11,7 +11,7 @@ channelRenderer.renderer = channelData =>{
       </div>
       <div class="item-after">
         <a class="button" href="/channels/${channelName}/settings">Settings</a>
-        <a class="button external" href="/${channelName}/analytics">Stats</a>
+        <a class="button" href="/channels/${channelName}/analytics">Stats</a>
       </div>
     </div>
   </li>`

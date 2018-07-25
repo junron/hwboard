@@ -86,6 +86,31 @@ const Framework7App = new Framework7({
       url:"/{{channelName}}"
     },
     {
+      name:"channelStats",
+      path:"/channels/:channelName/analytics",
+      reloadPrevious:true,
+      animate:false,
+      url:"/{{channelName}}/analytics",
+      on:{
+        pageAfterIn:e=>{
+          const target = e.currentTarget
+          const resources = ["/scripts/Chart.bundle.min.js","/routes/scripts/channel-stats.js","/routes/styles/channel-stats.css"]
+          for(const resource of resources){
+            let tag
+            if(resource.endsWith(".js")){
+              tag = document.createElement("script")
+              tag.src = resource
+            }else if(resource.endsWith(".css")){
+              tag = document.createElement("link")
+              tag.rel = "stylesheet"
+              tag.href = resource
+            }
+            target.appendChild(tag)
+          }
+        }
+      }
+    },
+    {
       name:"channelSettings",
       path:"/channels/:channelName/settings",
       reloadPrevious:true,
@@ -96,6 +121,15 @@ const Framework7App = new Framework7({
           const target = e.currentTarget
           const scripts = ["/scripts/students.js","/routes/scripts/render-admins.js","/routes/scripts/render-subjects.js","/routes/scripts/channel-settings.js"]
           for(const script of scripts){
+            if(script=="/routes/scripts/render-admins.js"&&typeof renderAdmins != "undefined"){
+              continue
+            }
+            if(script=="/routes/scripts/render-subjects.js"&&typeof renderSubjects != "undefined"){
+              continue
+            }
+            if(script=="/scripts/students.js"&&typeof commonJS != "undefined"){
+              continue
+            }
             const scriptTag = document.createElement("script")
             scriptTag.src = script
             target.appendChild(scriptTag)
