@@ -20,6 +20,7 @@
     "cookie-parser": "~1.4.3",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
+    "extend": "^3.0.2",
     "framework7": "^3.0.7",
     "fuse.js": "^3.2.1",
     "jsonwebtoken": "^8.3.0",
