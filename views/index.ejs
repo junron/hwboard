@@ -8,6 +8,18 @@
     <!--<link href="/styles/new.css" rel="stylesheet">-->
     <link rel="stylesheet" href = "/styles/icons.css">
       <div class="page page-current">
+      <div class="toolbar tabbar toolbar-bottom-md">
+    <div class="toolbar-inner">
+      <a href="/" class="tab-link tab-link-active">
+        <i class="icon demo-icon-1"></i>
+        <span class="tabbar-label">Homework</span>
+      </a>
+      <a href="/channels" class="tab-link">
+        <i class="icon demo-icon-2"></i>
+        <span class="tabbar-label">Channels</span>
+      </a>
+    </div>
+    </div>
       <div class="navbar">
         <div class="navbar-inner">
         <div class="item-content title">
@@ -18,18 +30,6 @@
         </div>
           <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
         </div>
-      </div>
-      <div class="toolbar tabbar toolbar-bottom-md">
-      <div class="toolbar-inner">
-        <a href="/" class="external tab-link tab-link-active">
-          <i class="icon demo-icon-1"></i>
-          <span class="tabbar-label">Homework</span>
-        </a>
-        <a href="/channels" class="tab-link">
-          <i class="icon demo-icon-2"></i>
-          <span class="tabbar-label">Channels</span>
-        </a>
-      </div>
       </div>
         <div class="page-content" style="padding-top:0px" role="main">
           <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
@@ -58,7 +58,7 @@
     <script src="/scripts/promise-worker.js"></script>
     <script src="/scripts/sugar-date.min.js"></script>
     <script>
-      const channel = location.pathname.substring(1)
+      const channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
       //Web worker for indexedDB
       //Use promise based messaging
       const worker = new PromiseWorker(new Worker("/scripts/worker.js"))
@@ -205,48 +205,7 @@
 <%- include("./partials/adminDialogs.ejs",{adminChannels}) %>
 <%- include("./partials/dialogs.ejs") %>
 <script>
-const mainView = Framework7App.views.create('.view-main',{
-    routesAdd:[
-      {
-        name:"sort",
-        path: "/popups/sort/",
-        url:"/routes/sort.html",
-        on :{
-          pageInit: _=>{
-            //Uncheck all
-            const radios = Array.from(document.querySelectorAll(`input[type=radio]`))
-            radios.forEach(radio => radio.checked=false)
-            const sortType = sortOptions.type || getCookie("sortType") || "Due date"
-            let sortOrder = sortOptions.order || 0
-            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true
-            document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
-          }
-        }
-      },
-      {
-        name:"edit-homework",
-        path: "/popups/edit/",
-        url:"/routes/edit-homework.html",
-        on :{
-          pageInit:function(e,page){
-            const edit = page.route.url.includes("?edit=true")
-            if(edit){
-              $("#edit-title").text("Edit homework")
-              startEdit()
-            }else{
-              $("#edit-title").text("Add homework")
-            }
-            initEditHomeworkEvents()
-          }
-        }
-      },
-      {
-        name:"home",
-        path: "/",
-        url:"/",
-      }
-    ]
-  })
+const mainView = Framework7App.views.create('.view-main')
 </script>
 <script>
   if ('serviceWorker' in navigator) {

@@ -175,7 +175,7 @@ router.get('/:channel/settings', async (req, res, next) => {
     //Report errors in production or mobile
     const mobile = isMobile(req.headers['user-agent'])
     const root = channel.roots.includes(email)
-    res.render('channelSettings', {root,reportErrors:(reportErrors||mobile)})
+    res.render('channelSettings', {root,channel,reportErrors:(reportErrors||mobile)})
   }else{
     res.status(404).end("Channel not found")
   }
