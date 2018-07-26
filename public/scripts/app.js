@@ -93,11 +93,20 @@ const Framework7App = new Framework7({
       url:"/{{channelName}}/analytics",
       on:{
         pageAfterIn:e=>{
+          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
           const target = e.currentTarget
           const resources = ["/scripts/Chart.bundle.min.js","/routes/scripts/channel-stats.js","/routes/styles/channel-stats.css"]
           for(const resource of resources){
             let tag
             if(resource.endsWith(".js")){
+              //Chart script is already loaded
+              if(resource=="/routes/scripts/channel-stats.js" && typeof gradedMode != "undefined"){
+                //Force charts to rerender
+                homeworkDateChart = false
+                homeworkSubjectChart = false
+                renderCharts()
+                continue
+              }
               tag = document.createElement("script")
               tag.src = resource
             }else if(resource.endsWith(".css")){

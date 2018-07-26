@@ -2,11 +2,20 @@ let homeworkSubjectChart
 let homeworkDateChart
 let gradedMode = 0
 
-channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
 
 //Db inited, can get data
 conn.on("ready",()=>{
   console.log("ready")
+  renderCharts()
+})
+
+//Page loaded after db init
+conn.emit("isReady",null,res=>{
+  console.log("ready before page load")
+  renderCharts()
+})
+
+function renderCharts(){
   conn.emit("homeworkSubjectData",{channel},(err,data)=>{
     if(err) throw err
     homeworkSubjectChart = renderHomeworkSubjectChart(data)
@@ -15,7 +24,7 @@ conn.on("ready",()=>{
     if(err) throw err
     homeworkDateChart = renderHomeworkDateChart(filterOutWeekends(fillInDays(data)))
   })
-})
+}
 
 const test = document.querySelector("input[type=checkbox][value=tests]")
 const regular = document.querySelector("input[type=checkbox][value=regular]")

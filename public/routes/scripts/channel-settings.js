@@ -1,10 +1,6 @@
   channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
-  conn.on("connect_error",function(err){
-    Raven.captureException(err)
-  })
-  conn.on("connect",function(){
-    console.log("Conne")
-  })
+
+
   function getChannelData(){
     const {render} = renderAdmins
     conn.emit("channelDataReq",{channel},async function(err,data){
@@ -22,8 +18,11 @@
     console.log("ready")
     getChannelData()
   })
-  //Timeout after 2 seconds
-  setTimeout(getChannelData,2000)
+  
+  //Page loaded after db init
+  conn.emit("isReady",null,res=>{
+    getChannelData()
+  })
 
   //Uncaught error that could not be handled via callback etc
   conn.on("uncaughtError",error=>{
