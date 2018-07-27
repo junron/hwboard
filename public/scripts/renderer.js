@@ -111,7 +111,7 @@ parser.parseHomeworkSubject = function(homework) {
       </div>`
       if(subjectChannelMap[subject]){
         rendered += `<div class="swipeout-actions-right">
-          <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
+          <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
           <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
         </div>
       </li> 
@@ -191,7 +191,7 @@ parser.parseHomeworkDate = function(homework) {
   </div>`
   if(subjectChannelMap[subject]){
   rendered += `<div class="swipeout-actions-right">
-      <a href="/popups/edit/?edit=true" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
+      <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
       <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
     </div>
   </li>

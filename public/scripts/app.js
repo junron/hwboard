@@ -60,18 +60,25 @@ const Framework7App = new Framework7({
         }
       },
       {
+        name:"add-homework",
+        path: "/popups/add/",
+        url:"/routes/edit-homework.html",
+        on :{
+          pageAfterIn:function(e,page){
+            gradedCheckboxChecked = false
+            $(".page-current #edit-title").text("Add homework")
+            initEditHomeworkEvents()
+          }
+        }
+      },
+      {
         name:"edit-homework",
         path: "/popups/edit/",
         url:"/routes/edit-homework.html",
         on :{
-          pageInit:function(e,page){
-            const edit = page.route.url.includes("?edit=true")
-            if(edit){
-              $("#edit-title").text("Edit homework")
-              startEdit()
-            }else{
-              $("#edit-title").text("Add homework")
-            }
+          pageAfterIn:function(e,page){
+            $(".page-current #edit-title").text("Edit homework")
+            startEdit()
             initEditHomeworkEvents()
           }
         }
@@ -104,7 +111,6 @@ const Framework7App = new Framework7({
                 //Force charts to rerender
                 homeworkDateChart = false
                 homeworkSubjectChart = false
-                renderCharts()
                 continue
               }
               tag = document.createElement("script")
