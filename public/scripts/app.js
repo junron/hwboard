@@ -111,6 +111,7 @@ const Framework7App = new Framework7({
                 //Force charts to rerender
                 homeworkDateChart = false
                 homeworkSubjectChart = false
+                renderChartsIfReady()
                 continue
               }
               tag = document.createElement("script")
