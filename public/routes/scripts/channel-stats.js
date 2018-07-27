@@ -15,6 +15,13 @@ conn.emit("isReady",null,res=>{
   renderCharts()
 })
 
+function renderChartsIfReady(){
+  conn.emit("isReady",null,res=>{
+    console.log("ready before page load")
+    renderCharts()
+  })
+}
+
 function renderCharts(){
   conn.emit("homeworkSubjectData",{channel},(err,data)=>{
     if(err) throw err
