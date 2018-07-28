@@ -34,6 +34,14 @@ const Framework7App = new Framework7({
       reloadPrevious:true,
       animate:false,
       url:"/",
+      on:{
+        pageAfterIn:e=>{
+          const target = e.currentTarget
+          const tag = document.createElement("script")
+          tag.src = "/scripts/loadHomework.js"
+          target.appendChild(tag)
+        }
+      },
       routes:[{
         name:"sort",
         path: "/popups/sort/",

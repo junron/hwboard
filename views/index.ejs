@@ -19,8 +19,17 @@
           <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
         </div>
       </div>
-      <div class="toolbar tabbar toolbar-bottom-md">
-      <div class="toolbar-inner">
+        <div class="page-content" style="padding-top:0px" role="main">
+          <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
+            <% renderer(data,sortType,sortOrder,adminChannels) %>
+          </div>
+        </div>
+        <!-- Floating App button
+        Clicking will cause the edit homework popup to appear
+        Only show for admins
+        -->
+        <div class="toolbar tabbar toolbar-bottom-md">
+    <div class="toolbar-inner">
         <a href="/" class="tab-link tab-link-active">
           <i class="icon demo-icon-1"></i>
           <span class="tabbar-label">Homework</span>
@@ -31,15 +40,6 @@
         </a>
       </div>
     </div>
-        <div class="page-content" style="padding-top:0px" role="main">
-          <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
-            <% renderer(data,sortType,sortOrder,adminChannels) %>
-          </div>
-        </div>
-        <!-- Floating App button
-        Clicking will cause the edit homework popup to appear
-        Only show for admins
-        -->
       <% if (admin){ %>
       <div class="fab fab-right-bottom admin-only color-green-blue" aria-label="Add homework">
         <a id="fab-add-homework" href="/popups/add/">
@@ -63,9 +63,10 @@
     <script src="/scripts/getCookie.js"></script>
     <script src="/scripts/fastLoadHomework.js"></script>
 
-    <!-- Get updated homework asap -->
+    <!-- Get updated homework from server asap -->
     <script src="/socket.io-client/dist/socket.io.slim.js"></script>
     <script src="/scripts/websocketConnect.js"></script>
+    <script src="/scripts/wsLoadHomework.js"></script>
 
     <% if(reportErrors){ %>
       <!--DoNt toUcHa my eRRor rePoTer-->
@@ -84,7 +85,6 @@
     <script defer src="/scripts/dates.js"></script>
     <script defer src="/scripts/generalForms.js"></script>
     <script defer src="/scripts/loadSW.js"></script>
-    <script defer src="/scripts/wsLoadHomework.js"></script>
     <% if (admin){ %>
       <!-- non admins wont need these -->
       <script defer src="/scripts/adminForms.js"></script>
