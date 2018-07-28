@@ -5,21 +5,9 @@
   <div id="app">
     <div class="view view-main">
     <link href="/styles/roboto.css" rel="stylesheet">
-    <!--<link href="/styles/new.css" rel="stylesheet">-->
     <link rel="stylesheet" href = "/styles/icons.css">
-      <div class="page page-current">
-      <div class="toolbar tabbar toolbar-bottom-md">
-    <div class="toolbar-inner">
-      <a href="/" class="tab-link tab-link-active">
-        <i class="icon demo-icon-1"></i>
-        <span class="tabbar-label">Homework</span>
-      </a>
-      <a href="/channels" class="tab-link">
-        <i class="icon demo-icon-2"></i>
-        <span class="tabbar-label">Channels</span>
-      </a>
-    </div>
-    </div>
+
+    <div class="page page-current">
       <div class="navbar">
         <div class="navbar-inner">
         <div class="item-content title">
@@ -31,9 +19,21 @@
           <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
         </div>
       </div>
+      <div class="toolbar tabbar toolbar-bottom-md">
+      <div class="toolbar-inner">
+        <a href="/" class="tab-link tab-link-active">
+          <i class="icon demo-icon-1"></i>
+          <span class="tabbar-label">Homework</span>
+        </a>
+        <a href="/channels" class="tab-link">
+          <i class="icon demo-icon-2"></i>
+          <span class="tabbar-label">Channels</span>
+        </a>
+      </div>
+    </div>
         <div class="page-content" style="padding-top:0px" role="main">
           <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
-            <%- renderer(data,sortType,sortOrder,adminChannels) -%>
+            <% renderer(data,sortType,sortOrder,adminChannels) %>
           </div>
         </div>
         <!-- Floating App button
@@ -56,20 +56,22 @@
     <!-- critical styles and scripts cannot be deferred-->
     <script src="/variables.js"></script>
     <!-- required for load of homework from cache-->
-    <script src="/scripts/jquery.min.js"></script>
+    <script src="/jquery/dist/jquery.slim.min.js"></script>
+    <script src="/sugar-date/dist/sugar-date.min.js"></script>
     <script src="/scripts/renderer.js"></script>
-    <script src="/scripts/getCookie.js"></script>
     <script src="/scripts/promise-worker.js"></script>
+    <script src="/scripts/getCookie.js"></script>
     <script src="/scripts/fastLoadHomework.js"></script>
+
+    <!-- Get updated homework asap -->
+    <script src="/socket.io-client/dist/socket.io.slim.js"></script>
+    <script src="/scripts/websocketConnect.js"></script>
 
     <% if(reportErrors){ %>
       <!--DoNt toUcHa my eRRor rePoTer
       <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
       <script src="/scripts/errorReporter.js"></script>-->
     <% } %>
-    <script src="/scripts/sugar-date.min.js"></script>
-    <script src="/scripts/socket.io.js"></script>
-    <script src="/scripts/websocketConnect.js"></script>
 
     <!-- framework7 scripts can be deferred -->
     <script defer src="/framework7/js/framework7.min.js"></script>
@@ -78,7 +80,7 @@
 
     <!-- non critical styles and scripts can be deferred-->
     <script defer src="/scripts/eventHandlers.js"></script>
-    <script defer src="/fuse.js/dist/fuse.js"></script>
+    <script defer src="/fuse.js/dist/fuse.min.js"></script>
     <script defer src="/scripts/dates.js"></script>
     <script defer src="/scripts/generalForms.js"></script>
     <script defer src="/scripts/loadSW.js"></script>
@@ -88,6 +90,12 @@
       <script defer src="/scripts/adminForms.js"></script>
       <script defer src="/scripts/edit-homework-eventHandlers.js"></script>
     <% } %>
+
+    <!-- Styles are not so critical -->
+    <link rel="stylesheet" href="/styles/index.css">
     <%- include("./partials/dialogs.ejs") %>
+    <script>
+      alert($(".toolbar-inner a[href='/']").length)
+    </script>
 </body>
 </html>
