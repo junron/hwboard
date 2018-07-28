@@ -13,6 +13,6 @@ $(document).on("change","input[type='radio']",function(){
 //TODO put this in a admin only js file
 $(document).on("click",".swipeout-edit-button",function(){
   lastTouched = this.parentElement.parentElement
-  mainView.router.navigate("/popups/edit/?edit=true")
+  mainView.router.navigate("/popups/edit/")
 })
 
