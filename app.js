@@ -33,6 +33,31 @@ app.use(cookieParser(cookieSecret));
 const server = http.createServer(app)
 const io = websocket.createServer(server)
 
+//Content security policy settings
+//"unsafe-inline" for inline styles and scripts, aim to remove
+//https://developers.google.com/web/fundamentals/security/csp/
+const csp = 
+`default-src 'self';
+script-src 'self';
+style-src 'self' 'unsafe-inline';
+connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
+object-src 'none';
+img-src 'self' data:;
+frame-ancestors 'none';`.split("\n").join("")
+
+app.use(function(req,res,next){
+  if(reportErrors){
+    const reportURI = "report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908;"
+    res.header("Content-Security-Policy",csp + reportURI)
+  }else{
+    res.header("Content-Security-Policy",csp)
+  }
+  //Stop clickjacking
+  //https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet
+  res.header("X-Frame-Options","deny")
+  next()
+})
+
 //routes
 const addChannel = require('./routes/addChannel');
 const routes = require('./routes/index');
@@ -54,31 +79,6 @@ app.set('view engine', 'ejs');
 if(testing){
   console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m")
 }
-
-//Content security policy settings
-//"unsafe-inline" for inline styles and scripts, aim to remove
-//https://developers.google.com/web/fundamentals/security/csp/
-const csp = 
-`default-src 'self';
-script-src 'self' 'unsafe-inline' https://cdn.ravenjs.com;
-style-src 'self' 'unsafe-inline';
-connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
-object-src 'none';
-img-src 'self' data:;
-frame-ancestors 'none';`.split("\n").join("")
-
-app.use(function(req,res,next){
-  if(reportErrors){
-    const reportURI = "report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908;"
-    res.header("Content-Security-Policy",csp + reportURI)
-  }else{
-    res.header("Content-Security-Policy",csp)
-  }
-  //Stop clickjacking
-  //https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet
-  res.header("X-Frame-Options","deny")
-  next()
-})
 
 //express setup
 app.use(logger('dev'));
