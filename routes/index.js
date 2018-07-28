@@ -70,6 +70,46 @@ function parsePushHeaders(files){
   return headers
 }
 
+//TImetable and other variables
+router.get("/variables.js", async (req, res) => {
+  if(testing && req.cookies.username){
+    const email = req.cookies.username
+    res.cookie("username",email,{
+      signed:true,
+      httpOnly:true
+    })
+  }
+  const authData = await authChannels(req,res)
+  if(authData=="redirected"){
+    return
+  }
+  if(req.query.code && req.signedCookies.redirPath){
+    return res.redirect(req.signedCookies.redirPath)
+  }
+  const {channelData,adminChannels} = authData
+
+  //Parse timetable
+  let timetable = {}
+  for(const channelName in channelData){
+    const channel = channelData[channelName]
+    timetable = Object.assign(timetable,channel.timetable)
+  }
+  const subjectSelectionList = [] 
+  const subjectChannelMapping = {}
+  for (const channel in adminChannels){
+    for (const subject of adminChannels[channel]){
+      subjectSelectionList.push(subject)
+      subjectChannelMapping[subject]=channel
+    }
+  }
+  res.type("application/javascript")
+  res.end(`
+  const timetable = ${JSON.stringify(timetable)};
+  const subjectSelectionList = ${JSON.stringify(subjectSelectionList)};
+  const subjectChannelMapping = ${JSON.stringify(subjectChannelMapping)};
+  `)
+})
+
 //Channel lists
 router.get("/channels", async (req, res) => {
   const renderer = require("../public/scripts/render-channels")
@@ -119,28 +159,10 @@ router.get('/:channel', async (req, res, next) => {
     }
     res.header("Link",parsePushHeaders(pushFiles))
     const data = await db.getHomework(channelName)
-    const adminChannels = 
-    [channel]
-    .filter(channel=>
-      //Get admin permissions only
-      channel.permissions>=2
-    )
-    .reduce((subjects,channel)=>{
-      //Create object with channel names as keys and subject array as values
-      subjects[channel.name] = channel.subjects
-      return subjects
-    },{})
-    const admin = Object.keys(adminChannels).length > 0
-
-    let timetable = {}
-    for(const channelName in channelData){
-      const channel = channelData[channelName]
-      timetable = Object.assign(timetable,channel.timetable)
-    }
 
     //Report errors in production or mobile
     const mobile = isMobile(req.headers['user-agent'])
-    res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,timetable,reportErrors:(reportErrors||mobile)})
+    res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,reportErrors:(reportErrors||mobile)})
   }else{
     res.status(404).end("Channel not found")
   }
@@ -248,12 +270,7 @@ router.get('/', async (req, res, next) => {
 
   //Report errors in production or mobile
   const mobile = isMobile(req.headers['user-agent'])
-  let timetable = {}
-  for(const channelName in channelData){
-    const channel = channelData[channelName]
-    timetable = Object.assign(timetable,channel.timetable)
-  }
-  res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,timetable,reportErrors:(reportErrors||mobile)})
+  res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,reportErrors:(reportErrors||mobile)})
 });
 
 

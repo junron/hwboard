@@ -1,71 +1,44 @@
-   <div id="details-sheet" class="sheet-modal">
-      <div class="sheet-modal-inner">
-        <div class="block">
-          <div class="sheet-modal-title" id="detailHomeworkName">
-          </div>
-          <div class="list no-hairlines">
-            <ul>
-              <li class="item-content">
+<div id="details-sheet" class="sheet-modal">
+  <div class="sheet-modal-inner">
+    <div class="block">
+      <div class="sheet-modal-title" id="detailHomeworkName">
+      </div>
+      <div class="list no-hairlines">
+        <ul>
+          <li class="item-content">
+            <div class="item-inner">
+              <div class="item-title">
+                <div class="item-header">Subject</div>
+                <span id="detailSubject"></span>
+              </div>
+            </div>
+          </li>
+          <li class="item-content">
+              <div class="item-inner">
+                <div class="item-title">
+                  <div class="item-header">Due</div>
+                  <span id="detailDue"></span>
+                </div>
+              </div>
+            </li>
+            <li class="item-content">
                 <div class="item-inner">
                   <div class="item-title">
-                    <div class="item-header">Subject</div>
-                    <span id="detailSubject"></span>
+                    <div class="item-header">Graded</div>
+                    <span id="detailGraded"></span>
                   </div>
                 </div>
               </li>
               <li class="item-content">
                   <div class="item-inner">
                     <div class="item-title">
-                      <div class="item-header">Due</div>
-                      <span id="detailDue"></span>
+                      <div class="item-header">Last edited</div>
+                      <span id="detailLastEdit"></span>
                     </div>
                   </div>
                 </li>
-                <li class="item-content">
-                    <div class="item-inner">
-                      <div class="item-title">
-                        <div class="item-header">Graded</div>
-                        <span id="detailGraded"></span>
-                      </div>
-                    </div>
-                  </li>
-                  <li class="item-content">
-                      <div class="item-inner">
-                        <div class="item-title">
-                          <div class="item-header">Last edited</div>
-                          <span id="detailLastEdit"></span>
-                        </div>
-                      </div>
-                    </li>
-            </ul>
-        </div>
-        </div>
-      </div>
+        </ul>
     </div>
-<script>
-const sortOptions = {
-  type:getCookie("sortType") || "Due date",
-  order:parseInt(getCookie("sortOrder")) || 0
-}
-//Deatils bottom sheet
-const detailsSheet = Framework7App.sheet.create({
-  el:".sheet-modal",
-  backdrop:true
-  })
-function rerenderSort(){
-  if(document.getElementById("sort-set-default").checked){
-    document.cookie = "sortType="+sortOptions.type
-    document.cookie = "sortOrder="+sortOptions.order
-  }
-  worker.postMessage({
-    type:"get"
-  }).then(data=>{
-    if((!data)||data.length==0){
-      //Perhaps indexeddb screwed up 
-      data = JSON.parse(localStorage.getItem("data"))
-    }
-    reRender(data)
-  })
-}
-
-</script>
+    </div>
+  </div>
+</div>
