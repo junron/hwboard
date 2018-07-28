@@ -1,7 +1,9 @@
 //request homework data from server
 //syntax conn.emit(<eventName>,[<data>],[<callback>])
 //Db is init and user is authed
-conn.on("ready",()=>{
+conn.on("ready",loadHomework)
+
+function loadHomework(){
   conn.emit("dataReq",channelSettings,function(err,data){
     //Always check if error occurred
     if(err) throw err;
@@ -18,7 +20,7 @@ conn.on("ready",()=>{
 
     reRender(data)
   })
-})
+}
 //Server pushes data, re-render
 conn.on("data",({channel,data:channelData})=>{
   //Add data to client side db
