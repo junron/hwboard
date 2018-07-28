@@ -68,9 +68,9 @@
     <script src="/scripts/websocketConnect.js"></script>
 
     <% if(reportErrors){ %>
-      <!--DoNt toUcHa my eRRor rePoTer
+      <!--DoNt toUcHa my eRRor rePoTer-->
       <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
-      <script src="/scripts/errorReporter.js"></script>-->
+      <script src="/scripts/errorReporter.js"></script>
     <% } %>
 
     <!-- framework7 scripts can be deferred -->
@@ -94,8 +94,5 @@
     <!-- Styles are not so critical -->
     <link rel="stylesheet" href="/styles/index.css">
     <%- include("./partials/dialogs.ejs") %>
-    <script>
-      alert($(".toolbar-inner a[href='/']").length)
-    </script>
 </body>
 </html>
