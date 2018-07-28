@@ -224,7 +224,7 @@ parser.parseHomeworkMetaData =  function(homework){
     lastEditPerson: editPerson,
     lastEditTime: editTime
   } = homework
-  text = text.replace(/ *\([^)]*\) */g, "");
+  
   let dueDate2 = Sugar.Date.create(dueDate)
   let daysLeft = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(dueDate2, "{d}/{M}"), "en-GB"))
   let iconColor = ""
