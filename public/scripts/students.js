@@ -64,7 +64,7 @@ async function getStudentByName2(studentName){
 }
 
 
-const studentsExport = Object.freeze({
+const studentsExport = {
   loadJSONData,
   getStudentById,
   getStudentByName,
@@ -73,7 +73,10 @@ const studentsExport = Object.freeze({
   getStudentByName2,
   getStudentByIdSync,
   getClassesSync
-})
+}
+if(typeof getData != "undefined"){
+  studentsExport.getData = getData
+}
 //commonJS pro
 if(commonJS){
   module.exports = Object.freeze({

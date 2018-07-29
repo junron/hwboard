@@ -50,7 +50,7 @@ function getTimingData(timingId){
   }
   return data
 }
-function getData(){
+function getSubjectData(){
   const data = {}
   const subjectName = document.getElementById("subjectInput").value
   data.subject = subjectName
