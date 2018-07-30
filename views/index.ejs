@@ -69,9 +69,9 @@
     <script src="/scripts/wsLoadHomework.js"></script>
 
     <% if(reportErrors){ %>
-      <!--DoNt toUcHa my eRRor rePoTer-->
+      <!--DoNt toUcHa my eRRor rePoTer
       <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
-      <script src="/scripts/errorReporter.js"></script>
+      <script src="/scripts/errorReporter.js"></script>-->
     <% } %>
 
     <!-- framework7 scripts can be deferred -->
@@ -94,5 +94,19 @@
     <!-- Styles are not so critical -->
     <link rel="stylesheet" href="/styles/index.css">
     <%- include("./partials/dialogs.ejs") %>
+
+    <!-- styles and scripts for later pages -->
+    <script defer src="/scripts/students.js"></script>
+
+    <!-- channel stats -->
+    <script defer src="/scripts/Chart.bundle.min.js"></script>
+    <script defer src="/routes/scripts/channel-stats.js"></script>
+    <link href="/routes/styles/channel-stats.css" rel="stylesheet">
+
+    <!-- channel settings -->
+    <script defer src="/routes/scripts/render-admins.js"></script>
+    <script defer src="/routes/scripts/render-subjects.js"></script>
+    <script defer src="/routes/scripts/channel-settings.js"></script>
+    <link href="/routes/styles/channel-settings.css" rel="stylesheet">
 </body>
 </html>
