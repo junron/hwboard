@@ -2,25 +2,13 @@ let homeworkSubjectChart
 let homeworkDateChart
 let gradedMode = 0
 
-
 //Db inited, can get data
 conn.on("ready",()=>{
-  console.log("ready")
-  renderCharts()
-})
-
-//Page loaded after db init
-conn.emit("isReady",null,res=>{
-  console.log("ready before page load")
-  renderCharts()
-})
-
-function renderChartsIfReady(){
-  conn.emit("isReady",null,res=>{
-    console.log("ready before page load")
+  if(location.hash.includes("analytics")){
+    console.log("ready")
     renderCharts()
-  })
-}
+  }
+})
 
 function renderCharts(){
   conn.emit("homeworkSubjectData",{channel},(err,data)=>{
@@ -33,10 +21,8 @@ function renderCharts(){
   })
 }
 
-const test = document.querySelector("input[type=checkbox][value=tests]")
-const regular = document.querySelector("input[type=checkbox][value=regular]")
-regular
-.addEventListener("change",e=>{
+$(document).on("change","input[type=checkbox][value=regular]",e=>{
+  const test = $("input[type=checkbox][value=tests]")[0]
   const checked = e.target.checked
   if(checked){
     if(test.checked){
@@ -56,8 +42,9 @@ regular
     homeworkSubjectChart = renderHomeworkSubjectChart(data)
   })
 })
-test
-.addEventListener("change",e=>{
+
+$(document).on("change","input[type=checkbox][value=tests]",e=>{
+  const regular = $("input[type=checkbox][value=regular]")[0]
   const checked = e.target.checked
   if(checked){
     if(regular.checked){

@@ -18,13 +18,7 @@ const Framework7App = new Framework7({
       animate:false,
       on:{
         pageAfterIn:e=>{
-          if(typeof channelScriptLoaded != "undefined"){
-            return
-          }
-          const scriptTag = document.createElement("script")
-          scriptTag.src = "/routes/scripts/channels.js"
-          const target = e.currentTarget
-          target.appendChild(scriptTag)
+          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
         }
       }
     },
@@ -88,13 +82,17 @@ const Framework7App = new Framework7({
       }
     ]
     },
-    {
-      name:"channels",
-      path:"/channels/:channelName",
-      reloadPrevious:true,
-      animate:false,
-      url:"/{{channelName}}"
-    },
+    //Currently disabled 
+    // As it adds extra complexity
+
+    // {
+    //   name:"channels",
+    //   path:"/channels/:channelName",
+    //   reloadPrevious:true,
+    //   animate:false,
+    //   url:"/{{channelName}}",
+    // },
+
     {
       name:"channelStats",
       path:"/channels/:channelName/analytics",
@@ -104,28 +102,12 @@ const Framework7App = new Framework7({
       on:{
         pageAfterIn:e=>{
           channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
-          const target = e.currentTarget
-          const resources = ["/scripts/Chart.bundle.min.js","/routes/scripts/channel-stats.js","/routes/styles/channel-stats.css"]
-          for(const resource of resources){
-            let tag
-            if(resource.endsWith(".js")){
-              //Chart script is already loaded
-              if(resource=="/routes/scripts/channel-stats.js" && typeof gradedMode != "undefined"){
-                //Force charts to rerender
-                homeworkDateChart = false
-                homeworkSubjectChart = false
-                renderChartsIfReady()
-                continue
-              }
-              tag = document.createElement("script")
-              tag.src = resource
-            }else if(resource.endsWith(".css")){
-              tag = document.createElement("link")
-              tag.rel = "stylesheet"
-              tag.href = resource
-            }
-            target.appendChild(tag)
-          }
+          homeworkDateChart = false
+          homeworkSubjectChart = false
+          conn.emit("isReady",null,res=>{
+            console.log("ready before page load")
+            renderCharts()
+          })
         }
       }
     },
@@ -137,26 +119,10 @@ const Framework7App = new Framework7({
       url:"/{{channelName}}/settings",
       on:{
         pageAfterIn:e=>{
-          const target = e.currentTarget
-          const scripts = ["/scripts/students.js","/routes/scripts/render-admins.js","/routes/scripts/render-subjects.js","/routes/scripts/channel-settings.js"]
-          for(const script of scripts){
-            if(script=="/routes/scripts/render-admins.js"&&typeof renderAdmins != "undefined"){
-              continue
-            }
-            if(script=="/routes/scripts/render-subjects.js"&&typeof renderSubjects != "undefined"){
-              continue
-            }
-            if(script=="/scripts/students.js"&&typeof commonJS != "undefined"){
-              continue
-            }
-            const scriptTag = document.createElement("script")
-            scriptTag.src = script
-            target.appendChild(scriptTag)
-          }
-          const styleTag = document.createElement("link")
-          styleTag.rel = "stylesheet"
-          styleTag.href = "/routes/styles/channel-settings.css"
-          target.appendChild(styleTag)
+          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+          conn.emit("isReady",null,res=>{
+            getChannelData()
+          })
         }
       },
       routes:[
