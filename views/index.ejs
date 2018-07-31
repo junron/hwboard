@@ -3,13 +3,34 @@
 <%- include("./partials/head") %>
 <body>
   <div id="app">
+  <!-- menu -->
+    <div class="panel panel-left">
+    <div class="list links-list">
+      <ul>
+        <li>
+          <a href="/" class="panel-close">
+            Homework
+          </a>
+        </li>
+        <li>
+        <a href="/channels/" class="panel-close">
+          Channels
+        </a>
+      </li>
+      </ul>
+    </div>
+    </div>
+
     <div class="view view-main">
     <link href="/styles/roboto.css" rel="stylesheet">
     <link rel="stylesheet" href = "/styles/icons.css">
+    <link rel="stylesheet" href = "/styles/bars.css">
 
     <div class="page page-current">
       <div class="navbar">
         <div class="navbar-inner">
+        <!-- bar icon and link -->
+        <a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>
         <div class="item-content title">
           <div class="item-inner item-title">
             <div>Homework Board</div>
@@ -28,18 +49,6 @@
         Clicking will cause the edit homework popup to appear
         Only show for admins
         -->
-        <div class="toolbar tabbar toolbar-bottom-md">
-    <div class="toolbar-inner">
-        <a href="/" class="tab-link tab-link-active">
-          <i class="icon demo-icon-1"></i>
-          <span class="tabbar-label">Homework</span>
-        </a>
-        <a href="/channels" class="tab-link">
-          <i class="icon demo-icon-2"></i>
-          <span class="tabbar-label">Channels</span>
-        </a>
-      </div>
-    </div>
       <% if (admin){ %>
       <div class="fab fab-right-bottom admin-only color-green-blue" aria-label="Add homework">
         <a id="fab-add-homework" href="/popups/add/">
