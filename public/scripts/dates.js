@@ -5,7 +5,7 @@ const daysUntil = date =>{
 const roundDate = date => Sugar.Date.create(Sugar.Date.format(new Date(date),"{d}/{M}/{yy}"),"en-GB")
 
 async function parseDate(dateString){
-  dateString = dateString ||$("#dueDate").val()
+  dateString = dateString ||$(".page-current #dueDate").val()
   if(dateString.toLowerCase()=="next lesson"){
     return getNextLesson()
   }
@@ -15,7 +15,7 @@ async function parseDate(dateString){
     //If is a school day 
     //and there is lesson for a subject on that day, use lesson time
     const dueDateDay = Sugar.Date.format(validatedDate,"{dow}")
-    const subject = $("#subject-name").val()
+    const subject = $(".page-current #subject-name").val()
     let lessonTime = await lessonOnDay(subject,dueDateDay)
     if(!lessonTime){
       lessonTime = await endSchoolTime(dueDateDay)

@@ -9,14 +9,14 @@ const {sequelize,Sequelize,Channels,Homework} = require("./models")
 const xss = require('xss')
 
 //Map emails to names
-const {getData,getStudentById} = require("./public/scripts/students")
+const {loadJSONData,getStudentById} = require("./public/scripts/students")
 
 //Object to store hwboard channel tables
 const tables = {}
 
 //Generate tables
 async function init(){
-  await getData("./data.json")
+  await loadJSONData("./data.json")
   await generateHomeworkTables()
   return sequelize.sync()
 }
@@ -82,6 +82,7 @@ async function getUserChannels(userEmail,permissionLevel=1){
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
   const Homework = tables[hwboardName]
+  console.log(Object.keys(tables))
   const data = await Homework.findAll({
     raw: true
   })

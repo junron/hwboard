@@ -33,32 +33,12 @@ app.use(cookieParser(cookieSecret));
 const server = http.createServer(app)
 const io = websocket.createServer(server)
 
-//routes
-const routes = require('./routes/index');
-const su = require('./routes/su');
-const update = require('./routes/update');
-const version = require('./routes/version');
-app.use('/', routes);
-app.use('/', su);
-app.use('/', update);
-app.use('/', version);
-
-//Views
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-//Show warning for testing mode
-//See testing.md
-if(testing){
-  console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m")
-}
-
 //Content security policy settings
 //"unsafe-inline" for inline styles and scripts, aim to remove
 //https://developers.google.com/web/fundamentals/security/csp/
 const csp = 
 `default-src 'self';
-script-src 'self' 'unsafe-inline' https://cdn.ravenjs.com;
+script-src 'self' 'unsafe-inline';
 style-src 'self' 'unsafe-inline';
 connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
 object-src 'none';
@@ -77,6 +57,28 @@ app.use(function(req,res,next){
   res.header("X-Frame-Options","deny")
   next()
 })
+
+//routes
+const addChannel = require('./routes/addChannel');
+const routes = require('./routes/index');
+const su = require('./routes/su');
+const update = require('./routes/update');
+const version = require('./routes/version');
+app.use('/', addChannel);
+app.use('/', routes);
+app.use('/', su);
+app.use('/', update);
+app.use('/', version);
+
+//Views
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+//Show warning for testing mode
+//See testing.md
+if(testing){
+  console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m")
+}
 
 //express setup
 app.use(logger('dev'));

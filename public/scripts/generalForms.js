@@ -62,3 +62,24 @@ function reRender(data){
   let sortOrder = sortOptions.order || 0
   $("#hwboard-homework-list").html(renderer(data,sortType,sortOrder))
 }
+
+//Details bottom sheet
+const detailsSheet = Framework7App.sheet.create({
+  el:".sheet-modal",
+  backdrop:true
+})
+function rerenderSort(){
+  if(document.getElementById("sort-set-default").checked){
+    document.cookie = "sortType="+sortOptions.type
+    document.cookie = "sortOrder="+sortOptions.order
+  }
+  worker.postMessage({
+    type:"get"
+  }).then(data=>{
+    if((!data)||data.length==0){
+      //Perhaps indexeddb screwed up 
+      data = JSON.parse(localStorage.getItem("data"))
+    }
+    reRender(data)
+  })
+}

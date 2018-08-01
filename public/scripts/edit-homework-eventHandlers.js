@@ -28,7 +28,7 @@ const initEditHomeworkEvents = ()=>{
     const elem = document.getElementById("update-hwboard-button")
     elem.disabled = true
     let actionPromise
-    if($("#edit-title").text()=="Edit homework"){
+    if($(".page-current #edit-title").text()=="Edit homework"){
       actionPromise = editHomework()
     }else{
       actionPromise = addHomework()
