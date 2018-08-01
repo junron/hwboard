@@ -3,6 +3,7 @@
 worker.postMessage({
   type:"get",
 }).then(data=>{
+  console.log("Load homework from Indexeddb")
   if(channel!=""){
     //Only show homework for current channel
     data = data.filter(a=>a.channel == channel)
@@ -14,5 +15,7 @@ worker.postMessage({
   reRender(data)
 })
 
-//Connected before page load
-conn.emit("isReady",null,loadHomework)
+if(typeof conn!="undefined"){
+  //Connected before page load
+  conn.emit("isReady",null,loadHomework)
+}
