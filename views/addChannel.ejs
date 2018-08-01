@@ -1,0 +1,127 @@
+<!DOCTYPE html> 
+<html lang="en">
+<%- include("partials/head") %>
+<link href="/styles/roboto.css" rel="stylesheet"> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<body> 
+  <style>
+    .md #app .list ul .list ul li {
+      padding-left: 0px;
+    }
+    .md #app .list ul .list ul{
+      padding-left: 0px;
+    }
+  </style>
+  <div id="app">
+    <div class="view view-main">
+    <link href="/styles/roboto.css" rel="stylesheet">
+    <link rel="stylesheet" href = "/styles/icons.css">
+      <div class="page page-current">
+      <div class="navbar">
+        <div class="navbar-inner">
+        <div class="left">
+          <a href="/channels" class="link">
+            <i class="icon icon-back"></i>
+          </a>
+          </div>
+              <div class="title">Add channel</div>
+            </div>
+          </div>
+          <div class="page-content block">
+            <div class="list no-hairlines">
+              <ul>
+                  <li class="list-item">
+                    <div class="item-content">
+                        <div class="list no-hairlines">
+                        <ul>
+                          <li class="item-content item-input">
+                              <div class="item-inner">
+                                <div class="item-title item-floating-label">Channel name</div>
+                                <div class="item-input-wrap">
+                                  <input type="text" id="channelName" autocomplete="off">
+                                </div>
+                              </div>
+                            </li>
+                            <li class="item-content item-input">
+                              <div class="item-inner">
+                            <button id="add-channel" class="button">Add channel</button>
+                          </div>
+                          </li>
+                          <div id="status">
+                          </div>
+                        </ul>
+                    </div>
+                    </div>
+                  </li>
+                </ul>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  <script src="/framework7/js/framework7.min.js"></script>
+  <script src="/scripts/app.js"></script>
+  <script src="/scripts/socket.io.js"></script>
+  <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
+  <script>
+  function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+</script>
+  <script>
+    //DoNt toUcHa my eRRor rePoTer
+    Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
+    Raven.setUserContext({
+      name: getCookie("name"),
+      email: getCookie("email"),
+    })
+  </script>
+<script>
+  const conn = io(location.origin,{secure: true})
+  conn.on("connect_error",function(err){
+    Raven.captureException(err)
+  })
+
+  conn.on("connect",function(){
+    console.log("Conne")
+  })
+
+  //Db inited, can get data
+  conn.on("ready",()=>{
+    console.log("ready")
+  })
+  document.getElementById("add-channel").addEventListener("click",()=>{
+    const input = document.getElementById("channelName").value
+    if(input.trim().length==0){
+      return Framework7App.dialog.alert("Channel name cannot be empty")
+    }
+    conn.emit("addChannel",input.trim(),(err,channelName)=>{
+      if(err){
+        Framework7App.dialog.alert(err)
+        throw err
+      }
+      document.getElementById("status").innerHTML = `
+      The channel ${channelName} has been created.
+      Add subjects and members <a class="external" href="/${channelName}/settings">here</a>
+      `
+    })
+  })
+</script>
+<script>
+  const mainView = Framework7App.views.create('.view-main')
+</script>
+<link rel="stylesheet" href="/framework7/css/framework7.min.css"> 
+</body>
+</html>

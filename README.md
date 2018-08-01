@@ -5,6 +5,7 @@ Master Branch (stable)
  
 Dev Branch:  
 ![pipeline status](https://git-badge.chatbox2.tk/hwboard2/dev)
+[![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/dev/badge.svg)](https://snyk.io/test/github/junron/hwboard/dev)
 
 ## Installation
 1. Clone this repository

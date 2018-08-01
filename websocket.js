@@ -124,6 +124,7 @@ exports.createServer = function(server){
       //For tests
       require("./websocket-routes/tests")(socket)
 
+      socket.on("isReady",(_,callback)=>callback(true))
       return socket.emit("ready")
     })
     .catch(uncaughtErrorHandler)
@@ -139,6 +140,9 @@ exports.createServer = function(server){
 module.exports.updateChannels = channels=>{
   for(const channel in channels){
     for(const property in channels[channel]){
+      if(!globalChannels[channel]){
+        globalChannels[channel] = {}
+      }
       globalChannels[channel][property] = channels[channel][property]
     }
   }

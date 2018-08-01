@@ -1,0 +1,20 @@
+<div class="page page-current">
+<div class="navbar">
+  <div class="navbar-inner">
+    <!-- bar icon and link -->
+    <a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>
+        <div class="title">Channels</div>
+      </div>
+    </div>
+      <div class="page-content block">
+      Channels allow you to control access to homework.<br>
+      It also allows you to add members who are outside your class or level.<br>
+      You can create a channel <a class="external" href="/addChannel">here</a>.
+      <div class="list no-hairlines">
+        <ul>
+          <%- renderer(channels)%>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <script src="/scripts/routes/channels.js"></script>
