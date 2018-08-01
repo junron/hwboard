@@ -39,7 +39,7 @@ const pushFiles = [
   "/framework7/css/framework7.min.css",
   "/framework7/js/framework7.min.js",
   "/scripts/promise-worker.js",
-  "/jquery/dist/jquery.min.js",
+  "/jquery/dist/jquery.slim.min.js",
   "/scripts/app.js",
   "/scripts/generalForms.js",
   "/scripts/worker.js",
