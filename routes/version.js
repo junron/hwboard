@@ -25,6 +25,11 @@ router.get("/cd/version.json",(req, res) => {
       lastUpdate
     }))
   })()
+  .catch((e)=>{
+    const code = e.code || 500
+    res.status(code).end(e.toString())
+    console.log(e)
+  })
 })
 router.get("/cd/version",(req, res) => {
   ;(async ()=>{
