@@ -17,7 +17,7 @@ function loadHomework(){
       //Add to localstorage as a fallback
       localStorage.setItem("data",JSON.stringify(data))
     }
-
+    console.log("Load homework from websocket")
     reRender(data)
   })
 }
