@@ -9,6 +9,23 @@ simpleGit.fetch = promisify(fetch)
 simpleGit.show = promisify(show)
 simpleGit.log = promisify(log)
 
+router.get("/cd/version.json",(req, res) => {
+  ;(async ()=>{
+    const promiseArr = [
+      simpleGit.revparse(["--abbrev-ref","HEAD"]),
+      simpleGit.revparse(["HEAD"]),
+      simpleGit.show(["-s","--format=%ci","HEAD"])
+    ]
+    const results = await Promise.all(promiseArr)
+    const [branch,commitSha,lastUpdate] = results.map(string => string.trim())
+    res.type("json")
+    res.end(JSON.stringify({
+      branch,
+      commitSha,
+      lastUpdate
+    }))
+  })()
+})
 router.get("/cd/version",(req, res) => {
   ;(async ()=>{
     await simpleGit.fetch()
