@@ -1,6 +1,6 @@
 //This is a service worker
 //It handles caching and PWA
-const version = "1.1.1"
+const version = "1.1.2"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -11,11 +11,11 @@ self.addEventListener('install', function(e) {
       const cacheArray = [
         "/styles/roboto.css",
         "/styles/icons.css",
-        "/scripts/socket.io.js",
+        "/socket.io-client/dist/socket.io.slim.js",
         "/framework7/css/framework7.min.css",
         "/framework7/js/framework7.min.js",
         "/scripts/promise-worker.js",
-        "/scripts/jquery.min.js",
+        "/jquery/dist/jquery.slim.min.js",
         "/scripts/app.js",
         "/scripts/generalForms.js",
         "/scripts/worker.js",
