@@ -20,7 +20,6 @@ module.exports = (socket,io,db)=>{
   socket.on("dataReq",function(msg,callback){
     console.log("received")
     ;(async ()=>{
-      console.log(msg)
       if(!isObject(msg)){
         throw "Msg is not an object"
       }

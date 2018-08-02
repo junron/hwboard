@@ -278,8 +278,15 @@ router.get('/', async (req, res, next) => {
   let data = await db.getHomeworkAll(channelData)
 
   //Report errors in production or mobile
+  let reportErrors = false
   const mobile = isMobile(req.headers['user-agent'])
-  res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors:(reportErrors||mobile)})
+  console.log("host",req.get("origin"))
+  if(hostname!="nushhwboard.tk"){
+    reportErrors = mobile
+  }else{
+    reportErrors = true
+  }
+  res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors})
 });
 
 
