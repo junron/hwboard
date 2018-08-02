@@ -22,7 +22,6 @@ async function checkPermissions(socket,msg,minPermissionLevel=2){
   }
 }
 async function checkPayloadAndPermissions(socket,msg,minPermissionLevel=2){
-  console.log(msg)
   await typeChecking(msg)
   await checkPermissions(socket,msg,minPermissionLevel=2)
   //Set defaults
