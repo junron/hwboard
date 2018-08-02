@@ -42,8 +42,8 @@
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.3",
-    "puppeteer": "^1.6.1",
-    "snyk": "^1.89.1",
+    "puppeteer": "^1.6.2",
+    "snyk": "^1.90.0",
     "socket.io-client": "^2.1.1"
   }
 }
