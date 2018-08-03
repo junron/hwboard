@@ -3,6 +3,7 @@ const Raven = require('raven');
 let config
 let reportErrors
 //Catch errors in loading config
+
 try {
   //Load config
   config = require("./loadConfig")
