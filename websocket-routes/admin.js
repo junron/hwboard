@@ -43,7 +43,9 @@ module.exports = (socket,io,db)=>{
       await sequelize.sync()
       await db.init()
       updateChannels(db.arrayToObject(await db.getUserChannels("*")))
-      return callback(null,xss(msg))
+      callback(null,xss(msg))
+      //disconnect to refresh channels
+      return socket.disconnect()
     })()
     .catch(e => {
       console.log(e)

@@ -1,4 +1,7 @@
-const conn = io(location.origin,{secure: true});
+const conn = io(location.origin,{
+  secure: true,
+  reconnectionDelay:100,
+});
 //Handle websocket connection errors
 //Standard code for all my websocket apps
 if(!navigator.onLine){
