@@ -88,7 +88,7 @@ function init(){
     input.addEventListener("input",changeStatus)
   }
   document.getElementById("add-subject").addEventListener("click",()=>{
-    const data = getData()
+    const data = getSubjectData()
     data.channel = channel
     console.log(data)
     conn.emit("addSubject",data,(err)=>{
