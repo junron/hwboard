@@ -280,12 +280,12 @@ router.get('/', async (req, res, next) => {
   //Report errors in production or mobile
   let reportErrors = false
   const mobile = isMobile(req.headers['user-agent'])
-  console.log(mobile)
   if(hostname!="nushhwboard.tk"){
     reportErrors = mobile
   }else{
     reportErrors = true
   }
+
   res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors})
 });
 
