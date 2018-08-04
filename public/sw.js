@@ -52,21 +52,26 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(
       caches.open('cache1').then(function(cache) {
         return cache.match(event.request).then(function(response) {
-          if((event.request.url.endsWith(".css")||event.request.url.endsWith(".ttf")||event.request.url.indexOf("min")>-1||event.request.url.indexOf("io")>-1)&&response){
+          const {url} = event.request
+          if((url.endsWith(".css")||url.endsWith(".ttf")||url.indexOf("min")>-1||url.indexOf("io")>-1)&&response){
             return addCacheHeader(response)
           }
-          console.log(`Loading ${event.request.url}`)
+          console.log(`Loading ${url}`)
           var fetchPromise = fetch(event.request).then(function(networkResponse) {
             //Dont cache socket io
-            if(event.request.url.includes("transport=polling") || event.request.url.includes("/cd/") || event.request.url.includes("checkVersion.js") || event.request.url.includes("?noCache")){
+            if((!url.includes("?useCache")) &&
+             (url.includes("transport=polling") || 
+             url.includes("/cd/") || 
+             url.includes("checkVersion.js") ||
+             url.includes("?noCache"))){
               return networkResponse;
             }
             if(networkResponse.ok){
               cache.put(event.request, networkResponse.clone());
-              console.log(`Cached ${event.request.url}`)
+              console.log(`Cached ${url}`)
               return networkResponse;
             }else{
-              console.log(`Failed to fetch from network ${event.request.url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
+              console.log(`Failed to fetch from network ${url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
               return response || networkResponse
             }
           })
