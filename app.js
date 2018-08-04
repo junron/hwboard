@@ -59,12 +59,12 @@ app.use(function(req,res,next){
 })
 
 //routes
-const addChannel = require('./routes/addChannel');
+const resetCache = require('./routes/resetCache');
 const routes = require('./routes/index');
 const su = require('./routes/su');
 const update = require('./routes/update');
 const version = require('./routes/version');
-app.use('/', addChannel);
+app.use('/', resetCache);
 app.use('/', routes);
 app.use('/', su);
 app.use('/', update);
