@@ -1,5 +1,5 @@
 #app {
-  height:100vh;
+  height:100%;
 }
 .md .fab.color-green-blue > a, .md .fab.color-green-blue .fab-buttons > a, .md .fab-buttons.color-green-blue a, .md .fab > a.color-green-blue, .md .fab .fab-buttons > a.color-green-blue {
   background: #018786;
