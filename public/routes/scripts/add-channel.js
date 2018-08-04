@@ -14,3 +14,9 @@ document.getElementById("add-channel").addEventListener("click",()=>{
     `
   })
 })
+
+conn.on("disconnect",()=>{
+  if(location.hash.includes("addChannel")){
+    conn.connect()
+  }
+})
