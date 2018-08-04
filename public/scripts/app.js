@@ -112,6 +112,21 @@ const Framework7App = new Framework7({
       }
     },
     {
+      name:"addChannel",
+      path:"/addChannel",
+      reloadPrevious:true,
+      animate:false,
+      url:"/routes/add-channel.html",
+      on:{
+        pageAfterIn:e=>{
+          const scriptTag = document.createElement("script")
+          scriptTag.src = "/routes/scripts/add-channel.js"
+          const target = e.currentTarget
+          target.appendChild(scriptTag)
+        }
+      }
+    },
+    {
       name:"channelSettings",
       path:"/channels/:channelName/settings",
       reloadPrevious:true,
