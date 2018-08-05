@@ -12,12 +12,50 @@
 
 const checkPayloadAndPermissions = require("./check-perm")
 const {updateChannels,getPermissionLvl} = require("../websocket")
-
+const {sequelize,Channels} = require("../models")
+const xss = require("xss")
 
 module.exports = (socket,io,db)=>{
 
   //Send uncaught errors, eg `callback is not a function` to client
   const uncaughtErrorHandler = require("./error")(socket)
+
+
+  socket.on("addChannel",function(msg,callback){
+    ;(async ()=>{
+      const config = {
+        name:xss(msg),
+        subjects:[],
+        roots:[socket.userData.preferred_username],
+        admins:[],
+        members:[]
+      }
+      const data = await Channels.findAll({
+        where:{
+          name:config.name
+        },
+        raw: true
+      })
+      if(data.length>0){
+        return callback("Channel already exists")
+      }
+      await Channels.create(config)
+      await sequelize.sync()
+      await db.init()
+      updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+      callback(null,xss(msg))
+      //disconnect to refresh channels
+      return socket.disconnect()
+    })()
+    .catch(e => {
+      console.log(e)
+      throw e
+    })
+    .catch(e => callback(e.toString()))
+    //Error in handling error
+    .catch(uncaughtErrorHandler)
+  })
+
 
   //Add subject
   socket.on("addSubject",function(msg,callback){

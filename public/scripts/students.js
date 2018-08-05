@@ -5,7 +5,7 @@ const studentsByName = {}
 const studentsByMG = {}
 const studentsById = {}
 let students
-async function getData(dataPath,cache=false){
+async function loadJSONData(dataPath,cache=false){
   if(students){
     //Already fetched data
     return students
@@ -64,8 +64,8 @@ async function getStudentByName2(studentName){
 }
 
 
-const studentsExport = Object.freeze({
-  getData,
+const studentsExport = {
+  loadJSONData,
   getStudentById,
   getStudentByName,
   getStudentsByClassName,
@@ -73,11 +73,14 @@ const studentsExport = Object.freeze({
   getStudentByName2,
   getStudentByIdSync,
   getClassesSync
-})
+}
+if(typeof getData != "undefined"){
+  studentsExport.getData = getData
+}
 //commonJS pro
 if(commonJS){
   module.exports = Object.freeze({
-    getData,
+    loadJSONData,
     getStudentById,
     getStudentByName,
     getStudentsByClassName,

@@ -1,6 +1,6 @@
 //This is a service worker
 //It handles caching and PWA
-const version = "1.1.0"
+const version = "1.1.2"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -11,17 +11,17 @@ self.addEventListener('install', function(e) {
       const cacheArray = [
         "/styles/roboto.css",
         "/styles/icons.css",
-        "/scripts/socket.io.js",
+        "/socket.io-client/dist/socket.io.slim.js",
         "/framework7/css/framework7.min.css",
         "/framework7/js/framework7.min.js",
-        "/scripts/promise-worker.js",
-        "/scripts/jquery.min.js",
+        "/promise-worker/dist/promise-worker.js",
+        "/jquery/dist/jquery.slim.min.js",
         "/scripts/app.js",
         "/scripts/generalForms.js",
         "/scripts/worker.js",
-        "/scripts/dexie.min.js",
+        "/dexie/dist/dexie.min.js",
         "/scripts/raven.min.js",
-        "/scripts/promise-worker.register.js",
+        "/promise-worker/dist/promise-worker.register.js",
         "/fonts/material.ttf",
         "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
         "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf"
@@ -52,22 +52,27 @@ self.addEventListener('fetch', function(event) {
     event.respondWith(
       caches.open('cache1').then(function(cache) {
         return cache.match(event.request).then(function(response) {
-          if((event.request.url.endsWith(".css")||event.request.url.endsWith(".ttf")||event.request.url.indexOf("min")>-1||event.request.url.indexOf("io")>-1)&&response){
+          const {url} = event.request
+          if((url.endsWith(".css")||url.endsWith(".ttf")||url.indexOf("min")>-1||url.indexOf("io")>-1)&&response){
             return addCacheHeader(response)
           }
-          console.log(`Loading ${event.request.url}`)
+          console.log(`Loading ${url}`)
           var fetchPromise = fetch(event.request).then(function(networkResponse) {
             //Dont cache socket io
-            if(event.request.url.includes("transport=polling") || event.request.url.includes("/cd/")){
+            if((!url.includes("?useCache")) &&
+             (url.includes("transport=polling") || 
+             url.includes("/cd/") || 
+             url.includes("checkVersion.js") ||
+             url.includes("?noCache"))){
               return networkResponse;
             }
             if(networkResponse.ok){
               cache.put(event.request, networkResponse.clone());
-              console.log(`Cached ${event.request.url}`)
+              console.log(`Cached ${url}`)
               return networkResponse;
             }else{
-              console.log(`Failed to fetch from network ${event.request.url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
-              return response
+              console.log(`Failed to fetch from network ${url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
+              return response || networkResponse
             }
           })
           return response || fetchPromise;

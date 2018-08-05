@@ -2,12 +2,12 @@ let previousAddedHomework
 function reset(){
   //Reset all edit dialog options to default
   //$("#edit-dialog-label").text("Add homework")
-  $("#subject-name").val("")
-  $("#dueDate").val("")
-  $("#date-input-info").text('Relative dates such as "next lesson" are accepted')
-  $("#homework-name").val("")
+  $(".page-current #subject-name").val("")
+  $(".page-current #dueDate").val("")
+  $(".page-current #date-input-info").text('Relative dates such as "next lesson" are accepted')
+  $(".page-current #homework-name").val("")
   document.getElementById("toggle-is-graded-checkbox").checked = false
-  const textInputSelectors = ["#subject-name","#dueDate","#homework-name"]
+  const textInputSelectors = [".page-current #subject-name",".page-current #dueDate",".page-current #homework-name"]
   textInputSelectors.forEach(removeFloating)
   gradedCheckboxChecked = false
 }
@@ -29,13 +29,13 @@ const addFloating = elem=>{
 
 //use id=true to get id as well, eg for edit
 async function getHomeworkData(id=false){
-  const subject = $("#subject-name").val().trim()
+  const subject = $(".page-current #subject-name").val().trim()
   if(subject===""){
     throw new Error("No subject selected")
   }
   const isTest = gradedCheckboxChecked
   //Remove lines
-  const text = $("#homework-name").val().split("\n").join("").trim()
+  const text = $(".page-current #homework-name").val().split("\n").join("").trim()
   const channel = subjectChannelMapping[subject]
   if(channel==undefined){
     throw new Error("Subject is not valid")
@@ -69,19 +69,19 @@ async function getHomeworkData(id=false){
 function load(subject,graded,text,dueDate,title){
   subject = subject.trim()
   //$("#edit-dialog-label").text(title)
-  $("#subject-name").val(subject)
+  $(".page-current #subject-name").val(subject)
   //Keep the time also
-  $("#dueDate").val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
-  $("#homework-name").val(text.trim())
+  $(".page-current #dueDate").val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
+  $(".page-current #homework-name").val(text.trim())
   parseDate()
   if(graded){
-    document.getElementById("toggle-is-graded-checkbox").checked = true
+    $(".page-current #toggle-is-graded-checkbox").attr("checked",true)
     gradedCheckboxChecked = true
   }else{
-    document.getElementById("toggle-is-graded-checkbox").checked = false
+    $(".page-current #toggle-is-graded-checkbox").attr("checked",false)
     gradedCheckboxChecked = false
   }
-  const textInputSelectors = ["#subject-name","#dueDate","#homework-name"]
+  const textInputSelectors = [".page-current #subject-name",".page-current #dueDate",".page-current #homework-name"]
   textInputSelectors.forEach(addFloating)
 }
 
@@ -89,6 +89,7 @@ function load(subject,graded,text,dueDate,title){
 function startEdit(){
   getExistingInfo().then(data =>{
     const {subject,isTest,text,dueDate} = data
+    console.log(data)
     load(subject,isTest,text,dueDate,"Edit homework")
   })
 }
