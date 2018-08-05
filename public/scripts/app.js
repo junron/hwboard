@@ -11,6 +11,25 @@ const Framework7App = new Framework7({
   },
   routes:[
     {
+      name:"timetable",
+      path:"/timetable",
+      url:"/routes/timetable.html",
+      reloadPrevious:true,
+      animate:false,
+      on:{
+        pageAfterIn:e=>{
+          const target = e.currentTarget
+          const tag = document.createElement("script")
+          tag.src = "/routes/scripts/timetable.js"
+          target.appendChild(tag)
+          const linkTag = document.createElement("link")
+          linkTag.rel = "stylesheet"
+          linkTag.href = "/routes/styles/timetable.css"
+          target.appendChild(linkTag)
+        }
+      }
+    },
+    {
       name:"channels",
       path:"/channels",
       url:"/channels",
