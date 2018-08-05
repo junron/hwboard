@@ -178,7 +178,7 @@ const notWeekend = int => !(new Date(int*24*60*60*1000).getDay() == 6 || new Dat
 function renderHomeworkDateChart(data){
   if(homeworkDateChart){
     homeworkDateChart.data = {
-      labels:Object.keys(data),
+      labels:Object.keys(data).map(toDate),
       datasets:[{
         data:Object.values(data),
         backgroundColor:getColors(Object.keys(data)),
