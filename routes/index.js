@@ -238,7 +238,7 @@ router.get('/:channel/analytics', async (req, res, next) => {
     const email = decodedToken.preferred_username
     //Report errors in production or mobile
     const mobile = isMobile(req.headers['user-agent'])
-    res.render('analytics', {reportErrors:(reportErrors||mobile)})
+    res.render('analytics', {channelName,reportErrors:(reportErrors||mobile)})
   }else{
     res.status(404).end("Channel not found")
   }
