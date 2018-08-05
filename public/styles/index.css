@@ -1,8 +1,9 @@
-#app {
-  height:100%;
-}
 .md .fab.color-green-blue > a, .md .fab.color-green-blue .fab-buttons > a, .md .fab-buttons.color-green-blue a, .md .fab > a.color-green-blue, .md .fab .fab-buttons > a.color-green-blue {
   background: #018786;
+}
+.page .page-content.block[role="main"] {
+  margin-top: 1px;
+  padding:0px;
 }
 .page .page-content.block .list.no-hairlines {
   margin-top:initial;
