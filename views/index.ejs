@@ -3,25 +3,7 @@
 <%- include("./partials/head") %>
 <body>
   <script src="/scripts/checkVersion.js"></script>
-  <script>
-  ;(async ()=>{
-    const promises = [
-      fetch("/cd/version.json?useCache")
-      .then(res=>res.json()),
-      fetch("/cd/version.json?noCache")
-      .then(res=>res.json())
-    ]
-    const result = await Promise.all(promises)
-    // New commit, refresh cache and reload page
-    if(result[1].commitSha != result[0].commitSha){
-      console.log("New version released!!")
-      console.log(`Upgrading from version ${result[0].commitSha} to ${result[1].commitSha}`)
-      await caches.delete("cache1")
-      location.reload()
-    }
-  })()
-  </script>
-  <div id="app">
+  <div id="app" style="display:none">
   <!-- menu -->
     <div class="panel panel-left">
     <div class="list links-list">
@@ -59,7 +41,7 @@
           <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
         </div>
       </div>
-        <div class="page-content" style="padding-top:0px" role="main">
+        <div class="page-content block" style="padding-top:0px" role="main">
           <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
             <%- renderer(data,sortType,sortOrder,adminChannels) %>
           </div>
@@ -81,6 +63,10 @@
       </div>
     </div>
     <link rel="stylesheet" href="/framework7/css/framework7.min.css">
+    <!-- unhide rendered page -->
+    <script>
+    document.getElementById("app").style.display = "block"
+    </script>
     <!-- critical styles and scripts cannot be deferred-->
     <script src="/variables.js"></script>
     <!-- required for load of homework from cache-->
