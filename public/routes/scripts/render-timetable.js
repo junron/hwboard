@@ -1,26 +1,54 @@
 const columnWidth = 50
+const timeNow = new Date("8/9/2018 10:30")
 let table = document.querySelector("#app .page-current table")
 const timingToPeriod = timing => {
   const period = (timing - 800)/50
   return Math.round(period)
 }
 const renderDay = day =>{
-  let html = `<tr><td style="width:${columnWidth}px">${day.day}</td>`
+  let html = "<tr "
+  let now = false
+  let lessonNowEndTime = false
+  if(day.day == Sugar.Date.format(timeNow,"{dow}")){
+    html += "class='today'"
+    now = parseInt(Sugar.Date.format(timeNow,'%H%M'))
+  }else if(day.day == Sugar.Date.format(Sugar.Date.addDays(new Date(timeNow),1),"{dow}")){
+    html += "class='tomorrow'"
+  }
+  html += `><td style="width:${columnWidth}px">${day.day}</td>`
   //Number of half hour intervals
   let lastLessonTime = 800
   const lessonEndTime = 1800
   for(const lesson of day.lessons){
+    let cssClass = ""
     const {subject,timing} = lesson
     const startTime = timingToPeriod(timing[0])
     const interval = timingToPeriod(timing[1]-timing[0]+800)
     if(lastLessonTime<timing[0]){
       const breakInterval = timingToPeriod(timing[0]-lastLessonTime+800)
-      html +=`<td style="width:${breakInterval*50}px" colspan=${breakInterval}></td>`
+      if(now){
+        if(now<timing[0]&&now>=lastLessonTime){
+          lessonNowEndTime = timing[0]
+          cssClass = "now"
+        }else if(lessonNowEndTime==lastLessonTime){
+          cssClass = "next"
+        }
+      }
+      html +=`<td class="${cssClass} style="width:${breakInterval*50}px" colspan=${breakInterval}></td>`
+      cssClass = ""
+    }
+    if(now){
+      if(now<timing[1]&&now>=timing[0]){
+        lessonNowEndTime = timing[1]
+        cssClass = "now"
+      }else if(lessonNowEndTime==timing[0]){
+        cssClass = "next"
+      }
     }
     lastLessonTime = timing[1]
-    //const subjectColor = intToRGB(hashCode(subject))
-    html +=`<td style="width:${interval*50}px;" colspan=${interval}>${subject}</td>`
+    html +=`<td class='${cssClass}' style="width:${interval*50}px;" colspan=${interval}>${subject}</td>`
   }
+  //Lesson at the end of the day
   if(lastLessonTime<lessonEndTime){
     const breakInterval = timingToPeriod(lessonEndTime-lastLessonTime+800)
     html +=`<td style="width:${breakInterval*50}px" colspan=${breakInterval}></td>`

@@ -2,9 +2,26 @@ table {
   border-collapse: collapse;
 }
 td {
-  text-align: center;
-  border: 1px solid black;
   border-spacing: 0px;
-  margin: 0;
-  height:30px;
+  background: #fff;
+  text-align: center;
+  color: #000;
+  border: 1px solid #ddd;
+  padding: 5px;
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+
+.today td{
+  color:red;
+}
+.tomorrow td{
+  color: #ab47bc;
+}
+.now{
+  background-color: #0082694a;
+}
+
+.next{
+  background-color: #b8f7c5e3;
 }
