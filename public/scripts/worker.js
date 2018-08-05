@@ -1,5 +1,5 @@
-importScripts("./dexie.min.js")
-importScripts("./promise-worker.register.js")
+importScripts("/dexie/dist/dexie.min.js")
+importScripts("/promise-worker/dist/promise-worker.register.js")
 const db = new Dexie("homeworks")
 db.version(1).stores({
   homework: "id,subject,dueDate,isTest,text,lastEditTime,lastEditPerson"

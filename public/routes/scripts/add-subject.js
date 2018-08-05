@@ -50,7 +50,7 @@ function getTimingData(timingId){
   }
   return data
 }
-function getData(){
+function getSubjectData(){
   const data = {}
   const subjectName = document.getElementById("subjectInput").value
   data.subject = subjectName
@@ -88,7 +88,7 @@ function init(){
     input.addEventListener("input",changeStatus)
   }
   document.getElementById("add-subject").addEventListener("click",()=>{
-    const data = getData()
+    const data = getSubjectData()
     data.channel = channel
     console.log(data)
     conn.emit("addSubject",data,(err)=>{

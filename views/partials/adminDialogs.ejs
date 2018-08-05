@@ -11,12 +11,4 @@ for (const channel in adminChannels){
 %>
 const subjectChannelMapping = <%-JSON.stringify(subjectChannelMapping)%>
 const subjectSelectionList = <%-JSON.stringify(subjectSelectionList)%>
-const editPopup = Framework7App.popup.create({
-  el: document.getElementById("edit-popup"),
-  on: {
-    opened: function () {
-      console.log('Popup opened')
-    }
-  }
-})
 </script>
