@@ -87,8 +87,8 @@ async function getNextLesson(){
   if(!subjectSelectionList.includes(subject)){
     throw new Error("Subject is not valid")
   }
-  const subjectTimeData = timetable[subject]''
-  const times = await rankDays(subjectTimeData)
+  const subjectTimeData = timetable[subject];
+  const times = await rankDays(subjectTimeData);
   return new Date(Math.min(...times))
 }
 const getTimingsForDay = async targetDay=>{
@@ -96,7 +96,7 @@ const getTimingsForDay = async targetDay=>{
   for(const subject in timetable){
     for (const day in timetable[subject]){
       if(day!==targetDay){
-        continue
+        continue;
       }else{
         for(const timing of timetable[subject][day]){
           //We want the end time
