@@ -50,4 +50,7 @@ body {
   margin-left: 12px !important;
   padding: 5px !important; }
 
+.fc-button {
+  white-space-collapsing: discard; }
+
 /*# sourceMappingURL=calendar.css.map */
