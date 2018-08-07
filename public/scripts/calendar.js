@@ -29,7 +29,7 @@ function updateHomework() {
 }
 
 conn.on("connect",function(){
-    updateHomework()
+    updateHomework();
 });
 
 setTimeout(function() {
@@ -51,6 +51,6 @@ setTimeout(function() {
         events: [],
     });
 
-    updateHomework()
+    updateHomework();
 
 }, 100);
