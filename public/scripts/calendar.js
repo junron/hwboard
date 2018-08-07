@@ -1,30 +1,40 @@
-function getHomework() {
-    conn.emit("dataReq",{},(err,data)=>{
-        if(err)
-            throw err;
-        const hw = data;
-    });
-    return hw;
-}
-
 function convertHomework(arrHomework) {
     let calendarEvents = [];
     for (const eachHomework of arrHomework) {
         const event ={
             title: eachHomework.text,
-            id: eachHomework.subject,
+            //id: eachHomework.subject,
             start: eachHomework.dueDate,
             allDay: true,
         };
-        calendarEvents.appendChild(event);
+        calendarEvents.push(event);
     }
     return calendarEvents;
 }
 
+function callback(thing) {
+    return thing;
+}
+
+function updateHomework() {
+    conn.emit("dataReq",{},(err,data)=>{
+        if(err)
+            throw err;
+        const hw = data;
+        const homeworkEvents = convertHomework(hw);
+        $('#calendar').fullCalendar('updateEvents', homeworkEvents );
+        console.log("Homework Events updated on calendar");
+        console.log(homeworkEvents);
+    });
+}
+
+conn.on("connect",function(){
+    updateHomework()
+});
+
 setTimeout(function() {
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
-    const homeworkEvents = convertHomework(getHomework());
 
     $('#calendar').fullCalendar({
         header: {
@@ -38,7 +48,9 @@ setTimeout(function() {
         },
         height: calendarHeight,
         editable: false,
-        events: homeworkEvents,
+        events: [],
     });
+
+    updateHomework()
 
 }, 100);
