@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'Bars';
-  src: url('/fonts/bars.ttf') format('truetype');
+  src:  url('/fonts/bars.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
-.bar {
+.bar{
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'Bars' !important;
   speak: none;
