@@ -187,6 +187,9 @@ async function removeMember(channel,member){
   }
   if(originalData.roots.includes(member)){
     originalData.roots = remove(originalData.roots,member)
+    if(originalData.roots.length == 0){
+      throw new Error("There must be at least 1 root in the channel.")
+    }
   }else if(originalData.admins.includes(member)){
     originalData.admins = remove(originalData.admins,member)
   }else if(originalData.members.includes(member)){
