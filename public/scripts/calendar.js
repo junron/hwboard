@@ -1,7 +1,6 @@
 setTimeout(function() {
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
-    const calendarWidth = window.innerWidth * 0.5;
 
     $('#calendar').fullCalendar({
         header: {
@@ -14,8 +13,7 @@ setTimeout(function() {
             next: 'right-single-arrow',
         },
         height: calendarHeight,
-        aspectRatio: calendarHeight/calendarWidth,
         editable: false,
     });
 
-}, 10);
+}, 100);
