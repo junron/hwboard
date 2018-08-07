@@ -1,6 +1,6 @@
 //WebKit bug where variable declared with const or let
 //Cant have the same name as an id
-const theme = "md"
+const theme = "md";
 const Framework7App = new Framework7({
   // App root element
   root: '#app',
@@ -30,9 +30,9 @@ const Framework7App = new Framework7({
       url:"/",
       on:{
         pageAfterIn:e=>{
-          const target = e.currentTarget
-          const tag = document.createElement("script")
-          tag.src = "/scripts/loadHomework.js"
+            const target = e.currentTarget;
+            const tag = document.createElement("script");
+            tag.src = "/scripts/loadHomework.js";
           target.appendChild(tag)
         }
       },
@@ -43,11 +43,11 @@ const Framework7App = new Framework7({
         on :{
           pageInit: _=>{
             //Uncheck all
-            const radios = Array.from(document.querySelectorAll(`input[type=radio]`))
-            radios.forEach(radio => radio.checked=false)
-            const sortType = sortOptions.type || getCookie("sortType") || "Due date"
-            let sortOrder = sortOptions.order || 0
-            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true
+              const radios = Array.from(document.querySelectorAll(`input[type=radio]`));
+              radios.forEach(radio => radio.checked = false);
+              const sortType = sortOptions.type || getCookie("sortType") || "Due date";
+              let sortOrder = sortOptions.order || 0;
+              document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
             document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
           }
         }
@@ -58,8 +58,8 @@ const Framework7App = new Framework7({
         url:"/routes/edit-homework.html",
         on :{
           pageAfterIn:function(e,page){
-            gradedCheckboxChecked = false
-            $(".page-current #edit-title").text("Add homework")
+              gradedCheckboxChecked = false;
+              $(".page-current #edit-title").text("Add homework");
             initEditHomeworkEvents()
           }
         }
@@ -70,12 +70,12 @@ const Framework7App = new Framework7({
         url:"/routes/edit-homework.html",
         on :{
           pageAfterIn:function(e,page){
-            console.log({e,page})
+              console.log({e, page});
             if(e.detail.route.url.includes("?edit=true")){
               Framework7App.router.navigate("/popups/edit/")
             }
-            $(".page-current #edit-title").text("Edit homework")
-            startEdit()
+              $(".page-current #edit-title").text("Edit homework");
+              startEdit();
             initEditHomeworkEvents()
           }
         }
@@ -101,11 +101,11 @@ const Framework7App = new Framework7({
       url:"/{{channelName}}/analytics",
       on:{
         pageAfterIn:e=>{
-          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
-          homeworkDateChart = false
-          homeworkSubjectChart = false
+            channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0];
+            homeworkDateChart = false;
+            homeworkSubjectChart = false;
           conn.emit("isReady",null,res=>{
-            console.log("ready before page load")
+              console.log("ready before page load");
             renderCharts()
           })
         }
@@ -119,13 +119,31 @@ const Framework7App = new Framework7({
       url:"/routes/add-channel.html",
       on:{
         pageAfterIn:e=>{
-          const scriptTag = document.createElement("script")
-          scriptTag.src = "/routes/scripts/add-channel.js"
-          const target = e.currentTarget
+            const scriptTag = document.createElement("script");
+            scriptTag.src = "/routes/scripts/add-channel.js";
+            const target = e.currentTarget;
           target.appendChild(scriptTag)
         }
       }
     },
+      {
+          name: "calendar",
+          path: "/calendar",
+          reloadPrevious: true,
+          animate: false,
+          url: "/calendar",
+          on: {
+              pageAfterIn: e => {
+                  const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.css'];
+                  //const scriptTag = document.createElement("script")
+                  const target = e.currentTarget;
+                  loadSources(target, sources);
+                  //scriptTag.src = "/routes/scripts/add-channel.js"
+                  //const target = e.currentTarget
+                  //target.appendChild(scriptTag)
+              }
+          }
+      },
     {
       name:"channelSettings",
       path:"/channels/:channelName/settings",
@@ -134,7 +152,7 @@ const Framework7App = new Framework7({
       url:"/{{channelName}}/settings",
       on:{
         pageAfterIn:e=>{
-          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+            channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0];
           conn.emit("isReady",null,res=>{
             getChannelData()
           })
@@ -147,10 +165,10 @@ const Framework7App = new Framework7({
           url:"/routes/add-member.html",
           on:{
             pageAfterIn:e=>{
-              console.log(e)
-              const scriptTag = document.createElement("script")
-              scriptTag.src = "/routes/scripts/add-member.js"
-              const target = e.currentTarget
+                console.log(e);
+                const scriptTag = document.createElement("script");
+                scriptTag.src = "/routes/scripts/add-member.js";
+                const target = e.currentTarget;
               target.appendChild(scriptTag)
             }
           }
@@ -161,13 +179,14 @@ const Framework7App = new Framework7({
           url:"/routes/add-subject.html",
           on:{
             pageAfterIn:e=>{
-              console.log(e)
-              const scriptTag = document.createElement("script")
-              scriptTag.src = "/routes/scripts/add-subject.js"
-              const target = e.currentTarget
+                console.log(e);
+                const scriptTag = document.createElement("script");
+                scriptTag.src = "/routes/scripts/add-subject.js";
+                const target = e.currentTarget;
               target.appendChild(scriptTag)
             }
           }
+
         }
       ]
     },
@@ -175,4 +194,19 @@ const Framework7App = new Framework7({
   dialog:{
     title: 'Hwboard',
   }
-})
+});
+
+function loadSources(target, sources) {
+    for (const src of sources) {
+        if (src.endsWith(".js")) {
+            const scriptTag = document.createElement("script");
+            scriptTag.src = src;
+            target.appendChild(scriptTag);
+        } else if (src.endsWith(".css")) {
+            const styleTag = document.createElement("link");
+            styleTag.rel = "stylesheet";
+            styleTag.href = src;
+            target.appendChild(styleTag);
+        }
+    }
+}
