@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="82f7ff8e-f708-4098-8bef-c1763a0aee59" name="Default" comment="">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/public/styles/bars.scss" afterPath="$PROJECT_DIR$/public/styles/bars.scss" />
       <change beforePath="$PROJECT_DIR$/public/styles/icons.css.map" afterPath="$PROJECT_DIR$/public/styles/icons.css.map" />
@@ -12,6 +13,13 @@
       <change beforePath="$PROJECT_DIR$/public/styles/roboto.css" afterPath="$PROJECT_DIR$/public/styles/roboto.css" />
       <change beforePath="$PROJECT_DIR$/public/styles/roboto.css.map" afterPath="$PROJECT_DIR$/public/styles/roboto.css.map" />
       <change beforePath="$PROJECT_DIR$/public/styles/roboto.scss" afterPath="$PROJECT_DIR$/public/styles/roboto.scss" />
+=======
+      <change beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
+      <change beforePath="$PROJECT_DIR$/public/scripts/websocketConnect.js" afterPath="$PROJECT_DIR$/public/scripts/websocketConnect.js" />
+      <change beforePath="$PROJECT_DIR$/public/styles/bars.css" afterPath="$PROJECT_DIR$/public/styles/bars.scss" />
+      <change beforePath="$PROJECT_DIR$/public/styles/index.css" afterPath="$PROJECT_DIR$/public/styles/index.scss" />
+      <change beforePath="$PROJECT_DIR$/public/styles/roboto.css" afterPath="$PROJECT_DIR$/public/styles/roboto.scss" />
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -78,7 +86,11 @@
       <file leaf-file-name="index.ejs" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/index.ejs">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="360">
+=======
+            <state relative-caret-position="15">
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
               <caret line="24" column="31" lean-forward="false" selection-start-line="24" selection-start-column="31" selection-end-line="24" selection-end-column="31" />
               <folding />
             </state>
@@ -212,8 +224,13 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+<<<<<<< HEAD
       <pane id="Scope" />
       <pane id="Scratches" />
+=======
+      <pane id="Scratches" />
+      <pane id="Scope" />
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -304,7 +321,10 @@
       <updated>1533100991779</updated>
       <workItem from="1533100994167" duration="3106000" />
       <workItem from="1533307986512" duration="1009000" />
+<<<<<<< HEAD
       <workItem from="1533625142171" duration="33000" />
+=======
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
     </task>
     <task id="LOCAL-00001" summary="css changed to scss">
       <created>1533109183868</created>
@@ -317,7 +337,11 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< HEAD
     <option name="totallyTimeSpent" value="4148000" />
+=======
+    <option name="totallyTimeSpent" value="4115000" />
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -327,8 +351,13 @@
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+<<<<<<< HEAD
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+=======
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
@@ -383,6 +412,7 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/public/styles/index.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -463,10 +493,16 @@
         </state>
       </provider>
     </entry>
+=======
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
     <entry file="file://$PROJECT_DIR$/public/calendar.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+<<<<<<< HEAD
+=======
+          <folding />
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
         </state>
       </provider>
     </entry>
@@ -549,6 +585,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+<<<<<<< HEAD
+=======
+          <folding />
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
         </state>
       </provider>
     </entry>
@@ -644,7 +684,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/views/index.ejs">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="360">
+=======
+        <state relative-caret-position="15">
+>>>>>>> e9081b508459aaeb55aee2f92e6f9e0364c2ae5e
           <caret line="24" column="31" lean-forward="false" selection-start-line="24" selection-start-column="31" selection-end-line="24" selection-end-column="31" />
           <folding />
         </state>
