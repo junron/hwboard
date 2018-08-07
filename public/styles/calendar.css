@@ -6,8 +6,9 @@ body {
 #calendar {
   margin: auto;
   margin-top: 20px;
+  margin-bottom: 10px;
   width: 90%;
   height: 90%;
-  padding: 10px; }
+  padding-top: 20px; }
 
 /*# sourceMappingURL=calendar.css.map */
