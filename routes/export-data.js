@@ -5,8 +5,11 @@ const db = require("../database")
 const {Readable} = require("stream")
 const Json2csvStream = require('json2csv').Transform
 
-router.get("/:channelName/data.json",(req, res) => {
+router.get("/:channelName/data.json",(req, res, next) => {
   ;(async ()=>{
+    if(req.params.channelName=="scripts"){
+      return next()
+    }
     const authData = await authChannels(req,res)
     if(authData=="redirected"){
       return
