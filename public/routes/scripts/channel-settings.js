@@ -12,7 +12,7 @@
   }
   //Db inited, can get data
   conn.on("ready",()=>{
-    if(location.hash.includes("/channels/")&&location.hash.includes("/settings")){
+    if(location.hash.includes("/channels/")&&location.hash.includes("/settings")&&!location.hash.includes("/popups/")){
       console.log("ready")
       getChannelData()
     }
@@ -20,7 +20,7 @@
   
 
   conn.on("channelData",async function(data){
-    if(location.hash.includes("/channels/")&&location.hash.includes("/settings")){
+    if(location.hash.includes("/channels/")&&location.hash.includes("/settings")&&!location.hash.includes("/popups/")){
       const {render} = renderAdmins
       const thisChannelData = data[channel]
       document.getElementById("member-list").innerHTML = await render(thisChannelData)
