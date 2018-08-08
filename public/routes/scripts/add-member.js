@@ -30,10 +30,27 @@
   const getElemAtIndex = array => index => array[index]
   const getPermissionFromIndex = getElemAtIndex(permissionLvls)
   const getMgFromIndex = getElemAtIndex(mentorGrps)
-  const fuse = new Fuse(studentData, options)
+
   const mgPrefix = mentorGrps[0].substring(0,3)
+  //Add a whole MG at once
   const mentorGrpsFuse = new Fuse(mentorGrps,permissionOptions)
 
+  //Search within mg first
+  const toTitle = string => string.toLowerCase().replace(/^(.)|\s(.)/g, a => a.toUpperCase())
+  const userName = toTitle(decodeURI(getCookie("name")))
+  let userMG
+  let level
+  const student = await studentsExport.getStudentByName(userName)
+  userMG = student.mentorGrp
+  level = parseInt(userMG[3])
+  const userMGStudentIDs = await studentsExport.getStudentsByClassName(userMG)
+  const mgStudents = userMGStudentIDs
+    .map(studentsExport.getStudentByIdSync)
+
+  const levelStudents = (await studentsExport.getStudentsByLevel(level))
+    .map(studentsExport.getStudentByIdSync)
+  let fuse = new Fuse(mgStudents, options)
+  let fuseLevel = "MG"
 
   const namesDropdown= Framework7App.autocomplete.create({
     openIn:"dropdown",
@@ -56,7 +73,26 @@
         const renderResult = result.map(getMgFromIndex)
         return render(renderResult)
       }
-      const result = fuse.search(query).slice(0,3)
+
+      if(query==""){
+        return render([])
+      }
+      
+      let result = fuse.search(query).slice(0,3)
+
+      if(result.length==0){
+        if(fuseLevel=='MG'){
+          fuseLevel="level"
+          console.log("level")
+          fuse = new Fuse(levelStudents,options)
+        }else if(fuseLevel=='level'){
+          fuseLevel="school"
+          console.log("school")
+          fuse = new Fuse(studentData,options)
+        }
+        result = fuse.search(query).slice(0,3)
+      }
+
       const renderResult = result.map(getName)
       studentIds = result.map(getId)
       return render(renderResult)
@@ -64,6 +100,7 @@
     inputEl:"#searchInput"
   })
 
+  //Permission dropdown
   const permissionFuse = new Fuse(permissionLvls,permissionOptions)
   const permissionLvlDropdown = Framework7App.autocomplete.create({
     openIn:"dropdown",
