@@ -117,7 +117,7 @@ const Framework7App = new Framework7({
       path:"/channels/:channelName/analytics",
       reloadPrevious:true,
       animate:false,
-      url:"/{{channelName}}/analytics",
+      url:"routes/channel-analytics.html",
       on:{
         pageAfterIn:e=>{
           channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
