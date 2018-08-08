@@ -89,7 +89,7 @@ router.get("/variables.js", async (req, res) => {
     })
   }
     const authData = await authChannels(req, res);
-  if(authData=="redirected"){
+  if(authData==="redirected"){
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
@@ -155,7 +155,7 @@ router.get("/channels", async (req, res) => {
     })
   }
     const authData = await authChannels(req, res);
-  if(authData=="redirected"){
+  if(authData==="redirected"){
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
@@ -181,7 +181,7 @@ router.get('/:channel', async (req, res, next) => {
   }
     const channelName = req.params.channel;
     const authData = await authChannels(req, res);
-  if(authData=="redirected"){
+  if(authData==="redirected"){
     return
   }
     const {channelData} = authData;
@@ -219,7 +219,7 @@ router.get('/:channel/settings', async (req, res, next) => {
   }
     const channelName = req.params.channel;
     const authData = await authChannels(req, res);
-  if(authData=="redirected"){
+  if(authData==="redirected"){
     return
   }
     const {channelData, decodedToken} = authData;
@@ -253,7 +253,7 @@ router.get('/:channel/analytics', async (req, res, next) => {
   }
     const channelName = req.params.channel;
     const authData = await authChannels(req, res);
-  if(authData=="redirected"){
+  if(authData==="redirected"){
     return
   }
     const {channelData, decodedToken} = authData;
@@ -305,7 +305,7 @@ router.get('/', async (req, res, next) => {
   //Report errors in production or mobile
     let reportErrors = false;
     const mobile = isMobile(req.headers['user-agent']);
-  if(hostname!="nushhwboard.tk"){
+  if(hostname!=="nushhwboard.tk"){
     reportErrors = mobile
   }else{
     reportErrors = true
