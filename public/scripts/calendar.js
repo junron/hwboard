@@ -6,6 +6,8 @@ function convertHomework(arrHomework) {
             //id: eachHomework.subject,
             start: eachHomework.dueDate,
             allDay: true,
+            textColor:"red",
+            backgroundColor:"yellow",
         };
         calendarEvents.push(event);
     }
