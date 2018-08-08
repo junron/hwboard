@@ -22,8 +22,8 @@ function updateHomework() {
             throw err;
         const hw = data;
         const homeworkEvents = convertHomework(hw);
-        $('#calendar').fullCalendar('updateEvents', homeworkEvents );
-        console.log("Homework Events updated on calendar");
+        $('#calendar').fullCalendar('renderEvents', homeworkEvents );
+        console.log("Homework Events rendered on calendar");
         console.log(homeworkEvents);
     });
 }
