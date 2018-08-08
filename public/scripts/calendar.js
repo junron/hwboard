@@ -54,6 +54,21 @@ setTimeout(function() {
         height: calendarHeight,
         editable: false,
         events: [],
+        eventRender: function(event, element) {
+            element.qtip({
+                content: "Homework: " + event.title + '<br />' + "Subject:" + event.id,
+                style: {
+                    background: 'black',
+                    color: '#FFFFFF'
+                },
+                position: {
+                    corner: {
+                        target: 'center',
+                        tooltip: 'bottomMiddle'
+                    }
+                }
+            });
+        }
     });
 
     updateHomework();

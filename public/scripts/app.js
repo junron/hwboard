@@ -160,6 +160,8 @@ const Framework7App = new Framework7({
                   //scriptTag.src = "/routes/scripts/add-channel.js"
                   //const target = e.currentTarget
                   //target.appendChild(scriptTag)
+                  const qtip = ['/scripts/jquery.qtip.min.js', '/styles/jquery.qtip.min.css'];
+                  loadSources(target,qtip);
               }
           }
       },
