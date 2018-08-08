@@ -9,6 +9,6 @@ RUN mkdir -p /hwboard2
 WORKDIR /hwboard2
 COPY . .
 
-RUN npm install --production
+RUN npm ci --production
 
 EXPOSE 3001
