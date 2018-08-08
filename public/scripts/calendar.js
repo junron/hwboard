@@ -55,6 +55,7 @@ setTimeout(function() {
         editable: false,
         events: [],
         eventRender: function(event, element) {
+            console.log(event,element)
             element.qtip({
                 content: "Homework: " + event.title + '<br />' + "Subject:" + event.id,
                 style: {
