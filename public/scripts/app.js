@@ -123,6 +123,10 @@ const Framework7App = new Framework7({
           channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
           homeworkDateChart = false
           homeworkSubjectChart = false
+          $("a[href='/channelName/data.json'").attr("href",`/${channel}/data.json`)
+          $("a[href='/channelName/data.json'").attr("download",`${channel}.data.json`)
+          $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`)
+          $("a[href='/channelName/data.csv'").attr("download",`${channel}.data.csv`)
           conn.emit("isReady",null,res=>{
             console.log("ready before page load")
             renderCharts()
@@ -150,10 +154,15 @@ const Framework7App = new Framework7({
       path:"/channels/:channelName/settings",
       reloadPrevious:true,
       animate:false,
-      url:"/{{channelName}}/settings",
+      url:"/routes/channel-settings.html",
       on:{
         pageAfterIn:e=>{
           channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+          if(!navigator.onLine){
+            $("#subject-list li").text("Can't load data offline")
+            $("#member-list li").text("Can't load data offline")
+          }
+          $(".root-only").hide()
           conn.emit("isReady",null,res=>{
             getChannelData()
           })

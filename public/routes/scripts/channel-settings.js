@@ -8,6 +8,17 @@
         console.log(data)
         document.getElementById("member-list").innerHTML = await render(data)
         document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
+        conn.emit("whoami",null,async function(err,name){
+          if(err){
+            Framework7App.dialog.alert(err.toString())
+            throw new Error(err)
+          }
+          if(data.roots.includes(name)){
+            $(".root-only").show()
+            $("a[href='/channels/channelName/settings/popups/add-member/'").attr("href",`/channels/${channel}/settings/popups/add-member/`)
+            $("a[href='/channels/channelName/settings/popups/add-subject/'").attr("href",`/channels/${channel}/settings/popups/add-subject/`)
+          }
+        })
     })
   }
   //Db inited, can get data
