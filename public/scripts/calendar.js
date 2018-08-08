@@ -3,9 +3,9 @@ function convertHomework(arrHomework) {
     for (const eachHomework of arrHomework) {
         const event ={
             title: eachHomework.text,
-            //id: eachHomework.subject,
-            start: eachHomework.dueDate,
-            allDay: true,
+            id: eachHomework.subject,
+            start: eachHomework.dueDate.slice(0, 10),
+            allDay: true
         };
         calendarEvents.push(event);
     }
