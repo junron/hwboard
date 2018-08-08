@@ -22,7 +22,12 @@ function updateHomework() {
             throw err;
         const hw = data;
         const homeworkEvents = convertHomework(hw);
-        $('#calendar').fullCalendar('renderEvents', homeworkEvents );
+        $('#calendar').fullCalendar('removeEventSource', $('#calendar').fullCalendar('getEventSources'));
+        const eventsToRender = {
+            events: homeworkEvents,
+            textColor: 'white'
+        };
+        $('#calendar').fullCalendar('addEventSource', eventsToRender);
         console.log("Homework Events rendered on calendar");
         console.log(homeworkEvents);
     });
