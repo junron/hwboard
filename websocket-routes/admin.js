@@ -164,10 +164,15 @@ module.exports = (socket,io,db)=>{
 
   //Get channel data
   socket.on("channelDataReq",function(msg,callback){
-    console.log("request received")
     ;(async ()=>{
-      console.log("Request authed")
-      console.log(msg)
+      if(!msg.channel){
+        const channels = socket.channels
+        const arrayChannels = []
+        for (channelName in channels){
+          arrayChannels.push(channels[channelName])
+        }
+        return [null,arrayChannels]
+      }
       msg = await checkPayloadAndPermissions(socket,msg,1)
       const {channel} = msg
       //Update cos why not
