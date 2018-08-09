@@ -1,79 +1,96 @@
-  function getChannelData(){
-    const {render} = renderAdmins
-    conn.emit("channelDataReq",{channel},async function(err,data){
-        if(err){
-        Framework7App.dialog.alert(err.toString())
-        throw new Error(err)
-        }
-        console.log(data)
-        document.getElementById("member-list").innerHTML = await render(data)
-        document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
-        conn.emit("whoami",null,async function(err,name){
-          if(err){
-            Framework7App.dialog.alert(err.toString())
-            throw new Error(err)
-          }
-          if(data.roots.includes(name)){
-            $(".root-only").show()
-            $("a[href='/channels/channelName/settings/popups/add-member/'").attr("href",`/channels/${channel}/settings/popups/add-member/`)
-            $("a[href='/channels/channelName/settings/popups/add-subject/'").attr("href",`/channels/${channel}/settings/popups/add-subject/`)
-          }
-        })
-    })
-  }
-  //Db inited, can get data
-  conn.on("ready",()=>{
-    if(location.hash.includes("/channels/")&&location.hash.includes("/settings")&&!location.hash.includes("/popups/")){
-      console.log("ready")
-      getChannelData()
+function getChannelData(){
+  //Load data from indexeddb, in case there is no internet
+  worker.postMessage({
+    type:"getSingleChannelByName",
+    name:channel
+  }).then(data=>{
+    if(!data.name){
+      //IndexedDB is empty, perhaps is first page load
+      return
     }
+    console.log("Load channels from Indexeddb")
+    return renderChannelData(data)
   })
-  
+  //Load data from websocket
+  conn.emit("channelDataReq",{channel},async function(err,data){
+    if(err){
+      Framework7App.dialog.alert(err.toString())
+      throw new Error(err)
+    }
+    console.log("Load channels from websocket")
+    return renderChannelData(data)
+  })
+}
 
-  conn.on("channelData",async function(data){
-    if(location.hash.includes("/channels/")&&location.hash.includes("/settings")&&!location.hash.includes("/popups/")){
-      const {render} = renderAdmins
-      const thisChannelData = data[channel]
-      document.getElementById("member-list").innerHTML = await render(thisChannelData)
-      document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData.subjects)
+async function renderChannelData(data){
+  const {render} = renderAdmins
+  document.getElementById("member-list").innerHTML = await render(data)
+  document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
+  conn.emit("whoami",null,async function(err,name){
+    if(err){
+      Framework7App.dialog.alert(err.toString())
+      throw new Error(err)
+    }
+    if(data.roots.includes(name)){
+      $(".root-only").show()
+      $("a[href='/channels/channelName/settings/popups/add-member/'").attr("href",`/channels/${channel}/settings/popups/add-member/`)
+      $("a[href='/channels/channelName/settings/popups/add-subject/'").attr("href",`/channels/${channel}/settings/popups/add-subject/`)
     }
   })
-  function deleteMember(memberElem){
-    const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
-    const memberId = memberEmail.replace("@nushigh.edu.sg","")
-    Framework7App.dialog.confirm("Are you sure you want to remove "+memberEmail +"?",function(){
-      conn.emit("removeMember",{channel,student:memberId},function(err){
-    if(err){
-     Framework7App.dialog.alert(err.toString())
-     throw new Error(err)
-    }
-        console.log("done")
-      })
-    })
+}
+//Db inited, can get data
+conn.on("ready",()=>{
+  if(location.hash.includes("/channels/")&&location.hash.includes("/settings")&&!location.hash.includes("/popups/")){
+    console.log("ready")
+    getChannelData()
   }
-  function promoteMember(memberElem){
-    const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
-    const memberId = memberEmail.replace("@nushigh.edu.sg","")
-    Framework7App.dialog.confirm("Are you sure you want to promote " + memberEmail + "?",function(){
-      conn.emit("promoteMember",{channel,student:memberId},function(err){
-         if(err){
-     Framework7App.dialog.alert(err.toString())
-     throw new Error(err)
-    }
-        console.log("done")
-      })
-    })
+})
+
+
+conn.on("channelData",async function(data){
+  if(location.hash.includes("/channels/")&&location.hash.includes("/settings")&&!location.hash.includes("/popups/")){
+    const {render} = renderAdmins
+    const thisChannelData = data[channel]
+    document.getElementById("member-list").innerHTML = await render(thisChannelData)
+    document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData.subjects)
   }
-  function demoteMember(memberElem){
-    const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
-    const memberId = memberEmail.replace("@nushigh.edu.sg","")
-    Framework7App.dialog.confirm("Are you sure you want to demote " + memberEmail + "?",function(){
-      conn.emit("demoteMember",{channel,student:memberId},function(err){
-    if(err){
-     Framework7App.dialog.alert(err.toString())
-     throw new Error(err)
-    }
-        console.log("done")
-      })
-    })
+})
+function deleteMember(memberElem){
+  const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
+  const memberId = memberEmail.replace("@nushigh.edu.sg","")
+  Framework7App.dialog.confirm("Are you sure you want to remove "+memberEmail +"?",function(){
+    conn.emit("removeMember",{channel,student:memberId},function(err){
+  if(err){
+    Framework7App.dialog.alert(err.toString())
+    throw new Error(err)
   }
+      console.log("done")
+    })
+  })
+}
+function promoteMember(memberElem){
+  const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
+  const memberId = memberEmail.replace("@nushigh.edu.sg","")
+  Framework7App.dialog.confirm("Are you sure you want to promote " + memberEmail + "?",function(){
+    conn.emit("promoteMember",{channel,student:memberId},function(err){
+        if(err){
+    Framework7App.dialog.alert(err.toString())
+    throw new Error(err)
+  }
+      console.log("done")
+    })
+  })
+}
+function demoteMember(memberElem){
+  const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1]
+  const memberId = memberEmail.replace("@nushigh.edu.sg","")
+  Framework7App.dialog.confirm("Are you sure you want to demote " + memberEmail + "?",function(){
+    conn.emit("demoteMember",{channel,student:memberId},function(err){
+  if(err){
+    Framework7App.dialog.alert(err.toString())
+    throw new Error(err)
+  }
+      console.log("done")
+    })
+  })
+}
