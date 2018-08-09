@@ -23,8 +23,13 @@ module.exports = (socket,io,db)=>{
 
   socket.on("addChannel",function(msg,callback){
     ;(async ()=>{
+      let name = xss(msg)
+      if(encodeURI(name)!=name){
+        //Channel will be part of url
+        return callback("Channel name invalid")
+      }
       const config = {
-        name:xss(msg),
+        name,
         subjects:[],
         roots:[socket.userData.preferred_username],
         admins:[],
@@ -32,14 +37,16 @@ module.exports = (socket,io,db)=>{
       }
       const data = await Channels.findAll({
         where:{
-          name:config.name
+          name
         },
         raw: true
       })
       if(data.length>0){
         return callback("Channel already exists")
       }
+      //Create channel tables
       await Channels.create(config)
+      //Sync to db
       await sequelize.sync()
       await db.init()
       updateChannels(db.arrayToObject(await db.getUserChannels("*")))

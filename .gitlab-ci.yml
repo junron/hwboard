@@ -21,7 +21,7 @@ cache:
 build:
   stage: build
   script:
-  - npm install
+  - npm ci
   - pwd
   - whoami
 

@@ -51,6 +51,15 @@ async function getStudentByName(studentName){
   if(!result) throw new Error("Student not found")
   return result
 }
+async function getStudentsByLevel(year){
+  const yearNow = new Date().getFullYear()%100
+  const resultPromises = []
+  for(let i=1;i<=7;i++){
+    resultPromises.push(getStudentsByClassName(`M${yearNow}${year}0${i}`))
+  }
+  const result = await Promise.all(resultPromises)
+  return [].concat(...result)
+}
 async function getStudentsByClassName(mentorGrp){
   const result = studentsByMG[mentorGrp]
   if(!result) throw new Error("Student not found")
@@ -64,7 +73,7 @@ async function getStudentByName2(studentName){
 }
 
 
-const studentsExport = {
+const studentsExport = Object.freeze({
   loadJSONData,
   getStudentById,
   getStudentByName,
@@ -72,8 +81,9 @@ const studentsExport = {
   getStudentsByClassNameSync,
   getStudentByName2,
   getStudentByIdSync,
-  getClassesSync
-}
+  getClassesSync,
+  getStudentsByLevel
+})
 if(typeof getData != "undefined"){
   studentsExport.getData = getData
 }
@@ -85,5 +95,6 @@ if(commonJS){
     getStudentByName,
     getStudentsByClassName,
     getStudentByName2,
+    getStudentsByLevel,
   })
 }
