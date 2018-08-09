@@ -54,7 +54,6 @@ const indexPushFiles = [...pushFiles,
   "/scripts/getCookie.js",
   "/scripts/fastLoadHomework.js",
   "/scripts/websocketConnect.js",
-  "/variables.js",
   "/styles/index.css",
   "/sugar-date/dist/sugar-date.min.js"
 ]
