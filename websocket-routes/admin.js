@@ -165,8 +165,10 @@ module.exports = (socket,io,db)=>{
   //Get channel data
   socket.on("channelDataReq",function(msg,callback){
     ;(async ()=>{
+      //Get channel data from all channels
       if(!msg.channel){
-        const channels = socket.channels
+        const channels = await db.getUserChannels(socket.userData.preferred_username)
+        //console.log(channels,)
         const arrayChannels = []
         for (channelName in channels){
           arrayChannels.push(channels[channelName])

@@ -78,45 +78,6 @@ function parsePushHeaders(files){
   return headers
 }
 
-//TImetable and other variables
-router.get("/variables.js", async (req, res) => {
-  if(testing && req.cookies.username){
-    const email = req.cookies.username
-    res.cookie("username",email,{
-      signed:true,
-      httpOnly:true
-    })
-  }
-  const authData = await authChannels(req,res)
-  if(authData=="redirected"){
-    return
-  }
-  if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
-  }
-  const {channelData,adminChannels} = authData
-
-  //Parse timetable
-  let timetable = {}
-  for(const channelName in channelData){
-    const channel = channelData[channelName]
-    timetable = Object.assign(timetable,channel.timetable)
-  }
-  const subjectSelectionList = [] 
-  const subjectChannelMapping = {}
-  for (const channel in adminChannels){
-    for (const subject of adminChannels[channel]){
-      subjectSelectionList.push(subject)
-      subjectChannelMapping[subject]=channel
-    }
-  }
-  res.type("application/javascript")
-  res.end(`
-  const timetable = ${JSON.stringify(timetable)};
-  const subjectSelectionList = ${JSON.stringify(subjectSelectionList)};
-  const subjectChannelMapping = ${JSON.stringify(subjectChannelMapping)};
-  `)
-})
 
 //Channel lists
 router.get("/channels", async (req, res) => {
@@ -176,73 +137,6 @@ router.get('/:channel', async (req, res, next) => {
   }
 })
 
-
-//View channel settings
-router.get('/:channel/settings', async (req, res, next) => {
-  if(testing && req.cookies.username){
-    const email = req.cookies.username
-    res.cookie("username",email,{
-      signed:true,
-      httpOnly:true
-    })
-  }
-  if(!dbInit){
-    //Create tables and stuffs
-    await db.init()
-    dbInit = true
-  }
-  const channelName = req.params.channel
-  const authData = await authChannels(req,res)
-  if(authData=="redirected"){
-    return
-  }
-  const {channelData,decodedToken} = authData
-  // console.log({channelData})
-  const channel = channelData[channelName]
-  if(channel){
-    res.header("Link",parsePushHeaders(basePushFiles))
-    const email = decodedToken.preferred_username
-    //Report errors in production or mobile
-    const mobile = isMobile(req.headers['user-agent'])
-    const root = channel.roots.includes(email)
-    res.render('channelSettings', {root,channel,reportErrors:(reportErrors||mobile)})
-  }else{
-    res.status(404).end("Channel not found")
-  }
-})
-
-//View channel stats
-router.get('/:channel/analytics', async (req, res, next) => {
-  if(testing && req.cookies.username){
-    const email = req.cookies.username
-    res.cookie("username",email,{
-      signed:true,
-      httpOnly:true
-    })
-  }
-  if(!dbInit){
-    //Create tables and stuffs
-    await db.init()
-    dbInit = true
-  }
-  const channelName = req.params.channel
-  const authData = await authChannels(req,res)
-  if(authData=="redirected"){
-    return
-  }
-  const {channelData,decodedToken} = authData
-  // console.log({channelData})
-  const channel = channelData[channelName]
-  if(channel){
-    res.header("Link",parsePushHeaders(basePushFiles))
-    const email = decodedToken.preferred_username
-    //Report errors in production or mobile
-    const mobile = isMobile(req.headers['user-agent'])
-    res.render('analytics', {channelName,reportErrors:(reportErrors||mobile)})
-  }else{
-    res.status(404).end("Channel not found")
-  }
-})
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
