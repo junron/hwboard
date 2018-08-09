@@ -116,6 +116,7 @@ module.exports = (socket,io,db)=>{
   //Promote member
   socket.on("promoteMember",function(msg,callback){
     ;(async ()=>{
+      msg = await checkPayloadAndPermissions(socket,msg,3)
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
       const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel])
@@ -140,6 +141,7 @@ module.exports = (socket,io,db)=>{
   //Demote member
   socket.on("demoteMember",function(msg,callback){
     ;(async ()=>{
+      msg = await checkPayloadAndPermissions(socket,msg,3)
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
       const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel])

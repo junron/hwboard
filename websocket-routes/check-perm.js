@@ -23,7 +23,7 @@ async function checkPermissions(socket,msg,minPermissionLevel=2){
 }
 async function checkPayloadAndPermissions(socket,msg,minPermissionLevel=2){
   await typeChecking(msg)
-  await checkPermissions(socket,msg,minPermissionLevel=2)
+  await checkPermissions(socket,msg,minPermissionLevel)
   //Set defaults
   //Dont use name, use email. Never use email or name as primary key.
   //Collisions like Cheng Yi may occur
