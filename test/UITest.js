@@ -56,10 +56,11 @@ async function remove(){
   await mouse.down()
   await mouse.move(coords.left+300,coords.top)
   await mouse.up()
+  console.log(coords)
   await page.tracing.stop();
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
   await page.screenshot({path: './artifacts/delete-before.png'})
-  await page.waitFor(1000)
+  await page.waitFor(3000)
   await deleteBtn.click()
   const okBtn = await page.$("span.dialog-button.dialog-button-bold")
   await okBtn.click()
