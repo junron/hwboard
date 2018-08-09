@@ -20,6 +20,19 @@ function loadHomework(){
     console.log("Load homework from websocket")
     reRender(data)
   })
+  conn.emit("channelDataReq",{},function(err,data){
+    //Always check if error occurred
+    if(err) throw err;
+    //Put channel data into client-side database for caching and offline access
+    worker.postMessage({
+      type:"setChannels",
+      data
+    })
+    //Add to localstorage as a fallback
+    localStorage.setItem("channelData",JSON.stringify(data))
+    setSubjectVariables(data)
+    console.log("Load channels from websocket")
+  })
 }
 //Server pushes data, re-render
 conn.on("data",({channel,data:channelData})=>{
