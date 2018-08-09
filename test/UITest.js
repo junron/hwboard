@@ -58,8 +58,9 @@ async function remove(){
   await mouse.up()
   await page.tracing.stop();
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
-  await deleteBtn.click()
   await page.screenshot({path: './artifacts/delete-before.png'})
+  await page.waitFor(1000)
+  await deleteBtn.click()
   const okBtn = await page.$("span.dialog-button.dialog-button-bold")
   await okBtn.click()
   await page.waitFor(500)
@@ -137,7 +138,8 @@ describe("Hwboard",async function(){
     return await add()
   })
   it("Should be able to show info dialog",function(done){
-    (async ()=>{
+    console.log('\x1b[36m%s\x1b[0m',"Attempt to show info dialog")
+    ;(async ()=>{
       await info()
       const name = await getHtml("#detailHomeworkName")
       const subject = await getHtml("#detailSubject")
@@ -153,6 +155,7 @@ describe("Hwboard",async function(){
     }).then(done)
   })
   it("Should be able to remove homework",async function(){
+    console.log('\x1b[36m%s\x1b[0m',"Attempt to remove homework")
     return await remove()
   })
   // it("Should detect dates properly",async ()=>{

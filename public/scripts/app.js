@@ -173,6 +173,7 @@ const Framework7App = new Framework7({
           if(!navigator.onLine){
             $("#subject-list li").text("Can't load data offline")
             $("#member-list li").text("Can't load data offline")
+            return getChannelData()
           }
           $(".root-only").hide()
           conn.emit("isReady",null,res=>{
