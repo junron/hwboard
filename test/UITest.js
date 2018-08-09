@@ -137,7 +137,8 @@ describe("Hwboard",async function(){
     return await add()
   })
   it("Should be able to show info dialog",function(done){
-    (async ()=>{
+    console.log('\x1b[36m%s\x1b[0m',"Attempt to show info dialog")
+    ;(async ()=>{
       await info()
       const name = await getHtml("#detailHomeworkName")
       const subject = await getHtml("#detailSubject")
