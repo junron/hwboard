@@ -49,8 +49,10 @@ async function remove(){
     elem = await page.$(".targetHomework")
   }
   console.log(await page.evaluate(_ => {
-    Framework7App.swipeout.open(document.querySelector(".targetHomework"),"right",()=>{
-      Promise.resolve("Opened right swipeout")
+    return new Promise((resolve,reject)=>{
+      Framework7App.swipeout.open(document.querySelector(".targetHomework"),"right",()=>{
+        resolve("Opened right swipeout")
+      })
     })
   }))
   page.waitFor(1000)
@@ -73,8 +75,10 @@ async function info(){
   }
   await page.screenshot({path: './artifacts/info-before.png'})
   console.log(await page.evaluate(_ => {
-    Framework7App.swipeout.open(document.querySelector(".targetHomework"),"left",()=>{
-      Promise.resolve("Opened left swipeout")
+    return new Promise((resolve,reject)=>{
+      Framework7App.swipeout.open(document.querySelector(".targetHomework"),"left",()=>{
+        resolve("Opened left swipeout")
+      })
     })
   }))
   await page.screenshot({path: './artifacts/info-middle.png'})

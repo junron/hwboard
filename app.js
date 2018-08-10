@@ -59,12 +59,14 @@ app.use(function(req,res,next){
 })
 
 //routes
+const api = require('./routes/api');
 const resetCache = require('./routes/resetCache');
 const exportData = require('./routes/export-data');
 const routes = require('./routes/index');
 const su = require('./routes/su');
 const update = require('./routes/update');
 const version = require('./routes/version');
+app.use('/', api);
 app.use('/', resetCache);
 app.use('/', exportData);
 app.use('/', routes);

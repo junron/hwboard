@@ -18,6 +18,7 @@ function loadHomework(){
       localStorage.setItem("data",JSON.stringify(data))
     }
     console.log("Load homework from websocket")
+    console.log(data)
     reRender(data)
   })
   conn.emit("channelDataReq",{},function(err,data){
