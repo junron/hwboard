@@ -33,7 +33,6 @@ async function init(){
   browser = await puppeteer.launch(options)
   console.log("browser launch")
   page = await browser.newPage()
-  await page.tracing.start({path: 'artifacts/trace.json', screenshots: true});
   console.log("pageopen")
   await page.goto('http://localhost:' + port)
   console.log("pageloaad")
@@ -42,7 +41,6 @@ async function init(){
 }
 
 async function remove(){
-  const mouse = page.mouse
   let elem = await page.$(".targetHomework")
   while(!elem){
     await page.waitForFunction(()=>{
@@ -56,7 +54,6 @@ async function remove(){
     })
   }))
   page.waitFor(1000)
-  await page.tracing.stop();
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
   await page.screenshot({path: './artifacts/delete-before.png'})
   await deleteBtn.click()
@@ -67,7 +64,6 @@ async function remove(){
   await page.screenshot({path: './artifacts/delete.png'})
 }
 async function info(){
-  const mouse = page.mouse
   let elem = await page.$(".targetHomework")
   while(!elem){
     await page.waitForFunction(()=>{
@@ -133,11 +129,14 @@ describe("Hwboard",async function(){
     return await page.waitFor(2000)
   })
   it("Should be able to add homework",async function(){
-    return await add()
+    await page.tracing.start({path: 'artifacts/add.json', screenshots: true});
+    await add()
+    return await page.tracing.stop()
   })
   it("Should be able to show info dialog",function(done){
     console.log('\x1b[36m%s\x1b[0m',"Attempt to show info dialog")
     ;(async ()=>{
+      await page.tracing.start({path: 'artifacts/info.json', screenshots: true});
       await info()
       const name = await getHtml("#detailHomeworkName")
       const subject = await getHtml("#detailSubject")
@@ -146,15 +145,19 @@ describe("Hwboard",async function(){
       const graded = await getHtml("#detailGraded")
       expect(graded).to.equal("Yes")
       const lastEdit = await getHtml("#detailLastEdit")
+      console.log("bleh")
       console.table = console.table || console.log
       console.table({name,subject,dueDate,graded,lastEdit})
+      await page.tracing.stop()
     })().catch(e=>{
       throw e
     }).then(done)
   })
   it("Should be able to remove homework",async function(){
+    await page.tracing.start({path: 'artifacts/remove.json', screenshots: true});
     console.log('\x1b[36m%s\x1b[0m',"Attempt to remove homework")
-    return await remove()
+    await remove()
+    return await page.tracing.stop()
   })
   // it("Should detect dates properly",async ()=>{
   //   const today = new Date()
