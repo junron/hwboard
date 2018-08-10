@@ -33,7 +33,6 @@ async function init(){
   browser = await puppeteer.launch(options)
   console.log("browser launch")
   page = await browser.newPage()
-  await page.tracing.start({path: 'artifacts/trace.json', screenshots: true});
   console.log("pageopen")
   await page.goto('http://localhost:' + port)
   console.log("pageloaad")
@@ -42,7 +41,6 @@ async function init(){
 }
 
 async function remove(){
-  const mouse = page.mouse
   let elem = await page.$(".targetHomework")
   while(!elem){
     await page.waitForFunction(()=>{
@@ -50,26 +48,22 @@ async function remove(){
     })
     elem = await page.$(".targetHomework")
   }
-  const backdrop = await page.$(".sheet-backdrop")
-  const coords = await getCoords(elem)
-  //We dont need to close info dialog anymore cos page reload
-  await mouse.move(coords.left+500,coords.top)
-  await mouse.down()
-  await mouse.move(coords.left+300,coords.top)
-  await mouse.up()
-  console.log(coords)
-  await page.tracing.stop();
+  console.log(await page.evaluate(_ => {
+    Framework7App.swipeout.open(document.querySelector(".targetHomework"),"right",()=>{
+      Promise.resolve("Opened right swipeout")
+    })
+  }))
+  page.waitFor(1000)
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
   await page.screenshot({path: './artifacts/delete-before.png'})
-  await page.waitFor(3000)
   await deleteBtn.click()
   const okBtn = await page.$("span.dialog-button.dialog-button-bold")
+  await page.waitFor(500)
   await okBtn.click()
   await page.waitFor(500)
   await page.screenshot({path: './artifacts/delete.png'})
 }
 async function info(){
-  const mouse = page.mouse
   let elem = await page.$(".targetHomework")
   while(!elem){
     await page.waitForFunction(()=>{
@@ -77,14 +71,16 @@ async function info(){
     })
     elem = await page.$(".targetHomework")
   }
-  const coords = await getCoords(elem)
-  console.log(coords)
   await page.screenshot({path: './artifacts/info-before.png'})
-  mouse.move(coords.left,coords.top)
-  mouse.down()
-  mouse.move(coords.left+200,coords.top)
+  console.log(await page.evaluate(_ => {
+    Framework7App.swipeout.open(document.querySelector(".targetHomework"),"left",()=>{
+      Promise.resolve("Opened left swipeout")
+    })
+  }))
   await page.screenshot({path: './artifacts/info-middle.png'})
-  mouse.up()
+  const btn = await page.$(".targetHomework .swipeout-overswipe")
+  await btn.click()
+  await page.waitFor(1000)
   await page.screenshot({path: './artifacts/info.png'})
 }
 async function add(){
@@ -132,16 +128,15 @@ describe("Hwboard",async function(){
     await page.goto('http://localhost:' + port)
     return await page.waitFor(2000)
   })
-  beforeEach(async ()=>{
-    await page.goto('http://localhost:' + port)
-    return await page.waitFor(2000)
-  })
   it("Should be able to add homework",async function(){
-    return await add()
+    await page.tracing.start({path: 'artifacts/add.json', screenshots: true});
+    await add()
+    return await page.tracing.stop()
   })
   it("Should be able to show info dialog",function(done){
     console.log('\x1b[36m%s\x1b[0m',"Attempt to show info dialog")
     ;(async ()=>{
+      await page.tracing.start({path: 'artifacts/info.json', screenshots: true});
       await info()
       const name = await getHtml("#detailHomeworkName")
       const subject = await getHtml("#detailSubject")
@@ -150,15 +145,19 @@ describe("Hwboard",async function(){
       const graded = await getHtml("#detailGraded")
       expect(graded).to.equal("Yes")
       const lastEdit = await getHtml("#detailLastEdit")
+      console.log("bleh")
       console.table = console.table || console.log
       console.table({name,subject,dueDate,graded,lastEdit})
+      await page.tracing.stop()
     })().catch(e=>{
       throw e
     }).then(done)
   })
   it("Should be able to remove homework",async function(){
+    await page.tracing.start({path: 'artifacts/remove.json', screenshots: true});
     console.log('\x1b[36m%s\x1b[0m',"Attempt to remove homework")
-    return await remove()
+    await remove()
+    return await page.tracing.stop()
   })
   // it("Should detect dates properly",async ()=>{
   //   const today = new Date()
