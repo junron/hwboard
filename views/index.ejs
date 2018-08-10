@@ -131,5 +131,20 @@
 
     <!-- timetable -->
     <script defer src="/routes/scripts/render-timetable.js"></script>
+
+    <!-- background sync -->
+    <script src="/fetch-sync/dist/fetch-sync.min.js"></script>
+    <script>
+    navigator.serviceWorker.ready.then(function(swRegistration){
+      fetchSync.init()
+      console.log("inited")
+      fetchSync('dataReqAuto', '/api/dataReq',{
+        method: 'POST',
+        body: {}
+      })
+      .then((response) => response.json())
+      .then(console.log)
+    })
+    </script>
 </body>
 </html>

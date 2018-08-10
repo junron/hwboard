@@ -1,6 +1,7 @@
 //This is a service worker
 //It handles caching and PWA
-const version = "1.1.2"
+const version = "1.2.0"
+importScripts('/fetch-sync/dist/fetch-sync.sw.min.js')
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -66,7 +67,7 @@ self.addEventListener('fetch', function(event) {
              (url.includes("transport=polling") || 
              url.includes("/cd/") || 
              url.includes("checkVersion.js") ||
-             url.includes("/api/") ||
+             url.includes("api/") ||
              url.includes("?noCache"))){
               return networkResponse;
             }
@@ -85,3 +86,24 @@ self.addEventListener('fetch', function(event) {
     );
   }
 });
+
+self.addEventListener("sync",event =>{
+  if (event.tag == 'dataReq') {
+    event.waitUntil(
+      (async ()=>{
+        console.log(new Date())
+        console.log(event)
+        return fetch("/api/dataReq",{
+          method:"POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body:"{}"
+        })
+        .then(res=>res.json())
+        .then(console.log)
+      })()
+    )
+  }
+})
