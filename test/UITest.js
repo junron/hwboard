@@ -50,20 +50,18 @@ async function remove(){
     })
     elem = await page.$(".targetHomework")
   }
-  const backdrop = await page.$(".sheet-backdrop")
-  const coords = await getCoords(elem)
-  //We dont need to close info dialog anymore cos page reload
-  await mouse.move(coords.left+500,coords.top)
-  await mouse.down()
-  await mouse.move(coords.left+300,coords.top)
-  await mouse.up()
-  console.log(coords)
+  console.log(await page.evaluate(_ => {
+    Framework7App.swipeout.open(document.querySelector(".targetHomework"),"right",()=>{
+      Promise.resolve("Opened right swipeout")
+    })
+  }))
+  page.waitFor(1000)
   await page.tracing.stop();
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
   await page.screenshot({path: './artifacts/delete-before.png'})
-  await page.waitFor(3000)
   await deleteBtn.click()
   const okBtn = await page.$("span.dialog-button.dialog-button-bold")
+  await page.waitFor(500)
   await okBtn.click()
   await page.waitFor(500)
   await page.screenshot({path: './artifacts/delete.png'})
@@ -77,14 +75,16 @@ async function info(){
     })
     elem = await page.$(".targetHomework")
   }
-  const coords = await getCoords(elem)
-  console.log(coords)
   await page.screenshot({path: './artifacts/info-before.png'})
-  mouse.move(coords.left,coords.top)
-  mouse.down()
-  mouse.move(coords.left+200,coords.top)
+  console.log(await page.evaluate(_ => {
+    Framework7App.swipeout.open(document.querySelector(".targetHomework"),"left",()=>{
+      Promise.resolve("Opened left swipeout")
+    })
+  }))
   await page.screenshot({path: './artifacts/info-middle.png'})
-  mouse.up()
+  const btn = await page.$(".targetHomework .swipeout-overswipe")
+  await btn.click()
+  await page.waitFor(1000)
   await page.screenshot({path: './artifacts/info.png'})
 }
 async function add(){
@@ -129,10 +129,6 @@ describe("Hwboard",async function(){
     await init()
   })
   afterEach(async ()=>{
-    await page.goto('http://localhost:' + port)
-    return await page.waitFor(2000)
-  })
-  beforeEach(async ()=>{
     await page.goto('http://localhost:' + port)
     return await page.waitFor(2000)
   })
