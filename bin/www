@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-const app = require('../app');
+const app = require('../app').app;
 const server = require('../app').server
 const debug = require('debug')('homeworkboard:server');
 const http = require('http');

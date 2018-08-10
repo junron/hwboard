@@ -1,7 +1,8 @@
 /* 
  * This file deals with homework statics and analytics, 
  * This includes:
- * - getting homework statics/subject -> homeworkSubjectData
+ * - getting homework statistics by subject -> homeworkSubjectData
+ * - getting homework statistics by date  -> homeworkDayData
  */
 
 const checkPayloadAndPermissions = require("./check-perm")
