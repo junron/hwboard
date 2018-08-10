@@ -21,7 +21,6 @@ async function loadJSONData(dataPath,cache=false){
   }
   students = data
   if(Object.keys(studentsByMG).length){
-    console.log(studentsByMG)
     return
   }
   for (const student of data){

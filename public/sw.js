@@ -1,7 +1,7 @@
 //This is a service worker
 //It handles caching and PWA
-const version = "1.1.3"
-let conn 
+const version = "1.1.2"
+
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
   console.log(`Installed service worker verison ${version}`)
@@ -48,16 +48,7 @@ function addCacheHeader(response){
       }
 }
 self.addEventListener('activate', event => {
-  console.log("blehblehbleh")
   event.waitUntil(clients.claim());
-  importScripts("/socket.io-client/dist/socket.io.slim.js");
-  conn = io(location.origin,{
-    transports: ['polling'],
-    secure: true,
-    reconnectionDelay:100,
-  });
-  console.log(conn)
-  conn.on("connected",console.log)
 });
 self.addEventListener('fetch', function(event) {
   if(event.request.method=="GET"){
@@ -75,6 +66,7 @@ self.addEventListener('fetch', function(event) {
              (url.includes("transport=polling") || 
              url.includes("/cd/") || 
              url.includes("checkVersion.js") ||
+             url.includes("/api/") ||
              url.includes("?noCache"))){
               return networkResponse;
             }

@@ -26,8 +26,14 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const websocket = require("./websocket")
 
+
+//Parsing request body
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 //Cookie parser must be before routes
 app.use(cookieParser(cookieSecret));
+
 
 // create servers
 const server = http.createServer(app)
@@ -86,8 +92,6 @@ if(testing){
 
 //express setup
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')))
 
@@ -123,17 +127,8 @@ app.use((req, res, next) => {
     });
   });
   
-  module.exports = app;
-  module.exports.server = server;
-
-  app.use((err, req, res, next) => {
-    Raven.captureException(err)
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: {}
-    });
-  });
-  
-  module.exports = app;
-  module.exports.server = server;
+  module.exports = {
+    app,
+    server,
+    io
+  };

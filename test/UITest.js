@@ -55,7 +55,7 @@ async function remove(){
       })
     })
   }))
-  page.waitFor(1000)
+  page.waitFor(2000)
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
   await page.screenshot({path: './artifacts/delete-before.png'})
   await deleteBtn.click()
