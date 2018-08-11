@@ -121,17 +121,7 @@ app.use((req, res, next) => {
     });
   });
   
-  module.exports = app;
-  module.exports.server = server;
-
-  app.use((err, req, res, next) => {
-    Raven.captureException(err)
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: {}
-    });
-  });
-  
-  module.exports = app;
-  module.exports.server = server;
+  module.exports= {
+    server,
+    app,
+  };
