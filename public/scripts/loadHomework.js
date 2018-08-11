@@ -31,7 +31,7 @@ worker.postMessage({
     //IndexedDB is empty, perhaps is first page load
     return
   }
-  while(!subjectChannelMappissng){
+  while(!subjectChannelMapping){
     //Wait for channelData to be loaded
   }
   reRender(data)
