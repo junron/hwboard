@@ -51,9 +51,9 @@ const getMetaData = day =>{
 
 const getDayClass = day =>{
   if(day.day == Sugar.Date.format(timeNow,"{dow}")){
-    return [parseInt(Sugar.Date.format(timeNow,'%H%M')),"<tr class='today'>"]
+    return [parseInt(Sugar.Date.format(timeNow,'%H%M')),"<tr class='timetable-today'>"]
   }else if(day.day == Sugar.Date.format(Sugar.Date.addDays(new Date(timeNow),1),"{dow}")){
-    return [null,"<tr class='tomorrow'>"]
+    return [null,"<tr class='timetable-tomorrow'>"]
   }else{
     return [null,"<tr>"]
   }
@@ -79,9 +79,9 @@ const renderDay = ([concurrentLessons,day]) =>{
     if(now){
       if(now<timing[1]&&now>=timing[0]){
         lessonNowEndTime = timing[1]
-        cssClass = "now"
+        cssClass = "timetable-now"
       }else if(lessonNowEndTime==timing[0]){
-        cssClass = "next"
+        cssClass = "timetable-next"
       }
     }
 
