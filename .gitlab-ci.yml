@@ -53,3 +53,5 @@ auto_update:
   environment:
     name: hwboard-jro-server
     url: https://nushhwboard.tk
+  only:
+    - master

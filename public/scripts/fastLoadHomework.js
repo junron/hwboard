@@ -1,4 +1,7 @@
 let channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+let timetable = {}
+let subjectChannelMapping = {}
+let subjectSelectionList = []
 let channelSettings
 if(channel==""){
   channelSettings = {}
