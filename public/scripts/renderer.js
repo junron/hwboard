@@ -189,9 +189,8 @@ parser.parseHomeworkDate = function(homework) {
   <div class="swipeout-actions-left">
     <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
   </div>`
-  console.log(subject,subjectChannelMap,subjectChannelMap[subject])
+  console.log(subject,Object.keys(subjectChannelMap).length,subjectChannelMap[subject])
   if(subjectChannelMap[subject]){
-    console.log("rendering")
     rendered += `<div class="swipeout-actions-right">
         <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
         <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>

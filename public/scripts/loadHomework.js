@@ -19,34 +19,42 @@ function setSubjectVariables(channelData){
 
 //Load cached data before websocket connects
 //Allows for faster loading of updated data
-worker.postMessage({
-  type:"get",
-}).then(data=>{
-  console.log("Load homework from Indexeddb")
-  if(channel!=""){
-    //Only show homework for current channel
-    data = data.filter(a=>a.channel == channel)
-  }
-  if(!data.length){
-    //IndexedDB is empty, perhaps is first page load
-    return
-  }
-  while(!subjectChannelMapping){
-    //Wait for channelData to be loaded
-  }
-  reRender(data)
-})
+async function loadHomeworkFromCache(){
+  const promises = []
+  promises.push(worker.postMessage({
+    type:"get",
+  }).then(data=>{
+    console.log("Load homework from Indexeddb")
+    if(channel!=""){
+      //Only show homework for current channel
+      data = data.filter(a=>a.channel == channel)
+    }
+    if(!data.length){
+      //IndexedDB is empty, perhaps is first page load
+      return []
+    }
+    return data
+  }))
 
-worker.postMessage({
-  type:"getChannels",
-}).then(data=>{
-  console.log("Load channels from Indexeddb")
-  if(!data.length){
-    //IndexedDB is empty, perhaps is first page load
-    return
+  promises.push(worker.postMessage({
+    type:"getChannels",
+  }).then(data=>{
+    console.log("Load channels from Indexeddb")
+    if(!data.length){
+      //IndexedDB is empty, perhaps is first page load
+      return false
+    }
+    setSubjectVariables(data)
+    return true
+  }))
+
+  const [data,channelResult] = await Promise.all(promises)
+  if(data.length&&channelResult){
+    reRender(data)
   }
-  setSubjectVariables(data)
-})
+}
+
+loadHomeworkFromCache()
 
 if(typeof conn!="undefined"){
   //Connected before page load
