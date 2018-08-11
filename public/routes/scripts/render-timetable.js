@@ -86,7 +86,7 @@ const renderDay = ([concurrentLessons,day]) =>{
     }
 
     if(lesson.concurrentLessons==1){
-      rows[0] += `<td class='${cssClass}' style="width:${interval*50}px;" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
+      rows[0] += `<td class='${cssClass}' style="width:${interval*50}px;height:50px" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
     }else{
       rows[lesson.position] += `<td class='${cssClass}' style="width:${interval*50}px;" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
     }
