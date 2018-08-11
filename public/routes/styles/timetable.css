@@ -12,16 +12,16 @@ td {
   font-size: 12px;
 }
 
-.today td{
+.timetable-today td,.timetable-today{
   color:red;
 }
-.tomorrow td{
+.timetable-tomorrow td,.timetable-tomorrow {
   color: #ab47bc;
 }
-.now{
+.timetable-now{
   background-color: #0082694a;
 }
 
-.next{
+.timetable-next{
   background-color: #b8f7c5e3;
 }
