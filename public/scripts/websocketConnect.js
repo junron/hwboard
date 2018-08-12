@@ -1,6 +1,7 @@
 const conn = io(location.origin,{
   secure: true,
   reconnectionDelay:100,
+  transports:["websocket"]
 });
 //Handle websocket connection errors
 //Standard code for all my websocket apps
