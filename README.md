@@ -4,7 +4,7 @@ Master Branch (stable)
 [![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/badge.svg?targetFile=package.json)](https://snyk.io/test/github/junron/hwboard?targetFile=package.json)  
  
 Dev Branch:  
-![pipeline status](https://git-badge.chatbox2.tk/hwboard2/dev)
+![pipeline status](https://git-badge.chatbox2.tk/hwboard2/dev)  
 [![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/dev/badge.svg)](https://snyk.io/test/github/junron/hwboard/dev)
 
 ## Installation
