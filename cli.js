@@ -179,7 +179,8 @@ if(gitlab||process.argv[4]=="default"){
       dockerCompose = dockerCompose.replace(`3001:3001`,`${config.PORT}:${config.PORT}`)
       await writeFile("./docker-compose.yml",dockerCompose)
       console.log("Config complete")
-      console.log("Run `docker-compose up` to start")
+      console.log("Run `docker-compose up` to build images and start a container")
+      console.log("Check the documentation to find out how to add channels and start hwboard.")
     })
     .catch((e)=>{
       console.log(e)
