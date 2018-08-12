@@ -95,27 +95,6 @@ if(gitlab||process.argv[4]=="default"){
     })
   })
 }
-}else if(process.argv[2]=="start"){
-  const { spawn } = require('child_process')
-console.log(process.argv)
-  const detached = (process.argv[3]=="detach")
-  const options = {
-    detached
-  }
-  if(detached){
-    options.stdio = ['ignore', 'ignore', 'ignore']
-  }
-  const server = spawn("node",["./bin/www"],options)
-  if(!detached){
-    server.stdout.on('data', function (data) {
-      console.log(data.toString())
-    })
-    server.stderr.on('data', function (data) {
-      console.log(data.toString())
-    })
-  }else{
-    server.unref()
-  }
 }else if(process.argv[2]=="config"){
   if(process.argv[3]=="secret-only"){
     const fs = require("fs")
@@ -136,6 +115,76 @@ console.log(process.argv)
         if(err) throw err
         console.log("Config complete")
       })
+    })
+  }else  if(process.argv[3]=="docker"){
+    const util = require('util')
+    const readline = require('readline')
+    readline.Interface.prototype.question[util.promisify.custom] = function(prompt) {
+      return new Promise(resolve =>
+        readline.Interface.prototype.question.call(this, prompt, resolve),
+      );
+    };
+    readline.Interface.prototype.questionAsync = util.promisify(
+      readline.Interface.prototype.question,
+    );
+    const r1 = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+    const config = {}
+    ;(async ()=>{
+      const crypto = require("crypto")
+      const randomBytes = util.promisify(crypto.randomBytes)
+      const secret = (await crypto.randomBytes(32)).toString("base64")
+      config.COOKIE_SECRET = secret
+      console.log("Using 32 bytes (256 bits) of random data for cookie secret: \n",config.COOKIE_SECRET)
+      console.log()
+      const hostname = await r1.questionAsync("Hostname (omit protocol and path) eg nushwhboard.tk: ",)
+      if(hostname!="skip"){
+        config.HOSTNAME = hostname
+      }else{
+        console.log(`Please set the HWBOARD_HOSTNAME environment variable`)
+      }
+      const ci = await r1.questionAsync("\nDo you want to run hwboard in dev/testing mode? This will skip the authentication process. (yes/no):  ")
+      config.CI = ci=="yes"
+      if(!config.CI){
+        const clientId = await r1.questionAsync("\nMicrosoft client id:  ")
+        if(clientId!="skip"){
+          config.MS_CLIENTID = clientId
+        }else{
+          console.log(`Please set the MS_CLIENTID environment variable`)
+        }
+        const clientSecret = await r1.questionAsync("\nMicrosoft client secret:  ")
+        if(clientSecret!="skip"){
+          config.MS_CLIENTSECRET = clientSecret
+        }else{
+          console.log(`Please set the MS_CLIENTSECRET environment variable`)
+        }
+      }
+      const port = await r1.questionAsync("\nPort to run hwboard on:  ")
+      if(port!="skip"){
+        config.PORT = port
+      }else{
+        console.log(`Please set the HWBOARD_PORT environment variable`)
+      }
+    })()
+    .then(async ()=>{
+      r1.close()
+      const fs = require("fs")
+      const writeFile = util.promisify(fs.writeFile)
+      const readFile = util.promisify(fs.readFile)
+      const writeConfig = writeFile("./config.json",JSON.stringify(config,null,2))
+      const readDockerCompose = readFile("./docker-compose.yml","utf-8")
+      let [dockerCompose] = await Promise.all([readDockerCompose,writeConfig])
+      dockerCompose = dockerCompose.replace(`3001:3001`,`${config.PORT}:${config.PORT}`)
+      await writeFile("./docker-compose.yml",dockerCompose)
+      console.log("Config complete")
+      console.log("Run `docker-compose up` to start")
+    })
+    .catch((e)=>{
+      console.log(e)
+      r1.close()
+      throw e
     })
   }else{
     console.log(`\x1b[31m
