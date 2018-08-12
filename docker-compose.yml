@@ -22,3 +22,5 @@ services:
       - POSTGRES_USER=hwboard
     depends_on:
       - "postgres"
+    volumes:
+      - ./:/hwboard2
