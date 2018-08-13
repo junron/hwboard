@@ -42,3 +42,8 @@ conn.on("uncaughtError",error=>{
   Framework7App.dialog.alert(error)
   throw new Error(error)
 })
+
+//Auth errors, redirect to auth url
+conn.on("authError",url=>{
+  location.href=url
+})
