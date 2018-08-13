@@ -105,6 +105,9 @@ const sortByTime = timetable =>{
   const days = ["mon","tue","wed","thu","fri"]
   for(const day of days){
     const lessons = timetable[day]
+    if(!lessons){
+      continue
+    }
     const sortedLessons = lessons.sort((a,b)=>{
       if(a.timing[0]>b.timing[0]){
         return 1
