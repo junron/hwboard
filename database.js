@@ -299,7 +299,7 @@ async function getHomeworkAll(channels,removeExpired=true){
   const homeworkPromises = []
   const channelNames = Object.keys(channels)
   for (const name of channelNames){
-    homeworkPromises.push(getHomework(name))
+    homeworkPromises.push(getHomework(name,removeExpired))
   }
   const homework2d = await Promise.all(homeworkPromises)
   //Join array of array of homework into single array of homework
