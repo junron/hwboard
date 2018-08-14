@@ -1,4 +1,4 @@
-const columnWidth = 50
+const columnWidth = 10
 const timeNow = new Date();//new Date("8/9/2018 10:30")
 let table = document.querySelector("#app .page-current table")
 const timingToPeriod = timing => {
@@ -86,9 +86,9 @@ const renderDay = ([concurrentLessons,day]) =>{
     }
 
     if(lesson.concurrentLessons==1){
-      rows[0] += `<td class='${cssClass}' style="width:${interval*50}px;height:50px" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
+      rows[0] += `<td class='${cssClass}' style="width:${interval*columnWidth}px;height:50px" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
     }else{
-      rows[lesson.position] += `<td class='${cssClass}' style="width:${interval*50}px;" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
+      rows[lesson.position] += `<td class='${cssClass}' style="width:${interval*columnWidth}px;" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
     }
     lastLessonTime = timing[1]
   }
@@ -96,7 +96,7 @@ const renderDay = ([concurrentLessons,day]) =>{
   //Lesson at the end of the day
   if(lastLessonTime<lessonEndTime){
     const breakInterval = timingToPeriod(lessonEndTime-lastLessonTime+800)
-    html +=`<td style="width:${breakInterval*50}px" colspan=${breakInterval}></td>`
+    html +=`<td style="width:${breakInterval*columnWidth}px" colspan=${breakInterval}></td>`
   }
   return html
 }
