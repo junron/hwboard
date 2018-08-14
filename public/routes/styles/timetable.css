@@ -13,10 +13,14 @@ td {
 }
 
 .timetable-today td,.timetable-today{
-  color:red;
+  background-color:red;
+  color:white;
+  font-weight:900;
 }
 .timetable-tomorrow td,.timetable-tomorrow {
-  color: #ab47bc;
+  background-color: #ab47bc;
+  color:white;
+  font-weight:900;
 }
 .timetable-now{
   background-color: #0082694a;

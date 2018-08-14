@@ -1,4 +1,4 @@
-const columnWidth = 50
+const columnWidth = Math.floor(innerWidth/20)
 const timeNow = new Date();//new Date("8/9/2018 10:30")
 let table = document.querySelector("#app .page-current table")
 const timingToPeriod = timing => {
