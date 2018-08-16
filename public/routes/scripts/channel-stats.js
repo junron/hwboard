@@ -110,6 +110,9 @@ const fillInDays = homeworkData =>{
 const default_colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC']
 const getColors = array => default_colors.slice(0,array.length)
 function renderHomeworkSubjectChart(data){
+  //Show only top 8 subjects
+  //chart becomes too small after that
+  data = data.slice(0,8)
   const split = getKeysAndValues(data)
   const keys = split[0]
   const values = split[1]
@@ -178,7 +181,7 @@ const notWeekend = int => !(new Date(int*24*60*60*1000).getDay() == 6 || new Dat
 function renderHomeworkDateChart(data){
   if(homeworkDateChart){
     homeworkDateChart.data = {
-      labels:Object.keys(data),
+      labels:Object.keys(data).map(toDate),
       datasets:[{
         data:Object.values(data),
         backgroundColor:getColors(Object.keys(data)),

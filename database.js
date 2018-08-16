@@ -165,6 +165,34 @@ async function addSubject(channelData){
     }
   })
 }
+
+//
+async function removeSubject(channelData){
+  let {channel,subject} = channelData
+  subject = xss(subject)
+  console.log(channel,subject)
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }))
+  if(originalDataArray.length==0){
+    throw new Error("Channel does not exist")
+  }
+
+  const originalData = originalDataArray[0]
+  const index = originalData.subjects.indexOf(subject)
+  if (index > -1) {
+    originalData.subjects.splice(index, 1)
+  }
+  delete originalData.timetable[subject]
+  return Channels.update(originalData,{
+    where:{
+      name:channel
+    }
+  })
+}
 async function removeMember(channel,member){
   member += "@nushigh.edu.sg"
   const originalDataArray = (await Channels.findAll({
@@ -187,6 +215,9 @@ async function removeMember(channel,member){
   }
   if(originalData.roots.includes(member)){
     originalData.roots = remove(originalData.roots,member)
+    if(originalData.roots.length == 0){
+      throw new Error("There must be at least 1 root in the channel.")
+    }
   }else if(originalData.admins.includes(member)){
     originalData.admins = remove(originalData.admins,member)
   }else if(originalData.members.includes(member)){
@@ -267,7 +298,7 @@ async function getHomeworkAll(channels,removeExpired=true){
   const homeworkPromises = [];
   const channelNames = Object.keys(channels);
   for (const name of channelNames){
-    homeworkPromises.push(getHomework(name))
+    homeworkPromises.push(getHomework(name,removeExpired))
   }
   const homework2d = await Promise.all(homeworkPromises);
   //Join array of array of homework into single array of homework
@@ -364,5 +395,6 @@ module.exports={
   addSubject,
   getNumTables,
   whenHomeworkExpires,
-  getNumHomework
-};
+  getNumHomework,
+  removeSubject
+}

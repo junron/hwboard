@@ -3,6 +3,7 @@
  * both subject and member-related
  * This includes:
  * - Adding subject -> addSubject
+ * - Removing subject -> removeSubject
  * - Promoting member -> promoteMember
  * - Demoting member -> demoteMember
  * - Removing member -> removeMember
@@ -23,8 +24,13 @@ module.exports = (socket,io,db)=>{
 
   socket.on("addChannel",function(msg,callback){
     ;(async ()=>{
+      let name = xss(msg)
+      if(encodeURI(name)!=name){
+        //Channel will be part of url
+        return callback("Channel name invalid")
+      }
       const config = {
-        name:xss(msg),
+        name,
         subjects:[],
         roots:[socket.userData.preferred_username],
         admins:[],
@@ -32,14 +38,16 @@ module.exports = (socket,io,db)=>{
       }
       const data = await Channels.findAll({
         where:{
-          name:config.name
+          name
         },
         raw: true
       })
       if(data.length>0){
         return callback("Channel already exists")
       }
+      //Create channel tables
       await Channels.create(config)
+      //Sync to db
       await sequelize.sync()
       await db.init()
       updateChannels(db.arrayToObject(await db.getUserChannels("*")))
@@ -56,6 +64,23 @@ module.exports = (socket,io,db)=>{
     .catch(uncaughtErrorHandler)
   })
 
+  //Remove subject
+  socket.on("removeSubject",function(msg,callback){
+    ;(async ()=>{
+      msg = await checkPayloadAndPermissions(socket,msg,3)
+      const {channel} = msg
+      console.log(msg)
+      await db.removeSubject(msg)
+      updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+      const thisChannel = socket.channels[channel]
+      io.to(channel).emit("channelData",{[channel]:thisChannel})
+      return null
+    })()
+    .then(callback)
+    .catch(e => callback(e.toString()))
+    //Error in handling error
+    .catch(uncaughtErrorHandler)
+  })
 
   //Add subject
   socket.on("addSubject",function(msg,callback){
@@ -109,6 +134,7 @@ module.exports = (socket,io,db)=>{
   //Promote member
   socket.on("promoteMember",function(msg,callback){
     ;(async ()=>{
+      msg = await checkPayloadAndPermissions(socket,msg,3)
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
       const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel])
@@ -133,6 +159,7 @@ module.exports = (socket,io,db)=>{
   //Demote member
   socket.on("demoteMember",function(msg,callback){
     ;(async ()=>{
+      msg = await checkPayloadAndPermissions(socket,msg,3)
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
       const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel])
@@ -157,10 +184,17 @@ module.exports = (socket,io,db)=>{
 
   //Get channel data
   socket.on("channelDataReq",function(msg,callback){
-    console.log("request received")
     ;(async ()=>{
-      console.log("Request authed")
-      console.log(msg)
+      //Get channel data from all channels
+      if(!msg.channel){
+        const channels = await db.getUserChannels(socket.userData.preferred_username)
+        //console.log(channels,)
+        const arrayChannels = []
+        for (channelName in channels){
+          arrayChannels.push(channels[channelName])
+        }
+        return [null,arrayChannels]
+      }
       msg = await checkPayloadAndPermissions(socket,msg,1)
       const {channel} = msg
       //Update cos why not

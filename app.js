@@ -62,12 +62,14 @@ app.use(function(req,res,next){
 //routes
 //const calendar = require('./routes/');
 const resetCache = require('./routes/resetCache');
+const exportData = require('./routes/export-data');
 const routes = require('./routes/index');
 const su = require('./routes/su');
 const update = require('./routes/update');
 const version = require('./routes/version');
 //app.use('/', calendar);
 app.use('/', resetCache);
+app.use('/', exportData);
 app.use('/', routes);
 app.use('/', su);
 app.use('/', update);
@@ -122,17 +124,7 @@ app.use((req, res, next) => {
     });
   });
   
-  module.exports = app;
-  module.exports.server = server;
-
-  app.use((err, req, res, next) => {
-      Raven.captureException(err);
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: {}
-    });
-  });
-  
-  module.exports = app;
-  module.exports.server = server;
+  module.exports= {
+    server,
+    app,
+  };

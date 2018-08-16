@@ -111,18 +111,69 @@ const Framework7App = new Framework7({
     //   animate:false,
     //   url:"/{{channelName}}",
     // },
-
+    {
+      name:"overallStats",
+      path:"/analytics",
+      reloadPrevious:true,
+      animate:false,
+      url:"routes/channel-analytics.html",
+      on:{
+        pageAfterIn:e=>{
+          channel = ""
+          if(!navigator.onLine){
+            //SHow offline message
+            const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
+            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.textAlign = "center"
+            homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
+            
+            const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
+            homeworkDate.font = "30px Helvetica"
+            homeworkDate.textAlign = "center"
+            homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
+          }
+          homeworkDateChart = false
+          homeworkSubjectChart = false
+          
+          $("a[href='/channels'").html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`)
+          $("a[href='/channelName/data.json'").attr("href",`/data.json`)
+          $("a[href='/channelName/data.json'").attr("download",`data.json`)
+          $("a[href='/channelName/data.csv'").attr("href",`/data.csv`)
+          $("a[href='/channelName/data.csv'").attr("download",`data.csv`)
+          conn.emit("isReady",null,res=>{
+            console.log("ready before page load")
+            renderCharts()
+          })
+        }
+      }
+    },
     {
       name:"channelStats",
       path:"/channels/:channelName/analytics",
       reloadPrevious:true,
       animate:false,
-      url:"/{{channelName}}/analytics",
+      url:"routes/channel-analytics.html",
       on:{
         pageAfterIn:e=>{
-            channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0];
-            homeworkDateChart = false;
-            homeworkSubjectChart = false;
+          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+          if(!navigator.onLine){
+            //SHow offline message
+            const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
+            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.textAlign = "center"
+            homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
+            
+            const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
+            homeworkDate.font = "30px Helvetica"
+            homeworkDate.textAlign = "center"
+            homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
+          }
+          homeworkDateChart = false
+          homeworkSubjectChart = false
+          $("a[href='/channelName/data.json'").attr("href",`/${channel}/data.json`)
+          $("a[href='/channelName/data.json'").attr("download",`${channel}.data.json`)
+          $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`)
+          $("a[href='/channelName/data.csv'").attr("download",`${channel}.data.csv`)
           conn.emit("isReady",null,res=>{
               console.log("ready before page load");
             renderCharts()
@@ -147,7 +198,7 @@ const Framework7App = new Framework7({
     },
       {
           name: "calendar",
-          path: "/calendar",
+          path: "/calendar/",
           reloadPrevious: true,
           animate: false,
           url: "/calendar",
@@ -170,10 +221,16 @@ const Framework7App = new Framework7({
       path:"/channels/:channelName/settings",
       reloadPrevious:true,
       animate:false,
-      url:"/{{channelName}}/settings",
+      url:"/routes/channel-settings.html",
       on:{
         pageAfterIn:e=>{
-            channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0];
+          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+          if(!navigator.onLine){
+            $("#subject-list li").text("Can't load data offline")
+            $("#member-list li").text("Can't load data offline")
+            return getChannelData()
+          }
+          $(".root-only").hide()
           conn.emit("isReady",null,res=>{
             getChannelData()
           })
