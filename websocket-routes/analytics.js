@@ -85,7 +85,7 @@ module.exports = (socket,db)=>{
       }else{
         msg = await checkPayloadAndPermissions(socket,msg,1)
         const {channel} = msg
-        const data = await db.getHomework(channel,false)
+        data = await db.getHomework(channel,false)
       }
 
       const result = {}
@@ -101,7 +101,7 @@ module.exports = (socket,db)=>{
       return null
     })()
     .then(callback)
-    .catch(e => callback(e.toString()))
+    .catch(e => {console.log(e);callback(e.toString())})
     //Error in handling error
     .catch(uncaughtErrorHandler)
   })
