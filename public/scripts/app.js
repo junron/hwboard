@@ -135,7 +135,7 @@ const Framework7App = new Framework7({
           homeworkDateChart = false
           homeworkSubjectChart = false
           
-          $("a[href='/channels'").html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`)
+          $("a[href='/channels'").parent().html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`)
           $("a[href='/channelName/data.json'").attr("href",`/data.json`)
           $("a[href='/channelName/data.json'").attr("download",`data.json`)
           $("a[href='/channelName/data.csv'").attr("href",`/data.csv`)
