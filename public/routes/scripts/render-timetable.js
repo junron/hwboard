@@ -86,9 +86,9 @@ const renderDay = ([concurrentLessons,day]) =>{
     }
 
     if(lesson.concurrentLessons==1){
-      rows[0] += `<td class='${cssClass}' style="width:${interval*50}px;height:50px" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
+      rows[0] += `<td class='${cssClass}' style="width:${interval*columnWidth}px;height:50px" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
     }else{
-      rows[lesson.position] += `<td class='${cssClass}' style="width:${interval*50}px;" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
+      rows[lesson.position] += `<td class='${cssClass}' style="width:${interval*columnWidth}px;" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
     }
     lastLessonTime = timing[1]
   }
@@ -96,7 +96,7 @@ const renderDay = ([concurrentLessons,day]) =>{
   //Lesson at the end of the day
   if(lastLessonTime<lessonEndTime){
     const breakInterval = timingToPeriod(lessonEndTime-lastLessonTime+800)
-    html +=`<td style="width:${breakInterval*50}px" colspan=${breakInterval}></td>`
+    html +=`<td style="width:${breakInterval*columnWidth}px" colspan=${breakInterval}></td>`
   }
   return html
 }
@@ -105,6 +105,9 @@ const sortByTime = timetable =>{
   const days = ["mon","tue","wed","thu","fri"]
   for(const day of days){
     const lessons = timetable[day]
+    if(!lessons){
+      continue
+    }
     const sortedLessons = lessons.sort((a,b)=>{
       if(a.timing[0]>b.timing[0]){
         return 1
