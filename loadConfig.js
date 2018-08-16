@@ -1,56 +1,95 @@
-function or(obj1,obj2){
-  const result = {}
-  for (const key in obj1){
-    if(!obj1[key]){
-      result[key] = obj2[key]
-    }else{
-      result[key] = obj1[key]
-    }
-  }
-  for (const key in obj2){
-    if(!result[key]){
-      result[key] = obj2[key]
-    }
-  }
-  return result
-}
+const variables = [
+  {
+    name:"HOSTNAME",
+    env:["HWBOARD_HOSTNAME"],
+    default:"",
+  },
+  {
+    name:"COOKIE_SECRET",
+    env:[],
+    default:"VeryInsecureCookieSecret",
+  },
+  {
+    name:"POSTGRES_USER",
+    default:"hwboard",
+  },
+  {
+    name:"POSTGRES_DB",
+    default:"hwboard",
+  },
+  {
+    name:"POSTGRES_PASSWORD",
+    default:"",
+  },
+  {
+    name:"POSTGRES_DB",
+    default:"hwboard",
+  },
+  {
+    name:"CI",
+    default:false
+  },
+  {
+    name:"MS_CLIENTID",
+    default:"",
+  },
+  {
+    name:"MS_CLIENTSECRET",
+    default:"",
+  },
+  {
+    name:"PORT",
+    env:["HWBOARD_PORT"],
+    default:3001,
+  },
+]
 
-let finalSettings
-let configFileSettings
+let finalSettings = {}
+let configFileSettings = false
 const envVarSettings = Object.assign({},process.env)
 
-envVarSettings.HOSTNAME = envVarSettings.HWBOARD_HOSTNAME
-delete envVarSettings.HWBOARD_HOSTNAME
-envVarSettings.PORT = envVarSettings.HWBOARD_PORT
-delete envVarSettings.HWBOARD_PORT
-envVarSettings.COOKIE_SECRET = envVarSettings.HWBOARD_COOKIE_SECRET
-delete envVarSettings.HWBOARD_COOKIE_SECRET
-
-try {
+try{
   configFileSettings = require("./config.json")
-  finalSettings = or(envVarSettings,configFileSettings)
-} catch (error) {
-  //Could not load config
+}catch(e){
   console.log("Config file not found, using environment variables")
-  finalSettings = envVarSettings
 }
-let {POSTGRES_PASSWORD,POSTGRES_USER,POSTGRES_DB,HOSTNAME,MS_CLIENTID,MS_CLIENTSECRET,PORT,CI,COOKIE_SECRET,GITLAB_SECRET_TOKEN} = finalSettings
-CI = (CI=="true") || CI || (process.env.CI=="true") || false
-if(CI==true){
-  //Auth credentials not needed for ci
-  MS_CLIENTID="hello"
-  MS_CLIENTSECRET="world"
-  HOSTNAME = HOSTNAME || "not_required"
+
+for(const variable of variables){
+  //Expand short syntax
+  if(typeof variable.file==="undefined"){
+    variable.file = [variable.name]
+  }
+  if(typeof variable.env==="undefined"){
+    variable.env = variable.file
+  }
+  if(configFileSettings){
+    //Get variables from config file if possible
+    for(const name of variable.file){
+      if(configFileSettings[name]){
+        finalSettings[variable.name] = configFileSettings[name]
+        break
+      }
+    }
+  }
+  //Skip env vars if variable defined in config file
+  if(typeof finalSettings[variable.name]!="undefined"){
+    continue
+  }
+  //Get variables from env vars
+  for(const name of variable.env){
+    if(envVarSettings[name]){
+      console.log(variable.env,name,envVarSettings["MS_CLIENTID"])
+      finalSettings[variable.name] = envVarSettings[name]
+      break
+    }
+  }
+  //Set default
+  if(typeof finalSettings[variable.name]==="undefined"){
+    finalSettings[variable.name] = variable.default
+  }
+  //Variable is not defined, throw error
+  if(typeof finalSettings[variable.name]==="undefined"){
+    throw new Error(`Variable ${variable.name} could not be found in either config file or environment variables`)
+  }
 }
-GITLAB_SECRET_TOKEN = GITLAB_SECRET_TOKEN || ""
-PORT = PORT || 3001
-//Cant see errors easily in docker or CI
-const isRemote = ((process.env.CI_PROJECT_NAME=="hwboard2") || process.env.IS_DOCKER=="true")
-//Dont report errors in testing/dev mode
-//But always report in docker or CI
-const REPORT_ERRORS = !(CI && !isRemote)
-const finalConfig = {POSTGRES_PASSWORD,POSTGRES_USER,POSTGRES_DB,HOSTNAME,MS_CLIENTID,MS_CLIENTSECRET,PORT,CI,COOKIE_SECRET,REPORT_ERRORS,GITLAB_SECRET_TOKEN}
-if(Object.values(finalConfig).includes(undefined)){
-  throw new Error(Object.entries(finalConfig) + " contains undefined.")
-}
-module.exports = finalConfig
+module.exports = finalSettings
