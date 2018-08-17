@@ -9,12 +9,6 @@ db.version(2).stores({
   channels: "id,name,admins,members,roots,subject,timetable,lastEditTime"
 }).upgrade()
 
-db.version(3).stores({
-  homework: "id,subject,dueDate,isTest,text,lastEditTime,lastEditPerson",
-  channels: "id,name,admins,members,roots,subject,timetable,lastEditTime",
-  pendingSyncs: "id++,url,body",
-}).upgrade()
-
 registerPromiseWorker(function (message) {
   //Homework
   if(message.type=="getSingle"){
@@ -36,14 +30,5 @@ registerPromiseWorker(function (message) {
     return db.channels.bulkPut(message.data)
   }else if(message.type=="getChannels"){
     return db.channels.toArray()
-  }
-
-  //Bakcground sync registrations
-  if(message.type=="getOne"){
-    return db.pendingSyncs.orderBy("id").limit(1).toArray()
-  }else if(message.type=="addSync"){
-    return db.pendingSyncs.put(message.sync)
-  }else if(message.type=="popSync"){
-    return db.pendingSyncs.delete(message.syncID)
   }
 });

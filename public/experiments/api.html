@@ -8,9 +8,19 @@
 </head>
 <body>
   <script>
-    navigator.serviceWorker.ready.then(function(swRegistration) {
-      return swRegistration.sync.register('dataReq');
-    });
+  promiseServiceWorker.postMessage({type:"sync",
+    data:{
+      url:"/api/dataReq",
+      options:{
+          method:"POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body:"{}"
+        }
+    }
+  })
   </script>
   Helloworld
 </body>
