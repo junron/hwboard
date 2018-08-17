@@ -42,6 +42,10 @@ const variables = [
     env:["HWBOARD_PORT"],
     default:3001,
   },
+  {
+    name:"SEQUELIZE_LOGGING",
+    default:true
+  }
 ]
 
 let finalSettings = {}
@@ -65,7 +69,7 @@ for(const variable of variables){
   if(configFileSettings){
     //Get variables from config file if possible
     for(const name of variable.file){
-      if(configFileSettings[name]){
+      if(typeof configFileSettings[name] !== "undefined"){
         finalSettings[variable.name] = configFileSettings[name]
         break
       }
@@ -77,7 +81,7 @@ for(const variable of variables){
   }
   //Get variables from env vars
   for(const name of variable.env){
-    if(envVarSettings[name]){
+    if(typeof envVarSettings[name] !== "undefined"){
       console.log(variable.env,name,envVarSettings["MS_CLIENTID"])
       finalSettings[variable.name] = envVarSettings[name]
       break
