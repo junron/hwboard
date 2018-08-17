@@ -1,7 +1,9 @@
 //This is a service worker
 //It handles caching and PWA
+//Promise worker for promise based-sw communication
+importScripts("/promise-worker/dist/promise-worker.register.js")
+
 const version = "1.2.0"
-importScripts('/fetch-sync/dist/fetch-sync.sw.min.js')
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -87,23 +89,32 @@ self.addEventListener('fetch', function(event) {
   }
 });
 
-self.addEventListener("sync",event =>{
-  if (event.tag == 'dataReq') {
-    event.waitUntil(
-      (async ()=>{
-        console.log(new Date())
-        console.log(event)
-        return fetch("/api/dataReq",{
-          method:"POST",
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body:"{}"
-        })
-        .then(res=>res.json())
-        .then(console.log)
-      })()
-    )
+const syncs = {}
+
+registerPromiseWorker(async function (msg) {
+  if(msg.type==="sync"){
+    const {data} = msg
+    const id = `${Math.random().toString().slice(2)}-${Math.random().toString().slice(2)}-${Math.random().toString().slice(2)}-${Math.random().toString().slice(2)}`
+    syncs[id] = {data}
+    const promise = new Promise(function(resolve, reject){
+      syncs[id].promise = {resolve: resolve, reject: reject}
+    })
+    self.registration.sync.register(id)
+    return promise
+  }
+});
+
+self.addEventListener("sync",async event =>{
+  //Is hwboard-sync
+  if(event.tag.split("-").length===4 && syncs[event.tag] && syncs[event.tag].promise){
+    const sync = syncs[event.tag]
+    const {data,promise} = sync
+    const {url,options} = data
+    const response = fetch(url,options)
+    if(response.ok){
+      promise.resolve(await (await response).json())
+    }else{
+      promise.reject(response.status)
+    }
   }
 })
