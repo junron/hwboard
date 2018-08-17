@@ -40,23 +40,39 @@ module.exports = (socket,db)=>{
   //Get homework statistics/subject
   socket.on("homeworkSubjectData",function(msg,callback){
     ;(async ()=>{
-      msg = await checkPayloadAndPermissions(socket,msg,1)
-      const {channel} = msg
-      const subjects = socket.channels[channel].subjects
+      let subjects = []
       const promises = []
-      for(const subject of subjects){
-        msg.subject = subject
-        promises.push(db.getNumHomework(msg))
+      if(msg.channel==""){
+        for(const channelName in socket.channels){
+          for(const subject of socket.channels[channelName].subjects){
+            msg.subject = subject
+            msg.channel = channelName
+            promises.push(db.getNumHomework(msg))
+            subjects.push(subject)
+          }
+        }
+        for(const subject of subjects){
+          msg.subject = subject
+        }
+      }else{
+        msg = await checkPayloadAndPermissions(socket,msg,1)
+        const {channel} = msg
+        subjects = socket.channels[channel].subjects
+        for(const subject of subjects){
+          msg.subject = subject
+          promises.push(db.getNumHomework(msg))
+        }
       }
 
       const result = await Promise.all(promises)
+      console.log(result)
       const combined = keyValueToArray(subjects,result)
       const sorted = combined.sort(sortArray)
       callback(null,sorted)
       return null
     })()
     .then(callback)
-    .catch(e => callback(e.toString()))
+    .catch(e => {console.log(e);callback(e.toString())})
     //Error in handling error
     .catch(uncaughtErrorHandler)
   })
@@ -64,12 +80,16 @@ module.exports = (socket,db)=>{
   //Get homework statistics/day
   socket.on("homeworkDayData",function(msg,callback){
     ;(async ()=>{
-      msg = await checkPayloadAndPermissions(socket,msg,1)
-      const {channel} = msg
+      let data
+      if(msg.channel ==""){
+        data = await db.getHomeworkAll(socket.channels,false)
+      }else{
+        msg = await checkPayloadAndPermissions(socket,msg,1)
+        const {channel} = msg
+        data = await db.getHomework(channel,false)
+      }
 
-      const data = await db.getHomework(channel,false)
       const result = {}
-
       for (const homework of data){
         const date = Math.floor(homework.dueDate.getTime()/(24*60*60*1000))
         if(result[date]){
@@ -82,7 +102,7 @@ module.exports = (socket,db)=>{
       return null
     })()
     .then(callback)
-    .catch(e => callback(e.toString()))
+    .catch(e => {console.log(e);callback(e.toString())})
     //Error in handling error
     .catch(uncaughtErrorHandler)
   })

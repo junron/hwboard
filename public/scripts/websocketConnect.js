@@ -1,6 +1,7 @@
 const conn = io(location.origin,{
   secure: true,
   reconnectionDelay:100,
+  transports:["websocket"]
 });
 //Handle websocket connection errors
 //Standard code for all my websocket apps
@@ -40,4 +41,9 @@ conn.on("connect",function(){
 conn.on("uncaughtError",error=>{
   Framework7App.dialog.alert(error)
   throw new Error(error)
+})
+
+//Auth errors, redirect to auth url
+conn.on("authError",url=>{
+  location.href=url
 })

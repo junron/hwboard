@@ -64,7 +64,7 @@ self.addEventListener('fetch', function(event) {
           }
           console.log(`Loading ${url}`)
           var fetchPromise = fetch(event.request).then(function(networkResponse) {
-            //Dont cache socket io
+            //Dont cache stuffs
             if((!url.includes("?useCache")) &&
              (url.includes("transport=polling") || 
              url.includes("/cd/") || 
