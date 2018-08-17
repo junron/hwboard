@@ -65,14 +65,12 @@ app.use(function(req,res,next){
 })
 
 //routes
-const api = require('./routes/api');
 const resetCache = require('./routes/resetCache');
 const exportData = require('./routes/export-data');
 const routes = require('./routes/index');
 const su = require('./routes/su');
 const update = require('./routes/update');
 const version = require('./routes/version');
-app.use('/', api);
 app.use('/', resetCache);
 app.use('/', exportData);
 app.use('/', routes);
@@ -106,7 +104,7 @@ app.use((req, res, next) => {
   
   // development error handler
   // will print stacktrace
-  if (app.get('env') === 'development') {
+  if (app.get('env') === 'development' && hostName!="nushhwboard.tk") {
     app.use((err, req, res, next) => {
       res.status(err.status || 500);
       res.render('error', {

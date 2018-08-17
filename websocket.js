@@ -12,7 +12,7 @@ exports.createServer = function(server){
   const io = require('socket.io')(server)
 
   //Load hwboard configuration
-  const {CI:testing,HOSTNAME,PORT:port,COOKIE_SECRET:cookieSecret} = require("./loadConfig")
+  const {CI:testing,HOSTNAME,PORT:port,COOKIE_SECRET:cookieSecret,MS_CLIENTID:clientId} = require("./loadConfig")
 
   //Prevent CSRF (sort of) by only allowing specific origins
   //Could origin spoofing be possible?
@@ -106,7 +106,17 @@ exports.createServer = function(server){
         }catch(e){
           //Problem with token, perhaps spoofed token?
           //Anyway get rid of this socket
+          //Redirect to auth url
+          const scopes = ["user.read","openid","profile"]
+          const url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
+          "response_type=code&"+
+          `scope=https%3A%2F%2Fgraph.microsoft.com%2F${scopes.join("%20")}&`+
+          `client_id=${clientId}&`+
+          `redirect_uri=https://${HOSTNAME}/&`+
+          "prompt=select_account&"+
+          `response_mode=query`
           console.log("Forced disconnect")
+          socket.emit("authError",url)
           socket.disconnect()
         }
       }

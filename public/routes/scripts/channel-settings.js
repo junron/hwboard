@@ -25,7 +25,7 @@ function getChannelData(){
 async function renderChannelData(data){
   const {render} = renderAdmins
   document.getElementById("member-list").innerHTML = await render(data)
-  document.getElementById("subject-list").innerHTML = renderSubjects(data.subjects)
+  document.getElementById("subject-list").innerHTML = renderSubjects(data)
   conn.emit("whoami",null,async function(err,name){
     if(err){
       Framework7App.dialog.alert(err.toString())
@@ -52,7 +52,7 @@ conn.on("channelData",async function(data){
     const {render} = renderAdmins
     const thisChannelData = data[channel]
     document.getElementById("member-list").innerHTML = await render(thisChannelData)
-    document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData.subjects)
+    document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData)
   }
 })
 function deleteMember(memberElem){
@@ -86,6 +86,19 @@ function demoteMember(memberElem){
   const memberId = memberEmail.replace("@nushigh.edu.sg","")
   Framework7App.dialog.confirm("Are you sure you want to demote " + memberEmail + "?",function(){
     conn.emit("demoteMember",{channel,student:memberId},function(err){
+  if(err){
+    Framework7App.dialog.alert(err.toString())
+    throw new Error(err)
+  }
+      console.log("done")
+    })
+  })
+}
+
+function deleteSubject(subjectElem){
+  const subjectName = subjectElem.children[0].children[0].children[0].innerText.split("\n")[0]
+  Framework7App.dialog.confirm("Are you sure you want to delete " + subjectName + "?",function(){
+    conn.emit("removeSubject",{channel,subject:subjectName},function(err){
   if(err){
     Framework7App.dialog.alert(err.toString())
     throw new Error(err)
