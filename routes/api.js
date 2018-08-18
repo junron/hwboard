@@ -9,6 +9,7 @@ let io
 class socketIO extends EventEmitter {}
 
 router.post("/api/:method",(req, res, next) => {
+  console.log("Loaded API route")
   ;(async ()=>{
     if(!io){
       io = require("../app").io
