@@ -4,6 +4,7 @@
   "description": "version 2 of homeworkboard",
   "main": "app.js",
   "scripts": {
+    "preinstall":"node cli.js preinstall",
     "start": "pm2 start ./bin/www --name hwboard2-web -i 0",
     "test": "snyk test && mocha test/dbtest.js test/UITest.js test/wsTest.js",
     "start:dev": "nodemon ./bin/www",
