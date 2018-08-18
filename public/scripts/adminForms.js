@@ -94,12 +94,41 @@ function startEdit(){
   })
 }
 
+async function backgroundSync(url,body){
+  return new Promise((resolve,reject)=>{
+      Notification.requestPermission(function(result) {
+      //Request notifications for background sync
+      if (result === 'granted') {
+        const id = promiseServiceWorker.postMessage({type:"sync",
+          data:{
+            url,
+            options:{
+                method:"POST",
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body:JSON.stringify(body)
+              }
+          }
+        })
+        return resolve(id)
+      }else{
+        return reject(new Error("Notification permission not granted."))
+      }
+    })
+  })
+}
+
 async function addHomework(){
   $("#update-hwboard-button").removeClass("editing-homework")
   const homework = await getHomeworkData()
   if(JSON.stringify(previousAddedHomework)==JSON.stringify(homework)){
     console.log("Repeated request rejected")
     return
+  }
+  if(navigator.onLine===false){
+    return backgroundSync("/api/addReq",homework)
   }
   previousAddedHomework = homework
   const promise = new Promise(function(resolve,reject){
@@ -114,6 +143,9 @@ async function addHomework(){
 async function editHomework(){
   $("#update-hwboard-button").removeClass("editing-homework")
   const homework = await getHomeworkData(true)
+  if(navigator.onLine===false){
+    return backgroundSync("/api/editReq",homework)
+  }
   const promise = new Promise(function(resolve,reject){
     conn.emit('editReq',homework,function(err){
       if(err) return reject(err)
@@ -130,12 +162,12 @@ function startDelete(){
 }
 function deleteHomework(){
   getExistingInfo().then(homeworkData=>{
-    const {id,channel} = homeworkData
+    if(navigator.onLine===false){
+      backgroundSync("/api/deleteReq",homeworkData).then(console.log)
+      return
+    }
     const promise = new Promise(function(resolve,reject){
-      conn.emit('deleteReq',{
-        id,
-        channel
-      },(err)=>{
+      conn.emit('deleteReq',homeworkData,(err)=>{
         if(err) return reject(err)
         //TODO: tell user that operation succeeded
         return resolve()
