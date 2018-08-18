@@ -33,6 +33,7 @@ async function authChannels(req,res){
       res.cookie("redirPath",req.url,{
         maxAge:10*60*60*1000,
         signed:true,
+        secure:true
       })
       if(!(req.query&&req.query.code)){
           console.log("redirected")
