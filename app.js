@@ -46,6 +46,7 @@ img-src 'self' data:;
 base-uri 'none';
 form-action 'none';
 font-src 'self';
+manifest-src 'self';
 frame-ancestors 'none';`.split("\n").join("")
 
 app.use(function(req,res,next){

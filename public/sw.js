@@ -32,6 +32,7 @@ self.addEventListener('install', function(e) {
         "/routes/channel-analytics.html",
         "/routes/edit-homework.html",
         "/routes/channel-settings.html",
+        "/manifest.json"
       ]
       return cache.addAll(cacheArray);
     })
