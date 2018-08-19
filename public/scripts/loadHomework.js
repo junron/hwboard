@@ -16,6 +16,10 @@ function setSubjectVariables(channelData){
   }
 }
 
+channelSettings = {
+  channel,
+  removeExpired:true
+}
 
 //Load cached data before websocket connects
 //Allows for faster loading of updated data

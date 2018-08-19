@@ -38,6 +38,7 @@ self.addEventListener('install', function(e) {
         "/routes/channel-settings.html",
         "/manifest.json",
         "/images/icons/favicon.png",
+        "/routes/channel-settings.html",
       ]
       return cache.addAll(cacheArray);
     })

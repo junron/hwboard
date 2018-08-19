@@ -99,6 +99,15 @@ async function backgroundSync(url,body){
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
       const swRegistration = await navigator.serviceWorker.ready
 
+      let action
+      if(url.includes("add")){
+        action="added"
+      }else if(url.includes("edit")){
+        action="edited"
+      }else if(url.includes("delete")){
+        action="deleted"
+      }
+
       if(Notification.permission!=="granted"){
         //Request notifications for background sync
         await new Promise((ok,cancel)=>{
@@ -106,14 +115,6 @@ async function backgroundSync(url,body){
             const result = await Notification.requestPermission()
             if (result !== 'granted') {
               return reject(new Error("Notification permission not granted."))
-            }
-            let action
-            if(url.includes("add")){
-              action="added"
-            }else if(url.includes("edit")){
-              action="edited"
-            }else if(url.includes("delete")){
-              action="deleted"
             }
             const title = "Hwboard"
             const notifOptions = {
@@ -124,6 +125,8 @@ async function backgroundSync(url,body){
             return ok()
           },cancel)
         })
+      }else{
+        Framework7App.dialog.confirm("You are currently offline. Your homework will be "+action+" ASAP.")
       }
       const id = promiseServiceWorker.postMessage({type:"sync",
         data:{
