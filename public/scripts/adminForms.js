@@ -107,24 +107,24 @@ async function backgroundSync(url,body){
             if (result !== 'granted') {
               return reject(new Error("Notification permission not granted."))
             }
+            let action
+            if(url.includes("add")){
+              action="added"
+            }else if(url.includes("edit")){
+              action="edited"
+            }else if(url.includes("delete")){
+              action="deleted"
+            }
+            const title = "Hwboard"
+            const notifOptions = {
+              icon:"/images/icons/favicon.png",
+              body:`Your homework will be ${action} as soon as you are online.`,
+            }
+            swRegistration.showNotification(title,notifOptions)
             return ok()
           },cancel)
         })
       }
-      let action
-      if(url.includes("add")){
-        action="added"
-      }else if(url.includes("edit")){
-        action="edited"
-      }else if(url.includes("delete")){
-        action="deleted"
-      }
-      const title = "Hwboard"
-      const notifOptions = {
-        icon:"/images/icons/favicon.png",
-        body:`You homework will be ${action} ASAP.`,
-      }
-      swRegistration.showNotification(title,notifOptions)
       const id = promiseServiceWorker.postMessage({type:"sync",
         data:{
           url,
