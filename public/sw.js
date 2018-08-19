@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.2.1"
+const version = "1.2.2"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -36,7 +36,8 @@ self.addEventListener('install', function(e) {
         "/routes/channel-analytics.html",
         "/routes/edit-homework.html",
         "/routes/channel-settings.html",
-        "/manifest.json"
+        "/manifest.json",
+        "/images/icons/favicon.png",
       ]
       return cache.addAll(cacheArray);
     })

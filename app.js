@@ -85,6 +85,7 @@ const routes = require('./routes/index');
 const su = require('./routes/su');
 const update = require('./routes/update');
 const version = require('./routes/version');
+app.use("/",api);
 app.use('/', resetCache);
 app.use('/', exportData);
 app.use('/', routes);

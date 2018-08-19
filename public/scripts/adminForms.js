@@ -96,38 +96,44 @@ function startEdit(){
 
 async function backgroundSync(url,body){
   return new Promise(async (resolve,reject)=>{
-    if(Notification.permission!=="granted"){
-      //Request notifications for background sync
-      await new Promise((ok,cancel)=>{
-        Framework7App.dialog.confirm("You are currently offline.\nTo enable homework to be synced as soon as you get online, notifications need to be enabled.","Background sync",async ()=>{
-          const result = await Notification.requestPermission()
-          if (result !== 'granted') {
-            return reject(new Error("Notification permission not granted."))
-          }
-          return ok()
-        },cancel)
-      })
-    }
-    const title = "Hwboard"
-    const notifOptions = {
-      icon:"/images/icons/favicon.png",
-      body:"Your action will be executed when you are connected to the Internet",
-    }
-    const bgSyncNotif = new Notification(title,notifOptions)
-    const id = promiseServiceWorker.postMessage({type:"sync",
-      data:{
-        url,
-        options:{
-            method:"POST",
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body:JSON.stringify(body)
-          }
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+      const swRegistration = await navigator.serviceWorker.ready
+
+      if(Notification.permission!=="granted"){
+        //Request notifications for background sync
+        await new Promise((ok,cancel)=>{
+          Framework7App.dialog.confirm("You are currently offline.\nTo enable homework to be synced as soon as you get online, notifications need to be enabled.","Background sync",async ()=>{
+            const result = await Notification.requestPermission()
+            if (result !== 'granted') {
+              return reject(new Error("Notification permission not granted."))
+            }
+            return ok()
+          },cancel)
+        })
       }
-    })
-    return resolve(id)
+      const title = "Hwboard"
+      const notifOptions = {
+        icon:"/images/icons/favicon.png",
+        body:"Sync registered",
+      }
+      swRegistration.showNotification(title,notifOptions)
+      const id = promiseServiceWorker.postMessage({type:"sync",
+        data:{
+          url,
+          options:{
+              method:"POST",
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body:JSON.stringify(body)
+            }
+        }
+      })
+      return resolve(id)
+    }else{
+      reject("Background sync not available")
+    }
   })
 }
 
