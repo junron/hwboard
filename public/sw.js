@@ -1,5 +1,6 @@
 //This is a service worker
 //It handles caching and PWA
+
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
@@ -26,8 +27,16 @@ self.addEventListener('install', function(e) {
         "/scripts/raven.min.js",
         "/promise-worker/dist/promise-worker.register.js",
         "/fonts/material.ttf",
+        "/scripts/renderer.js",
+        "/scripts/getCookie.js",
+        "/scripts/fastLoadHomework.js",
+        "scripts/loadHomework.js",
         "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
-        "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf"
+        "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
+        "/routes/channel-analytics.html",
+        "/routes/edit-homework.html",
+        "/routes/channel-settings.html",
+        "/manifest.json"
       ]
       return cache.addAll(cacheArray);
     })
@@ -51,7 +60,7 @@ function addCacheHeader(response){
       }
 }
 self.addEventListener('activate', event => {
-  event.waitUntil(clients.claim());
+  event.waitUntil(clients.claim())
 });
 self.addEventListener('fetch', function(event) {
   if(event.request.method=="GET"){

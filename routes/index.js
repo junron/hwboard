@@ -85,7 +85,8 @@ router.get("/channels", async (req, res) => {
     const email = req.cookies.username
     res.cookie("username",email,{
       signed:true,
-      httpOnly:true
+      httpOnly:true,
+      sameSite:"lax"
     })
   }
   const authData = await authChannels(req,res)

@@ -4,8 +4,9 @@
   "description": "version 2 of homeworkboard",
   "main": "app.js",
   "scripts": {
+    "preinstall": "node cli.js preinstall",
     "start": "pm2 start ./bin/www --name hwboard2-web -i 0",
-    "test": "snyk test && mocha test/dbtest.js test/UITest.js test/wsTest.js",
+    "test": "snyk test && mocha test/dbtest.js test/UITest.js test/wsTest.js --exit",
     "start:dev": "nodemon ./bin/www",
     "hwboard": "node cli.js"
   },
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
+    "lighthouse": "^3.0.3",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.3",
     "puppeteer": "^1.7.0",

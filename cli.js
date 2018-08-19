@@ -95,6 +95,46 @@ if(gitlab||process.argv[4]=="default"){
     })
   })
 }
+}else if(process.argv[2]=="preinstall"){
+  if(process.env.CI_PROJECT_NAME=="hwboard2"||process.env.IS_DOCKER=="true" || typeof process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD !== "undefined"){
+    if(typeof process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD !== "undefined"){
+      console.log("Chrome will not be downloaded for puppeteer.")
+      process.exit(0)
+    }else{
+      console.log("Chrome will be downloaded for puppeteer.")
+      process.exit(0)
+    }
+  }else{
+    const readline = require('readline')
+    const r1 = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+
+    r1.question("Puppeteer requires chrome to work.\nDownload chrome? (Y/n):  ",ans=>{
+      if(ans=="n"){
+        console.log(`
+        Please set the PUPPETEER_SKIP_CHROMIUM_DOWNLOAD to true.
+
+        On unix, run:
+        export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+        On Windows, run:
+        set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+
+        Press Ctrl + c twice to exit, then set the environment variable.
+        Then, run npm install again
+        `)
+        setTimeout(()=>{
+          process.exit(1)
+        },100000000)
+      }else{
+        console.log("Chrome will be downloaded for puppeteer.")
+        r1.close()
+      }
+    })
+  }
 }else if(process.argv[2]=="config"){
   if(process.argv[3]=="secret-only"){
     const fs = require("fs")
