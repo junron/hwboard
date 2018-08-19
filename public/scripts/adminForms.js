@@ -111,10 +111,18 @@ async function backgroundSync(url,body){
           },cancel)
         })
       }
+      let action
+      if(url.includes("add")){
+        action="added"
+      }else if(url.includes("edit")){
+        action="edited"
+      }else if(url.includes("delete")){
+        action="deleted"
+      }
       const title = "Hwboard"
       const notifOptions = {
         icon:"/images/icons/favicon.png",
-        body:"Sync registered",
+        body:`You homework will be ${action} ASAP.`,
       }
       swRegistration.showNotification(title,notifOptions)
       const id = promiseServiceWorker.postMessage({type:"sync",
