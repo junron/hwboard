@@ -99,8 +99,10 @@ if(gitlab||process.argv[4]=="default"){
   if(process.env.CI_PROJECT_NAME=="hwboard2"||process.env.IS_DOCKER=="true" || typeof process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD !== "undefined"){
     if(typeof process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD !== "undefined"){
       console.log("Chrome will not be downloaded for puppeteer.")
+      process.exit(0)
     }else{
       console.log("Chrome will be downloaded for puppeteer.")
+      process.exit(0)
     }
   }else{
     const readline = require('readline')

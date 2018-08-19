@@ -129,8 +129,12 @@ describe("Hwboard",async function(){
     await init()
   })
   afterEach(async ()=>{
-    await page.goto('http://localhost:' + port)
-    return await page.waitFor(2000)
+    if(!page.isClosed()){
+      await page.goto('http://localhost:' + port)
+      return await page.waitFor(2000)
+    }else{
+      return console.log("Page has been closed, not refreshing")
+    }
   })
   it("Should be able to add homework",async function(){
     await page.tracing.start({path: 'artifacts/add.json', screenshots: true});
@@ -149,9 +153,11 @@ describe("Hwboard",async function(){
       const graded = await getHtml("#detailGraded")
       expect(graded).to.equal("Yes")
       const lastEdit = await getHtml("#detailLastEdit")
-      console.log("bleh")
-      console.table = console.table || console.log
-      console.table({name,subject,dueDate,graded,lastEdit})
+      if(console.table){
+        console.table({name,subject,dueDate,graded,lastEdit})
+      }else{
+        console.log({name,subject,dueDate,graded,lastEdit})
+      }
       await page.tracing.stop()
     })().catch(e=>{
       throw e
@@ -162,6 +168,36 @@ describe("Hwboard",async function(){
     console.log('\x1b[36m%s\x1b[0m',"Attempt to remove homework")
     await remove()
     return await page.tracing.stop()
+  })
+
+  it("Should perform decently for Lighthouse audits",async ()=>{
+    const url = 'http://localhost:' + port
+    const lighthouse = require("lighthouse")
+    page.close()
+    const {URL} = require("url")
+    const {lhr} = await lighthouse(url, {
+      port: (new URL(browser.wsEndpoint())).port,
+      output: 'json',
+      logLevel: 'info',
+    })
+    const fs = require("fs")
+    fs.writeFileSync("./artifacts/lighthouse.json",JSON.stringify(lhr))
+    console.log(`Lighthouse scores:`)
+    const scores = {}
+    for(const category in lhr.categories){
+      scores[category] = lhr.categories[category].score
+    }
+    if(console.table){
+      console.table(scores)
+    }else{
+      console.log(scores)
+    }
+    //Note: scores for performance and PWA are significantly lower 
+    //This isdue to lack of HTTPS and NGINX compression and h2
+    expect(scores.pwa).to.be.greaterThan(0.6)
+    expect(scores.accessibility).to.be.greaterThan(0.85)
+    expect(scores["best-practices"]).to.be.greaterThan(0.88)
+    expect(scores.seo).to.be.greaterThan(0.95)
   })
   // it("Should detect dates properly",async ()=>{
   //   const today = new Date()
