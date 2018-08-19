@@ -26,8 +26,14 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const websocket = require("./websocket")
 
+
+//Parsing request body
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 //Cookie parser must be before routes
 app.use(cookieParser(cookieSecret));
+
 
 // create servers
 const server = http.createServer(app)
@@ -72,12 +78,14 @@ app.use(function(req,res,next){
 })
 
 //routes
+const api = require("./routes/api")
 const resetCache = require('./routes/resetCache');
 const exportData = require('./routes/export-data');
 const routes = require('./routes/index');
 const su = require('./routes/su');
 const update = require('./routes/update');
 const version = require('./routes/version');
+app.use("/",api);
 app.use('/', resetCache);
 app.use('/', exportData);
 app.use('/', routes);
@@ -97,8 +105,6 @@ if(testing){
 
 //express setup
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')))
 
