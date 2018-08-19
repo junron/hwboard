@@ -11,6 +11,10 @@
     console.log("New version released!!")
     console.log(`Upgrading from version ${result[0].commitSha} to ${result[1].commitSha}`)
     await caches.delete("cache1")
+    if ('serviceWorker' in navigator) {
+      const swRegistation = await navigator.serviceWorker.ready
+      await swRegistation.unregister()
+    }
     location.reload()
   }
 })()
