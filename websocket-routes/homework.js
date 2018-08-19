@@ -18,7 +18,7 @@ module.exports = (socket,io,db)=>{
 
   //Get homework from database
   socket.on("dataReq",function(msg,callback){
-    console.log("received")
+    console.log("Data req")
     ;(async ()=>{
       if(!isObject(msg)){
         throw "Msg is not an object"
@@ -67,7 +67,7 @@ module.exports = (socket,io,db)=>{
       })
       return callback(null)
     })()
-    .catch(e => callback(e.toString()))
+    .catch(e => {console.log(e);callback(e.toString())})
     //Error in handling error
     .catch(uncaughtErrorHandler)
   })

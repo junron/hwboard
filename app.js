@@ -43,12 +43,16 @@ const io = websocket.createServer(server)
 //"unsafe-inline" for inline styles and scripts, aim to remove
 //https://developers.google.com/web/fundamentals/security/csp/
 const csp = 
-`default-src 'self';
+`default-src 'none';
 script-src 'self' 'unsafe-inline';
 style-src 'self' 'unsafe-inline';
 connect-src 'self' https://sentry.io wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
 object-src 'none';
 img-src 'self' data:;
+base-uri 'none';
+form-action 'none';
+font-src 'self';
+manifest-src 'self';
 frame-ancestors 'none';`.split("\n").join("")
 
 app.use(function(req,res,next){
@@ -61,6 +65,15 @@ app.use(function(req,res,next){
   //Stop clickjacking
   //https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet
   res.header("X-Frame-Options","deny")
+
+  //Ask browsers to help detect XSS
+  //https://infosec.mozilla.org/guidelines/web_security#x-xss-protection
+  res.header("X-XSS-Protection","1; mode=block")
+  res.header("X-Content-Type-Options","nosniff")
+  res.header("Strict-Transport-Security","max-age=1576800; includeSubDomains")
+  res.header("Referrer-Policy","strict-origin")
+  res.header("Expect-CT",`max-age=31536000, enforce,  report-uri="https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908"`)
+  res.header(`Feature-policy`,`geolocation 'none'; accelerometer 'none';ambient-light-sensor 'none'; sync-xhr 'none'; autoplay 'none'; picture-in-picture 'none';payment 'none'`)
   next()
 })
 
@@ -72,7 +85,6 @@ const routes = require('./routes/index');
 const su = require('./routes/su');
 const update = require('./routes/update');
 const version = require('./routes/version');
-app.use('/', api);
 app.use('/', resetCache);
 app.use('/', exportData);
 app.use('/', routes);
@@ -126,9 +138,10 @@ app.use((req, res, next) => {
       error: {}
     });
   });
-  
-  module.exports = {
-    app,
+
+  module.exports= {
     server,
-    io
+    app,
+    io,
   };
+
