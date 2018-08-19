@@ -137,4 +137,5 @@ app.use((req, res, next) => {
   module.exports= {
     server,
     app,
+    io,
   };

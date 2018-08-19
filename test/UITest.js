@@ -3,7 +3,8 @@ const puppeteer = require("puppeteer")
 const mocha = require("mocha")
 const {expect} = require("chai")
 const port = require("../loadConfig").PORT
-const server = require("../app").server
+const {server,io} = require("../app")
+const {sequelize} = require("../models")
 const options = {
   headless:false,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -189,9 +190,8 @@ describe("Hwboard",async function(){
     }
     if(console.table){
       console.table(scores)
-    }else{
-      console.log(scores)
     }
+    console.log(scores)
     //Note: scores for performance and PWA are significantly lower 
     //This isdue to lack of HTTPS and NGINX compression and h2
     expect(scores.pwa).to.be.greaterThan(0.6)
@@ -217,6 +217,8 @@ describe("Hwboard",async function(){
   // })
   after(async ()=>{
     await browser.close()
-    return server.close()
+    server.close()
+    io.close()
+    return
   })
 })
