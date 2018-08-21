@@ -237,10 +237,24 @@ const Framework7App = new Framework7({
           on:{
             pageAfterIn:e=>{
               console.log(e)
+              const target = e.currentTarget
+              const scriptTag2 = document.createElement("script")
+              scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
+              target.appendChild(scriptTag2)
               const scriptTag = document.createElement("script")
               scriptTag.src = "/routes/scripts/add-subject.js"
-              const target = e.currentTarget
               target.appendChild(scriptTag)
+              const linkTag = document.createElement("link")
+              linkTag.rel = "stylesheet"
+              linkTag.href = "/routes/styles/timetable.css"
+              target.appendChild(linkTag)
+              scriptTag2.onload = ()=>{
+                addSubjectRenderTimetable().then(_=>{
+                  $("#app .page-current table#homeworkboard-timetable td").filter(function(){
+                    return this.innerHTML === " "
+                  }).css("background-color","#d8ffe0")
+                })
+              }
             }
           }
         }

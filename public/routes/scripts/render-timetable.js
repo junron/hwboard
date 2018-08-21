@@ -86,7 +86,14 @@ const renderDay = (concurrentLessons,day,colorLessons=true,splitEveryHalfHour=fa
 
     if(subject==" "){
       if(splitEveryHalfHour){
-        rows[0] += `<td class='${cssClass}' style="width:${columnWidth}px;height:50px" rowspan=1 colspan=1> </td>`.repeat(interval)
+        const startTime = timing[0]
+        for(let offset=0;offset<interval;offset++){
+          let thisStartTime = startTime
+          const hours = Math.floor(offset/2)
+          thisStartTime += hours*100
+          thisStartTime += (offset % 2)*30
+          rows[0] += `<td class='${cssClass}' style="width:${columnWidth}px;height:50px" data-day=${day.day} data-time-start=${thisStartTime} rowspan=1 colspan=1> </td>`
+        }
       }else{
         rows[0] += `<td class='${cssClass}' style="width:${interval*columnWidth}px;height:50px" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
       }
@@ -101,11 +108,17 @@ const renderDay = (concurrentLessons,day,colorLessons=true,splitEveryHalfHour=fa
   //Lesson at the end of the day
   if(lastLessonTime<lessonEndTime){
     const breakInterval = timingToPeriod(lessonEndTime-lastLessonTime+800)
-    console.log(breakInterval)
     if(breakInterval>1 && splitEveryHalfHour){
-      html += `<td style="width:${columnWidth}px" colspan=1></td>`.repeat(breakInterval)
+      const startTime = lastLessonTime
+        for(let offset=0;offset<breakInterval;offset++){
+          let thisStartTime = startTime
+          const hours = Math.floor(offset/2)
+          thisStartTime += hours*100
+          thisStartTime += (offset % 2)*30
+          html += `<td style="width:${columnWidth}px;height:50px" data-day=${day.day} data-time-start=${thisStartTime} rowspan=1 colspan=1> </td>`
+        }
     }else{
-      html += `<td style="width:${breakInterval*columnWidth}px" colspan=${breakInterval}></td>`
+      html += `<td style="width:${breakInterval*columnWidth}px" colspan=${breakInterval}> </td>`
     }
   }
   return html
