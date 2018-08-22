@@ -37,34 +37,39 @@ conn.on("connect",function(){
     updateHomework();
 });
 
-setTimeout(function() {
-    const calendarPadding = 100;
-    const calendarHeight = window.innerHeight - calendarPadding;
+function init(){
+  if(!$('#calendar').length || ! $('#calendar').fullCalendar){
+    return setTimeout(init, 10);
+  }
+  const calendarPadding = 100;
+  const calendarHeight = window.innerHeight - calendarPadding;
 
-    $('#calendar').fullCalendar({
-        header: {
-            left: 'title',
-            center: '',
-            right: 'prev,next today',
-        },
-        buttonIcons: {
-            prev: 'left-single-arrow',
-            next: 'right-single-arrow',
-        },
-        height: calendarHeight,
-        editable: false,
-        events: [],
-        eventRender: function(eventObj, $el) {
-            $el.popover({
-                title: eventObj.title,
-                content: eventObj.description,
-                trigger: 'hover',
-                placement: 'top',
-                container: 'body'
-            });
-        }
-    });
+  $('#calendar').fullCalendar({
+    defaultView: 'month',
+    eventLimit: true,
+    header: {
+      left: 'title',
+      center: '',
+      right: 'prev,next today',
+    },
+    buttonIcons: {
+      prev: 'left-single-arrow',
+      next: 'right-single-arrow',
+    },
+    height: calendarHeight,
+    editable: false,
+    events: [],
+    eventRender: function(eventObj, $el) {
+      $el.popover({
+        title: eventObj.title,
+        content: eventObj.description,
+        trigger: 'hover',
+        placement: 'top',
+        container: 'body'
+      });
+    }
+  });
 
-    updateHomework();
-
-}, 1000);
+  updateHomework();
+}
+setTimeout(init, 10);
