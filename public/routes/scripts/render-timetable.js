@@ -1,5 +1,5 @@
-const columnWidth = 10//Math.floor(innerWidth/20)
-const timeNow = new Date("8/22/2018 10:30")
+const columnWidth = Math.floor(innerWidth/20)
+const timeNow = new Date()
 const timingToPeriod = timing => {
   const period = (timing - 800)/50
   return Math.round(period)
