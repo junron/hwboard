@@ -18,14 +18,7 @@ const Framework7App = new Framework7({
       animate:false,
       on:{
         pageAfterIn:e=>{
-          const target = e.currentTarget
-          const tag = document.createElement("script")
-          tag.src = "/routes/scripts/timetable.js"
-          target.appendChild(tag)
-          const linkTag = document.createElement("link")
-          linkTag.rel = "stylesheet"
-          linkTag.href = "/routes/styles/timetable.css"
-          target.appendChild(linkTag)
+          loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css"])
         }
       }
     },
@@ -49,10 +42,7 @@ const Framework7App = new Framework7({
       url:"/",
       on:{
         pageAfterIn:e=>{
-          const target = e.currentTarget
-          const tag = document.createElement("script")
-          tag.src = "/scripts/loadHomework.js"
-          target.appendChild(tag)
+          loadSources(e.currentTarget,["/scripts/loadHomework.js"])
         }
       },
       routes:[{
@@ -189,10 +179,7 @@ const Framework7App = new Framework7({
       url:"/routes/add-channel.html",
       on:{
         pageAfterIn:e=>{
-          const scriptTag = document.createElement("script")
-          scriptTag.src = "/routes/scripts/add-channel.js"
-          const target = e.currentTarget
-          target.appendChild(scriptTag)
+          loadSources(e.currentTarget,["/routes/scripts/add-channel.js"])
         }
       }
     },
@@ -223,11 +210,7 @@ const Framework7App = new Framework7({
           url:"/routes/add-member.html",
           on:{
             pageAfterIn:e=>{
-              console.log(e)
-              const scriptTag = document.createElement("script")
-              scriptTag.src = "/routes/scripts/add-member.js"
-              const target = e.currentTarget
-              target.appendChild(scriptTag)
+              loadSources(e.currentTarget,["/routes/scripts/add-member.js"])
             }
           }
         },
@@ -237,11 +220,7 @@ const Framework7App = new Framework7({
           url:"/routes/add-subject.html",
           on:{
             pageAfterIn:e=>{
-              console.log(e)
-              const scriptTag = document.createElement("script")
-              scriptTag.src = "/routes/scripts/add-subject.js"
-              const target = e.currentTarget
-              target.appendChild(scriptTag)
+              loadSources(e.currentTarget,["/routes/scripts/add-subject.js"])
             }
           }
         }
@@ -252,3 +231,18 @@ const Framework7App = new Framework7({
     title: 'Hwboard',
   }
 })
+
+function loadSources(target, sources) {
+  for (const src of sources) {
+      if (src.endsWith(".js")) {
+          const scriptTag = document.createElement("script");
+          scriptTag.src = src;
+          target.appendChild(scriptTag);
+      } else if (src.endsWith(".css")) {
+          const styleTag = document.createElement("link");
+          styleTag.rel = "stylesheet";
+          styleTag.href = src;
+          target.appendChild(styleTag);
+      }
+  }
+}
