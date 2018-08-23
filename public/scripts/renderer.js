@@ -18,8 +18,8 @@ const gradedFirst = (a,b) => {
 }
 
 const dueEarlierFirst = (a,b) => {
-  const daysLeftA = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(a.dueDate), "{d}/{M}"), "en-GB"))
-  const daysLeftB = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(b.dueDate), "{d}/{M}"), "en-GB"))
+  const daysLeftA = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(a.dueDate), "{d}/{M}/{yyyy}"), "en-GB"))
+  const daysLeftB = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(b.dueDate), "{d}/{M}/{yyyy}"), "en-GB"))
   if(daysLeftA > daysLeftB){
     return 1
   }else if(daysLeftA < daysLeftB){
@@ -227,7 +227,8 @@ parser.parseHomeworkMetaData =  function(homework){
   } = homework
   
   let dueDate2 = Sugar.Date.create(dueDate)
-  let daysLeft = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(dueDate2, "{d}/{M}"), "en-GB"))
+  console.log(Sugar.Date.format(dueDate2, "{d}/{M}/{yyyy}"))
+  let daysLeft = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(dueDate2, "{d}/{M}/{yyyy}"), "en-GB"))
   let iconColor = ""
   if (Sugar.Date.isToday(dueDate2)) {
     daysLeft = 0
@@ -256,9 +257,6 @@ parser.parseHomeworkMetaData =  function(homework){
     default:
       displayDate = `${daysLeft} days left`
   }
-  //if (isTest) {
-  //  displayDate = parser.toTitle(displayDate.replace("Due ", ""))
-  //}
   return {
     dueDate,
     editTime,

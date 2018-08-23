@@ -398,6 +398,7 @@ async function deleteHomework(hwboardName,homeworkId){
 const expiryTimers = {}
 //Get notified when homework expires
 async function whenHomeworkExpires(channel,callback){
+  const scheduler = require('node-schedule')
   let channelData = await getHomework(channel)
   //We do not want to remove homework that is due when testing
   if(channelData.length==0 || testing){
@@ -411,11 +412,11 @@ async function whenHomeworkExpires(channel,callback){
     }
   })
   const dueDate = channelData.pop().dueDate
-  console.log({dueDate},dueDate - new Date())
+  console.log({dueDate})
   if(expiryTimers[channel]){
-    clearTimeout(expiryTimers[channel])
+    expiryTimers[channel].cancel()
   }
-  expiryTimers[channel] = setTimeout(callback,dueDate - new Date())
+  expiryTimers[channel] = scheduler.scheduleJob(dueDate,callback)
 }
 //Mitigate XSS
 async function removeXss(object){
