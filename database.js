@@ -10,14 +10,13 @@ const {CI:testing} = require("./loadConfig")
 const xss = require('xss')
 
 //Map emails to names
-const {loadJSONData,getStudentById} = require("./public/scripts/students")
+const {getStudentById} = require("./students")
 
 //Object to store hwboard channel tables
 const tables = {}
 
 //Generate tables
 async function init(){
-  await loadJSONData("./data.json")
   await generateHomeworkTables()
   return sequelize.sync()
 }
