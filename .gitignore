@@ -9,3 +9,4 @@ artifacts
 idea
 .idea
 .map
+**/data.json
