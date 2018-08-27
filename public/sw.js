@@ -1,6 +1,6 @@
 //This is a service worker
 //It handles caching and PWA
-const version = "1.1.2"
+const version = "1.1.4"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -47,6 +47,9 @@ function addCacheHeader(response){
         return response
       }
 }
+self.addEventListener('activate', event => {
+  event.waitUntil(clients.claim())
+});
 self.addEventListener('fetch', function(event) {
   if(event.request.method=="GET"){
     event.respondWith(
@@ -58,7 +61,7 @@ self.addEventListener('fetch', function(event) {
           }
           console.log(`Loading ${url}`)
           var fetchPromise = fetch(event.request).then(function(networkResponse) {
-            //Dont cache socket io
+            //Dont cache stuffs
             if((!url.includes("?useCache")) &&
              (url.includes("transport=polling") || 
              url.includes("/cd/") || 
