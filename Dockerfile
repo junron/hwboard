@@ -10,5 +10,3 @@ WORKDIR /hwboard2
 COPY . .
 
 RUN npm ci --production
-
-EXPOSE 3001

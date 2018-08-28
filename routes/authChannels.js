@@ -33,6 +33,8 @@ async function authChannels(req,res){
       res.cookie("redirPath",req.url,{
         maxAge:10*60*60*1000,
         signed:true,
+        secure:true,
+        sameSite:"lax",
       })
       if(!(req.query&&req.query.code)){
           console.log("redirected")
@@ -68,7 +70,8 @@ async function authChannels(req,res){
             httpOnly:true,
             secure:true,
             signed:true,
-            maxAge:2592000000
+            maxAge:2592000000,
+            sameSite:"lax"
           })
           tempToken = data.id_token
         }catch(e){
@@ -86,8 +89,8 @@ async function authChannels(req,res){
     //Accessible and modifiable via client side JS\
     //DO NOT trust!!!
     //Just for analytics
-    res.cookie('email',decodedToken.preferred_username,{maxAge:2592000000})
-    res.cookie('name',decodedToken.name,{maxAge:2592000000})
+    res.cookie('email',decodedToken.preferred_username,{maxAge:2592000000,sameSite:"lax"})
+    res.cookie('name',decodedToken.name,{maxAge:2592000000,sameSite:"lax"})
   }
 
   //Get authorised channels

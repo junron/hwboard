@@ -4,20 +4,28 @@ const authChannels = require("./authChannels")
 const db = require("../database")
 const EventEmitter = require('events');
 const auth = require("../auth")
-const io = require("../websocket").createServer
+let io
 
 class socketIO extends EventEmitter {}
 
-//TODO: change to post
-router.get("/api/:method",(req, res, next) => {
+router.post("/api/:method",(req, res, next) => {
+  console.log("Loaded API route")
   ;(async ()=>{
+    if(!io){
+      io = require("../app").io
+    }
     const socket = new socketIO()
     const {method} = req.params
-    console.log(method)
+
+    //Handle uncaught errors
     socket.on("uncaughtError",err=>{
       res.status(500).end(err)
     })
+
     try{
+      if(db.getNumTables()==0){
+        await db.init()
+      }
       const token = req.signedCookies.token
       const tokenClaims = await auth.verifyToken(token)
       socket.userData = tokenClaims
@@ -48,18 +56,37 @@ router.get("/api/:method",(req, res, next) => {
 
     //For tests
     require("../websocket-routes/tests")(socket)
-    if(method=="whoami"){
-      socket.emit("whoami",null,function(err,data){
-        if(err) throw err
-        console.log(data)
-        return res.end(data)
-      })
-    }else if(method=="dataReq"){
-      console.log(sokcet.channels)
-      socket.emit("dataReq",{channel:"M18207"},function(err,data){
-        if(err) throw err
-        console.log(data)
-        return res.end(data)
+
+    //Supported methods
+    const methods = [
+
+      //Testing
+      "whoami",
+      "textMessage",
+
+      //Homework
+      "dataReq",
+      "editReq",
+      "deleteReq",
+      "addReq",
+
+      //Analytics
+      "homeworkSubjectData",
+      "homeworkDayData",
+
+      //Administration and channels
+      "channelDataReq",
+      
+      //Most destructive admin methods are not supported as of now
+      "addMember",
+    ]
+    if(methods.includes(method)){
+      console.log(req.body)
+      socket.emit(method,req.body,function(err,...results){
+        if(err){
+          throw err
+        }
+        return res.end(JSON.stringify(results))
       })
     }else{
       return res.status(400).end("Invalid method")

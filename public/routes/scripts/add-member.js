@@ -1,17 +1,4 @@
 ;(async ()=>{
-  const options = {
-    shouldSort: true,
-    threshold: 0.4,
-    includeScore: true,
-    location: 0,
-    distance: 100,
-    maxPatternLength: 32,
-    minMatchCharLength: 3,
-    keys: [
-      "id",
-      "name"
-    ]
-  }
   const permissionOptions = {
     shouldSort: true,
     threshold: 0.4,
@@ -20,85 +7,69 @@
     maxPatternLength: 32,
     minMatchCharLength: 3
   }
+  const promisifiedSocketio = (...data)=>{
+    return new Promise((resolve,reject)=>{
+      conn.emit("studentDataReq",...data,(err,data)=>{
+        if(err){
+          return reject(err)
+        }else{
+          return resolve(data)
+        }
+      })
+    })
+  }
   const permissionLvls = ["Root","Admin","Member"]
-  const studentData = await studentsExport.loadJSONData("/scripts/data.json")
-  const mentorGrps = studentsExport.getClassesSync()
-  let studentIds
-  const getName = object => object.item.name
-  const getId = object => object.item.id
-  //Love currying
-  const getElemAtIndex = array => index => array[index]
-  const getPermissionFromIndex = getElemAtIndex(permissionLvls)
-  const getMgFromIndex = getElemAtIndex(mentorGrps)
 
-  const mgPrefix = mentorGrps[0].substring(0,3)
-  //Add a whole MG at once
-  const mentorGrpsFuse = new Fuse(mentorGrps,permissionOptions)
-
-  //Search within mg first
-  const toTitle = string => string.toLowerCase().replace(/^(.)|\s(.)/g, a => a.toUpperCase())
-  const userName = toTitle(decodeURI(getCookie("name")))
-  let userMG
-  let level
-  const student = await studentsExport.getStudentByName(userName)
-  userMG = student.mentorGrp
-  level = parseInt(userMG[3])
-  const userMGStudentIDs = await studentsExport.getStudentsByClassName(userMG)
-  const mgStudents = userMGStudentIDs
-    .map(studentsExport.getStudentByIdSync)
-
-  const levelStudents = (await studentsExport.getStudentsByLevel(level))
-    .map(studentsExport.getStudentByIdSync)
-  let fuse = new Fuse(mgStudents, options)
-  let fuseLevel = "MG"
 
   const namesDropdown= Framework7App.autocomplete.create({
     openIn:"dropdown",
-    limit: 3,
     renderItem:(item,index)=>{
-      if(item.value.toUpperCase().substring(0,3)==mgPrefix){
-        const numStudents = studentsExport.getStudentsByClassNameSync(item.value).length
-        return "\n        <li>\n          <label class=\"item-radio item-content\" data-value=\"" + item.value + "\">\n            <div class=\"item-inner\">\n              <div class=\"item-title\">" + (item.text) +"<div class=\"item-footer\">" + numStudents +" students</div>\n </div>\n            </div>\n          </label>\n        </li>\n      ";
+      if(searchData && typeof searchData[index].mentorGrp==="string"){
+        return `<li>
+        <label class="item-radio item-content" data-value="${item.value}">
+        <div class="item-inner">
+        <div class="item-title">
+          ${item.text}
+        <div class="item-footer">
+          ${searchData[index].id}, ${searchData[index].mentorGrp}
+        </div>
+        </div>
+        </div>
+        </label>
+        </li>
+        `
+      }else{
+        return `<li>
+        <label class="item-radio item-content" data-value="${item.value}">
+        <div class="item-inner">
+        <div class="item-title">
+          ${item.text}
+        <div class="item-footer">
+          ${searchData[index].info}
+        </div>
+        </div>
+        </div>
+        </label>
+        </li>
+        `
       }
-      //Must not return a promise
-      const studentId = studentIds[index]
-      //Had to specially make a synchronous version
-      const {mentorGrp} = studentsExport.getStudentByIdSync(studentId)
-      //Very long rendering string, dun care
-      return "\n        <li>\n          <label class=\"item-radio item-content\" data-value=\"" + item.value + "\">\n            <div class=\"item-inner\">\n              <div class=\"item-title\">" + (item.text) +"<div class=\"item-footer\"><span class=\"studentId\">" + studentId +"</span>, " + mentorGrp+ "</div>\n </div>\n            </div>\n          </label>\n        </li>\n      ";
     },
-    source:(query,render)=>{
-      if(query.toUpperCase().substring(0,3)==mgPrefix){
-        const result = mentorGrpsFuse.search(query).slice(0,3)
-        const renderResult = result.map(getMgFromIndex)
-        return render(renderResult)
-      }
-
-      if(query==""){
+    source:async (query,render)=>{
+      const result = await promisifiedSocketio({
+        method:"searchStudents",
+        data:query
+      })
+      if(result.type=="empty"){
         return render([])
       }
-      
-      let result = fuse.search(query).slice(0,3)
-
-      if(result.length==0){
-        if(fuseLevel=='MG'){
-          fuseLevel="level"
-          console.log("level")
-          fuse = new Fuse(levelStudents,options)
-        }else if(fuseLevel=='level'){
-          fuseLevel="school"
-          console.log("school")
-          fuse = new Fuse(studentData,options)
-        }
-        result = fuse.search(query).slice(0,3)
-      }
-
-      const renderResult = result.map(getName)
-      studentIds = result.map(getId)
-      return render(renderResult)
+      searchData = result.data
+      return render(result.data.map(value => value.name))
     },
     inputEl:"#searchInput"
   })
+
+  const getElemAtIndex = array => index => array[index]
+  const getPermissionFromIndex = getElemAtIndex(permissionLvls)
 
   //Permission dropdown
   const permissionFuse = new Fuse(permissionLvls,permissionOptions)
@@ -117,18 +88,37 @@
 
 
 async function getResult(){
+  const promisifiedSocketio = (...data)=>{
+    return new Promise((resolve,reject)=>{
+      conn.emit("studentDataReq",...data,(err,data)=>{
+        if(err){
+          return reject(err)
+        }else{
+          return resolve(data)
+        }
+      })
+    })
+  }
   const permissionLvls = ["Root","Admin","Member"]
   const idOnly = student => student.id
   let studentsArray
-  let permissionLevel
-  const mentorGrps = studentsExport.getClassesSync()
+  const mentorGrps = await promisifiedSocketio({
+    method:"getClasses",
+    data:""
+  })
   const mgPrefix = mentorGrps[0].substring(0,3)
   const input = document.getElementById("searchInput").value
   const permissionLvl = document.getElementById("permissionLvlInput").value
   if(input.toUpperCase().substring(0,3)==mgPrefix){
-    studentsArray = await studentsExport.getStudentsByClassName(input.toUpperCase())
+    studentsArray = await promisifiedSocketio({
+      method:"getStudentsByClassName",
+      data:input.toUpperCase()
+    })
   }else{
-    studentsArray = [await studentsExport.getStudentByName(input)].map(idOnly)
+    studentsArray = [await promisifiedSocketio({
+      method:"getStudentByName",
+      data:input
+    })].map(idOnly)
   }
   if(!permissionLvls.includes(permissionLvl)){
     throw new Error("Permission level invalid")

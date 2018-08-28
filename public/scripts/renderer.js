@@ -18,8 +18,8 @@ const gradedFirst = (a,b) => {
 }
 
 const dueEarlierFirst = (a,b) => {
-  const daysLeftA = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(a.dueDate), "{d}/{M}"), "en-GB"))
-  const daysLeftB = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(b.dueDate), "{d}/{M}"), "en-GB"))
+  const daysLeftA = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(a.dueDate), "{d}/{M}/{yyyy}"), "en-GB"))
+  const daysLeftB = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(b.dueDate), "{d}/{M}/{yyyy}"), "en-GB"))
   if(daysLeftA > daysLeftB){
     return 1
   }else if(daysLeftA < daysLeftB){
@@ -189,9 +189,8 @@ parser.parseHomeworkDate = function(homework) {
   <div class="swipeout-actions-left">
     <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
   </div>`
-  console.log(subject,subjectChannelMap,subjectChannelMap[subject])
+  console.log(subject,Object.keys(subjectChannelMap).length,subjectChannelMap[subject])
   if(subjectChannelMap[subject]){
-    console.log("rendering")
     rendered += `<div class="swipeout-actions-right">
         <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
         <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
@@ -228,7 +227,8 @@ parser.parseHomeworkMetaData =  function(homework){
   } = homework
   
   let dueDate2 = Sugar.Date.create(dueDate)
-  let daysLeft = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(dueDate2, "{d}/{M}"), "en-GB"))
+  console.log(Sugar.Date.format(dueDate2, "{d}/{M}/{yyyy}"))
+  let daysLeft = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(dueDate2, "{d}/{M}/{yyyy}"), "en-GB"))
   let iconColor = ""
   if (Sugar.Date.isToday(dueDate2)) {
     daysLeft = 0
@@ -257,9 +257,6 @@ parser.parseHomeworkMetaData =  function(homework){
     default:
       displayDate = `${daysLeft} days left`
   }
-  //if (isTest) {
-  //  displayDate = parser.toTitle(displayDate.replace("Due ", ""))
-  //}
   return {
     dueDate,
     editTime,

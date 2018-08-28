@@ -18,11 +18,16 @@
           Channels
         </a>
       </li>
-    <!--  <li>
+      <li>
       <a href="/timetable/" class="panel-close">
         Timetable
       </a>
-    </li> -->
+      </li>
+      <li>
+      <a href="/analytics/" class="panel-close">
+        Statistics
+      </a>
+      </li>
       </ul>
     </div>
     </div>
@@ -90,7 +95,7 @@
     
     <% if(reportErrors){ %>
       <!--DoNt toUcHa my eRRor rePoTer-->
-      <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
+      <script src="/scripts/raven.min.js"></script>
       <script src="/scripts/errorReporter.js"></script>
     <% } %>
 
@@ -116,7 +121,6 @@
     <%- include("./partials/dialogs.ejs") %>
 
     <!-- styles and scripts for later pages -->
-    <script defer src="/scripts/students.js"></script>
 
     <!-- channel stats -->
     <script defer src="/chart.js/dist/Chart.bundle.min.js"></script>

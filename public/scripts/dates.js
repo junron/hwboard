@@ -2,7 +2,7 @@ const daysUntil = date =>{
   const roundedDate = roundDate(date)
   return Sugar.Date.daysUntil(Sugar.Date.create("Today"),roundedDate)
 }
-const roundDate = date => Sugar.Date.create(Sugar.Date.format(new Date(date),"{d}/{M}/{yy}"),"en-GB")
+const roundDate = date => Sugar.Date.create(Sugar.Date.format(new Date(date),"{d}/{M}/{yyyy}"),"en-GB")
 
 async function parseDate(dateString){
   dateString = dateString ||$(".page-current #dueDate").val()
@@ -28,6 +28,9 @@ async function parseDate(dateString){
       validatedDate.setHours(Math.floor(lessonTime/100))
       validatedDate.setMinutes(lessonTime%100)
     }
+  }
+  if(Number.isNaN(daysUntil(validatedDate))){
+    throw new Error("Date is too far in the future or too precise")
   }
   return validatedDate
 }
