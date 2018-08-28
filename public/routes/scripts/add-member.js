@@ -1,4 +1,3 @@
-let searchData
 ;(async ()=>{
   const permissionOptions = {
     shouldSort: true,

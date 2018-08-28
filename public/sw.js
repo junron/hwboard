@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.2.2"
+const version = "1.2.3"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -74,7 +74,13 @@ self.addEventListener('fetch', function(event) {
             return addCacheHeader(response)
           }
           console.log(`Loading ${url}`)
-          var fetchPromise = fetch(event.request).then(function(networkResponse) {
+          var fetchPromise = Promise.race([fetch(event.request),new Promise((_,reject)=>{
+            setTimeout(()=>{
+              reject(new Error("Request timeout"))
+            },2000)
+          })
+          ])
+          .then(networkResponse=>{
             //Dont cache stuffs
             if((!url.includes("?useCache")) &&
              (url.includes("transport=polling") || 

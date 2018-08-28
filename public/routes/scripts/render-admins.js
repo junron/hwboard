@@ -61,7 +61,6 @@ const renderAdmins = (()=>{
         const id = email.replace("@nushigh.edu.sg","")
         let name
         try{
-          console.log("waiting for",id)
           ;({name} = await promisifiedSocketio({
             method:"getStudentById",
             data:id
