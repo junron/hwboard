@@ -30,15 +30,15 @@ async function generateHomeworkTables(){
   }
 }
 async function getUserChannels(userEmail,permissionLevel=1){
-  if(userEmail=="*"){
+  if(userEmail==="*"){
     return Channels.findAll({
       raw: true,
     })
   }
-  const Op = Sequelize.Op
+  const Op = Sequelize.Op;
   const data = await Channels.findAll({
     raw: true,
-    where:{
+    /*where:{
       [Op.or]:[
         {
           roots:{
@@ -56,9 +56,9 @@ async function getUserChannels(userEmail,permissionLevel=1){
           }
         }
       ]
-    }
-  }) 
-  if(userEmail=="*"){
+    }*/
+  });
+  if(userEmail==="*"){
     return data
   }
   for(let channel of data){

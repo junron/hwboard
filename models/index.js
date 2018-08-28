@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require('sequelize-cockroachdb');
 
 //Same as docker env variables 
 //or use a config file
@@ -14,6 +14,7 @@ if(process.env.CI_PROJECT_NAME=="hwboard2"||process.env.IS_DOCKER=="true"){
 }
 const sequelize = new Sequelize(dbName,dbUser,dbPasswd,{
   host:POSTGRES_HOST,
+  port:26257,
   dialect: "postgres",
   operatorsAliases: Sequelize.Op
 })
@@ -27,10 +28,14 @@ sequelize.authenticate()
 
 //Export the model creator becos we may need to create more tables later, on demand
 //Should i curry this?
-const Homework = require("./Homework")
+const Homework = require("./Homework")(sequelize, Sequelize, dbName)
 
 //We can export the created model cos we only need one
 const Channels = require("./Channels")(sequelize, Sequelize)
+
+
+Homework.sync({force: true})
+Channels.sync({force: true})
 
 
 module.exports = {sequelize,Sequelize,Homework,Channels}

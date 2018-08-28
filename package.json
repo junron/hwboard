@@ -36,6 +36,7 @@
     "raven": "^2.6.3",
     "request-promise-native": "^1.0.5",
     "sequelize": "^4.38.0",
+    "sequelize-cockroachdb": "^1.0.3",
     "simple-git": "^1.96.0",
     "socket.io": "^2.1.1",
     "socket.io-cookie-parser": "1.0.0",

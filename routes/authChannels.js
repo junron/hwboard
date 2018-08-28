@@ -93,7 +93,7 @@ async function authChannels(req,res){
   //Get authorised channels
   const channelData = {}
   const channels = await db.getUserChannels(decodedToken.preferred_username)
-  for (let channel of channels){
+  for (const channel of channels){
     channelData[channel.name] = channel
   }
   //Yey my failed attempt at functional programming
