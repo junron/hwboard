@@ -18,12 +18,12 @@ module.exports = socket=>{
         "getStudentByName",
         "getStudentsByLevel",
         "getStudentsByClassName",
-        "getStudentsRawData",
+        "searchStudents",
       ]
       if(!methodList.includes(method)){
         throw new Error("Invalid method")
       }
-      const result = await students[method](...data)
+      const result = await students[method](data)
       return callback(null,result)
     })()
     .catch(e => {
