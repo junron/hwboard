@@ -39,7 +39,6 @@ test:
   - whoami
   - npm run hwboard add channel
   - npm run hwboard getData
-  - cp data.json public/scripts/data.json
   - mkdir artifacts
   - npm test
   artifacts:
