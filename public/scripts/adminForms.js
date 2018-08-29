@@ -46,7 +46,7 @@ async function getHomeworkData(id=false){
     throw new Error("Homework name not specified")
   }
   if(id){
-    const id = parseInt($(lastTouched).attr("sqlid"))
+    const id = $(lastTouched).attr("sqlid")
     return {
       subject,
       text,

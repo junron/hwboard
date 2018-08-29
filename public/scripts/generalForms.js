@@ -1,6 +1,6 @@
 //Get data from indexeddb about specific homework
 async function getExistingInfo(){
-  const id = parseInt($(lastTouched).attr("sqlid"))
+  const id = $(lastTouched).attr("sqlid")
   const result = await worker.postMessage({
     type:"getSingle",
     id
