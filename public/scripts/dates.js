@@ -19,8 +19,13 @@ const roundDate = date => Sugar.Date.create(Sugar.Date.format(new Date(date),"{d
  */
 async function parseDate(dateString){
   dateString = dateString ||$(".page-current #dueDate").val()
-  if(dateString.toLowerCase()=="next lesson"){
-    return getNextLesson()
+  if(dateString.toLowerCase().includes("next lesson")){
+    const numNextLesson = dateString.toLowerCase().split("next").join("").length-6
+    let nextLesson = new Date()
+    for(let i=0;i<numNextLesson;i++){
+      nextLesson = await getNextLesson(nextLesson)
+    }
+    return nextLesson
   }
   let validatedDate
   const termDate = await parseTermXWeekY(dateString)
@@ -61,26 +66,33 @@ async function parseDate(dateString){
  * @returns {Date}
  */
 async function parseTermXWeekY(dateString){
-  const parsed = /(Term|T) ?([1-4]) ?(Week|W) ?(10|[1-9])/gi.exec(dateString)
+  const parsed = /(Term|T) ?([1-4]) ?(Week|W)? ?(10|[1-9])?/gi.exec(dateString)
   if(parsed===null){
     return null
   }
   const terms = [new Date(2018,0,2),new Date(2018,2,19),new Date(2018,5,25), new Date(2018,8,10)]
   const term = parseInt(parsed[2])
-  const week = parseInt(parsed[4])
+  let week = parseInt(parsed[4])
   if(term>4 || term<1){
     throw new Error(`Term ${term} is invalid`)
   }
-  if(week>10 || term<1){
+  if(parsed[4]===undefined){
+    week = 1
+  }
+  if(week>10 || week<1){
     throw new Error(`Week ${week} is invalid`)
   }
   const termStart = terms[term-1]
-  const thisStart = Sugar.Date.addWeeks(termStart,week-1)
+  let thisStart = Sugar.Date.addWeeks(termStart,week-1)
   const subject = $("#subject-name").val().trim()
   if(subject!=""){
     if(!subjectSelectionList.includes(subject)){
       throw new Error("Subject is not valid")
     }
+    thisStart = await getNextLesson(thisStart)
+  }
+  if(Sugar.Date.isPast(thisStart)){
+    throw new Error("Date cannot be in the past")
   }
   return thisStart
 }
@@ -132,9 +144,7 @@ async function rankDays(daysObject,mustBeAfter=new Date()){
       let date = Sugar.Date.create(`${day} ${startTime}`)
       //If lesson is not in future,add 1 week
       date = await validate(date)
-      if(Sugar.Date.isPast(date)){
-        date = Sugar.Date.addWeeks(date,1)
-      }
+      date = await minDateAfter(date,mustBeAfter)
       rankedTimings.push(date)
     }
   }
@@ -143,14 +153,15 @@ async function rankDays(daysObject,mustBeAfter=new Date()){
 /**
  * Gets the next lesson
  * @async
+ * @param {Date} minDate
  */
-async function getNextLesson(){
+async function getNextLesson(minDate=new Date()){
   const subject = $("#subject-name").val()
   if(!subjectSelectionList.includes(subject)){
     throw new Error("Subject is not valid")
   }
   const subjectTimeData = timetable[subject]
-  const times = await rankDays(subjectTimeData)
+  const times = await rankDays(subjectTimeData,minDate)
   return new Date(Math.min(...times))
 }
 const getTimingsForDay = async targetDay=>{
@@ -188,4 +199,18 @@ async function lessonOnDay(lesson,day){
   if(timetable[lesson] && timetable[lesson][day]){
     return Math.max(...([].concat(...timetable[lesson][day])))
   }
+}
+/**
+ * Returns the date that is on the same day of the week and
+ * at the same time of the day as `date`, but after `minDate`
+ * @param {Date} date 
+ * @param {Date} minDate 
+ */
+
+//TODO: This uses an O(n) algorithm but an O(1) is probably possible
+async function minDateAfter(date,minDate){
+  while (date.getTime()<=minDate.getTime()){
+    date = Sugar.Date.addWeeks(date,1)
+  }
+  return date
 }
