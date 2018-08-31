@@ -1,15 +1,34 @@
+/**
+ * Finds number of calendar days until a given date.
+ * @param {Date} date Date to find days until
+ */
 const daysUntil = date =>{
   const roundedDate = roundDate(date)
   return Sugar.Date.daysUntil(Sugar.Date.create("Today"),roundedDate)
 }
+/**
+ * Rounds a date to 00:00 that day
+ * @param {Date} date 
+ */
 const roundDate = date => Sugar.Date.create(Sugar.Date.format(new Date(date),"{d}/{M}/{yyyy}"),"en-GB")
 
+/**
+ * Parses a date string
+ * @async
+ * @param {String} dateString 
+ */
 async function parseDate(dateString){
   dateString = dateString ||$(".page-current #dueDate").val()
   if(dateString.toLowerCase()=="next lesson"){
     return getNextLesson()
   }
-  const validatedDate = await validate(dateString)
+  let validatedDate
+  const termDate = await parseTermXWeekY(dateString)
+  if(termDate==null){
+    validatedDate = await validate(dateString)
+  }else{
+    validatedDate = termDate
+  }
   if(validatedDate.getHours()==0){
     //Date was specified with "tomorrow" or "next wednesday"
     //If is a school day 
@@ -34,14 +53,49 @@ async function parseDate(dateString){
   }
   return validatedDate
 }
+/**
+ * Parses a string in the form Term X Week Y 
+ * into the date object of the first lesson of a subject 
+ * @async
+ * @param {String} dateString 
+ * @returns {Date}
+ */
+async function parseTermXWeekY(dateString){
+  const parsed = /(Term|T) ?([1-4]) ?(Week|W) ?(10|[1-9])/gi.exec(dateString)
+  if(parsed===null){
+    return null
+  }
+  const terms = [new Date(2018,0,2),new Date(2018,2,19),new Date(2018,5,25), new Date(2018,8,10)]
+  const term = parseInt(parsed[2])
+  const week = parseInt(parsed[4])
+  if(term>4 || term<1){
+    throw new Error(`Term ${term} is invalid`)
+  }
+  if(week>10 || term<1){
+    throw new Error(`Week ${week} is invalid`)
+  }
+  const termStart = terms[term-1]
+  const thisStart = Sugar.Date.addWeeks(termStart,week-1)
+  const subject = $("#subject-name").val().trim()
+  if(subject!=""){
+    if(!subjectSelectionList.includes(subject)){
+      throw new Error("Subject is not valid")
+    }
+  }
+  return thisStart
+}
 
-//Ensures that date is not in the past
+/**
+ * Ensures that the date given is not in the past.
+ * Rounds the date if it is found to be in the past
+ * @param {String} dateString 
+ * @async
+ */
 async function validate(dateString){
-  // 
   let date = Sugar.Date.create(dateString,"en-GB")
   const days = daysUntil(date)
   //Date is 1 week ago, throw error
-  if(days < (-6)){
+  if(days < -6){
     throw new Error("Date cannot be in the past")
   }
   if(days < 0){
@@ -63,8 +117,13 @@ const splitTime = time =>{
   return [hr,min]
 }
 
-//Takes an object of {day:[[start,end],[start,end]]} and flattenss it into a 1d array of dates
-async function rankDays(daysObject){
+/**
+ * Takes an object of {day:[[start,end],[start,end]]} and flattens it into a 1d array of dates
+ * @param {Object} daysObject 
+ * @param {Date} mustBeAfter Mininum time for date
+ * @async
+ */
+async function rankDays(daysObject,mustBeAfter=new Date()){
   const rankedTimings = []
   for (const day in daysObject){
     for(const timing of daysObject[day]){
@@ -81,6 +140,10 @@ async function rankDays(daysObject){
   }
   return rankedTimings
 }
+/**
+ * Gets the next lesson
+ * @async
+ */
 async function getNextLesson(){
   const subject = $("#subject-name").val()
   if(!subjectSelectionList.includes(subject)){
@@ -106,11 +169,21 @@ const getTimingsForDay = async targetDay=>{
   }
   return timings
 }
+/**
+ * Gets the end time of the last lesson
+ * @async
+ * @param {String} day A lowercase day of the week (mon,tue,wed,thu,fri,sat,sun)
+ */
 async function endSchoolTime(day){
   const timings = await getTimingsForDay(day)
   return Math.max(...timings)
 }
-
+/**
+ * Gets that end time of a lesson on a day
+ * @async
+ * @param {String} lesson Subject name
+ * @param {String} day A lowercase day of the week (mon,tue,wed,thu,fri,sat,sun)
+ */
 async function lessonOnDay(lesson,day){
   if(timetable[lesson] && timetable[lesson][day]){
     return Math.max(...([].concat(...timetable[lesson][day])))
