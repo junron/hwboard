@@ -1,26 +1,28 @@
 version: '3'
 services:
-  postgres:
-    restart: always
-    image: postgres:10-alpine
+  cockroachdb:
+    build:
+      dockerfile: Dockerfile-cockroach
+      context: .
     ports:
-      - "5432"
+      - "26257:26257"
+      - "8080:8080"
+    command: "/bin/bash -c 'while :; do sleep 2073600; done'"
     environment:
-      - POSTGRES_USER=hwboard
-      - POSTGRES_PASS=incorrect_spaghett
-      - POSTGRES_NAME=hwboard
+      - COCKROACH_USER=hwboard
+      - COCKROACH_DB=hwboard
   web:
     restart: always
     build: .
     ports:
       - "3001:3001"
-    command: "./wait-for-it.sh postgres:5432 -- /bin/bash -c 'while :; do sleep 2073600; done'"
+    command: "./wait-for-it.sh cockroachdb:26257 -- /bin/bash -c 'while :; do sleep 2073600; done'"
     environment:
       - IS_DOCKER=true
       - POSTGRES_DB=hwboard
       - POSTGRES_PASSWORD=incorrect_spaghett
       - POSTGRES_USER=hwboard
     depends_on:
-      - "postgres"
+      - "cockroachdb"
     volumes:
       - ./:/hwboard2

@@ -10,7 +10,7 @@ let POSTGRES_HOST = "localhost"
 //Cos db container is called postgres
 //https://forums.docker.com/t/cant-get-postgres-to-work/29580/4
 if(process.env.CI_PROJECT_NAME=="hwboard2"||process.env.IS_DOCKER=="true"){
-  POSTGRES_HOST = "postgres"
+  POSTGRES_HOST = "cockroachdb"
 }
 
 const config = {
