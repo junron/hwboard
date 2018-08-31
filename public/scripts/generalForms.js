@@ -43,7 +43,7 @@ async function updateChannelHomework(channel,channelData){
 async function loadDetails(){
   const data = await getExistingInfo()
   const {subject,isTest,text,dueDate,lastEditTime:editTime,lastEditPerson:editPerson} = data
-  $("#detailLastEdit").text(Sugar.Date.format(new Date(editTime),"{d}/{M}")+" "+Sugar.Date.format(new Date(editTime),"%I:%M")+Sugar.Date.format(new Date(editTime),"%P")+" by "+editPerson)
+  $("#detailLastEdit").text(Sugar.Date.format(new Date(editTime),"{d}/{M}/{yyyy}")+" "+Sugar.Date.format(new Date(editTime),"%I:%M")+Sugar.Date.format(new Date(editTime),"%P")+" by "+editPerson)
     $("#detailHomeworkName").text(text)
     $("#detailSubject").text(subject)
     if(isTest){
@@ -60,6 +60,16 @@ async function loadDetails(){
 function reRender(data){
   const sortType = sortOptions.type || getCookie("sortType") || "Due date"
   let sortOrder = sortOptions.order || 0
+  console.log("called",subjectChannelMapping)
+  // let n =0
+  // while(!Object.keys(subjectChannelMapping).length && n<10000){
+  //   //Wait for channelData to be loaded
+  //   if(!n){
+  //     console.log("Waiting for subject channel map to load")
+  //   }
+  //   n++
+  // }
+  // console.log(n)
   $("#hwboard-homework-list").html(renderer(data,sortType,sortOrder))
 }
 

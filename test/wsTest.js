@@ -27,9 +27,6 @@ describe("websocket",function(){
     after(function(done){
       websocket.close()
       done()
-      setTimeout(function(){
-        process.exit(0)
-      },500)
     })
     it("Should be able to echo text messages",function(done){
       console.log(client.connected)

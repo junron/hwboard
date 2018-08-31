@@ -8,11 +8,11 @@ const globalChannels = {}
 //export so that accessible in app.js
 //server param is a http server
 exports.createServer = function(server){
-  //Create websocker server from http server
+  //Create websocket server from http server
   const io = require('socket.io')(server)
 
   //Load hwboard configuration
-  const {CI:testing,HOSTNAME,PORT:port,COOKIE_SECRET:cookieSecret} = require("./loadConfig")
+  const {CI:testing,HOSTNAME,PORT:port,COOKIE_SECRET:cookieSecret,MS_CLIENTID:clientId} = require("./loadConfig")
 
   //Prevent CSRF (sort of) by only allowing specific origins
   //Could origin spoofing be possible?
@@ -68,12 +68,11 @@ exports.createServer = function(server){
           preferred_username:socket.request.signedCookies.username
         }
         socket.channels = {}
-        db.getUserChannels(socket.userData.preferred_username).then(channels=>{
-          for (const channel of channels){
-            socket.join(channel.name)
-            socket.channels[channel.name] = globalChannels[channel.name]
-          }
-        })
+        const channels = await db.getUserChannels(socket.userData.preferred_username)
+        for (const channel of channels){
+          socket.join(channel.name)
+          socket.channels[channel.name] = globalChannels[channel.name]
+        }
       }else if(testing){
         //In testing mode
         socket.userData = {
@@ -81,12 +80,11 @@ exports.createServer = function(server){
           preferred_username:"tester@nushigh.edu.sg"
         }
         socket.channels = {}
-        db.getUserChannels(socket.userData.preferred_username).then(channels=>{
-          for (const channel of channels){
-            socket.join(channel.name)
-            socket.channels[channel.name] = globalChannels[channel.name]
-          }
-        })
+        const channels = await db.getUserChannels(socket.userData.preferred_username)
+        for (const channel of channels){
+          socket.join(channel.name)
+          socket.channels[channel.name] = globalChannels[channel.name]
+        }
       }else{
         //In production, verify token
         try{
@@ -106,7 +104,17 @@ exports.createServer = function(server){
         }catch(e){
           //Problem with token, perhaps spoofed token?
           //Anyway get rid of this socket
+          //Redirect to auth url
+          const scopes = ["user.read","openid","profile"]
+          const url = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
+          "response_type=code&"+
+          `scope=https%3A%2F%2Fgraph.microsoft.com%2F${scopes.join("%20")}&`+
+          `client_id=${clientId}&`+
+          `redirect_uri=https://${HOSTNAME}/&`+
+          "prompt=select_account&"+
+          `response_mode=query`
           console.log("Forced disconnect")
+          socket.emit("authError",url)
           socket.disconnect()
         }
       }
@@ -118,6 +126,8 @@ exports.createServer = function(server){
       //Homework ops
       require("./websocket-routes/homework")(socket,io,db)
 
+      //Student data
+      require("./websocket-routes/students-api")(socket)
       //Stats
       require("./websocket-routes/analytics")(socket,db)
 
@@ -126,7 +136,7 @@ exports.createServer = function(server){
 
       socket.on("isReady",(_,callback)=>callback(true))
       return socket.emit("ready")
-    })
+      })
     .catch(uncaughtErrorHandler)
 
     socket.on('disconnect', function(){

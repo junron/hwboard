@@ -4,7 +4,6 @@ module.exports = (sequelize, Sequelize,name) => {
     id :{
       type: Sequelize.INTEGER,
       autoIncrement: true,
-      allowNull: false,
       primaryKey: true
     },
     text: {
