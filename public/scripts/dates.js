@@ -1,6 +1,6 @@
-const dateParserFn = timetable=>{
+const dateParserFn = (timetable,subjectSelectionList)=>{
   if(timetable){
-    subjectSelectionList = Object.keys(timetable)
+    subjectSelectionList = subjectSelectionList || Object.keys(timetable)
   }
   let subject = ""
   if(typeof Sugar === "undefined"){
@@ -248,5 +248,5 @@ const dateParserFn = timetable=>{
 if(typeof module !== 'undefined'){
   module.exports = dateParserFn
 }else{
-  dateParser = Object.freeze(dateParserFn(timetable))
+  dateParser = Object.freeze(dateParserFn(timetable,subjectSelectionList))
 }
