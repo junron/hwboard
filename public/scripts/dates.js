@@ -66,7 +66,7 @@ async function parseDate(dateString){
  * @returns {Date}
  */
 async function parseTermXWeekY(dateString){
-  const parsed = /(Term|T) ?([1-4]) ?(Week|W)? ?(10|[1-9])?/gi.exec(dateString)
+  const parsed = /(Term|T) ?([1-4]) ?(Week|W)? ?(10|[1-9])$?/gi.exec(dateString)
   if(parsed===null){
     return null
   }
@@ -84,6 +84,9 @@ async function parseTermXWeekY(dateString){
   }
   const termStart = terms[term-1]
   let thisStart = Sugar.Date.addWeeks(termStart,week-1)
+  if(Sugar.Date.daysUntil(thisStart)>6){
+    throw new Error("Date cannot be in the past")
+  }
   const subject = $("#subject-name").val().trim()
   if(subject!=""){
     if(!subjectSelectionList.includes(subject)){
