@@ -40,7 +40,7 @@ async function getHomeworkData(id=false){
   if(channel==undefined){
     throw new Error("Subject is not valid")
   }
-  const date = await parseDate()
+  const date = await dateParser.parseDate()
   const dueDate = date.getTime()
   if(text==""){
     throw new Error("Homework name not specified")
@@ -73,7 +73,7 @@ function load(subject,graded,text,dueDate,title){
   //Keep the time also
   $(".page-current #dueDate").val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
   $(".page-current #homework-name").val(text.trim())
-  parseDate()
+  dateParser.parseDate()
   if(graded){
     $(".page-current #toggle-is-graded-checkbox").attr("checked",true)
     gradedCheckboxChecked = true

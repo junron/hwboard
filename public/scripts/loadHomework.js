@@ -14,6 +14,7 @@ function setSubjectVariables(channelData){
       }
     }
   }
+  dateParser = Object.freeze(dateParserFn(timetable))
 }
 
 channelSettings = {
