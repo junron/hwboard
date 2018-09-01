@@ -110,7 +110,7 @@ async function checkDate(date){
   return page.evaluate(async (date)=>{
     try{
       console.log(date)
-      const parsedDate = await parseDate(date)
+      const parsedDate = await dateParser.parseDate(date)
       return parsedDate.toString()
     }catch(e){
       return "error"

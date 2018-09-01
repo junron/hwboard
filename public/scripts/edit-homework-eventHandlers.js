@@ -49,10 +49,10 @@ const initEditHomeworkEvents = ()=>{
     })
   }
   $(document).on("input","#dueDate",()=>{
-    parseDate().then(date=>{
+    dateParser.parseDate().then(date=>{
       $(".date-input").removeClass("item-input-invalid")
       $("#due-date-validation-err").text("")
-      $("#date-input-info").text(`${Sugar.Date.format(date,"%d/%m/%Y %H:%M")}, ${daysUntil(date)} days time`)
+      $("#date-input-info").text(`${Sugar.Date.format(date,"%d/%m/%Y %H:%M")}, ${dateParser.daysUntil(date)} days time`)
     }).catch(err=>{
       $(".date-input").addClass("item-input-invalid")
       $("#due-date-validation-err").text(err.message)
