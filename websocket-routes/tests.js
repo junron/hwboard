@@ -13,7 +13,6 @@ module.exports = (socket)=>{
     return callback(null,socket.userData.preferred_username)
   })
   socket.on("textMessage",function(msg,callback){
-    console.log(msg)
     return callback(null,msg+"received")
   })
   socket.on("binaryMessage",function(msg,callback){
