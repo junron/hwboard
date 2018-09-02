@@ -240,7 +240,9 @@ parser.parseHomeworkMetaData =  function(homework){
   if (isTest) {
     icon = "&#xe900;"
     bgColor = "#bbdefb"
-    extra = ", Graded"
+    extra = `    <div class="chip color-red">
+      <div class="chip-label">Graded</div>
+    </div>`
   } else {
     icon = "&#xe873;"
   }
