@@ -26,18 +26,8 @@ channelSettings = {
 //Allows for faster loading of updated data
 async function loadHomeworkFromCache(){
   const promises = []
-  promises.push(worker.postMessage({
-    type:"getChannels",
-  }).then(data=>{
-    console.log("Load channels from Indexeddb")
-    if(!data.length){
-      //IndexedDB is empty, perhaps is first page load
-      return false
-    }
-    setSubjectVariables(data)
-    return true
-  }))
 
+  //Get homework data
   promises.push(worker.postMessage({
     type:"get",
   }).then(data=>{
@@ -51,6 +41,19 @@ async function loadHomeworkFromCache(){
       return []
     }
     return data
+  }))
+  
+  //Get channel data
+  promises.push(worker.postMessage({
+    type:"getChannels",
+  }).then(data=>{
+    console.log("Load channels from Indexeddb")
+    if(!data.length){
+      //IndexedDB is empty, perhaps is first page load
+      return false
+    }
+    setSubjectVariables(data)
+    return true
   }))
   const [data,channelResult] = await Promise.all(promises)
   if(data.length&&channelResult){
