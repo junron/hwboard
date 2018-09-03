@@ -1,4 +1,4 @@
-async function renderTimetable(){
+async function addSubjectRenderTimetable(){
   if(!Object.keys(timetable).length){
     await loadChannelData()
   }
@@ -17,8 +17,7 @@ async function renderTimetable(){
   table.innerHTML += getTimeHeadings()
   for(const day of sortedTimetable){
     const [concurrentSubjects,formattedDay] = getMetaData(insertBreak(day))
-    table.innerHTML += renderDay(concurrentSubjects,formattedDay)
+    table.innerHTML += renderDay(concurrentSubjects,formattedDay,false,true)
   }
 }
-renderTimetable()
 
