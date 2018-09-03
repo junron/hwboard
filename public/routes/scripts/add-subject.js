@@ -1,6 +1,22 @@
 const addSubjectTimings = {}
 const parsedAddSubjectTimings = {}
 const numericalOrder = (a,b)=>a-b;
+const checkIfComplete = ()=>{
+  if($("#subjectInput").val().trim().length==0){
+    return false
+  }
+  if(Object.keys(parsedAddSubjectTimings).length==0){
+    return false
+  }
+  return true
+}
+const updateDisabledStatus = ()=>{
+  if(checkIfComplete()){
+    $(".page-current #add-subject").removeClass("disabled")
+  }else{
+    $(".page-current #add-subject").addClass("disabled")
+  }
+}
 $(document).on("click","#app .page-current table#homeworkboard-timetable td",e=>{
   if(e.target.innerHTML===" "){
     const output = $("#app .page-current .add-subject-timetable-output")
@@ -55,9 +71,11 @@ $(document).on("click","#app .page-current table#homeworkboard-timetable td",e=>
       parsedAddSubjectTimings[day].push(timings)
     }
   }
+  updateDisabledStatus()
 })
+$(document).on("input",".page-current #subjectInput",updateDisabledStatus)
 document.getElementById("add-subject").addEventListener("click",()=>{
-  const subject = $("#subjectInput").val()
+  const subject = $("#subjectInput").val().trim()
   const subjectData = {
     subject,
     channel,
