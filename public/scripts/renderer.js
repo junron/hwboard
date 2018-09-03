@@ -265,7 +265,7 @@ parser.parseHomeworkMetaData =  function(homework){
         }
         return num
       }
-      if(daysLeft<=14 && getNumberOfSundays(dueDate2)<=2){
+      if(daysLeft<=14 && daysLeft>=3 && getNumberOfSundays(dueDate2)<=2){
         displayDate = ""
         if(getNumberOfSundays(dueDate2)>0){
           displayDate+="Next "
