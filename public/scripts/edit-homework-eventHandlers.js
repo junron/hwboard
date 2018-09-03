@@ -42,7 +42,7 @@ const initEditHomeworkEvents = ()=>{
       },100)
     }).catch(e=>{
       console.error(e)
-      const errorAlert = Framework7App.dialog.alert(e.message)
+      const errorAlert = Framework7App.dialog.alert(e.toString())
       errorAlert.on("closed",()=>{
         elem.disabled = false
       })

@@ -155,10 +155,10 @@ async function addHomework(){
     console.log("Repeated request rejected")
     return
   }
+  previousAddedHomework = homework
   if(navigator.onLine===false){
     return backgroundSync("/api/addReq",homework)
   }
-  previousAddedHomework = homework
   const promise = new Promise(function(resolve,reject){
     conn.emit('addReq',homework,function(err){
       if(err) return reject(err)

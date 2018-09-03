@@ -220,7 +220,18 @@ const Framework7App = new Framework7({
           url:"/routes/add-subject.html",
           on:{
             pageAfterIn:e=>{
-              loadSources(e.currentTarget,["/routes/scripts/add-subject.js"])
+              const target = e.currentTarget
+              const scriptTag2 = document.createElement("script")
+              scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
+              target.appendChild(scriptTag2)
+              loadSources(target,["/routes/scripts/add-subject.js","/routes/styles/timetable.css"])
+              scriptTag2.onload = ()=>{
+                addSubjectRenderTimetable().then(_=>{
+                  $("#app .page-current table#homeworkboard-timetable td").filter(function(){
+                    return this.innerHTML === " "
+                  }).css("background-color","#d8ffe0")
+                })
+              }
             }
           }
         }
