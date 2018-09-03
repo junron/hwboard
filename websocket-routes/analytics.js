@@ -1,7 +1,8 @@
 /* 
  * This file deals with homework statics and analytics, 
  * This includes:
- * - getting homework statics/subject -> homeworkSubjectData
+ * - getting homework statistics by subject -> homeworkSubjectData
+ * - getting homework statistics by date  -> homeworkDayData
  */
 
 const checkPayloadAndPermissions = require("./check-perm")
@@ -85,23 +86,27 @@ module.exports = (socket,db)=>{
       }else{
         msg = await checkPayloadAndPermissions(socket,msg,1)
         const {channel} = msg
-        const data = await db.getHomework(channel,false)
+        data = await db.getHomework(channel,false)
       }
 
       const result = {}
+      const upper = Math.floor(new Date(new Date().getFullYear(),11,31).getTime()/(24*60*60*1000))
+      const lower = Math.floor(new Date(new Date().getFullYear(),0,1).getTime()/(24*60*60*1000))
       for (const homework of data){
         const date = Math.floor(homework.dueDate.getTime()/(24*60*60*1000))
-        if(result[date]){
-          result[date]++
-        }else{
-          result[date]=1
+        if(date>=lower && date<=upper){
+          if(result[date]){
+            result[date]++
+          }else{
+            result[date]=1
+          }
         }
       }
       callback(null,result)
       return null
     })()
     .then(callback)
-    .catch(e => callback(e.toString()))
+    .catch(e => {console.log(e);callback(e.toString())})
     //Error in handling error
     .catch(uncaughtErrorHandler)
   })

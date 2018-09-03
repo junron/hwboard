@@ -1,6 +1,10 @@
 //This is a service worker
 //It handles caching and PWA
-const version = "1.1.4"
+
+//Promise worker for promise based-sw communication
+importScripts("/promise-worker/dist/promise-worker.register.js")
+
+const version = "1.2.3"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -23,8 +27,18 @@ self.addEventListener('install', function(e) {
         "/scripts/raven.min.js",
         "/promise-worker/dist/promise-worker.register.js",
         "/fonts/material.ttf",
+        "/scripts/renderer.js",
+        "/scripts/getCookie.js",
+        "/scripts/fastLoadHomework.js",
+        "scripts/loadHomework.js",
         "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
-        "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf"
+        "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
+        "/routes/channel-analytics.html",
+        "/routes/edit-homework.html",
+        "/routes/channel-settings.html",
+        "/manifest.json",
+        "/images/icons/favicon.png",
+        "/routes/channel-settings.html",
       ]
       return cache.addAll(cacheArray);
     })
@@ -60,12 +74,19 @@ self.addEventListener('fetch', function(event) {
             return addCacheHeader(response)
           }
           console.log(`Loading ${url}`)
-          var fetchPromise = fetch(event.request).then(function(networkResponse) {
+          var fetchPromise = Promise.race([fetch(event.request),new Promise((_,reject)=>{
+            setTimeout(()=>{
+              reject(new Error("Request timeout"))
+            },2000)
+          })
+          ])
+          .then(networkResponse=>{
             //Dont cache stuffs
             if((!url.includes("?useCache")) &&
              (url.includes("transport=polling") || 
              url.includes("/cd/") || 
              url.includes("checkVersion.js") ||
+             url.includes("api/") ||
              url.includes("?noCache"))){
               return networkResponse;
             }
@@ -84,3 +105,54 @@ self.addEventListener('fetch', function(event) {
     );
   }
 });
+
+const syncs = {}
+
+registerPromiseWorker(async function (msg) {
+  if(msg.type==="sync"){
+    const {data} = msg
+    const id = `${Math.random().toString().slice(2)}-${Math.random().toString().slice(2)}-${Math.random().toString().slice(2)}-${Math.random().toString().slice(2)}`
+    syncs[id] = {data}
+    console.log(id,syncs)
+    self.registration.sync.register(id)
+    return id
+  }
+});
+
+self.addEventListener("sync",async event =>{
+  console.log(event)
+  //event.waitUntil((async ()=>{
+    //Is hwboard-sync
+    if(event.tag.split("-").length===4 && syncs[event.tag]){
+      const sync = syncs[event.tag]
+      const {data,} = sync
+      const {url,options} = data
+      let action
+      if(url.includes("add")){
+        action="added."
+      }else if(url.includes("edit")){
+        action="edited."
+      }else if(url.includes("delete")){
+        action="deleted."
+      }
+      const response = await fetch(url,options)
+      const title = "Hwboard"
+      const notifOptions = {
+        icon:"/images/icons/favicon.png",
+      }
+
+      if(response.ok){
+        console.log(await response.json())
+        if(action===undefined){
+          notifOptions.body = "Your request has succeeded"
+        }else{
+          notifOptions.body = "Your homework has been successfully " + action
+        }
+      }else{
+        console.log(response)
+        notifOptions.body = "Your request failed with error code " + response.status
+      }
+      return self.registration.showNotification(title, notifOptions)
+    }
+  //})())
+})

@@ -4,8 +4,9 @@
   "description": "version 2 of homeworkboard",
   "main": "app.js",
   "scripts": {
+    "preinstall": "node cli.js preinstall",
     "start": "pm2 start ./bin/www --name hwboard2-web -i 0",
-    "test": "snyk test && mocha test/dbtest.js test/UITest.js test/wsTest.js",
+    "test": "snyk test && mocha test/dbtest.js test/UITest.js test/wsTest.js test/datesTest.js --exit",
     "start:dev": "nodemon ./bin/www",
     "hwboard": "node cli.js"
   },
@@ -23,15 +24,16 @@
     "ejs": "^2.6.1",
     "express": "^4.16.3",
     "extend": "^3.0.2",
-    "framework7": "^3.1.1",
+    "framework7": "^3.2.1",
     "fuse.js": "^3.2.1",
     "jquery": "^3.3.1",
     "json2csv": "^4.2.1",
     "jsonwebtoken": "^8.3.0",
     "jwks-rsa": "^1.3.0",
     "morgan": "^1.9.0",
+    "node-schedule": "^1.3.0",
     "pg": "^7.4.3",
-    "pm2": "^3.0.3",
+    "pm2": "^3.0.4",
     "promise-worker": "^1.1.1",
     "raven": "^2.6.3",
     "request-promise-native": "^1.0.5",
@@ -44,10 +46,11 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
+    "lighthouse": "^3.0.3",
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.3",
+    "nodemon": "^1.18.4",
     "puppeteer": "^1.7.0",
-    "snyk": "^1.90.2",
+    "snyk": "^1.94.0",
     "socket.io-client": "^2.1.1"
   }
 }

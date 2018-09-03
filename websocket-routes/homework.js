@@ -18,7 +18,7 @@ module.exports = (socket,io,db)=>{
 
   //Get homework from database
   socket.on("dataReq",function(msg,callback){
-    console.log("received")
+    console.log("Data req")
     ;(async ()=>{
       if(!isObject(msg)){
         throw "Msg is not an object"
@@ -54,19 +54,21 @@ module.exports = (socket,io,db)=>{
     console.log("received")
     ;(async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg)
+      delete msg.id
       const {channel} = msg
       await db.addHomework(channel,msg)
       //Notify users
       const data = await db.getHomework(channel)
+      console.log("yey",channel)
       io.to(channel).emit("data",{channel,data})
-      //Notifiy user when homework expires
+      //Notify user when homework expires
       await db.whenHomeworkExpires(channel,async()=>{
         const data = await db.getHomework(channel)
         io.to(channel).emit("data",{channel,data})
       })
       return callback(null)
     })()
-    .catch(e => callback(e.toString()))
+    .catch(e => {console.log(e);callback(e.toString())})
     //Error in handling error
     .catch(uncaughtErrorHandler)
   })
