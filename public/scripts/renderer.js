@@ -253,7 +253,27 @@ parser.parseHomeworkMetaData =  function(homework){
       displayDate = "Due tomorrow"
       break;
     default:
-      displayDate = `${daysLeft} days left`
+      const getNumberOfSundays = date =>{
+        const absDate = Sugar.Date.create(Sugar.Date.format(date, "{d}/{M}/{yyyy}"), "en-GB")
+        const startDate = Sugar.Date.create("Today")
+        let num = 0
+        while (startDate < absDate){
+          if(startDate.getDay()==0){
+            num++
+          }
+          Sugar.Date.addDays(startDate,1)
+        }
+        return num
+      }
+      if(daysLeft<=14 && getNumberOfSundays(dueDate2)<=2){
+        displayDate = ""
+        if(getNumberOfSundays(dueDate2)>0){
+          displayDate+="Next "
+        }
+        displayDate+=Sugar.Date.format(dueDate2,"%A")
+      }else{
+        displayDate = `${daysLeft} days left`
+      }
   }
   return {
     dueDate,
