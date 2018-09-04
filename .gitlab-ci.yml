@@ -7,7 +7,7 @@ image: node:10-alpine
 # Only needed when using a docker container to run your tests in.
 # Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
 services:
-  - name: jro11/cockroachdb-alpine-docker:latest
+  - name: jro11/cockroachdb-alpine-docker:stable
     alias: cockroachdb
 variables:
   COCKROACH_DB: hwboard
