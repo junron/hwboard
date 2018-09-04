@@ -6,10 +6,10 @@ const {POSTGRES_PASSWORD:dbPasswd,POSTGRES_USER:dbUser,POSTGRES_DB:dbName="hwboa
 
 
 let POSTGRES_HOST = "localhost"
-//In gitlab and docker, postgres is on `postgres` and not `localhost`
-//Cos db container is called postgres
+//In docker, cockroachdb is on `cockroachdb` and not `localhost`
+//Cos db container is called cockroachdb
 //https://forums.docker.com/t/cant-get-postgres-to-work/29580/4
-if(process.env.CI_PROJECT_NAME=="hwboard2"||process.env.IS_DOCKER=="true"){
+if(process.env.IS_DOCKER=="true"){
   POSTGRES_HOST = "cockroachdb"
 }
 

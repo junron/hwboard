@@ -34,8 +34,8 @@ if(gitlab||process.argv[4]=="default"){
     name:"testing",
     subjects:["math","chemistry"],
     roots:["tester@nushigh.edu.sg"],
-    admins:[],
-    members:[]
+    admins:[""],
+    members:[""]
   }
   console.log("Using config:")
   console.log(config)
@@ -71,19 +71,25 @@ if(gitlab||process.argv[4]=="default"){
     config.name = answer
     r1.question("Subjects (seperate with comma): ()  ",(answer)=>{
       config.subjects = answer.split(",").filter(notEmpty)
+      if(config.subjects.length==0){
+        config.subjects = [""]
+      }
       r1.question("Root users (seperate with comma): (h1710074@nushigh.edu.sg)  ",(answer="h1710074@nushigh.edu.sg")=>{
         if(answer==""){
-          answer ="h1710074@nushigh.edu.sg"
+          answer = "h1710074@nushigh.edu.sg"
         }
         config.roots = answer.split(",")
         r1.question("Admin users (seperate with comma): ()  ",(answer)=>{
           if(answer==""){
-            config.admins = []
+            config.admins = [""]
           }else{
             config.admins = answer.split(",")
           }
           r1.question("Normal users (seperate with comma): ()  ",(answer="*")=>{
             config.members = answer.split(",").filter(notEmpty)
+            if(config.members.length==0){
+              config.members = [""]
+            }
             console.log(config)
             r1.question("Is this okay? (Yes/no)  ",async answer=>{
               if(answer.toLowerCase()=="yes"){
