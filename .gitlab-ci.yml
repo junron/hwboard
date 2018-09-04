@@ -11,7 +11,7 @@ services:
     alias: cockroachdb
 variables:
   COCKROACH_DB: hwboard
-  COCKROACH_USER: runner
+  COCKROACH_USER: hwboard
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
 cache:
