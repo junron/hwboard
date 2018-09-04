@@ -9,7 +9,7 @@ let POSTGRES_HOST = "localhost"
 //In docker, cockroachdb is on `cockroachdb` and not `localhost`
 //Cos db container is called cockroachdb
 //https://forums.docker.com/t/cant-get-postgres-to-work/29580/4
-if(process.env.IS_DOCKER=="true"){
+if(process.env.CI_PROJECT_NAME=="hwboard2" || process.env.IS_DOCKER=="true"){
   POSTGRES_HOST = "cockroachdb"
 }
 
