@@ -38,7 +38,7 @@ const sendResults = async data=>{
       'Content-Type': 'application/json'
     },
     mode:"no-cors",
-    body:JSON.stringify(data)
+    body:data
   })
 }
 
@@ -61,15 +61,17 @@ const getStats = async _=>{
     return M.join(' ');
   })()
   const {platform} = navigator
+  const {release} = Raven.e.release
   const storageUsage = await navigator.storage.estimate()
   if(navigator.doNotTrack){
-    return {storageUsage}
+    return {storageUsage,release}
   }
   return {
     idBase64,
     browser,
     platform,
-    storageUsage
+    storageUsage,
+    release
   }
 }
 
