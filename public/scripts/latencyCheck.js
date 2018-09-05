@@ -62,6 +62,9 @@ const getStats = async _=>{
   })()
   const {platform} = navigator
   const storageUsage = await navigator.storage.estimate()
+  if(navigator.doNotTrack){
+    return {storageUsage}
+  }
   return {
     idBase64,
     browser,
