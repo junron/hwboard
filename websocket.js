@@ -135,6 +135,7 @@ exports.createServer = function(server){
       require("./websocket-routes/tests")(socket)
 
       socket.on("isReady",(_,callback)=>callback(true))
+      
       return socket.emit("ready")
       })
     .catch(uncaughtErrorHandler)
