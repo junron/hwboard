@@ -29,9 +29,9 @@ const dueEarlierFirst = (a,b) => {
 }
 
 const subjectFirst = (a,b) => {
-  if(a.subject > b.subject){
+  if((a.subject+a.text).toLowerCase() > (b.subject+b.text).toLowerCase()){
     return 1
-  }else if(a.subject < b.subject){
+  }else if((a.subject+a.text).toLowerCase() < (b.subject+b.text).toLowerCase()){
     return -1
   }
   return 0
