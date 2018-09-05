@@ -143,3 +143,8 @@ white-space:unset;
   top: inherit !important;
   left: inherit !important;
   }
+  @media(max-width: 400px) {
+    .md #app .list .item-media+.item-inner {
+       margin-left: 0px;
+    }
+  }

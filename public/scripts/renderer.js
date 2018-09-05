@@ -29,9 +29,9 @@ const dueEarlierFirst = (a,b) => {
 }
 
 const subjectFirst = (a,b) => {
-  if(a.subject > b.subject){
+  if((a.subject+a.text).toLowerCase() > (b.subject+b.text).toLowerCase()){
     return 1
-  }else if(a.subject < b.subject){
+  }else if((a.subject+a.text).toLowerCase() < (b.subject+b.text).toLowerCase()){
     return -1
   }
   return 0
@@ -265,11 +265,11 @@ parser.parseHomeworkMetaData =  function(homework){
         }
         return num
       }
-      if(daysLeft<=14 && daysLeft>=3 && getNumberOfSundays(dueDate2)<=2){
+      if(daysLeft<=14 && getNumberOfSundays(dueDate2)==1){
         displayDate = ""
-        if(getNumberOfSundays(dueDate2)>0){
+        //if(getNumberOfSundays(dueDate2)>0){
           displayDate+="Next "
-        }
+       // }
         displayDate+=Sugar.Date.format(dueDate2,"%A")
       }else{
         displayDate = `${daysLeft} days left`
