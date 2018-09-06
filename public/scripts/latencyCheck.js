@@ -45,28 +45,10 @@ const sendResults = async data=>{
 const getStats = async _=>{
   const idBytes = await crypto.subtle.digest("SHA-512",new TextEncoder("utf-8").encode(getCookie("name")+getCookie("email")))
   const idBase64 = btoa(new Uint8Array(idBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
-  const browser = (function(){
-    var ua= navigator.userAgent, tem, 
-    M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-    if(/trident/i.test(M[1])){
-        tem=  /\brv[ :]+(\d+)/g.exec(ua) || [];
-        return 'IE '+(tem[1] || '');
-    }
-    if(M[1]=== 'Chrome'){
-        tem= ua.match(/\b(OPR|Edge)\/(\d+)/);
-        if(tem!= null) return tem.slice(1).join(' ').replace('OPR', 'Opera');
-    }
-    M= M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-    if((tem= ua.match(/version\/(\d+)/i))!= null) M.splice(1, 1, tem[1]);
-    return M.join(' ');
-  })()
-  const {platform} = navigator
   const release = (await (await fetch("/cd/version.json?useCache")).json()).commitSha
   const storageUsage = await navigator.storage.estimate()
   return {
     idBase64,
-    browser,
-    platform,
     storageUsage,
     release
   }
