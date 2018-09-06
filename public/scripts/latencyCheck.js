@@ -8,7 +8,7 @@ const latencyCheck = ()=>{
     let start = performance.now()
     //Tests basic ping
     conn.emit("whoami",null,(_,email)=>{
-      latency.normal = performance.now()-start
+      latency.normal = (performance.now()-start).toFixed(2)
       //Resolve student id to name
       const id = email.replace("@nushigh.edu.sg","")
       start = performance.now()
@@ -16,14 +16,14 @@ const latencyCheck = ()=>{
         method:"getStudentById",
         data:id
       },(_,name)=>{
-        latency.resolve = performance.now()-start
+        latency.resolve = (performance.now()-start).toFixed(2)
         if(name.id!==id){
           throw new Error("Id mismatch")
         }
         //Get channels
         start = performance.now()
         conn.emit("channelDataReq",{},_=>{
-          latency.database = performance.now()-start
+          latency.database = (performance.now()-start).toFixed(2)
           resolve({latency})
         })
       })
@@ -38,7 +38,7 @@ const sendResults = async data=>{
       'Content-Type': 'application/json'
     },
     mode:"no-cors",
-    body:data
+    body:JSON.stringify(data)
   })
 }
 
@@ -61,7 +61,7 @@ const getStats = async _=>{
     return M.join(' ');
   })()
   const {platform} = navigator
-  const {release} = Raven.e.release
+  const release = hwboardRelease
   const storageUsage = await navigator.storage.estimate()
   if(navigator.doNotTrack){
     return {storageUsage,release}
@@ -75,8 +75,11 @@ const getStats = async _=>{
   }
 }
 
-;(async ()=>{
-  const results = await Promise.all([latencyCheck(),getStats()])
-  const data = Object.assign(...results)
-  return sendResults(data)
+;(async _=>{
+  conn.emit("isReady",null,async ()=>{
+    const results = await Promise.all([latencyCheck(),getStats()])
+    const data = Object.assign(...results)
+    console.log(latencyCheck(),getStats(),data)
+    return sendResults(data)
+  })
 })()
