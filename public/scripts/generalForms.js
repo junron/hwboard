@@ -43,7 +43,7 @@ async function updateChannelHomework(channel,channelData){
 async function loadDetails(){
   const data = await getExistingInfo()
   const {subject,isTest,text,dueDate,lastEditTime:editTime,lastEditPerson:editPerson} = data
-  $("#detailLastEdit").text(Sugar.Date.format(new Date(editTime),"{d}/{M}")+" "+Sugar.Date.format(new Date(editTime),"%I:%M")+Sugar.Date.format(new Date(editTime),"%P")+" by "+editPerson)
+  $("#detailLastEdit").text(Sugar.Date.format(new Date(editTime),"{d}/{M}/{yyyy}")+" "+Sugar.Date.format(new Date(editTime),"%I:%M")+Sugar.Date.format(new Date(editTime),"%P")+" by "+editPerson)
     $("#detailHomeworkName").text(text)
     $("#detailSubject").text(subject)
     if(isTest){
@@ -51,7 +51,7 @@ async function loadDetails(){
     }else{
       $("#detailGraded").text("No")
     }
-    $("#detailDue").text(`${Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M")}, ${daysUntil(new Date(dueDate))} days left.`)
+    $("#detailDue").text(`${Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M")}, ${dateParser.daysUntil(new Date(dueDate))} days left.`)
     detailsSheet.open()
   }
 

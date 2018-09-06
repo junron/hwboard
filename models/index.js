@@ -18,7 +18,7 @@ const config = {
   dialect: "postgres",
   operatorsAliases: Sequelize.Op
 }
-console.log(logging)
+console.log({logging})
 if(logging===false){
   config.logging = false
 }

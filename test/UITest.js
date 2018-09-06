@@ -105,24 +105,6 @@ async function add(){
     return $($(".hwitem:contains('Add homework test')")[0]).addClass("targetHomework")
   })
 }
-async function checkDate(date){
-  console.log(date)
-  return page.evaluate(async (date)=>{
-    try{
-      console.log(date)
-      const parsedDate = await parseDate(date)
-      return parsedDate.toString()
-    }catch(e){
-      return "error"
-    }
-  },date)
-}
-function getDate(date){
-  if(date=="error"){
-    return "error"
-  }
-  return date.getDate()+"/"+date.getMonth()+1+"/"+date.getFullYear()
-}
 describe("Hwboard",async function(){
   this.timeout(20000);
   before(async function(){
@@ -197,24 +179,8 @@ describe("Hwboard",async function(){
     expect(scores.pwa).to.be.greaterThan(0.6)
     expect(scores.accessibility).to.be.greaterThan(0.85)
     expect(scores["best-practices"]).to.be.greaterThan(0.85)
-    expect(scores.seo).to.be.greaterThan(0.95)
+    expect(scores.seo).to.be.greaterThan(0.89)
   })
-  // it("Should detect dates properly",async ()=>{
-  //   const today = new Date()
-  //   const tomorrow = new Date()
-  //   const wednesday = new Date()
-  //   const nextMonth = new Date()
-  //   tomorrow.setDate(today.getDate()+1)
-  //   wednesday.setDate(wednesday.getDate() + (3 + 7 - wednesday.getDay()) % 7)
-  //   nextMonth.setMonth(nextMonth.getMonth()+1)
-  //   const dates = ["tomorrow","wed","next month","wedneday","1970"]
-  //   const expectedResults = [tomorrow.toString(),wednesday.toString(),nextMonth.toString(),"error","error"]
-  //   let results = []
-  //   for (let date of dates){
-  //     results.push(await checkDate(date))
-  //   }
-  //   expect(JSON.stringify(results)).to.equal(JSON.stringify(expectedResults))
-  // })
   after(async ()=>{
     await browser.close()
     server.close()

@@ -40,7 +40,7 @@ async function getHomeworkData(id=false){
   if(channel==undefined){
     throw new Error("Subject is not valid")
   }
-  const date = await parseDate()
+  const date = await dateParser.parseDate()
   const dueDate = date.getTime()
   if(text==""){
     throw new Error("Homework name not specified")
@@ -73,7 +73,7 @@ function load(subject,graded,text,dueDate,title){
   //Keep the time also
   $(".page-current #dueDate").val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
   $(".page-current #homework-name").val(text.trim())
-  parseDate()
+  dateParser.parseDate()
   if(graded){
     $(".page-current #toggle-is-graded-checkbox").attr("checked",true)
     gradedCheckboxChecked = true
@@ -99,6 +99,15 @@ async function backgroundSync(url,body){
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
       const swRegistration = await navigator.serviceWorker.ready
 
+      let action
+      if(url.includes("add")){
+        action="added"
+      }else if(url.includes("edit")){
+        action="edited"
+      }else if(url.includes("delete")){
+        action="deleted"
+      }
+
       if(Notification.permission!=="granted"){
         //Request notifications for background sync
         await new Promise((ok,cancel)=>{
@@ -106,14 +115,6 @@ async function backgroundSync(url,body){
             const result = await Notification.requestPermission()
             if (result !== 'granted') {
               return reject(new Error("Notification permission not granted."))
-            }
-            let action
-            if(url.includes("add")){
-              action="added"
-            }else if(url.includes("edit")){
-              action="edited"
-            }else if(url.includes("delete")){
-              action="deleted"
             }
             const title = "Hwboard"
             const notifOptions = {
@@ -124,6 +125,8 @@ async function backgroundSync(url,body){
             return ok()
           },cancel)
         })
+      }else{
+        Framework7App.dialog.confirm("You are currently offline. Your homework will be "+action+" ASAP.")
       }
       const id = promiseServiceWorker.postMessage({type:"sync",
         data:{
@@ -152,10 +155,10 @@ async function addHomework(){
     console.log("Repeated request rejected")
     return
   }
+  previousAddedHomework = homework
   if(navigator.onLine===false){
     return backgroundSync("/api/addReq",homework)
   }
-  previousAddedHomework = homework
   const promise = new Promise(function(resolve,reject){
     conn.emit('addReq',homework,function(err){
       if(err) return reject(err)
