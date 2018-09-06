@@ -61,11 +61,8 @@ const getStats = async _=>{
     return M.join(' ');
   })()
   const {platform} = navigator
-  const release = hwboardRelease
+  const release = (await (await fetch("/cd/version.json?useCache")).json()).commitSha
   const storageUsage = await navigator.storage.estimate()
-  if(navigator.doNotTrack){
-    return {storageUsage,release}
-  }
   return {
     idBase64,
     browser,
