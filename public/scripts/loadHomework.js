@@ -65,7 +65,11 @@ loadHomeworkFromCache()
 
 if(typeof conn!="undefined"){
   //Connected before page load
-  conn.emit("isReady",null,loadHomework)
+  conn.emit("isReady",null,(res)=>{
+    if(res){
+      loadHomework()
+    }
+  })
 }
 
 async function loadChannelData(){
