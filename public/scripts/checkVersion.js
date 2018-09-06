@@ -8,7 +8,6 @@
   const result = await Promise.all(promises)
   if(typeof setSentryRelease === "function"){
     setSentryRelease(result[0].commitSha)
-    hwboardRelease = result[0].commitSha
   }
   // New commit, refresh cache and reload page
   if(result[1].commitSha != result[0].commitSha){
