@@ -131,8 +131,10 @@ const Framework7App = new Framework7({
           $("a[href='/channelName/data.csv'").attr("download",`data.csv`)
           $("a[href='/channelName/data.csv'").attr("href",`/data.csv`)
           conn.emit("isReady",null,res=>{
-            console.log("ready before page load")
-            renderCharts()
+            if(res){
+              console.log("ready before page load")
+              renderCharts()
+            }
           })
         }
       }
@@ -165,8 +167,10 @@ const Framework7App = new Framework7({
           $("a[href='/channelName/data.csv'").attr("download",`${channel}.data.csv`)
           $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`)
           conn.emit("isReady",null,res=>{
-            console.log("ready before page load")
-            renderCharts()
+            if(res){
+              console.log("ready before page load")
+              renderCharts()
+            }
           })
         }
       }
@@ -199,7 +203,9 @@ const Framework7App = new Framework7({
           }
           $(".root-only").hide()
           conn.emit("isReady",null,res=>{
-            getChannelData()
+            if(res){
+              getChannelData()
+            }
           })
         }
       },

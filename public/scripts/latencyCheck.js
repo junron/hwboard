@@ -76,10 +76,18 @@ const getStats = async _=>{
 }
 
 ;(async _=>{
-  conn.emit("isReady",null,async ()=>{
+  async function startCheck(){
     const results = await Promise.all([latencyCheck(),getStats()])
     const data = Object.assign(...results)
-    console.log(latencyCheck(),getStats(),data)
     return sendResults(data)
+  }
+  conn.emit("isReady",null,value=>{
+    if(value){
+      console.log("run")
+      startCheck()
+    }else{
+      console.log("deferred")
+      conn.on("ready",startCheck)
+    }
   })
 })()
