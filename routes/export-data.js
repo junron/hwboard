@@ -5,11 +5,14 @@ const db = require("../database")
 const {Readable} = require("stream")
 const Json2csvStream = require('json2csv').Transform
 
+const removePersonalData = homework =>{
+  const homeworkClone = Object.assign({},homework)
+  delete homeworkClone.lastEditPerson
+  delete homeworkClone.lastEditTime
+  return homeworkClone
+}
 router.get("/:channelName/data.json",(req, res, next) => {
   ;(async ()=>{
-    if(req.params.channelName=="scripts"){
-      return next()
-    }
     const authData = await authChannels(req,res)
     if(authData=="redirected"){
       return
@@ -19,7 +22,8 @@ router.get("/:channelName/data.json",(req, res, next) => {
     if(channel){
       res.setHeader('Content-disposition', 'attachment; filename='+req.params.channelName+'.data.json')
       res.type("json")
-      const data = await db.getHomework(req.params.channelName,false)
+      const data = (await db.getHomework(req.params.channelName,false))
+      .map(removePersonalData)
       res.send(JSON.stringify(data))
     }else{
       res.status(404).end("Channel not found")
@@ -43,14 +47,19 @@ router.get("/:channelName/data.csv",(req, res) => {
     if(channel){
       res.setHeader('Content-disposition', 'attachment; filename='+req.params.channelName+'.data.csv')
       res.type("csv")
-      const data = await db.getHomework(req.params.channelName,false)
+      const data = (await db.getHomework(req.params.channelName,false))
+      .map(removePersonalData)
       const dataStream = new Readable()
       dataStream._read = () => {};
       dataStream.push(JSON.stringify(data))
       dataStream.push(null)
 
-      console.log(data)
-      const fields = Object.keys(data[0])
+      let fields
+      if(data.length>0){
+        fields = Object.keys(data[0])
+      }else{
+        fields = []
+      }
       const options = { fields }
       const transformOptions = { highWaterMark: 16384, encoding: 'utf-8' }
       const toCSV = new Json2csvStream(options, transformOptions)

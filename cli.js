@@ -4,8 +4,30 @@
 //This file is very messy.
 //Please ignore it as it is only for the CLI
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
-
-if(process.argv[2]+process.argv[3]=="addchannel"){
+if(process.argv[2]==="getData"){
+  function decryptData(password){
+    var fs = require('fs')
+    const crypto = require("crypto")
+    var decrypt = crypto.createDecipher("aes-256-cbc", password)
+    var output = fs.createWriteStream("data.json")
+    const input = fs.createReadStream("data.json.enc")
+    input
+    .pipe(decrypt)
+    .pipe(output)
+  }
+  const readline = require('readline')
+  if(process.env.HWBOARD_DATA_PASSWORD){
+    return decryptData(process.env.HWBOARD_DATA_PASSWORD)
+  }
+  const r1 = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+  r1.question("Decryption key:  ",password=>{
+    decryptData(password)
+    r1.close()
+  })
+}else if(process.argv[2]+process.argv[3]=="addchannel"){
 let config ={}
 if(gitlab||process.argv[4]=="default"){
   config = {

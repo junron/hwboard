@@ -14,25 +14,20 @@ function setSubjectVariables(channelData){
       }
     }
   }
+  dateParser = Object.freeze(dateParserFn(timetable,subjectSelectionList))
 }
 
+channelSettings = {
+  channel,
+  removeExpired:true
+}
 
 //Load cached data before websocket connects
 //Allows for faster loading of updated data
 async function loadHomeworkFromCache(){
   const promises = []
-  promises.push(worker.postMessage({
-    type:"getChannels",
-  }).then(data=>{
-    console.log("Load channels from Indexeddb")
-    if(!data.length){
-      //IndexedDB is empty, perhaps is first page load
-      return false
-    }
-    setSubjectVariables(data)
-    return true
-  }))
 
+  //Get homework data
   promises.push(worker.postMessage({
     type:"get",
   }).then(data=>{
@@ -47,6 +42,19 @@ async function loadHomeworkFromCache(){
     }
     return data
   }))
+  
+  //Get channel data
+  promises.push(worker.postMessage({
+    type:"getChannels",
+  }).then(data=>{
+    console.log("Load channels from Indexeddb")
+    if(!data.length){
+      //IndexedDB is empty, perhaps is first page load
+      return false
+    }
+    setSubjectVariables(data)
+    return true
+  }))
   const [data,channelResult] = await Promise.all(promises)
   if(data.length&&channelResult){
     reRender(data)
@@ -57,7 +65,11 @@ loadHomeworkFromCache()
 
 if(typeof conn!="undefined"){
   //Connected before page load
-  conn.emit("isReady",null,loadHomework)
+  conn.emit("isReady",null,(res)=>{
+    if(res){
+      loadHomework()
+    }
+  })
 }
 
 async function loadChannelData(){

@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.2.2"
+const version = "1.2.4"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -38,6 +38,7 @@ self.addEventListener('install', function(e) {
         "/routes/channel-settings.html",
         "/manifest.json",
         "/images/icons/favicon.png",
+        "/routes/channel-settings.html",
       ]
       return cache.addAll(cacheArray);
     })
@@ -73,7 +74,14 @@ self.addEventListener('fetch', function(event) {
             return addCacheHeader(response)
           }
           console.log(`Loading ${url}`)
-          var fetchPromise = fetch(event.request).then(function(networkResponse) {
+          var fetchPromise = Promise.race([fetch(event.request),new Promise((resolve,reject)=>{
+            setTimeout(()=>{
+              //Use cache is network is slow
+              return resolve(false)
+            },2000)
+          })
+          ])
+          .then(networkResponse=>{
             //Dont cache stuffs
             if((!url.includes("?useCache")) &&
              (url.includes("transport=polling") || 
@@ -89,7 +97,7 @@ self.addEventListener('fetch', function(event) {
               return networkResponse;
             }else{
               console.log(`Failed to fetch from network ${url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
-              return response || networkResponse
+              return response
             }
           })
           return response || fetchPromise;
