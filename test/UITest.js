@@ -3,7 +3,8 @@ const puppeteer = require("puppeteer")
 const mocha = require("mocha")
 const {expect} = require("chai")
 const port = require("../loadConfig").PORT
-const server = require("../app").server
+const {server,io} = require("../app")
+const {sequelize} = require("../models")
 const options = {
   headless:false,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -55,7 +56,7 @@ async function remove(){
       })
     })
   }))
-  page.waitFor(1000)
+  page.waitFor(2000)
   const deleteBtn = await page.$(".targetHomework .swipeout-actions-right a:not(.swipeout-edit-button)")
   await page.screenshot({path: './artifacts/delete-before.png'})
   await deleteBtn.click()
@@ -104,24 +105,6 @@ async function add(){
     return $($(".hwitem:contains('Add homework test')")[0]).addClass("targetHomework")
   })
 }
-async function checkDate(date){
-  console.log(date)
-  return page.evaluate(async (date)=>{
-    try{
-      console.log(date)
-      const parsedDate = await parseDate(date)
-      return parsedDate.toString()
-    }catch(e){
-      return "error"
-    }
-  },date)
-}
-function getDate(date){
-  if(date=="error"){
-    return "error"
-  }
-  return date.getDate()+"/"+date.getMonth()+1+"/"+date.getFullYear()
-}
 describe("Hwboard",async function(){
   this.timeout(20000);
   before(async function(){
@@ -129,8 +112,12 @@ describe("Hwboard",async function(){
     await init()
   })
   afterEach(async ()=>{
-    await page.goto('http://localhost:' + port)
-    return await page.waitFor(2000)
+    if(!page.isClosed()){
+      await page.goto('http://localhost:' + port)
+      return await page.waitFor(2000)
+    }else{
+      return console.log("Page has been closed, not refreshing")
+    }
   })
   it("Should be able to add homework",async function(){
     await page.tracing.start({path: 'artifacts/add.json', screenshots: true});
@@ -149,9 +136,11 @@ describe("Hwboard",async function(){
       const graded = await getHtml("#detailGraded")
       expect(graded).to.equal("Yes")
       const lastEdit = await getHtml("#detailLastEdit")
-      console.log("bleh")
-      console.table = console.table || console.log
-      console.table({name,subject,dueDate,graded,lastEdit})
+      if(console.table){
+        console.table({name,subject,dueDate,graded,lastEdit})
+      }else{
+        console.log({name,subject,dueDate,graded,lastEdit})
+      }
       await page.tracing.stop()
     })().catch(e=>{
       throw e
@@ -163,24 +152,39 @@ describe("Hwboard",async function(){
     await remove()
     return await page.tracing.stop()
   })
-  // it("Should detect dates properly",async ()=>{
-  //   const today = new Date()
-  //   const tomorrow = new Date()
-  //   const wednesday = new Date()
-  //   const nextMonth = new Date()
-  //   tomorrow.setDate(today.getDate()+1)
-  //   wednesday.setDate(wednesday.getDate() + (3 + 7 - wednesday.getDay()) % 7)
-  //   nextMonth.setMonth(nextMonth.getMonth()+1)
-  //   const dates = ["tomorrow","wed","next month","wedneday","1970"]
-  //   const expectedResults = [tomorrow.toString(),wednesday.toString(),nextMonth.toString(),"error","error"]
-  //   let results = []
-  //   for (let date of dates){
-  //     results.push(await checkDate(date))
-  //   }
-  //   expect(JSON.stringify(results)).to.equal(JSON.stringify(expectedResults))
-  // })
+
+  it("Should perform decently for Lighthouse audits",async ()=>{
+    const url = 'http://localhost:' + port
+    const lighthouse = require("lighthouse")
+    page.close()
+    const {URL} = require("url")
+    const {lhr} = await lighthouse(url, {
+      port: (new URL(browser.wsEndpoint())).port,
+      output: 'json',
+      logLevel: 'info',
+    })
+    const fs = require("fs")
+    fs.writeFileSync("./artifacts/lighthouse.json",JSON.stringify(lhr))
+    console.log(`Lighthouse scores:`)
+    const scores = {}
+    for(const category in lhr.categories){
+      scores[category] = lhr.categories[category].score
+    }
+    if(console.table){
+      console.table(scores)
+    }
+    console.log(scores)
+    //Note: scores for performance and PWA are significantly lower 
+    //This isdue to lack of HTTPS and NGINX compression and h2
+    expect(scores.pwa).to.be.greaterThan(0.6)
+    expect(scores.accessibility).to.be.greaterThan(0.85)
+    expect(scores["best-practices"]).to.be.greaterThan(0.85)
+    expect(scores.seo).to.be.greaterThan(0.89)
+  })
   after(async ()=>{
     await browser.close()
-    return server.close()
+    server.close()
+    io.close()
+    return
   })
 })

@@ -85,7 +85,8 @@ router.get("/channels", async (req, res) => {
       const email = req.cookies.username;
     res.cookie("username",email,{
       signed:true,
-      httpOnly:true
+      httpOnly:true,
+      sameSite:"lax"
     })
   }
     const authData = await authChannels(req, res);
@@ -164,39 +165,6 @@ router.get('/', async (req, res, next) => {
   }
 
   res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors})
-});
-
-//View channel 
-router.get('/:channel', async (req, res, next) => {
-  if(req.params.channel.includes(".")){
-    return next()
-  }
-  if(!dbInit){
-    //Create tables and stuffs
-      await db.init();
-    dbInit = true
-  }
-    const channelName = req.params.channel;
-    const authData = await authChannels(req, res);
-  if(authData==="redirected"){
-    return
-  }
-    const {channelData} = authData;
-    const channel = channelData[channelName];
-  if(channel){
-      let {sortOrder, sortType} = req.cookies;
-    if(sortOrder){
-      sortOrder = parseInt(sortOrder)
-    }
-      res.header("Link", parsePushHeaders(pushFiles));
-      const data = await db.getHomework(channelName);
-
-    //Report errors in production or mobile
-      const mobile = isMobile(req.headers['user-agent']);
-    res.render('index', {renderer,data,sortType,sortOrder,admin,adminChannels,reportErrors:(reportErrors||mobile)})
-  }else{
-    res.status(404).end("Channel not found")
-  }
 });
 
 module.exports = router;
