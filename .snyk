@@ -9,5 +9,5 @@ ignore:
   'npm:chownr:20180731':
     - pm2 > chokidar > fsevents > node-pre-gyp > tar > chownr:
         reason: No user input given to pm2
-        expires: '2018-09-06T06:53:55.292Z'
+        expires: '2018-10-06T09:46:41.632Z'
 patch: {}
