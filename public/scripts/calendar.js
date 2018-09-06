@@ -1,5 +1,5 @@
-colors = ["#ff5252", "#ff4081", "#e040fb", "#7c4dff", "#536dfe", "#448aff", "#40c4ff", "#18ffff", "#64ffda", "#69f0ae", "#b2ff59", "#eeff41", "#ffff00", "#ffd740", "#ffab40", "#ff6e40"];
-subjectColors = [[],[]];
+const colors = ["#ff5252", "#ff4081", "#e040fb", "#7c4dff", "#536dfe", "#448aff", "#40c4ff", "#18ffff", "#64ffda", "#69f0ae", "#b2ff59", "#eeff41", "#ffff00", "#ffd740", "#ffab40", "#ff6e40"];
+const subjectColors = [[],[]];
 
 
 function convertHomework(arrHomework) {
@@ -77,17 +77,24 @@ setTimeout(function() {
             prev: 'left-single-arrow',
             next: 'right-single-arrow',
         },
+        eventLimit: true,
+        views: {
+            month: {
+                eventLimit: 1
+            }
+        },
         height: calendarHeight,
         editable: false,
         events: [],
-        eventRender: function(eventObj, $el) {
-            $el.popover({
+        eventMouseover: function(eventObj, _) {
+            console.log(this)
+            $(this).popover({
                 title: eventObj.title,
                 content: eventObj.description,
-                trigger: 'hover',
+                trigger: 'manual',
                 placement: 'top',
-                container: 'body'
-            });
+                container: '#calendar'
+            }).popover('toggle');
         }
     });
 
