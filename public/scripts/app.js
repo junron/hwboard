@@ -118,12 +118,12 @@ const Framework7App = new Framework7({
           if(!navigator.onLine){
             //SHow offline message
             const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.font = "15px Helvetica"
             homeworkSubject.textAlign = "center"
             homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
             
             const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-            homeworkDate.font = "30px Helvetica"
+            homeworkDate.font = "15px Helvetica"
             homeworkDate.textAlign = "center"
             homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
@@ -156,12 +156,12 @@ const Framework7App = new Framework7({
           if(!navigator.onLine){
             //SHow offline message
             const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.font = "15px Helvetica"
             homeworkSubject.textAlign = "center"
             homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
             
             const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-            homeworkDate.font = "30px Helvetica"
+            homeworkDate.font = "15px Helvetica"
             homeworkDate.textAlign = "center"
             homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
