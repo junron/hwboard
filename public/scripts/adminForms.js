@@ -95,18 +95,37 @@ function startEdit(){
 }
 
 async function backgroundSync(url,body){
+  async function hash(data){
+    const bytes = await crypto.subtle.digest("SHA-512",new TextEncoder("utf-8").encode(data))
+    return btoa(new Uint8Array(bytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
+  }
   return new Promise(async (resolve,reject)=>{
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
       const swRegistration = await navigator.serviceWorker.ready
 
+      let previousHomeworkHash
       let action
       if(url.includes("add")){
         action="added"
+        const allHomework = await worker.postMessage({
+          type:"get"
+        })
+        previousHomeworkHash = await hash(JSON.stringify(allHomework.filter(a=>a.subject===body.subject && a.channel===body.channel)))
       }else if(url.includes("edit")){
         action="edited"
       }else if(url.includes("delete")){
         action="deleted"
       }
+
+      if(previousHomeworkHash===undefined){
+        const homework = await worker.postMessage({
+          type:"getSingle",
+          id:body.id
+        })
+        console.log(JSON.stringify([homework]))
+        previousHomeworkHash = await hash(JSON.stringify([homework]))
+      }
+      body.previousHomeworkHash = previousHomeworkHash
 
       if(Notification.permission!=="granted"){
         //Request notifications for background sync
@@ -128,6 +147,19 @@ async function backgroundSync(url,body){
       }else{
         Framework7App.dialog.confirm("You are currently offline. Your homework will be "+action+" ASAP.")
       }
+      console.log({type:"sync",
+      data:{
+        url,
+        options:{
+            method:"POST",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(body)
+          }
+      }
+    })
       const id = promiseServiceWorker.postMessage({type:"sync",
         data:{
           url,
@@ -157,6 +189,7 @@ async function addHomework(){
   }
   previousAddedHomework = homework
   if(navigator.onLine===false){
+    console.log("bg")
     return backgroundSync("/api/addReq",homework)
   }
   const promise = new Promise(function(resolve,reject){
