@@ -66,9 +66,11 @@ const Framework7App = new Framework7({
         path: "/popups/add/",
         url:"/routes/edit-homework.html",
         on :{
+          pageBeforeIn:function(e,page){
+            $(page.el.querySelector("#edit-title")).text("Add homework")
+          },
           pageAfterIn:function(e,page){
             gradedCheckboxChecked = false
-            $(".page-current #edit-title").text("Add homework")
             initEditHomeworkEvents()
           }
         }
@@ -78,13 +80,16 @@ const Framework7App = new Framework7({
         path: "/popups/edit/",
         url:"/routes/edit-homework.html",
         on :{
+          pageBeforeIn:function(e,page){
+            $(page.el.querySelector("#edit-title")).text("Edit homework")
+            startEdit()
+          },
           pageAfterIn:function(e,page){
             console.log({e,page})
             if(e.detail.route.url.includes("?edit=true")){
               Framework7App.router.navigate("/popups/edit/")
             }
             $(".page-current #edit-title").text("Edit homework")
-            startEdit()
             initEditHomeworkEvents()
           }
         }
@@ -113,12 +118,12 @@ const Framework7App = new Framework7({
           if(!navigator.onLine){
             //SHow offline message
             const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.font = "15px Helvetica"
             homeworkSubject.textAlign = "center"
             homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
             
             const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-            homeworkDate.font = "30px Helvetica"
+            homeworkDate.font = "15px Helvetica"
             homeworkDate.textAlign = "center"
             homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
@@ -151,12 +156,12 @@ const Framework7App = new Framework7({
           if(!navigator.onLine){
             //SHow offline message
             const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.font = "15px Helvetica"
             homeworkSubject.textAlign = "center"
             homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
             
             const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-            homeworkDate.font = "30px Helvetica"
+            homeworkDate.font = "15px Helvetica"
             homeworkDate.textAlign = "center"
             homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
