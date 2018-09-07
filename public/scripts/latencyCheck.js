@@ -46,7 +46,11 @@ const getStats = async _=>{
   const idBytes = await crypto.subtle.digest("SHA-512",new TextEncoder("utf-8").encode(getCookie("name")+getCookie("email")))
   const idBase64 = btoa(new Uint8Array(idBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
   const release = (await (await fetch("/cd/version.json?useCache")).json()).commitSha
-  const storageUsage = await navigator.storage.estimate()
+  let storageUsage = "Not supported"
+  //Navigator.storage.estimate not supporte in Safari and Opera
+  if(navigator.storage && typeof navigator.storage.estimate==="function"){
+    storageUsage = await navigator.storage.estimate()
+  }
   return {
     idBase64,
     storageUsage,
