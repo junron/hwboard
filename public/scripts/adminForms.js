@@ -66,22 +66,21 @@ async function getHomeworkData(id=false){
 }
 
 //load form with options
-function load(subject,graded,text,dueDate,title){
+function load(subject,graded,text,dueDate,pageSelector=".page-current"){
   subject = subject.trim()
-  //$("#edit-dialog-label").text(title)
-  $(".page-current #subject-name").val(subject)
+  $(`${pageSelector} #subject-name`).val(subject)
   //Keep the time also
-  $(".page-current #dueDate").val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
-  $(".page-current #homework-name").val(text.trim())
+  $(`${pageSelector} #dueDate`).val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
+  $(`${pageSelector} #homework-name`).val(text.trim())
   dateParser.parseDate()
   if(graded){
-    $(".page-current #toggle-is-graded-checkbox").attr("checked",true)
+    $(`${pageSelector} #toggle-is-graded-checkbox`).attr("checked",true)
     gradedCheckboxChecked = true
   }else{
-    $(".page-current #toggle-is-graded-checkbox").attr("checked",false)
+    $(`${pageSelector} #toggle-is-graded-checkbox`).attr("checked",false)
     gradedCheckboxChecked = false
   }
-  const textInputSelectors = [".page-current #subject-name",".page-current #dueDate",".page-current #homework-name"]
+  const textInputSelectors = [`${pageSelector} #subject-name`,`${pageSelector} #dueDate`,`${pageSelector} #homework-name`]
   textInputSelectors.forEach(addFloating)
 }
 
@@ -90,7 +89,7 @@ function startEdit(){
   getExistingInfo().then(data =>{
     const {subject,isTest,text,dueDate} = data
     console.log(data)
-    load(subject,isTest,text,dueDate,"Edit homework")
+    load(subject,isTest,text,dueDate,".page-next")
   })
 }
 

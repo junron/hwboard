@@ -66,9 +66,11 @@ const Framework7App = new Framework7({
         path: "/popups/add/",
         url:"/routes/edit-homework.html",
         on :{
+          pageBeforeIn:function(e,page){
+            $(page.el.querySelector("#edit-title")).text("Add homework")
+          },
           pageAfterIn:function(e,page){
             gradedCheckboxChecked = false
-            $(".page-current #edit-title").text("Add homework")
             initEditHomeworkEvents()
           }
         }
@@ -78,13 +80,16 @@ const Framework7App = new Framework7({
         path: "/popups/edit/",
         url:"/routes/edit-homework.html",
         on :{
+          pageBeforeIn:function(e,page){
+            $(page.el.querySelector("#edit-title")).text("Edit homework")
+            startEdit()
+          },
           pageAfterIn:function(e,page){
             console.log({e,page})
             if(e.detail.route.url.includes("?edit=true")){
               Framework7App.router.navigate("/popups/edit/")
             }
             $(".page-current #edit-title").text("Edit homework")
-            startEdit()
             initEditHomeworkEvents()
           }
         }
