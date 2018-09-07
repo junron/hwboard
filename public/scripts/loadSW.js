@@ -17,7 +17,9 @@ if ('serviceWorker' in navigator) {
       }
       navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
     });
+   // return navigator.serviceWorker.getRegistration
   }).then(function (worker) { // the worker is ready
+    console.log("Loaded promise sw")
     promiseServiceWorker = new PromiseWorker(worker)
   })
   .catch(function(error) {
