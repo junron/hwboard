@@ -76,7 +76,7 @@ parser.parseBySubject = function (data,order=0) {
     if(html==""){
       return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
     }
-    html+="</div></ul>"
+    html+="</ul></div>"
     return html
 }
 parser.parseHomeworkSubject = function(homework) {
@@ -158,7 +158,7 @@ parser.parseByDate = function(data,order=0) {
   if(html==""){
     return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
   }
-  html+="</div></ul>"
+  html+="</ul></div>"
   return html
 }
 parser.parseHomeworkDate = function(homework) {
