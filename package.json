@@ -46,11 +46,11 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "lighthouse": "^3.0.3",
+    "lighthouse": "^3.1.1",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.4",
-    "puppeteer": "^1.7.0",
-    "snyk": "^1.94.0",
+    "puppeteer": "^1.8.0",
+    "snyk": "^1.95.0",
     "socket.io-client": "^2.1.1"
   }
 }
