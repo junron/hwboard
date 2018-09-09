@@ -12,9 +12,9 @@ function loadHomework(){
       //Put data into client-side database for caching
       //But only for main page
       if(channel==""){
-        console.log("iOS error:",worker," is not initalized")
-        console.log({worker})
         console.log("worker is a(n): ",typeof worker)
+        console.log({worker})
+        console.log("iOS error:",worker," is not initalized")
         worker.postMessage({
           type:"set",
           data
