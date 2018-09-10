@@ -50,7 +50,7 @@
     "mocha": "^5.2.0",
     "nodemon": "^1.18.4",
     "puppeteer": "^1.8.0",
-    "snyk": "^1.95.0",
+    "snyk": "^1.95.3",
     "socket.io-client": "^2.1.1"
   }
 }
