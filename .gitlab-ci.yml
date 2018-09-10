@@ -34,8 +34,11 @@ test:
     HWBOARD_COOKIE_SECRET: "totallyVerySecureSecretWhatCouldPossiblyGoWrong"
   stage: test
   script:
-  - pwd
-  - whoami
+  - pwd  
+  - npm -v
+  - npm i -g npm
+  - npm -v
+  - node --version
   - npm audit
   - npm run hwboard add channel
   - npm run hwboard getData
