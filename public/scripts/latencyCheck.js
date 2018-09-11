@@ -48,8 +48,12 @@ const getStats = async _=>{
   const release = (await (await fetch("/cd/version.json?useCache")).json()).commitSha
   let storageUsage = "Not supported"
   //Navigator.storage.estimate not supporte in Safari and Opera
-  if(navigator.storage && typeof navigator.storage.estimate==="function"){
-    storageUsage = await navigator.storage.estimate()
+  try{
+    if(navigator.storage && typeof navigator.storage.estimate==="function"){
+      storageUsage = await navigator.storage.estimate()
+    }
+  }catch(e){
+    console.log(e)
   }
   return {
     idBase64,
