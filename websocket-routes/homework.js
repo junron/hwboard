@@ -50,7 +50,6 @@ module.exports = (socket,io,db)=>{
     
   //Add homework
   socket.on("addReq",function(msg,callback){
-    console.log("received")
     ;(async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg)
       delete msg.id
@@ -70,7 +69,6 @@ module.exports = (socket,io,db)=>{
       await db.addHomework(channel,msg)
       //Notify users
       const data = await db.getHomework(channel)
-      console.log("yey",channel)
       io.to(channel).emit("data",{channel,data})
       //Notify user when homework expires
       await db.whenHomeworkExpires(channel,async()=>{
