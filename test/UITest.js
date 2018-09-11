@@ -24,12 +24,6 @@ const getHtml = async selector => {
     return document.querySelector(selector).innerHTML
   },selector)
 }
-const getCoords = async elem =>{
-  return page.evaluate((header) => {
-    const {top, left, bottom, right} = header.getBoundingClientRect()
-    return {top, left, bottom, right}
-  }, elem)
-}
 async function init(){
   browser = await puppeteer.launch(options)
   console.log("browser launch")
@@ -111,7 +105,7 @@ describe("Hwboard",async function(){
     server.listen(port)
     await init()
   })
-  afterEach(async ()=>{
+  afterEach(async function(){
     if(!page.isClosed()){
       await page.goto('http://localhost:' + port)
       return await page.waitFor(2000)
@@ -153,7 +147,7 @@ describe("Hwboard",async function(){
     return await page.tracing.stop()
   })
 
-  it("Should perform decently for Lighthouse audits",async ()=>{
+  it("Should perform decently for Lighthouse audits",async function(){
     const url = 'http://localhost:' + port
     const lighthouse = require("lighthouse")
     page.close()
@@ -181,7 +175,7 @@ describe("Hwboard",async function(){
     expect(scores["best-practices"]).to.be.greaterThan(0.85)
     expect(scores.seo).to.be.greaterThan(0.89)
   })
-  after(async ()=>{
+  after(async function(){
     await browser.close()
     server.close()
     io.close()
