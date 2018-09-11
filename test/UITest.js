@@ -106,7 +106,7 @@ async function add(){
   })
 }
 describe("Hwboard",async function(){
-  this.timeout(20000);
+  this.timeout(15000);
   before(async function(){
     server.listen(port)
     await init()
