@@ -35,10 +35,10 @@ const initEditHomeworkEvents = ()=>{
     }
     //The error handling should be the same
     actionPromise.then(_=>{
-      mainView.router.back()
       setTimeout(()=>{
         elem.disabled = false
         reset()
+        mainView.router.back()
       },100)
     }).catch(e=>{
       console.error(e)
