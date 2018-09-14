@@ -1,88 +1,101 @@
-const addSubjectTimings = {}
-const parsedAddSubjectTimings = {}
-const numericalOrder = (a,b)=>a-b;
-const checkIfComplete = ()=>{
-  if($("#subjectInput").val().trim().length==0){
-    return false
+swiper = Framework7App.swiper.create(".swiper-container",{
+  speed:100,
+  spaceBetween:0,
+  pagination: {
+    el: '.swiper-pagination',
   }
-  if(Object.keys(parsedAddSubjectTimings).length==0){
-    return false
-  }
-  return true
-}
-const updateDisabledStatus = ()=>{
-  if(checkIfComplete()){
-    $(".page-current #add-subject").removeClass("disabled")
-  }else{
-    $(".page-current #add-subject").addClass("disabled")
-  }
-}
-$(document).on("click","#app .page-current table#homeworkboard-timetable td",e=>{
-  if(e.target.innerHTML===" "){
-    const output = $("#app .page-current .add-subject-timetable-output")
-    const target = $(e.target)
-    const day = target.attr("data-day")
-    const time = parseInt(target.attr("data-time-start"))
-    if(target.css("background-color")==="rgb(216, 255, 224)"){
-      target.css("background-color","#99cdf3")
-      if(addSubjectTimings[day] instanceof Array){
-        addSubjectTimings[day].push(time)
-        addSubjectTimings[day] = addSubjectTimings[day].sort(numericalOrder)
-      }else{
-        addSubjectTimings[day] = [time]
-      }
+})
+function canAddTiming(id){
+  let can = true
+  const currentId = id || document.querySelector(".swiper-slide.swiper-slide-active").id
+  const inputs = Array.from(document.querySelectorAll(`#${currentId} input`))
+  let day
+  for(const input of inputs){
+    if(input.classList.contains("day-input")){
+      day = input.value
     }else{
-      target.css("background-color","#d8ffe0")
-      const index = addSubjectTimings[day].indexOf(time)
-      if(index>-1){
-        addSubjectTimings[day].splice(index,1)
+      const isValid = Sugar.Date.isValid(Sugar.Date.create(day + " " + input.value))
+      if(isValid||input.value==""){
+          input.parentElement.parentElement.parentElement.classList.remove("item-input-invalid")
+          input.parentElement.querySelector(".item-input-error-message").innerText = ""
+      }else{ 
+        input.parentElement.parentElement.parentElement.classList.add("item-input-invalid")
+        input.parentElement.querySelector(".item-input-error-message").innerText = "Invalid date/time"
       }
-    }
-    const increasingSubSequences = [[]]
-    //Note: addSubjectTimings[day] is sorted
-    for(const timing of addSubjectTimings[day]){
-      const thisIncrease = increasingSubSequences[increasingSubSequences.length-1]
-      if(thisIncrease.length==0){
-        thisIncrease.push(timing)
-      }else if(timing-thisIncrease[thisIncrease.length-1]===30 || timing-thisIncrease[thisIncrease.length-1]==70){
-        thisIncrease.push(timing)
-      }else{
-        increasingSubSequences.push([timing])
-      }
-    }
-    parsedAddSubjectTimings[day] = []
-    $(`span[data-day=${day}]`).remove()
-    for(const timingArray of increasingSubSequences){
-      if(timingArray.length===0){
-        delete parsedAddSubjectTimings[day]
-        break
-      }
-      let endTime = Math.max(...timingArray) + 30
-      if(endTime%100==60){
-        endTime += 40
-      }
-      const startTime = Math.min(...timingArray)
-      const timings = [startTime,endTime]
-      if(document.querySelector(`span[data-day=${day}]`)){
-        output.append(`<span data-day=${day}>, and from ${startTime} to ${endTime}</span>`)
-      }else{
-        output.append(`<span data-day=${day}><br>${day} from ${startTime} to ${endTime}</span>`)
-      }
-      parsedAddSubjectTimings[day].push(timings)
+      can = can && !!input.value && isValid
     }
   }
-  updateDisabledStatus()
-})
-$(document).on("input",".page-current #subjectInput",updateDisabledStatus)
-document.getElementById("add-subject").addEventListener("click",()=>{
-  const subject = $("#subjectInput").val().trim()
-  const subjectData = {
-    subject,
-    channel,
-    data:parsedAddSubjectTimings
+  return can
+}
+function changeStatus(){
+  const button = document.getElementById("add-timing-button")
+  if(!canAddTiming()){
+    button.classList.add("color-gray","disabled")
+  }else{
+    button.classList.remove("color-gray","disabled")
   }
-  conn.emit("addSubject",subjectData,(err)=>{
-    if(err) throw new Error(err)
-    mainView.router.back()
+}
+function getTimingData(timingId){
+  const data = {}
+  let day
+  const inputs = Array.from(document.querySelectorAll(`#${timingId} input`))
+  for(const input of inputs){
+    if(input.classList.contains("day-input")){
+      day = Sugar.Date.format(Sugar.Date.create(input.value),"{dow}")
+      data[day] = [[]]
+    }else{
+      const time = parseInt(Sugar.Date.format(Sugar.Date.create(input.value),"%H%M"))
+      data[day][0].push(time)
+    }
+  }
+  return data
+}
+function getSubjectData(){
+  const data = {}
+  const subjectName = document.getElementById("subjectInput").value
+  data.subject = subjectName
+  data.data = {}
+  const timingCount = swiper.slides.length
+  for(let i = 1;i<=timingCount;i++){
+    const thisId = "timing-"+i
+    if(canAddTiming(thisId)){
+      const timingData = getTimingData(thisId)
+      data.data = Object.assign(data.data,timingData)
+    }
+  }
+  return data
+}
+
+function addTiming(){
+  const newId = "timing-" + (swiper.slides.length + 1)
+  const clone = document.getElementById("timing-1").cloneNode(true)
+  clone.id = newId
+  const swiperWrapper = document.querySelector(".swiper-wrapper")
+  swiperWrapper.appendChild(clone)
+  const newInputs = Array.from(document.querySelectorAll(`#${newId} input`))
+  for(const input of newInputs){
+    input.addEventListener("input",changeStatus)
+    input.parentElement.parentElement.parentElement.classList.remove("item-input-with-value")
+    input.value = ""
+  }
+  swiper.appendSlide(clone)
+  swiper.slideNext()
+  changeStatus()
+}
+function init(){
+  const inputs = Array.from(document.querySelectorAll(`#timing-1 input`))
+  for(const input of inputs){
+    input.addEventListener("input",changeStatus)
+  }
+  document.getElementById("add-subject").addEventListener("click",()=>{
+    const data = getSubjectData()
+    data.channel = channel
+    console.log(data)
+    conn.emit("addSubject",data,(err)=>{
+      if(err) throw new Error(err)
+      mainView.router.back()
+    })
   })
-})
+  changeStatus()
+}
+init()
