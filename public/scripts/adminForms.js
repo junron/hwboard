@@ -72,7 +72,7 @@ function load(subject,graded,text,dueDate,pageSelector=".page-current"){
   //Keep the time also
   $(`${pageSelector} #dueDate`).val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
   $(`${pageSelector} #homework-name`).val(text.trim())
-  dateParser.parseDate()
+  dateParser.parseDate($(`${pageSelector} #dueDate`).val())
   if(graded){
     $(`${pageSelector} #toggle-is-graded-checkbox`).attr("checked",true)
     gradedCheckboxChecked = true

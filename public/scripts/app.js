@@ -10,18 +10,18 @@ const Framework7App = new Framework7({
     pushState: true,
   },
   routes:[
-    {
-      name:"timetable",
-      path:"/timetable",
-      url:"/routes/timetable.html",
-      reloadPrevious:true,
-      animate:false,
-      on:{
-        pageAfterIn:e=>{
-          loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css"])
-        }
-      }
-    },
+    // {
+    //   name:"timetable",
+    //   path:"/timetable",
+    //   url:"/routes/timetable.html",
+    //   reloadPrevious:true,
+    //   animate:false,
+    //   on:{
+    //     pageAfterIn:e=>{
+    //       loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css"])
+    //     }
+    //   }
+    // },
     {
       name:"channels",
       path:"/channels",
@@ -232,17 +232,17 @@ const Framework7App = new Framework7({
           on:{
             pageAfterIn:e=>{
               const target = e.currentTarget
-              const scriptTag2 = document.createElement("script")
-              scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
-              target.appendChild(scriptTag2)
-              loadSources(target,["/routes/scripts/add-subject.js","/routes/styles/timetable.css"])
-              scriptTag2.onload = ()=>{
-                addSubjectRenderTimetable().then(_=>{
-                  $("#app .page-current table#homeworkboard-timetable td").filter(function(){
-                    return this.innerHTML === " "
-                  }).css("background-color","#d8ffe0")
-                })
-              }
+              // const scriptTag2 = document.createElement("script")
+              // scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
+              // target.appendChild(scriptTag2)
+              loadSources(target,["/routes/scripts/add-subject.js"])//,"/routes/styles/timetable.css"])
+              // scriptTag2.onload = ()=>{
+              //   addSubjectRenderTimetable().then(_=>{
+              //     $("#app .page-current table#homeworkboard-timetable td").filter(function(){
+              //       return this.innerHTML === " "
+              //     }).css("background-color","#d8ffe0")
+              //   })
+              // }
             }
           }
         }
