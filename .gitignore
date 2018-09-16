@@ -6,3 +6,7 @@ artifacts
 *~
 #*
 **/data.json
+**/*.key
+**/*.crt
+**/certs
+**/ca-key
