@@ -4,7 +4,47 @@
 //This file is very messy.
 //Please ignore it as it is only for the CLI
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
-if(process.argv[2]==="getData"){
+if(process.argv[2]==="cockroach"){
+  if(process.argv[3]==="create-ca"){
+    ;(async ()=>{
+      const {promisify} = require('util');
+      const execFile  = promisify(require('child_process').execFile);
+      const mkdir = promisify(require('fs').mkdir)
+      try{
+        await Promise.all([mkdir("cockroach/certs"),mkdir("cockroach/ca-key")])
+      }catch(e){}
+      await execFile("cockroach",["cert","create-ca","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
+      console.log("CA key generated in `./cockroach/ca-key/ca.key`.")
+      console.log("CA cert generated in `./cockroach/certs/ca.crt`.")
+    })()
+  }else if(process.argv[3]==="create-node"){
+    ;(async ()=>{
+      const {promisify} = require('util');
+      const execFile  = promisify(require('child_process').execFile);
+      await execFile("cockroach",["cert","create-node","localhost","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
+      console.log("Node key generated in `./cockroach/certs/node.key`.")
+      console.log("Node cert generated in `./cockroach/certs/node.crt`.")
+      console.log("Copy `./certs/node.key`,`./cockroach/certs/node.crt` and `./cockroach/certs/ca.crt`")
+      console.log("to the target server's certs directory to start a secure node.")
+    })()
+  }else if(process.argv[3]==="create-client"){
+    ;(async ()=>{
+      const {promisify} = require('util');
+      const execFile  = promisify(require('child_process').execFile);
+      const readline = require('readline')
+      const r1 = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      })
+      r1.question("Client username:  ",async name=>{
+        await execFile("cockroach",["cert","create-client",name,"--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
+        console.log("Client key generated in `./cockroach/certs/client."+name+".key`.")
+        console.log("Client cert generated in `./cockroach/certs/client."+name+".crt`.")
+        r1.close()
+      })
+    })()
+  }
+}else if(process.argv[2]==="getData"){
   function decryptData(password){
     var fs = require('fs')
     const crypto = require("crypto")
@@ -353,4 +393,15 @@ if(gitlab||process.argv[4]=="default"){
       })
     })
   }
+}else{
+  console.log(`
+  
+  
+  Command invalid
+  
+  
+  
+  
+  `)
+  process.exit(1)
 }

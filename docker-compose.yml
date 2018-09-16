@@ -2,7 +2,7 @@ version: '3'
 services:
   cockroachdb:
     build:
-      dockerfile: Dockerfile-cockroach
+      dockerfile: cockroach/Dockerfile
       context: .
     ports:
       - "26257:26257"
