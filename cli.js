@@ -1,11 +1,95 @@
 #!/usr/bin/env node
 
+function promisifyAll(moduleObj) {
+  const {promisify} = require('util')
+  for(const thing in moduleObj){
+    if(typeof moduleObj[thing]==="function"){
+      moduleObj[thing] = promisify(moduleObj[thing])
+    }
+  }
+	return moduleObj
+}
 
 //This file is very messy.
 //Please ignore it as it is only for the CLI
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
 if(process.argv[2]==="cockroach"){
-  if(process.argv[3]==="create-ca"){
+  if(process.argv[3]==="config"){
+    ;(async ()=>{
+      const {promisify} = require("util")
+      const fs  = promisifyAll(require('fs'));
+      const readline = require('readline')
+      readline.Interface.prototype.question[promisify.custom] = function(prompt) {
+        return new Promise(resolve =>
+          readline.Interface.prototype.question.call(this, prompt, resolve),
+        );
+      };
+      readline.Interface.prototype.questionAsync = promisify(
+        readline.Interface.prototype.question,
+      );
+      const r1 = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      })
+      const options = {}
+      options.secure = (await r1.questionAsync("Secure cluster? (Y/n) "))!=="n"
+      options.nodes = []
+      while (true){
+        const thisNodeOptions = {}
+        const nodePort = parseInt(await r1.questionAsync("Node port number:  "))
+        const isRemote = (await r1.questionAsync("Is this node on another machine? (Y/n) "))!=="n"
+        if(isRemote){
+          const sshHost = await r1.questionAsync("Remote ssh host (eg ssh.somedomain.com) ")
+          const sshUser = await r1.questionAsync("Remote ssh user (eg johnny) ")
+          const sshKeyfile = await r1.questionAsync("Private key file path for user "+sshUser+" (eg ~/.ssh/id_rsa) ")
+          thisNodeOptions.nodeHost = sshHost
+          thisNodeOptions.connectionCommand = `ssh ${sshUser}@${sshHost} -i ${sshKeyfile} -L ${nodePort}:localhost:${nodePort}`
+        }
+        thisNodeOptions.nodePort = nodePort
+        options.nodes[options.nodes.length] = thisNodeOptions
+        const isContinue = (await r1.questionAsync("Do you want to add another node? (Y/n) "))!=="n"
+        if(!isContinue){
+          break
+        }
+      }
+      const sshTunnelInit = options.nodes.reduce((prev,curr)=>{
+        if(curr.connectionCommand!==undefined){
+          return prev + curr.connectionCommand + ";" 
+        }
+        return prev
+      },"")
+      
+
+      let base = "cockroach start --host=localhost -p "+options.nodes[0].nodePort+" "
+      if(options.secure){
+        base += "--certs-dir=cockroach/certs "
+      }else{
+        base += "--insecure"
+      }
+      base += "--join="
+      const cockroachInit = options.nodes.reduce((prev,curr)=>{
+        const {nodePort} = curr
+        return prev + "localhost:"+nodePort+","
+      },base)
+      await fs.writeFile("cockroach/ssh-tunnel-init.sh",sshTunnelInit)
+      await fs.writeFile("cockroach/run.sh",cockroachInit)
+      r1.close()
+      console.log(`
+      
+      Config complete.
+
+      ======= SSH tunnel =======
+      Run \`./cockroach/ssh-tunnel-init.sh\` to create ssh tunnels.
+      Run \`screen ./cockroach/ssh-tunnel-init.sh\` to run the tunnel in a screen session.
+      Press Ctrl-d then Ctrl-a to detach from the screen session
+
+      ======= CockroachDB =======
+      Run \`./cockroach/run.sh\` to start the cockroachdb node.
+      Run \`./cockroach/run.sh --background\` to start the cockroachdb node in the background.
+      If running in the background, please consider using Docker instead.
+      `)
+    })()
+  }else if(process.argv[3]==="create-ca"){
     ;(async ()=>{
       const {promisify} = require('util');
       const execFile  = promisify(require('child_process').execFile);
