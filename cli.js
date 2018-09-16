@@ -100,6 +100,12 @@ if(process.argv[2]==="cockroach"){
       await execFile("cockroach",["cert","create-ca","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
       console.log("CA key generated in `./cockroach/ca-key/ca.key`.")
       console.log("CA cert generated in `./cockroach/certs/ca.crt`.")
+      console.log("\n\n")
+      console.log("Encrypting CA key.")
+      console.log("You need to decrypt it if you want to use it.")
+      console.log("Do not enter a passphrase if you do not want to encrypt the CA key.")
+      console.log("Use the `ssh-keygen -p -f ./cockroach/ca-key/ca.key` command to change the passphrase/decrypt the key.\n\n")
+      await execFile("ssh-keygen",[ "-p", "-f", "./cockroach/ca-key/ca.key"])
     })()
   }else if(process.argv[3]==="create-node"){
     ;(async ()=>{
