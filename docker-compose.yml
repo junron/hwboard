@@ -7,10 +7,12 @@ services:
     ports:
       - "26257:26257"
       - "8080:8080"
-    command: "/bin/bash -c 'while :; do sleep 2073600; done'"
+    command: "./cockroach/run.sh"
     environment:
       - COCKROACH_USER=hwboard
       - COCKROACH_DB=hwboard
+    volumes:
+      - ./cockroach:/cockroach
   web:
     restart: always
     build: .

@@ -5,5 +5,6 @@ ENV COCKROACH_CHANNEL=official-docker
 RUN cp cockroach-latest.linux-musl-amd64/cockroach /usr/local/bin/cockroach
 
 RUN apk add bash
+COPY cockroach cockroach
 
-EXPOSE 26257 8080
+CMD "./cockroach/run.sh"
