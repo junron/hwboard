@@ -85,6 +85,7 @@ async function authChannels(req,res){
       decodedToken = await auth.verifyToken(token)
     }catch(e){
       console.log(e)
+      res.clearCookie("token")
       res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
       "response_type=code&"+
       `scope=https%3A%2F%2Fgraph.microsoft.com%2F${scopes.join("%20")}&`+
