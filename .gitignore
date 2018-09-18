@@ -6,7 +6,6 @@ artifacts
 *~
 #*
 **/data.json
-**/*.key
-**/*.crt
-**/certs
-**/ca-key
+cockroach
+!cockroach/Dockerfile
+cockroach-data
