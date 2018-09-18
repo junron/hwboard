@@ -42,6 +42,7 @@ const Framework7App = new Framework7({
       url:"/",
       on:{
         pageAfterIn:e=>{
+          prevDataHash = ""
           loadSources(e.currentTarget,["/scripts/loadHomework.js"])
         }
       },
