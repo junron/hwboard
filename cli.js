@@ -67,8 +67,8 @@ if(process.argv[2]==="cockroach"){
         return prev
       },"")
 
-      
-      let base = "cockroach start --host=localhost -p "+port+" --http-port="+httpPort+" "
+
+      let base = "cockroach start -p "+port+" --http-port="+httpPort+" "
       if(options.secure){
         base += "--certs-dir=cockroach/certs "
       }else{
@@ -81,8 +81,9 @@ if(process.argv[2]==="cockroach"){
       },base)
       const shebang = `#!/usr/bin/env bash
       `
+      const runForever = "--background;while :; do sleep 2073600; done"
       const writeSSHTunnel = fs.writeFile("cockroach/ssh-tunnel-init.sh",shebang+sshTunnelInit)
-      const writeRunFile = fs.writeFile("cockroach/run.sh",shebang+cockroachInit)
+      const writeRunFile = fs.writeFile("cockroach/run.sh",shebang+cockroachInit+runForever)
       const readDockerCompose = fs.readFile("./docker-compose.yml","utf-8")
 
 
