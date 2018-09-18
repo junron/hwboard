@@ -66,8 +66,8 @@ if(process.argv[2]==="cockroach"){
         }
         return prev
       },"")
-      
 
+      
       let base = "cockroach start --host=localhost -p "+port+" --http-port="+httpPort+" "
       if(options.secure){
         base += "--certs-dir=cockroach/certs "
@@ -79,8 +79,10 @@ if(process.argv[2]==="cockroach"){
         const {nodePort} = curr
         return prev + "localhost:"+nodePort+","
       },base)
-      const writeSSHTunnel = fs.writeFile("cockroach/ssh-tunnel-init.sh",sshTunnelInit)
-      const writeRunFile = fs.writeFile("cockroach/run.sh",cockroachInit)
+      const shebang = `#!/usr/bin/env bash
+      `
+      const writeSSHTunnel = fs.writeFile("cockroach/ssh-tunnel-init.sh",shebang+sshTunnelInit)
+      const writeRunFile = fs.writeFile("cockroach/run.sh",shebang+cockroachInit)
       const readDockerCompose = fs.readFile("./docker-compose.yml","utf-8")
 
 
@@ -90,7 +92,7 @@ if(process.argv[2]==="cockroach"){
       if(exposeHTTP){
         dockerCompose = dockerCompose.replace(`8080:8080`,`${httpPort}:${httpPort}`)
       }else{
-        dockerCompose = dockerCompose.replace(`8080:8080`,``)
+        dockerCompose = dockerCompose.replace(`      - "8080:8080"`,``)
       }
 
       const chmodFiles = [fs.chmod("cockroach/run.sh",0o755),fs.chmod("cockroach/ssh-tunnel-init.sh",0o755)]
