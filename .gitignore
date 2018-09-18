@@ -6,6 +6,6 @@ artifacts
 *~
 #*
 **/data.json
-cockroach
+cockroach/*
 !cockroach/Dockerfile
 cockroach-data
