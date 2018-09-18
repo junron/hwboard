@@ -35,6 +35,8 @@ if(process.argv[2]==="cockroach"){
       options.secure = (await r1.questionAsync("Secure cluster? (Y/n) "))!=="n"
       options.nodes = []
       const port = parseInt(await r1.questionAsync("Node port number:  "))
+      const httpPort = parseInt(await r1.questionAsync("HTTP port number:  "))
+      const exposeHTTP = (await r1.questionAsync("Do you want to expose the HTTP port? (Y/n) "))!=="n"
       options.nodes[0] = {
         nodePort:port
       }
@@ -66,7 +68,7 @@ if(process.argv[2]==="cockroach"){
       },"")
       
 
-      let base = "cockroach start --host=localhost -p "+options.nodes[0].nodePort+" "
+      let base = "cockroach start --host=localhost -p "+port+" --http-port="+httpPort+" "
       if(options.secure){
         base += "--certs-dir=cockroach/certs "
       }else{
@@ -80,10 +82,19 @@ if(process.argv[2]==="cockroach"){
       const writeSSHTunnel = fs.writeFile("cockroach/ssh-tunnel-init.sh",sshTunnelInit)
       const writeRunFile = fs.writeFile("cockroach/run.sh",cockroachInit)
       const readDockerCompose = fs.readFile("./docker-compose.yml","utf-8")
+
+
       let [dockerCompose] = await Promise.all([readDockerCompose,writeSSHTunnel,writeRunFile])
-      dockerCompose = dockerCompose.replace(`26257:26257`,`${options.nodes[0].nodePort}:${options.nodes[0].nodePort}`)
-      dockerCompose = dockerCompose.replace(`cockroachdb:26257`,`cockroachdb:${options.nodes[0].nodePort}`)
-      await fs.writeFile("./docker-compose.yml",dockerCompose)
+      dockerCompose = dockerCompose.replace(`26257:26257`,`${port}:${port}`)
+      dockerCompose = dockerCompose.replace(`cockroachdb:26257`,`cockroachdb:${port}`)
+      if(exposeHTTP){
+        dockerCompose = dockerCompose.replace(`8080:8080`,`${httpPort}:${httpPort}`)
+      }else{
+        dockerCompose = dockerCompose.replace(`8080:8080`,``)
+      }
+
+      const chmodFiles = [fs.chmod("cockroach/run.sh",0o755),fs.chmod("cockroach/ssh-tunnel-init.sh",0o755)]
+      await [...chmodFiles,fs.writeFile("./docker-compose.yml",dockerCompose)]
       r1.close()
       console.log(`
       
