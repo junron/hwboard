@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.3.0"
+const version = "1.3.1"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -96,6 +96,9 @@ self.addEventListener('fetch', function(event) {
               console.log(`Cached ${url}`)
               return networkResponse;
             }else{
+              if(networkResponse.ok!==false || networkResponse.type=="opaqueredirect"){
+                return networkResponse
+              }
               console.log(`Failed to fetch from network ${url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
               return response
             }
