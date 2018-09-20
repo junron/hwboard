@@ -67,7 +67,7 @@ if(process.argv[2]==="cockroach"){
         return prev
       },"")
 
-
+      let openUFWPorts = "sudo ufw allow proto tcp from 172.16.0.0/12 to any port "
       let base = "cockroach start -p "+port+" --http-port="+httpPort+" "
       if(options.secure){
         base += "--certs-dir=cockroach/certs "
@@ -77,12 +77,14 @@ if(process.argv[2]==="cockroach"){
       base += "--join="
       const cockroachInit = options.nodes.reduce((prev,curr)=>{
         const {nodePort} = curr
+        openUFWPorts+=nodePort + ","
         return prev + "localhost:"+nodePort+","
       },base)
       const shebang = `#!/usr/bin/env bash
       `
       const runForever = "--background;while :; do sleep 2073600; done"
-      const writeSSHTunnel = fs.writeFile("cockroach/ssh-tunnel-init.sh",shebang+sshTunnelInit)
+      openUFWPorts+=";"
+      const writeSSHTunnel = fs.writeFile("cockroach/ssh-tunnel-init.sh",shebang+openUFWPorts+sshTunnelInit)
       const writeRunFile = fs.writeFile("cockroach/run.sh",shebang+cockroachInit+runForever)
       const readDockerCompose = fs.readFile("./docker-compose.yml","utf-8")
 
