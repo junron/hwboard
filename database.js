@@ -93,11 +93,13 @@ async function getHomework(hwboardName,removeExpired=true){
       if(homework.dueDate >= new Date().getTime()){
         homework.channel = hwboardName
         let studentName = homework.lastEditPerson
+        if(homework.tags && homework.tags.includes("Graded")){
+          homework.isTest = true
+        }
         try{
           const student = await getStudentById(homework.lastEditPerson.replace("@nushigh.edu.sg",""))
           studentName = student.name
-        }catch(e){
-        }
+        }catch(e){}
         homework.lastEditPerson = studentName
         return true
       }

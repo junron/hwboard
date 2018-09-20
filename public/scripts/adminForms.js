@@ -33,7 +33,10 @@ async function getHomeworkData(id=false){
   if(subject===""){
     throw new Error("No subject selected")
   }
-  const isTest = gradedCheckboxChecked
+  const tags = []
+  if(gradedCheckboxChecked){
+    tags.push("Graded")
+  }
   //Remove lines
   const text = $(".page-current #homework-name").val().split("\n").join("").trim()
   const channel = subjectChannelMapping[subject]
@@ -50,7 +53,7 @@ async function getHomeworkData(id=false){
     return {
       subject,
       text,
-      isTest,
+      tags,
       id,
       dueDate,
       channel
@@ -59,7 +62,7 @@ async function getHomeworkData(id=false){
   return {
     subject,
     text,
-    isTest,
+    tags,
     dueDate,
     channel
   }

@@ -15,8 +15,8 @@ module.exports = (sequelize, Sequelize,name) => {
     dueDate: {
       type: Sequelize.DATE
     },
-    isTest: {
-      type: Sequelize.BOOLEAN
+    tags: {
+      type: Sequelize.ARRAY(Sequelize.STRING)
     },
     lastEditPerson: {
       type: Sequelize.STRING
