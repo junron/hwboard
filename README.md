@@ -1,10 +1,10 @@
 # Hwboard v2 
 Master Branch (stable)  
-![pipeline status](https://git-badge.chatbox2.tk/hwboard2/master)  
+![pipeline status](https://git-badge.chatbox2.tk/orange/jro/hwboard2/master)  
 [![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/badge.svg?targetFile=package.json)](https://snyk.io/test/github/junron/hwboard?targetFile=package.json)  
  
 Dev Branch:  
-![pipeline status](https://git-badge.chatbox2.tk/hwboard2/dev)  
+![pipeline status](https://git-badge.chatbox2.tk/orange/jro/hwboard2/dev)  
 [![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/dev/badge.svg)](https://snyk.io/test/github/junron/hwboard/dev)
 
 ## Installation

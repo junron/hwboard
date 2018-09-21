@@ -19,4 +19,5 @@ const sortOptions = {
 }
 //Web worker for indexedDB
 //Use promise based messaging
-const worker = new PromiseWorker(new Worker("/scripts/worker.js"))
+let worker = new PromiseWorker(new Worker("/scripts/worker.js"))
+console.log("Worker created:",worker)

@@ -5,8 +5,4 @@ node_modules
 artifacts
 *~
 #*
-
-idea
-.idea
-.map
 **/data.json
