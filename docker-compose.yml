@@ -14,7 +14,7 @@ services:
     build: .
     ports:
       - "3001:3001"
-    command: "./wait-for-it.sh postgres:5432 -- /bin/bash -c 'while :; do sleep 2073600; done'"
+    command: "./wait-for-it.sh postgres:5432 -- /bin/bash -c 'npm start;while :; do sleep 2073600; done'"
     environment:
       - IS_DOCKER=true
       - POSTGRES_DB=hwboard
