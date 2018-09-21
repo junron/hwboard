@@ -1,22 +1,23 @@
 colors = ["#ff5252", "#ff4081", "#e040fb", "#7c4dff", "#536dfe", "#448aff", "#40c4ff", "#18ffff", "#64ffda", "#69f0ae", "#b2ff59", "#eeff41", "#ffff00", "#ffd740", "#ffab40", "#ff6e40"];
-subjectColors = [[],[]];
 
 
 function convertHomework(arrHomework) {
     let calendarEvents = [];
     for (const eachHomework of arrHomework) {
-        //const eventColor = subjectColors[0][subjectColors[1].findIndex(function (findSubject) {return findSubject == eachHomework.subject})];
+        const eventColor = subjectColors[0][subjectColors[1].findIndex(function (findSubject) {return findSubject === eachHomework.subject})];
+        console.log(eventColor)
         const event ={
             title: eachHomework.text,
             id: eachHomework.subject,
             start: eachHomework.dueDate.slice(0, 10),
-            allDay: true
+            allDay: true,
+            color: eventColor
         };
         calendarEvents.push(event);
     }
     return calendarEvents;
 }
-//eventBackgroundColor: eventColor
+
 
 function updateHomework() {
     conn.emit("dataReq",{},(err,data)=>{
@@ -34,8 +35,9 @@ function updateHomework() {
         console.log(homeworkEvents);
     });
 }
-/*
+
 function setColors() {
+    subjectColors = [[],[]];
     conn.emit("channelDataReq",{},(err,data)=>{
         if(err)
             throw err;
@@ -53,16 +55,15 @@ function setColors() {
             subjectColors[1].push(allSubjects[a]);
             a++;
         }
-        console.log("colours set")
+        console.log("colours set");
         updateHomework();
     });
-}*/
+}
 
 conn.on("connect",function(){
-    //setColors();
-    updateHomework();
+    setColors();
 });
-
+let k
 setTimeout(function() {
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
@@ -79,19 +80,25 @@ setTimeout(function() {
         },
         height: calendarHeight,
         editable: false,
-        events: [],
-        eventRender: function(eventObj, $el) {
-            $el.popover({
-                title: eventObj.title,
-                content: eventObj.description,
-                trigger: 'hover',
-                placement: 'top',
-                container: 'body'
+        eventClick: (eventObj,e)=> {
+            console.log(eventObj,e.target)
+            const formattedDate = new Date(eventObj.start).toDateString()
+             k = Framework7App.popover.create({
+                targetEl: e.target,
+                content: `<div class="popover">
+                <div class="popover-inner">
+                <div class="block">
+                <h1>${eventObj.title}</h1>
+                <p>${eventObj.id}<br/>${formattedDate}</p>
+                </div>
+                </div>
+                </div>`
             });
+            k.open();
         }
+
     });
 
-    //setColors();
-    updateHomework();
+    setColors();
 
 }, 1000);
