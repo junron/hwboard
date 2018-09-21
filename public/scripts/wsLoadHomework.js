@@ -1,9 +1,12 @@
-//request homework data from server
-//syntax conn.emit(<eventName>,[<data>],[<callback>])
 //Db is init and user is authed
-conn.on("ready",loadHomework);
+conn.on("ready",loadHomework)
 
 function loadHomework(){
+  if(typeof worker==="undefined"){
+    worker = new PromiseWorker(new Worker("/scripts/worker.js"))
+    console.log("Worker was not initalized.")
+    console.log("Worker is now a(n)",typeof worker)
+  }
   const promises = []
   promises.push(new Promise((resolve,reject)=>{
     conn.emit("dataReq",channelSettings,function(err,data){
@@ -12,6 +15,9 @@ function loadHomework(){
       //Put data into client-side database for caching
       //But only for main page
       if(channel==""){
+        console.log("worker is a(n): ",typeof worker)
+        console.log({worker})
+        console.log("iOS error:",worker," is not initalized")
         worker.postMessage({
           type:"set",
           data
@@ -31,7 +37,7 @@ function loadHomework(){
       worker.postMessage({
         type:"setChannels",
         data
-      });
+      })
       //Add to localstorage as a fallback
       localStorage.setItem("channelData",JSON.stringify(data))
       setSubjectVariables(data)
@@ -53,6 +59,6 @@ conn.on("data",({channel,data:channelData})=>{
   console.log(channel,channelData)
   console.log("Data is pushed from server")
   updateChannelHomework(channel,channelData).then(newData=>{
-    reRender(newData);
+    reRender(newData)
   })
-});
+})

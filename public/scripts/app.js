@@ -1,6 +1,6 @@
 //WebKit bug where variable declared with const or let
 //Cant have the same name as an id
-const theme = "md";
+const theme = "md"
 const Framework7App = new Framework7({
   // App root element
   root: '#app',
@@ -10,18 +10,18 @@ const Framework7App = new Framework7({
     pushState: true,
   },
   routes:[
-    {
-      name:"timetable",
-      path:"/timetable",
-      url:"/routes/timetable.html",
-      reloadPrevious:true,
-      animate:false,
-      on:{
-        pageAfterIn:e=>{
-          loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css"])
-        }
-      }
-    },
+    // {
+    //   name:"timetable",
+    //   path:"/timetable",
+    //   url:"/routes/timetable.html",
+    //   reloadPrevious:true,
+    //   animate:false,
+    //   on:{
+    //     pageAfterIn:e=>{
+    //       loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css"])
+    //     }
+    //   }
+    // },
     {
       name:"channels",
       path:"/channels",
@@ -42,6 +42,7 @@ const Framework7App = new Framework7({
       url:"/",
       on:{
         pageAfterIn:e=>{
+          prevDataHash = ""
           loadSources(e.currentTarget,["/scripts/loadHomework.js"])
         }
       },
@@ -52,11 +53,11 @@ const Framework7App = new Framework7({
         on :{
           pageInit: _=>{
             //Uncheck all
-              const radios = Array.from(document.querySelectorAll(`input[type=radio]`));
-              radios.forEach(radio => radio.checked = false);
-              const sortType = sortOptions.type || getCookie("sortType") || "Due date";
-              let sortOrder = sortOptions.order || 0;
-              document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
+            const radios = Array.from(document.querySelectorAll(`input[type=radio]`))
+            radios.forEach(radio => radio.checked=false)
+            const sortType = sortOptions.type || getCookie("sortType") || "Due date"
+            let sortOrder = sortOptions.order || 0
+            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true
             document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
           }
         }
@@ -66,9 +67,11 @@ const Framework7App = new Framework7({
         path: "/popups/add/",
         url:"/routes/edit-homework.html",
         on :{
+          pageBeforeIn:function(e,page){
+            $(page.el.querySelector("#edit-title")).text("Add homework")
+          },
           pageAfterIn:function(e,page){
-              gradedCheckboxChecked = false;
-              $(".page-current #edit-title").text("Add homework");
+            gradedCheckboxChecked = false
             initEditHomeworkEvents()
           }
         }
@@ -78,13 +81,16 @@ const Framework7App = new Framework7({
         path: "/popups/edit/",
         url:"/routes/edit-homework.html",
         on :{
+          pageBeforeIn:function(e,page){
+            $(page.el.querySelector("#edit-title")).text("Edit homework")
+            startEdit()
+          },
           pageAfterIn:function(e,page){
-              console.log({e, page});
+            console.log({e,page})
             if(e.detail.route.url.includes("?edit=true")){
               Framework7App.router.navigate("/popups/edit/")
             }
-              $(".page-current #edit-title").text("Edit homework");
-              startEdit();
+            $(".page-current #edit-title").text("Edit homework")
             initEditHomeworkEvents()
           }
         }
@@ -113,12 +119,12 @@ const Framework7App = new Framework7({
           if(!navigator.onLine){
             //SHow offline message
             const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.font = "15px Helvetica"
             homeworkSubject.textAlign = "center"
             homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
             
             const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-            homeworkDate.font = "30px Helvetica"
+            homeworkDate.font = "15px Helvetica"
             homeworkDate.textAlign = "center"
             homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
@@ -151,12 +157,12 @@ const Framework7App = new Framework7({
           if(!navigator.onLine){
             //SHow offline message
             const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.font = "15px Helvetica"
             homeworkSubject.textAlign = "center"
             homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
             
             const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-            homeworkDate.font = "30px Helvetica"
+            homeworkDate.font = "15px Helvetica"
             homeworkDate.textAlign = "center"
             homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
@@ -187,26 +193,6 @@ const Framework7App = new Framework7({
         }
       }
     },
-      {
-          name: "calendar",
-          path: "/calendar/",
-          reloadPrevious: true,
-          animate: false,
-          url: "/calendar",
-          on: {
-              pageAfterIn: e => {
-                  const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.css'];
-                  //const scriptTag = document.createElement("script")
-                  const target = e.currentTarget;
-                  loadSources(target, sources);
-                  //scriptTag.src = "/routes/scripts/add-channel.js"
-                  //const target = e.currentTarget
-                  //target.appendChild(scriptTag)
-                  const qtip = ['/scripts/jquery.qtip.min.js', '/styles/jquery.qtip.min.css'];
-                  loadSources(target,qtip);
-              }
-          }
-      },
     {
       name:"channelSettings",
       path:"/channels/:channelName/settings",
@@ -247,20 +233,19 @@ const Framework7App = new Framework7({
           on:{
             pageAfterIn:e=>{
               const target = e.currentTarget
-              const scriptTag2 = document.createElement("script")
-              scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
-              target.appendChild(scriptTag2)
-              loadSources(target,["/routes/scripts/add-subject.js","/routes/styles/timetable.css"])
-              scriptTag2.onload = ()=>{
-                addSubjectRenderTimetable().then(_=>{
-                  $("#app .page-current table#homeworkboard-timetable td").filter(function(){
-                    return this.innerHTML === " "
-                  }).css("background-color","#d8ffe0")
-                })
-              }
+              // const scriptTag2 = document.createElement("script")
+              // scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
+              // target.appendChild(scriptTag2)
+              loadSources(target,["/routes/scripts/add-subject.js"])//,"/routes/styles/timetable.css"])
+              // scriptTag2.onload = ()=>{
+              //   addSubjectRenderTimetable().then(_=>{
+              //     $("#app .page-current table#homeworkboard-timetable td").filter(function(){
+              //       return this.innerHTML === " "
+              //     }).css("background-color","#d8ffe0")
+              //   })
+              // }
             }
           }
-
         }
       ]
     },

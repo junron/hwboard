@@ -30,13 +30,16 @@ build:
 test:
   image: amio/node-chrome
   variables:
-    SNYK_TOKEN: "d76994fe-1f4f-4099-92bb-c4fc2081fa84"
     CI: "true"
     HWBOARD_COOKIE_SECRET: "totallyVerySecureSecretWhatCouldPossiblyGoWrong"
   stage: test
   script:
-  - pwd
-  - whoami
+  - pwd  
+  - npm -v
+  - npm i -g npm
+  - npm -v
+  - node --version
+  - npm audit
   - npm run hwboard add channel
   - npm run hwboard getData
   - mkdir artifacts
@@ -48,8 +51,6 @@ test:
     when: always
 auto_update:
   stage: deploy
-  only: 
-  - master
   script:
   - apk add curl
   - curl --header "X-Gitlab-Token:$GITLAB_TOKEN" https://nushhwboard.tk/cd/update/?commitSHA=$CI_COMMIT_SHA
