@@ -4,21 +4,21 @@
 
 //Load models and stuffs
 const {sequelize,Sequelize,Channels,Homework} = require("./models")
+const {CI:testing} = require("./loadConfig")
 
 //Prevent xss
 const xss = require('xss')
 
 //Map emails to names
-const {loadJSONData,getStudentById} = require("./public/scripts/students")
+const {getStudentById} = require("./students")
 
 //Object to store hwboard channel tables
 const tables = {};
 
 //Generate tables
 async function init(){
-  await loadJSONData("./data.json");
-  await generateHomeworkTables();
-  return sequelize.sync();
+  await generateHomeworkTables()
+  return sequelize.sync()
 }
 
 //Creates tables based on `Homework` model dynamically
@@ -81,7 +81,10 @@ async function getUserChannels(userEmail,permissionLevel=1){
 //Assumes that access has been granted
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
-  const Homework = tables[hwboardName];
+  const Homework = tables[hwboardName]
+  if(typeof Homework==="undefined"){
+    throw new Error("Homework table cound not be found")
+  }
   const data = await Homework.findAll({
     raw: true
   });
@@ -108,8 +111,11 @@ async function getHomework(hwboardName,removeExpired=true){
   }
 }
 async function getNumHomework({channel,subject,graded=0,startDate=Infinity,endDate=Infinity}){
-  const Homework = tables[channel];
-  const Op = Sequelize.Op;
+  const Homework = tables[channel]
+  if(typeof Homework==="undefined"){
+    throw new Error("Homework table cound not be found")
+  }
+  const Op = Sequelize.Op
   const where = {
     subject,
   };
@@ -159,6 +165,34 @@ async function addSubject(channelData){
   originalData.timetable = (originalData.timetable || {});
   originalData.timetable[subject] = data;
   originalData.subjects.push(subject);
+  return Channels.update(originalData,{
+    where:{
+      name:channel
+    }
+  })
+}
+
+//
+async function removeSubject(channelData){
+  let {channel,subject} = channelData
+  subject = xss(subject)
+  console.log(channel,subject)
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }))
+  if(originalDataArray.length==0){
+    throw new Error("Channel does not exist")
+  }
+
+  const originalData = originalDataArray[0]
+  const index = originalData.subjects.indexOf(subject)
+  if (index > -1) {
+    originalData.subjects.splice(index, 1)
+  }
+  delete originalData.timetable[subject]
   return Channels.update(originalData,{
     where:{
       name:channel
@@ -306,15 +340,52 @@ async function getHomeworkAll(channels,removeExpired=true){
 }
 
 async function addHomework(hwboardName,newHomework){
-  const Homework = tables[hwboardName];
+  const Homework = tables[hwboardName]
+  if(typeof Homework==="undefined"){
+    throw new Error("Homework table cound not be found")
+  }
   //Very important step...
-  newHomework = await removeXss(newHomework);
+  newHomework = await removeXss(newHomework)
+  //Disallow invalid subjects
+  //Except in testing
+  if(!testing){
+    const userData = await getUserChannels(newHomework.lastEditPerson)
+    const {subjects} = userData.find(channel => channel.name===hwboardName)
+    if(!subjects.includes(newHomework.subject)){
+      throw new Error("Invalid subject")
+    }
+  }
   return Homework.create(newHomework)
 }
 
 async function editHomework(hwboardName,newHomework){
-  const Homework = tables[hwboardName];
-  newHomework = await removeXss(newHomework);
+  const Homework = tables[hwboardName]
+  const Op = Sequelize.Op
+  if(typeof Homework==="undefined"){
+    throw new Error("Homework table cound not be found")
+  }
+  newHomework = await removeXss(newHomework)
+  //Disallow the modification of overdue homework
+  //Also disallow invalid subjects
+  //Except in testing
+  if(!testing){
+    const userData = await getUserChannels(newHomework.lastEditPerson)
+    const {subjects} = userData.find(channel => channel.name===hwboardName)
+    if(!subjects.includes(newHomework.subject)){
+      throw new Error("Invalid subject")
+    }
+    const numCount = await Homework.count({
+      where:{
+        id:newHomework.id,
+        dueDate:{
+          [Op.gt]:new Date(),
+        }
+      }
+    })
+    if(numCount===0){
+      throw new Error("Modification rejected. Either the homework does not exist or it has expired")
+    }
+  }
   return Homework.update(newHomework,
     {
     where:{
@@ -324,6 +395,25 @@ async function editHomework(hwboardName,newHomework){
 }
 async function deleteHomework(hwboardName,homeworkId){
   const Homework = tables[hwboardName]
+  const Op = Sequelize.Op
+  if(typeof Homework==="undefined"){
+    throw new Error("Homework table cound not be found")
+  }
+  //Disallow the modification of overdue homework
+  //Except in testing
+  if(!testing){
+    const numCount = await Homework.count({
+      where:{
+        id:homeworkId,
+        dueDate:{
+          [Op.gt]:new Date(),
+        }
+      }
+    })
+    if(numCount===0){
+      throw new Error("Modification rejected. Either the homework does not exist or it has expired")
+    }
+  }
   return Homework.destroy(
     {
     where:{
@@ -332,11 +422,11 @@ async function deleteHomework(hwboardName,homeworkId){
   })
 }
 
-const {testing} = require("./loadConfig");
-const expiryTimers = {};
+const expiryTimers = {}
 //Get notified when homework expires
 async function whenHomeworkExpires(channel,callback){
-  let channelData = await getHomework(channel);
+  const scheduler = require('node-schedule')
+  let channelData = await getHomework(channel)
   //We do not want to remove homework that is due when testing
   if(channelData.length===0 || testing){
     return
@@ -348,12 +438,12 @@ async function whenHomeworkExpires(channel,callback){
       return 1
     }
   })
-  const dueDate = channelData.pop().dueDate;
-  console.log({dueDate},dueDate - new Date());
+  const dueDate = channelData.pop().dueDate
+  console.log({dueDate})
   if(expiryTimers[channel]){
-    clearTimeout(expiryTimers[channel])
+    expiryTimers[channel].cancel()
   }
-  expiryTimers[channel] = setTimeout(callback,dueDate - new Date())
+  expiryTimers[channel] = scheduler.scheduleJob(dueDate,callback)
 }
 //Mitigate XSS
 async function removeXss(object){

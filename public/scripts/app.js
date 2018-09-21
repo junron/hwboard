@@ -18,14 +18,7 @@ const Framework7App = new Framework7({
       animate:false,
       on:{
         pageAfterIn:e=>{
-          const target = e.currentTarget
-          const tag = document.createElement("script")
-          tag.src = "/routes/scripts/timetable.js"
-          target.appendChild(tag)
-          const linkTag = document.createElement("link")
-          linkTag.rel = "stylesheet"
-          linkTag.href = "/routes/styles/timetable.css"
-          target.appendChild(linkTag)
+          loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css"])
         }
       }
     },
@@ -49,10 +42,7 @@ const Framework7App = new Framework7({
       url:"/",
       on:{
         pageAfterIn:e=>{
-            const target = e.currentTarget;
-            const tag = document.createElement("script");
-            tag.src = "/scripts/loadHomework.js";
-          target.appendChild(tag)
+          loadSources(e.currentTarget,["/scripts/loadHomework.js"])
         }
       },
       routes:[{
@@ -116,7 +106,7 @@ const Framework7App = new Framework7({
       path:"/analytics",
       reloadPrevious:true,
       animate:false,
-      url:"routes/channel-analytics.html",
+      url:"/routes/channel-analytics.html",
       on:{
         pageAfterIn:e=>{
           channel = ""
@@ -135,14 +125,16 @@ const Framework7App = new Framework7({
           homeworkDateChart = false
           homeworkSubjectChart = false
           
-          $("a[href='/channels'").html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`)
-          $("a[href='/channelName/data.json'").attr("href",`/data.json`)
+          $("a[href='/channels'").parent().html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`)
           $("a[href='/channelName/data.json'").attr("download",`data.json`)
-          $("a[href='/channelName/data.csv'").attr("href",`/data.csv`)
+          $("a[href='/channelName/data.json'").attr("href",`/data.json`)
           $("a[href='/channelName/data.csv'").attr("download",`data.csv`)
+          $("a[href='/channelName/data.csv'").attr("href",`/data.csv`)
           conn.emit("isReady",null,res=>{
-            console.log("ready before page load")
-            renderCharts()
+            if(res){
+              console.log("ready before page load")
+              renderCharts()
+            }
           })
         }
       }
@@ -152,7 +144,7 @@ const Framework7App = new Framework7({
       path:"/channels/:channelName/analytics",
       reloadPrevious:true,
       animate:false,
-      url:"routes/channel-analytics.html",
+      url:"/routes/channel-analytics.html",
       on:{
         pageAfterIn:e=>{
           channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
@@ -170,13 +162,15 @@ const Framework7App = new Framework7({
           }
           homeworkDateChart = false
           homeworkSubjectChart = false
-          $("a[href='/channelName/data.json'").attr("href",`/${channel}/data.json`)
           $("a[href='/channelName/data.json'").attr("download",`${channel}.data.json`)
-          $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`)
+          $("a[href='/channelName/data.json'").attr("href",`/${channel}/data.json`)
           $("a[href='/channelName/data.csv'").attr("download",`${channel}.data.csv`)
+          $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`)
           conn.emit("isReady",null,res=>{
-              console.log("ready before page load");
-            renderCharts()
+            if(res){
+              console.log("ready before page load")
+              renderCharts()
+            }
           })
         }
       }
@@ -189,10 +183,7 @@ const Framework7App = new Framework7({
       url:"/routes/add-channel.html",
       on:{
         pageAfterIn:e=>{
-            const scriptTag = document.createElement("script");
-            scriptTag.src = "/routes/scripts/add-channel.js";
-            const target = e.currentTarget;
-          target.appendChild(scriptTag)
+          loadSources(e.currentTarget,["/routes/scripts/add-channel.js"])
         }
       }
     },
@@ -232,7 +223,9 @@ const Framework7App = new Framework7({
           }
           $(".root-only").hide()
           conn.emit("isReady",null,res=>{
-            getChannelData()
+            if(res){
+              getChannelData()
+            }
           })
         }
       },
@@ -243,11 +236,7 @@ const Framework7App = new Framework7({
           url:"/routes/add-member.html",
           on:{
             pageAfterIn:e=>{
-                console.log(e);
-                const scriptTag = document.createElement("script");
-                scriptTag.src = "/routes/scripts/add-member.js";
-                const target = e.currentTarget;
-              target.appendChild(scriptTag)
+              loadSources(e.currentTarget,["/routes/scripts/add-member.js"])
             }
           }
         },
@@ -257,11 +246,18 @@ const Framework7App = new Framework7({
           url:"/routes/add-subject.html",
           on:{
             pageAfterIn:e=>{
-                console.log(e);
-                const scriptTag = document.createElement("script");
-                scriptTag.src = "/routes/scripts/add-subject.js";
-                const target = e.currentTarget;
-              target.appendChild(scriptTag)
+              const target = e.currentTarget
+              const scriptTag2 = document.createElement("script")
+              scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
+              target.appendChild(scriptTag2)
+              loadSources(target,["/routes/scripts/add-subject.js","/routes/styles/timetable.css"])
+              scriptTag2.onload = ()=>{
+                addSubjectRenderTimetable().then(_=>{
+                  $("#app .page-current table#homeworkboard-timetable td").filter(function(){
+                    return this.innerHTML === " "
+                  }).css("background-color","#d8ffe0")
+                })
+              }
             }
           }
 
@@ -272,19 +268,19 @@ const Framework7App = new Framework7({
   dialog:{
     title: 'Hwboard',
   }
-});
+})
 
 function loadSources(target, sources) {
-    for (const src of sources) {
-        if (src.endsWith(".js")) {
-            const scriptTag = document.createElement("script");
-            scriptTag.src = src;
-            target.appendChild(scriptTag);
-        } else if (src.endsWith(".css")) {
-            const styleTag = document.createElement("link");
-            styleTag.rel = "stylesheet";
-            styleTag.href = src;
-            target.appendChild(styleTag);
-        }
-    }
+  for (const src of sources) {
+      if (src.endsWith(".js")) {
+          const scriptTag = document.createElement("script");
+          scriptTag.src = src;
+          target.appendChild(scriptTag);
+      } else if (src.endsWith(".css")) {
+          const styleTag = document.createElement("link");
+          styleTag.rel = "stylesheet";
+          styleTag.href = src;
+          target.appendChild(styleTag);
+      }
+  }
 }

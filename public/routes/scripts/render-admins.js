@@ -34,11 +34,23 @@ const renderAdmins = (()=>{
     person += `</li>`
     return person
   }
-
+  const promisifiedSocketio = (...data)=>{
+    return new Promise((resolve,reject)=>{
+      if(!navigator.onLine){
+        reject("Cannot load student data offline")
+      }
+      conn.emit("studentDataReq",...data,(err,data)=>{
+        if(err){
+          return reject(err)
+        }else{
+          return resolve(data)
+        }
+      })
+    })
+  }
   async function render(channelData){
     const currentPerson = getCookie("email")
     const isRoot = channelData.roots.includes(currentPerson)
-    await loadJSONData("/scripts/data.json")
     console.log("Data fetched")
     let html = ""
     const roles = ["Roots","Admins","Members"]
@@ -49,7 +61,10 @@ const renderAdmins = (()=>{
         const id = email.replace("@nushigh.edu.sg","")
         let name
         try{
-          name = getStudentByIdSync(id).name
+          ;({name} = await promisifiedSocketio({
+            method:"getStudentById",
+            data:id
+          }))
         }catch(e){
           console.log(e)
           name = id
