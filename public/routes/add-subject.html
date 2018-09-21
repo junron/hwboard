@@ -22,25 +22,54 @@
           </li>
           <li class="item-content item-divider">
             <div class="item-title">
-              Timings<br>
-              <span style="font-size:0.75em">Select timings from the timetable</span>
+              Timings
+            </div>
+            <div class="item-after">
+              <button id="add-timing-button" class="button button-outline" onclick="addTiming()">Add timing</button>
             </div>
           </li>
-          <li class="item-content">
-            <div class="add-subject-timetable-output">
+          <li>
+            <div class="swiper-container">
+              <div class="swiper-pagination"></div>
+              <div class="swiper-wrapper">
+              <div class="swiper-slide" id="timing-1">
+              <ul>
+              <li class="item-content item-input">
+                <div class="item-inner">
+                <div class="item-title item-floating-label">Day</div>
+                <div class="item-input-wrap">
+                  <input type="text" class="day-input" autocomplete="off">
+                  <div class="item-input-error-message"></div>
+                </div>
+              </div>
+              </li>
+              <li class="item-content item-input">
+                <div class="item-inner">
+                <div class=" item-title item-floating-label">Start time</div>
+                <div class="item-input-wrap">
+                  <input type="text" class="start-time" autocomplete="off">
+                  <div class="item-input-error-message"></div>
+                </div>
+                </div>
+              </li>
+              <li class="item-content item-input">
+                  <div class="item-inner">
+                <div class="item-title item-floating-label">End time</div>
+                <div class="item-input-wrap">
+                  <input type="text" class="end-time" autocomplete="off">
+                  <div class="item-input-error-message"></div>
+                </div>
+                </div>
+              </li>
+              </ul>
             </div>
-          </li>
-          <br>
-            <li class="item-content item-input">
-              <table id="homeworkboard-timetable" cellspacing="0">
-              </table>
-            </li>
+            </div>
+            </div>
           </li>
       </ul>
-    </div>
+  </div>
   <div class="row md">
-      <button id="add-subject" class="button col disabled">OK</button>
+      <button id="add-subject" class="button col">OK</button>
     </div>
-    <br>
 </div>
 </div>

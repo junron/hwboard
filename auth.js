@@ -9,10 +9,10 @@ async function verifyToken(token){
     cache: true,
     jwksUri: 'https://login.microsoftonline.com/common/discovery/v2.0/keys'
   });
-  return new Promise(function(resolve){
+  return new Promise(function(resolve,reject){
     //Grr why cant ppl use promises all da way
     client.getSigningKey(kid, async function(err, key) {
-      if(err) throw err;
+      if(err) return reject(err)
       const signingKey = key.publicKey || key.rsaPublicKey
       const options = { 
         algorithms: ['RS256'],
