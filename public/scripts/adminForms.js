@@ -40,7 +40,7 @@ async function getHomeworkData(id=false){
   if(channel==undefined){
     throw new Error("Subject is not valid")
   }
-  const date = await parseDate()
+  const date = await dateParser.parseDate()
   const dueDate = date.getTime()
   if(text==""){
     throw new Error("Homework name not specified")
@@ -73,7 +73,7 @@ function load(subject,graded,text,dueDate,title){
   //Keep the time also
   $(".page-current #dueDate").val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
   $(".page-current #homework-name").val(text.trim())
-  parseDate()
+  dateParser.parseDate()
   if(graded){
     $(".page-current #toggle-is-graded-checkbox").attr("checked",true)
     gradedCheckboxChecked = true
@@ -94,6 +94,60 @@ function startEdit(){
   })
 }
 
+async function backgroundSync(url,body){
+  return new Promise(async (resolve,reject)=>{
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+      const swRegistration = await navigator.serviceWorker.ready
+
+      let action
+      if(url.includes("add")){
+        action="added"
+      }else if(url.includes("edit")){
+        action="edited"
+      }else if(url.includes("delete")){
+        action="deleted"
+      }
+
+      if(Notification.permission!=="granted"){
+        //Request notifications for background sync
+        await new Promise((ok,cancel)=>{
+          Framework7App.dialog.confirm("You are currently offline.\nTo enable homework to be synced as soon as you get online, notifications need to be enabled.","Background sync",async ()=>{
+            const result = await Notification.requestPermission()
+            if (result !== 'granted') {
+              return reject(new Error("Notification permission not granted."))
+            }
+            const title = "Hwboard"
+            const notifOptions = {
+              icon:"/images/icons/favicon.png",
+              body:`Your homework will be ${action} as soon as you are online.`,
+            }
+            swRegistration.showNotification(title,notifOptions)
+            return ok()
+          },cancel)
+        })
+      }else{
+        Framework7App.dialog.confirm("You are currently offline. Your homework will be "+action+" ASAP.")
+      }
+      const id = promiseServiceWorker.postMessage({type:"sync",
+        data:{
+          url,
+          options:{
+              method:"POST",
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body:JSON.stringify(body)
+            }
+        }
+      })
+      return resolve(id)
+    }else{
+      reject("Background sync not available")
+    }
+  })
+}
+
 async function addHomework(){
   $("#update-hwboard-button").removeClass("editing-homework")
   const homework = await getHomeworkData()
@@ -102,6 +156,9 @@ async function addHomework(){
     return
   }
   previousAddedHomework = homework
+  if(navigator.onLine===false){
+    return backgroundSync("/api/addReq",homework)
+  }
   const promise = new Promise(function(resolve,reject){
     conn.emit('addReq',homework,function(err){
       if(err) return reject(err)
@@ -114,6 +171,9 @@ async function addHomework(){
 async function editHomework(){
   $("#update-hwboard-button").removeClass("editing-homework")
   const homework = await getHomeworkData(true)
+  if(navigator.onLine===false){
+    return backgroundSync("/api/editReq",homework)
+  }
   const promise = new Promise(function(resolve,reject){
     conn.emit('editReq',homework,function(err){
       if(err) return reject(err)
@@ -130,12 +190,12 @@ function startDelete(){
 }
 function deleteHomework(){
   getExistingInfo().then(homeworkData=>{
-    const {id,channel} = homeworkData
+    if(navigator.onLine===false){
+      backgroundSync("/api/deleteReq",homeworkData).then(console.log)
+      return
+    }
     const promise = new Promise(function(resolve,reject){
-      conn.emit('deleteReq',{
-        id,
-        channel
-      },(err)=>{
+      conn.emit('deleteReq',homeworkData,(err)=>{
         if(err) return reject(err)
         //TODO: tell user that operation succeeded
         return resolve()

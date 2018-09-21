@@ -8,7 +8,7 @@ const globalChannels = {}
 //export so that accessible in app.js
 //server param is a http server
 exports.createServer = function(server){
-  //Create websocker server from http server
+  //Create websocket server from http server
   const io = require('socket.io')(server)
 
   //Load hwboard configuration
@@ -47,6 +47,13 @@ exports.createServer = function(server){
 
     //Authentication
     ;(async ()=>{
+      socket.ready = false
+      //Tell client socket status
+      socket.on("isReady",(_,callback)=>{
+        ;(async ()=>{
+          callback(socket.ready)
+        })().catch(uncaughtErrorHandler)
+      })
       //Authenticate user on connection
       //You can access cookies in websockets too!
       const token = socket.request.signedCookies.token
@@ -68,12 +75,11 @@ exports.createServer = function(server){
           preferred_username:socket.request.signedCookies.username
         }
         socket.channels = {}
-        db.getUserChannels(socket.userData.preferred_username).then(channels=>{
-          for (const channel of channels){
-            socket.join(channel.name)
-            socket.channels[channel.name] = globalChannels[channel.name]
-          }
-        })
+        const channels = await db.getUserChannels(socket.userData.preferred_username)
+        for (const channel of channels){
+          socket.join(channel.name)
+          socket.channels[channel.name] = globalChannels[channel.name]
+        }
       }else if(testing){
         //In testing mode
         socket.userData = {
@@ -81,12 +87,11 @@ exports.createServer = function(server){
           preferred_username:"tester@nushigh.edu.sg"
         }
         socket.channels = {}
-        db.getUserChannels(socket.userData.preferred_username).then(channels=>{
-          for (const channel of channels){
-            socket.join(channel.name)
-            socket.channels[channel.name] = globalChannels[channel.name]
-          }
-        })
+        const channels = await db.getUserChannels(socket.userData.preferred_username)
+        for (const channel of channels){
+          socket.join(channel.name)
+          socket.channels[channel.name] = globalChannels[channel.name]
+        }
       }else{
         //In production, verify token
         try{
@@ -128,15 +133,17 @@ exports.createServer = function(server){
       //Homework ops
       require("./websocket-routes/homework")(socket,io,db)
 
+      //Student data
+      require("./websocket-routes/students-api")(socket)
       //Stats
       require("./websocket-routes/analytics")(socket,db)
 
       //For tests
       require("./websocket-routes/tests")(socket)
 
-      socket.on("isReady",(_,callback)=>callback(true))
+      socket.ready = true
       return socket.emit("ready")
-    })
+      })
     .catch(uncaughtErrorHandler)
 
     socket.on('disconnect', function(){

@@ -3,89 +3,111 @@
 
 //This file is very messy.
 //Please ignore it as it is only for the CLI
-const gitlab = (process.env.CI_PROJECT_NAME==="hwboard2");
-
-if(process.argv[2]+process.argv[3]==="addchannel") {
-let config ={};
-if(gitlab||process.argv[4]==="default"){
+const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
+if(process.argv[2]==="getData"){
+  function decryptData(password){
+    var fs = require('fs')
+    const crypto = require("crypto")
+    var decrypt = crypto.createDecipher("aes-256-cbc", password)
+    var output = fs.createWriteStream("data.json")
+    const input = fs.createReadStream("data.json.enc")
+    input
+    .pipe(decrypt)
+    .pipe(output)
+  }
+  const readline = require('readline')
+  if(process.env.HWBOARD_DATA_PASSWORD){
+    return decryptData(process.env.HWBOARD_DATA_PASSWORD)
+  }
+  const r1 = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+  r1.question("Decryption key:  ",password=>{
+    decryptData(password)
+    r1.close()
+  })
+}else if(process.argv[2]+process.argv[3]=="addchannel"){
+let config ={}
+if(gitlab||process.argv[4]=="default"){
   config = {
     name:"testing",
     subjects:["math","chemistry"],
     roots:["tester@nushigh.edu.sg"],
     admins:[],
     members:[]
-  };
-  console.log("Using config:");
+  }
+  console.log("Using config:")
   console.log(config)
   ;(async()=>{
-    const {sequelize,Channels} = require("./models");
-    await sequelize.sync();
+    const {sequelize,Channels} = require("./models")
+    await sequelize.sync()
     const data = await Channels.findAll({
       where:{
         name:config.name
       },
       raw: true
-    });
+    })
     if(data.length>0){
-      console.log("Channel already exists. Exiting.");
-      sequelize.close();
+      console.log("Channel already exists. Exiting.")
+      sequelize.close()
       return
     }
-    await Channels.create(config);
-    console.log("channel created");
+    await Channels.create(config)
+    console.log("channel created")
     sequelize.close()
   })()
 }else{
-  const notEmpty = string => string.length > 0;
-  const readline = require('readline');
+  const notEmpty = string => string.length > 0
+  const readline = require('readline')
   const r1 = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   })
   r1.question("Channel name: (testing)  ",(answer="testing")=>{
-    if(answer===""){
+    if(answer==""){
       answer ="testing"
     }
-    config.name = answer;
+    config.name = answer
     r1.question("Subjects (seperate with comma): ()  ",(answer)=>{
-      config.subjects = answer.split(",").filter(notEmpty);
+      config.subjects = answer.split(",").filter(notEmpty)
       r1.question("Root users (seperate with comma): (h1710074@nushigh.edu.sg)  ",(answer="h1710074@nushigh.edu.sg")=>{
-        if(answer===""){
+        if(answer==""){
           answer ="h1710074@nushigh.edu.sg"
         }
-        config.roots = answer.split(",");
+        config.roots = answer.split(",")
         r1.question("Admin users (seperate with comma): ()  ",(answer)=>{
-          if(answer===""){
+          if(answer==""){
             config.admins = []
           }else{
             config.admins = answer.split(",")
           }
           r1.question("Normal users (seperate with comma): ()  ",(answer="*")=>{
-            config.members = answer.split(",").filter(notEmpty);
+            config.members = answer.split(",").filter(notEmpty)
             console.log(config)
             r1.question("Is this okay? (Yes/no)  ",async answer=>{
-              if(answer.toLowerCase()==="yes"){
-                const {init} = require("./database");
-                const {sequelize,Channels} = require("./models");
-                await sequelize.sync();
+              if(answer.toLowerCase()=="yes"){
+                const {init} = require("./database")
+                const {sequelize,Channels} = require("./models")
+                await sequelize.sync()
                 const data = await Channels.findAll({
                   where:{
                     name:config.name
                   },
                   raw: true
-                });
+                })
                 if(data.length>0){
-                  console.log("Channel already exists. Exiting.");
-                  sequelize.close();
+                  console.log("Channel already exists. Exiting.")
+                  sequelize.close()
                   return
                 }
-                await Channels.create(config);
-                await init();
-                console.log("channel created");
-                sequelize.close();
+                await Channels.create(config)
+                await init()
+                console.log("channel created")
+                sequelize.close()
                 r1.close()
               }else{
-                console.log("operation cancelled");
+                console.log("operation cancelled")
                 r1.close()
               }
             })
@@ -95,10 +117,50 @@ if(gitlab||process.argv[4]==="default"){
     })
   })
 }
-}else if(process.argv[2]==="config"){
-  if(process.argv[3]==="secret-only"){
-    const fs = require("fs");
-    let config;
+}else if(process.argv[2]=="preinstall"){
+  if(process.env.CI_PROJECT_NAME=="hwboard2"||process.env.IS_DOCKER=="true" || typeof process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD !== "undefined"){
+    if(typeof process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD !== "undefined"){
+      console.log("Chrome will not be downloaded for puppeteer.")
+      process.exit(0)
+    }else{
+      console.log("Chrome will be downloaded for puppeteer.")
+      process.exit(0)
+    }
+  }else{
+    const readline = require('readline')
+    const r1 = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+
+    r1.question("Puppeteer requires chrome to work.\nDownload chrome? (Y/n):  ",ans=>{
+      if(ans=="n"){
+        console.log(`
+        Please set the PUPPETEER_SKIP_CHROMIUM_DOWNLOAD to true.
+
+        On unix, run:
+        export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+        On Windows, run:
+        set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+
+        Press Ctrl + c twice to exit, then set the environment variable.
+        Then, run npm install again
+        `)
+        setTimeout(()=>{
+          process.exit(1)
+        },100000000)
+      }else{
+        console.log("Chrome will be downloaded for puppeteer.")
+        r1.close()
+      }
+    })
+  }
+}else if(process.argv[2]=="config"){
+  if(process.argv[3]=="secret-only"){
+    const fs = require("fs")
+    let config
     try{
       config = JSON.parse(fs.readFileSync("./config.json"))
     }catch(e){

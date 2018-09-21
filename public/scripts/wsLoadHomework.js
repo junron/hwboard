@@ -36,17 +36,22 @@ function loadHomework(){
       localStorage.setItem("channelData",JSON.stringify(data))
       setSubjectVariables(data)
       console.log("Load channels from websocket")
-      resolve()
+      resolve(true)
     })
   }))
-  Promise.all(promises).then(([data])=>{
-    reRender(data)
+  Promise.all(promises).then(data=>{
+    if(data[1]===true){
+      reRender(data[0])
+    }else{
+      console.log("Unable to load channel data")
+    }
   })
 }
 //Server pushes data, re-render
 conn.on("data",({channel,data:channelData})=>{
   //Add data to client side db
-  console.log(channel,channelData);
+  console.log(channel,channelData)
+  console.log("Data is pushed from server")
   updateChannelHomework(channel,channelData).then(newData=>{
     reRender(newData);
   })

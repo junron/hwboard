@@ -19,7 +19,8 @@ router.get("/testing/su",(req, res) => {
       res.cookie("username",switchUserName,{
         secure:true,
         signed:true,
-        httpOnly:true
+        httpOnly:true,
+        sameSite:"lax"
       })
       res.end(`Successful su from ${ip} for ${switchUserName}`)
     }else{

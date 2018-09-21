@@ -23,6 +23,7 @@ function getChannelData(){
 }
 
 async function renderChannelData(data){
+  $(".root-only").hide()
   const {render} = renderAdmins
   document.getElementById("member-list").innerHTML = await render(data)
   document.getElementById("subject-list").innerHTML = renderSubjects(data)
