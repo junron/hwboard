@@ -63,7 +63,6 @@ function setColors() {
 conn.on("connect",function(){
     setColors();
 });
-let k
 setTimeout(function() {
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
@@ -81,9 +80,8 @@ setTimeout(function() {
         height: calendarHeight,
         editable: false,
         eventClick: (eventObj,e)=> {
-            console.log(eventObj,e.target)
             const formattedDate = new Date(eventObj.start).toDateString()
-             k = Framework7App.popover.create({
+            let popover = Framework7App.popover.create({
                 targetEl: e.target,
                 content: `<div class="popover">
                 <div class="popover-inner">
@@ -94,11 +92,11 @@ setTimeout(function() {
                 </div>
                 </div>`
             });
-            k.open();
+            popover.open();
         }
 
     });
 
     setColors();
 
-}, 1000);
+}, 750);
