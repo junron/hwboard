@@ -210,6 +210,7 @@ const Framework7App = new Framework7({
                   //target.appendChild(scriptTag)
                   const qtip = ['/scripts/jquery.qtip.min.js', '/styles/jquery.qtip.min.css'];
                   loadSources(target,qtip);
+                  calendarInit()
               }
           }
       },
