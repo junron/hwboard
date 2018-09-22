@@ -1,9 +1,12 @@
-//request homework data from server
-//syntax conn.emit(<eventName>,[<data>],[<callback>])
 //Db is init and user is authed
 conn.on("ready",loadHomework)
 
 function loadHomework(){
+  if(typeof worker==="undefined"){
+    worker = new PromiseWorker(new Worker("/scripts/worker.js"))
+    console.log("Worker was not initalized.")
+    console.log("Worker is now a(n)",typeof worker)
+  }
   const promises = []
   promises.push(new Promise((resolve,reject)=>{
     conn.emit("dataReq",channelSettings,function(err,data){
@@ -12,6 +15,9 @@ function loadHomework(){
       //Put data into client-side database for caching
       //But only for main page
       if(channel==""){
+        console.log("worker is a(n): ",typeof worker)
+        console.log({worker})
+        console.log("iOS error:",worker," is not initalized")
         worker.postMessage({
           type:"set",
           data
@@ -36,17 +42,22 @@ function loadHomework(){
       localStorage.setItem("channelData",JSON.stringify(data))
       setSubjectVariables(data)
       console.log("Load channels from websocket")
-      resolve()
+      resolve(true)
     })
   }))
-  Promise.all(promises).then(([data])=>{
-    reRender(data)
+  Promise.all(promises).then(data=>{
+    if(data[1]===true){
+      reRender(data[0])
+    }else{
+      console.log("Unable to load channel data")
+    }
   })
 }
 //Server pushes data, re-render
 conn.on("data",({channel,data:channelData})=>{
   //Add data to client side db
   console.log(channel,channelData)
+  console.log("Data is pushed from server")
   updateChannelHomework(channel,channelData).then(newData=>{
     reRender(newData)
   })

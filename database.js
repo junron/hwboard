@@ -17,6 +17,7 @@ const tables = {}
 
 //Generate tables
 async function init(){
+  await sequelize.sync()
   await generateHomeworkTables()
   return sequelize.sync()
 }

@@ -10,18 +10,18 @@ const Framework7App = new Framework7({
     pushState: true,
   },
   routes:[
-    {
-      name:"timetable",
-      path:"/timetable",
-      url:"/routes/timetable.html",
-      reloadPrevious:true,
-      animate:false,
-      on:{
-        pageAfterIn:e=>{
-          loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css"])
-        }
-      }
-    },
+    // {
+    //   name:"timetable",
+    //   path:"/timetable",
+    //   url:"/routes/timetable.html",
+    //   reloadPrevious:true,
+    //   animate:false,
+    //   on:{
+    //     pageAfterIn:e=>{
+    //       loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css"])
+    //     }
+    //   }
+    // },
     {
       name:"channels",
       path:"/channels",
@@ -42,6 +42,7 @@ const Framework7App = new Framework7({
       url:"/",
       on:{
         pageAfterIn:e=>{
+          prevDataHash = ""
           loadSources(e.currentTarget,["/scripts/loadHomework.js"])
         }
       },
@@ -66,9 +67,11 @@ const Framework7App = new Framework7({
         path: "/popups/add/",
         url:"/routes/edit-homework.html",
         on :{
+          pageBeforeIn:function(e,page){
+            $(page.el.querySelector("#edit-title")).text("Add homework")
+          },
           pageAfterIn:function(e,page){
             gradedCheckboxChecked = false
-            $(".page-current #edit-title").text("Add homework")
             initEditHomeworkEvents()
           }
         }
@@ -78,13 +81,16 @@ const Framework7App = new Framework7({
         path: "/popups/edit/",
         url:"/routes/edit-homework.html",
         on :{
+          pageBeforeIn:function(e,page){
+            $(page.el.querySelector("#edit-title")).text("Edit homework")
+            startEdit()
+          },
           pageAfterIn:function(e,page){
             console.log({e,page})
             if(e.detail.route.url.includes("?edit=true")){
               Framework7App.router.navigate("/popups/edit/")
             }
             $(".page-current #edit-title").text("Edit homework")
-            startEdit()
             initEditHomeworkEvents()
           }
         }
@@ -113,12 +119,12 @@ const Framework7App = new Framework7({
           if(!navigator.onLine){
             //SHow offline message
             const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.font = "15px Helvetica"
             homeworkSubject.textAlign = "center"
             homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
             
             const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-            homeworkDate.font = "30px Helvetica"
+            homeworkDate.font = "15px Helvetica"
             homeworkDate.textAlign = "center"
             homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
@@ -126,13 +132,15 @@ const Framework7App = new Framework7({
           homeworkSubjectChart = false
           
           $("a[href='/channels'").parent().html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`)
-          $("a[href='/channelName/data.json'").attr("href",`/data.json`)
           $("a[href='/channelName/data.json'").attr("download",`data.json`)
-          $("a[href='/channelName/data.csv'").attr("href",`/data.csv`)
+          $("a[href='/channelName/data.json'").attr("href",`/data.json`)
           $("a[href='/channelName/data.csv'").attr("download",`data.csv`)
+          $("a[href='/channelName/data.csv'").attr("href",`/data.csv`)
           conn.emit("isReady",null,res=>{
-            console.log("ready before page load")
-            renderCharts()
+            if(res){
+              console.log("ready before page load")
+              renderCharts()
+            }
           })
         }
       }
@@ -149,24 +157,26 @@ const Framework7App = new Framework7({
           if(!navigator.onLine){
             //SHow offline message
             const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-            homeworkSubject.font = "30px Helvetica"
+            homeworkSubject.font = "15px Helvetica"
             homeworkSubject.textAlign = "center"
             homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
             
             const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-            homeworkDate.font = "30px Helvetica"
+            homeworkDate.font = "15px Helvetica"
             homeworkDate.textAlign = "center"
             homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
           homeworkDateChart = false
           homeworkSubjectChart = false
-          $("a[href='/channelName/data.json'").attr("href",`/${channel}/data.json`)
           $("a[href='/channelName/data.json'").attr("download",`${channel}.data.json`)
-          $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`)
+          $("a[href='/channelName/data.json'").attr("href",`/${channel}/data.json`)
           $("a[href='/channelName/data.csv'").attr("download",`${channel}.data.csv`)
+          $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`)
           conn.emit("isReady",null,res=>{
-            console.log("ready before page load")
-            renderCharts()
+            if(res){
+              console.log("ready before page load")
+              renderCharts()
+            }
           })
         }
       }
@@ -199,7 +209,9 @@ const Framework7App = new Framework7({
           }
           $(".root-only").hide()
           conn.emit("isReady",null,res=>{
-            getChannelData()
+            if(res){
+              getChannelData()
+            }
           })
         }
       },
@@ -220,7 +232,18 @@ const Framework7App = new Framework7({
           url:"/routes/add-subject.html",
           on:{
             pageAfterIn:e=>{
-              loadSources(e.currentTarget,["/routes/scripts/add-subject.js"])
+              const target = e.currentTarget
+              // const scriptTag2 = document.createElement("script")
+              // scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
+              // target.appendChild(scriptTag2)
+              loadSources(target,["/routes/scripts/add-subject.js"])//,"/routes/styles/timetable.css"])
+              // scriptTag2.onload = ()=>{
+              //   addSubjectRenderTimetable().then(_=>{
+              //     $("#app .page-current table#homeworkboard-timetable td").filter(function(){
+              //       return this.innerHTML === " "
+              //     }).css("background-color","#d8ffe0")
+              //   })
+              // }
             }
           }
         }
@@ -233,16 +256,23 @@ const Framework7App = new Framework7({
 })
 
 function loadSources(target, sources) {
-  for (const src of sources) {
-      if (src.endsWith(".js")) {
-          const scriptTag = document.createElement("script");
-          scriptTag.src = src;
-          target.appendChild(scriptTag);
-      } else if (src.endsWith(".css")) {
-          const styleTag = document.createElement("link");
-          styleTag.rel = "stylesheet";
-          styleTag.href = src;
-          target.appendChild(styleTag);
+  function loadSource(source){
+    return new Promise((resolve,reject)=>{
+      if (source.endsWith(".js")) {
+        const scriptTag = document.createElement("script");
+        scriptTag.src = source;
+        target.appendChild(scriptTag);
+        scriptTag.onload = resolve;
+      } else if (source.endsWith(".css")) {
+        const styleTag = document.createElement("link");
+        styleTag.rel = "stylesheet";
+        styleTag.href = source;
+        target.appendChild(styleTag);
+        styleTag.onload = resolve
+      }else{
+        reject("Source type cannot be determined")
       }
+    })
   }
+  return Promise.all(sources.map(loadSource))
 }

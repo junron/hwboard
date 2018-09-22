@@ -8,16 +8,32 @@
 
 
 module.exports = (socket)=>{
+  const uncaughtErrorHandler = require("./error")(socket)
+
   //For tests
   socket.on("whoami",function(msg,callback){
-    return callback(null,socket.userData.preferred_username)
+    ;(async ()=>{
+      return callback(null,socket.userData.preferred_username)
+    })()
+    .catch(e => callback(e.toString()))
+    //Error in handling error
+    .catch(uncaughtErrorHandler)
   })
   socket.on("textMessage",function(msg,callback){
-    console.log(msg)
-    return callback(null,msg+"received")
+    ;(async()=>{
+      return callback(null,msg+"received")
+    })()
+    .catch(e => callback(e.toString()))
+    //Error in handling error
+    .catch(uncaughtErrorHandler)
   })
   socket.on("binaryMessage",function(msg,callback){
-    const text = msg.toString()
-    return callback(null,Buffer.from(text+"received","utf8"))
+    ;(async()=>{
+      const text = msg.toString()
+      return callback(null,Buffer.from(text+"received","utf8"))
+    })()
+    .catch(e => callback(e.toString()))
+    //Error in handling error
+    .catch(uncaughtErrorHandler)
   })
 }
