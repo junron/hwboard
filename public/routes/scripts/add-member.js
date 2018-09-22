@@ -137,6 +137,6 @@ document.getElementById("add-member").addEventListener("click",()=>{
     })
   }).catch(e=>{
     console.log(e)
-    Framework7App.dialog.alert(e.message)
+    Framework7App.dialog.alert(e.toString())
   })
 })

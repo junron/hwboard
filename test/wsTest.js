@@ -9,7 +9,7 @@ const websocket = require("../app").server
 const port = require("../loadConfig").PORT
 let client
 describe("websocket",function(){
-    this.timeout(0000)
+    this.timeout(10000)
     before(function(done){
       websocket.listen(port)
       setTimeout(()=>{
