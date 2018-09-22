@@ -2,7 +2,14 @@ const Sequelize = require('sequelize-cockroachdb');
 
 //Same as docker env variables 
 //or use a config file
-const {POSTGRES_PASSWORD:dbPasswd,POSTGRES_USER:dbUser,POSTGRES_DB:dbName="hwboard",SEQUELIZE_LOGGING:logging} = require("../loadConfig")
+const {
+  POSTGRES_PASSWORD:dbPasswd,
+  POSTGRES_USER:dbUser,
+  POSTGRES_DB:dbName="hwboard",
+  SEQUELIZE_LOGGING:logging,
+  COCKROACH_DB_PORT:cockroachDBPort,
+  COCKROACH_DB_SECURE:cockroachSecure
+} = require("../loadConfig")
 
 
 let POSTGRES_HOST = "localhost"
@@ -15,15 +22,24 @@ if(process.env.CI_PROJECT_NAME=="hwboard2" || process.env.IS_DOCKER=="true"){
 
 const config = {
   host:POSTGRES_HOST,
-  port:26257,
+  port:cockroachDBPort,
   dialect: "postgres",
   operatorsAliases: Sequelize.Op
 }
-console.log(logging)
+console.log({logging})
 if(logging===false){
   config.logging = false
 }
-
+if(cockroachSecure){
+  const fs = require("fs")
+  config.dialectOptions = {
+    ssl: {
+      ca: fs.readFileSync(__dirname + '../cockroach/certs/ca.crt').toString(),
+      key: fs.readFileSync(__dirname + '../cockroach/certs/client.'+dbUser+'.key').toString(),
+      cert: fs.readFileSync(__dirname + '../cockroach/certs/client.'+dbUser+'.crt').toString(),
+    }
+  }
+}
 const sequelize = new Sequelize(dbName,dbUser,dbPasswd,config)
 sequelize.authenticate()
 .then(() => {
