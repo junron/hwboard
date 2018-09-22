@@ -20,7 +20,7 @@ function convertHomework(arrHomework) {
 
 
 function updateHomework() {
-    conn.emit("dataReq",{},(err,data)=>{
+    conn.emit("dataReq",{removeExpired:false},(err,data)=>{
         if(err)
             throw err;
         const hw = data;
@@ -83,7 +83,7 @@ function calendarInit(){
                 <div class="popover-inner">
                 <div class="block">
                 <h1>${eventObj.title}</h1>
-                <p>${eventObj.id}<br/>${formattedDate}</p>
+                <p>${eventObj.id}<br/>Due ${formattedDate}</p>
                 </div>
                 </div>
                 </div>`
