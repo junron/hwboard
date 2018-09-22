@@ -109,7 +109,7 @@ if(process.argv[2]==="cockroach"){
       }
 
       const chmodFiles = [fs.chmod("cockroach/run.sh",0o755),fs.chmod("cockroach/ssh-tunnel-init.sh",0o755)]
-      await [...chmodFiles,fs.writeFile("./docker-compose.yml",dockerCompose)]
+      await [...chmodFiles,fs.writeFile("./docker-compose.yml",dockerCompose),fs.writeFile("./config.json",JSON.stringify(config,null,2))]
       r1.close()
       console.log(`
       
