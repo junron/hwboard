@@ -256,16 +256,23 @@ const Framework7App = new Framework7({
 })
 
 function loadSources(target, sources) {
-  for (const src of sources) {
-      if (src.endsWith(".js")) {
-          const scriptTag = document.createElement("script");
-          scriptTag.src = src;
-          target.appendChild(scriptTag);
-      } else if (src.endsWith(".css")) {
-          const styleTag = document.createElement("link");
-          styleTag.rel = "stylesheet";
-          styleTag.href = src;
-          target.appendChild(styleTag);
+  function loadSource(source){
+    return new Promise((resolve,reject)=>{
+      if (source.endsWith(".js")) {
+        const scriptTag = document.createElement("script");
+        scriptTag.src = source;
+        target.appendChild(scriptTag);
+        scriptTag.onload = resolve;
+      } else if (source.endsWith(".css")) {
+        const styleTag = document.createElement("link");
+        styleTag.rel = "stylesheet";
+        styleTag.href = source;
+        target.appendChild(styleTag);
+        styleTag.onload = resolve
+      }else{
+        reject("Source type cannot be determined")
       }
+    })
   }
+  return Promise.all(sources.map(loadSource))
 }
