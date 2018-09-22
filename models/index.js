@@ -34,9 +34,9 @@ if(cockroachSecure){
   const fs = require("fs")
   config.dialectOptions = {
     ssl: {
-      ca: fs.readFileSync(__dirname + '../cockroach/certs/ca.crt').toString(),
-      key: fs.readFileSync(__dirname + '../cockroach/certs/client.'+dbUser+'.key').toString(),
-      cert: fs.readFileSync(__dirname + '../cockroach/certs/client.'+dbUser+'.crt').toString(),
+      ca: fs.readFileSync(__dirname + '/../cockroach/certs/ca.crt').toString(),
+      key: fs.readFileSync(__dirname + '/../cockroach/certs/client.'+dbUser+'.key').toString(),
+      cert: fs.readFileSync(__dirname + '/../cockroach/certs/client.'+dbUser+'.crt').toString(),
     }
   }
 }
