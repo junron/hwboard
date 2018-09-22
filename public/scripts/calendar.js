@@ -63,7 +63,7 @@ function setColors() {
 conn.on("connect",function(){
     setColors();
 });
-setTimeout(function() {
+function calendarInit(){
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
 
@@ -71,11 +71,7 @@ setTimeout(function() {
         header: {
             left: 'title',
             center: '',
-            right: 'prev,next today',
-        },
-        buttonIcons: {
-            prev: 'left-single-arrow',
-            next: 'right-single-arrow',
+            right: '',
         },
         height: calendarHeight,
         editable: false,
@@ -98,5 +94,4 @@ setTimeout(function() {
     });
 
     setColors();
-
-}, 750);
+}
