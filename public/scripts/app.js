@@ -200,17 +200,17 @@ const Framework7App = new Framework7({
           animate: false,
           url: "/calendar",
           on: {
-              pageAfterIn: e => {
+              pageAfterIn: async e => {
                   const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.css'];
                   //const scriptTag = document.createElement("script")
                   const target = e.currentTarget;
-                  loadSources(target, sources);
+                  await loadSources(target, sources)
+                  calendarInit()
                   //scriptTag.src = "/routes/scripts/add-channel.js"
                   //const target = e.currentTarget
                   //target.appendChild(scriptTag)
-                  const qtip = ['/scripts/jquery.qtip.min.js', '/styles/jquery.qtip.min.css'];
-                  loadSources(target,qtip);
-                  calendarInit()
+                  // const qtip = ['/scripts/jquery.qtip.min.js', '/styles/jquery.qtip.min.css'];
+                  // loadSources(target,qtip);
               }
           }
       },
@@ -277,17 +277,24 @@ const Framework7App = new Framework7({
   }
 })
 
-function loadSources(target, sources) {
-  for (const src of sources) {
-      if (src.endsWith(".js")) {
-          const scriptTag = document.createElement("script");
-          scriptTag.src = src;
-          target.appendChild(scriptTag);
-      } else if (src.endsWith(".css")) {
-          const styleTag = document.createElement("link");
-          styleTag.rel = "stylesheet";
-          styleTag.href = src;
-          target.appendChild(styleTag);
+async function loadSources(target, sources) {
+  function loadSource(source){
+    return new Promise((resolve,reject)=>{
+      if (source.endsWith(".js")) {
+        const scriptTag = document.createElement("script");
+        scriptTag.src = source;
+        scriptTag.addEventListener("load",resolve);
+        target.appendChild(scriptTag);
+      } else if (source.endsWith(".css")) {
+        const styleTag = document.createElement("link");
+        styleTag.rel = "stylesheet";
+        styleTag.href = source;
+        target.appendChild(styleTag);
+        styleTag.addEventListener("load",resolve);
+      }else{
+        reject("Source type cannot be determined")
       }
+    })
   }
+  return Promise.all(sources.map(loadSource))
 }
