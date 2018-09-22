@@ -50,7 +50,7 @@ if(process.argv[2]==="cockroach"){
           const sshUser = await r1.questionAsync("Remote ssh user (eg johnny) ")
           const sshKeyfile = await r1.questionAsync("Private key file path for user "+sshUser+" (eg ~/.ssh/id_rsa) ")
           thisNodeOptions.nodeHost = sshHost
-          thisNodeOptions.connectionCommand = `ssh ${sshUser}@${sshHost} -i ${sshKeyfile} -L ${nodePort}:localhost:${nodePort}`
+          thisNodeOptions.connectionCommand = `ssh ${sshUser}@${sshHost} -i ${sshKeyfile} -L 0.0.0.0:${nodePort}:localhost:${nodePort}`
         }
         thisNodeOptions.nodePort = nodePort
         options.nodes[options.nodes.length] = thisNodeOptions
@@ -78,11 +78,14 @@ if(process.argv[2]==="cockroach"){
       const cockroachInit = options.nodes.reduce((prev,curr)=>{
         const {nodePort} = curr
         openUFWPorts+=nodePort + ","
-        return prev + "localhost:"+nodePort+","
+        if(curr.connectionCommand===undefined){
+          return prev
+        }
+        return prev + "host.docker.internal:"+nodePort+","
       },base)
       const shebang = `#!/usr/bin/env bash
       `
-      const runForever = "--background;while :; do sleep 2073600; done"
+      const runForever = "--background --advertise-host host.docker.internal;while :; do sleep 2073600; done"
       if(openUFWPorts.slice(-1)==","){
         openUFWPorts = openUFWPorts.slice(0,-1)
       }
