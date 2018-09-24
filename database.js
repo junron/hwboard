@@ -13,7 +13,7 @@ const xss = require('xss')
 const {getStudentById} = require("./students")
 
 //Object to store hwboard channel tables
-const tables = {}
+const tables = {};
 
 //Generate tables
 async function init(){
@@ -24,19 +24,19 @@ async function init(){
 
 //Creates tables based on `Homework` model dynamically
 async function generateHomeworkTables(){
-  const channels = await getUserChannels("*")
+  const channels = await getUserChannels("*");
   for (let channel of channels){
     //Could have curried but meh
     tables[channel.name] = Homework(sequelize,Sequelize,channel.name)
   }
 }
 async function getUserChannels(userEmail,permissionLevel=1){
-  if(userEmail=="*"){
+  if(userEmail==="*"){
     return Channels.findAll({
       raw: true,
     })
   }
-  const Op = Sequelize.Op
+  const Op = Sequelize.Op;
   const data = await Channels.findAll({
     raw: true,
     where:{
@@ -58,23 +58,23 @@ async function getUserChannels(userEmail,permissionLevel=1){
         }
       ]
     }
-  }) 
-  if(userEmail=="*"){
+  });
+  if(userEmail==="*"){
     return data
   }
   for(let channel of data){
     if(channel.roots.includes(userEmail)){
-      channel.permissions = 3
+      channel.permissions = 3;
       //We want the highest permissions
-      continue
+      continue;
     }
     if(channel.admins.includes(userEmail)&&permissionLevel<=2){
-      channel.permissions = 2
-      continue
+      channel.permissions = 2;
+      continue;
     }
     if(channel.members.includes(userEmail)&&permissionLevel<=1){
-      channel.permissions = 1
-      continue
+      channel.permissions = 1;
+      continue;
     }
   }
   return data
@@ -88,18 +88,18 @@ async function getHomework(hwboardName,removeExpired=true){
   }
   const data = await Homework.findAll({
     raw: true
-  })
+  });
   if(removeExpired){
     return await filter(data,async homework=>{
       if(homework.dueDate >= new Date().getTime()){
-        homework.channel = hwboardName
-        let studentName = homework.lastEditPerson
+        homework.channel = hwboardName;
+        let studentName = homework.lastEditPerson;
         try{
-          const student = await getStudentById(homework.lastEditPerson.replace("@nushigh.edu.sg",""))
+          const student = await getStudentById(homework.lastEditPerson.replace("@nushigh.edu.sg",""));
           studentName = student.name
         }catch(e){
         }
-        homework.lastEditPerson = studentName
+        homework.lastEditPerson = studentName;
         return true
       }
       return false
@@ -119,15 +119,15 @@ async function getNumHomework({channel,subject,graded=0,startDate=Infinity,endDa
   const Op = Sequelize.Op
   const where = {
     subject,
-  }
+  };
   if(graded){
-    if(graded==-1){
+    if(graded===-1){
       where.isTest = false
     }else{
       where.isTest = true
     }
   }
-  if(startDate!=Infinity && startDate != endDate){
+  if(startDate!==Infinity && startDate !== endDate){
     where.dueDate = {
       [Op.lte]:endDate,
       [Op.gt]:startDate,
@@ -136,17 +136,17 @@ async function getNumHomework({channel,subject,graded=0,startDate=Infinity,endDa
   return Homework.count({where})
 }
 async function addSubject(channelData){
-  let {channel,data,subject} = channelData
-  const days = ["mon","tue","wed","thu","fri"]
-  subject = xss(subject)
+  let {channel,data,subject} = channelData;
+  const days = ["mon","tue","wed","thu","fri"];
+  subject = xss(subject);
   const isValidTime = time => parseInt(time) === time && time >= 0 && time < 2400
   //Validation
-  const timetableDays = Object.keys(data)
+  const timetableDays = Object.keys(data);
   for(const day of timetableDays){
     if(!days.includes(day)){
       throw new Error(`${day} is invalid`)
     }
-    const times = data[day]
+    const times = data[day];
     for(const timing of times){
       if(!(timing.every(isValidTime))){
         throw new Error(`${timing} is invalid`)
@@ -158,14 +158,42 @@ async function addSubject(channelData){
       name:channel
     },
     raw: true
+  }));
+  if(originalDataArray.length===0){
+    throw new Error("Channel does not exist")
+  }
+  const originalData = originalDataArray[0];
+  originalData.timetable = (originalData.timetable || {});
+  originalData.timetable[subject] = data;
+  originalData.subjects.push(subject);
+  return Channels.update(originalData,{
+    where:{
+      name:channel
+    }
+  })
+}
+
+//
+async function removeSubject(channelData){
+  let {channel,subject} = channelData
+  subject = xss(subject)
+  console.log(channel,subject)
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
   }))
   if(originalDataArray.length==0){
     throw new Error("Channel does not exist")
   }
+
   const originalData = originalDataArray[0]
-  originalData.timetable = (originalData.timetable || {})
-  originalData.timetable[subject] = data
-  originalData.subjects.push(subject)
+  const index = originalData.subjects.indexOf(subject)
+  if (index > -1) {
+    originalData.subjects.splice(index, 1)
+  }
+  delete originalData.timetable[subject]
   return Channels.update(originalData,{
     where:{
       name:channel
@@ -208,16 +236,16 @@ async function removeMember(channel,member){
     },
     raw: true
   }))
-  if(originalDataArray.length==0){
+  if(originalDataArray.length===0){
     throw new Error("Channel does not exist")
   }
-  const originalData = originalDataArray[0]
+  const originalData = originalDataArray[0];
   const remove = (array,value) =>{
-    const index = array.indexOf(value)
-    if(index==-1){
+    const index = array.indexOf(value);
+    if(index===-1){
       throw new Error("Member does not exist")
     }
-    array.splice(index,1)
+    array.splice(index,1);
     return array
   }
   if(originalData.roots.includes(member)){
@@ -242,22 +270,22 @@ async function removeMember(channel,member){
 async function addMember(channel,members,permissionLevel){
   const permissionToNumber = lvl => {
     const index = ["member","admin","root"].indexOf(lvl)
-    if(index==-1){
+    if(index===-1){
       throw new Error("Permission level invalid")
     }
     return index+1
-  }
+  };
   const numberToPermission = number => ["members","admins","roots"][number-1]
   const originalDataArray = (await Channels.findAll({
     where:{
       name:channel
     },
     raw: true
-  }))
-  if(originalDataArray.length==0){
+  }));
+  if(originalDataArray.length===0){
     throw new Error("Channel does not exist")
   }
-  const originalData = originalDataArray[0]
+  const originalData = originalDataArray[0];
   const getPermissionLvl = email => {
     if(originalData.roots.includes(email)){
       return 3
@@ -268,17 +296,17 @@ async function addMember(channel,members,permissionLevel){
     }else{
       return 0
     }
-  }
-  const targetRole = originalData[permissionLevel+"s"]
+  };
+  const targetRole = originalData[permissionLevel+"s"];
   //The target permission level
-  const permissionLvl = permissionToNumber(permissionLevel)
+  const permissionLvl = permissionToNumber(permissionLevel);
   for(let member of members){
     //Input does not contain emails
-    member = member + "@nushigh.edu.sg"
-    const currentPermissionLvl = getPermissionLvl(member)
+    member = member + "@nushigh.edu.sg";
+    const currentPermissionLvl = getPermissionLvl(member);
     //Member is not in channel yet
-    if(currentPermissionLvl==0){
-      targetRole.push(member)
+    if(currentPermissionLvl===0){
+      targetRole.push(member);
       continue
     }
     //Member already in target role
@@ -289,10 +317,10 @@ async function addMember(channel,members,permissionLevel){
     //Target permission lvl > existing permission lvl
     //Remove from existing and add to new
     if(permissionLvl > currentPermissionLvl ){
-      const index = currentPermissionLvlArray.indexOf(member)
-      currentPermissionLvlArray.splice(index,1)
-      targetRole.push(member)
-      continue
+      const index = currentPermissionLvlArray.indexOf(member);
+      currentPermissionLvlArray.splice(index,1);
+      targetRole.push(member);
+      continue;
     }
   }
   return Channels.update(originalData,{
@@ -302,12 +330,12 @@ async function addMember(channel,members,permissionLevel){
   })
 }
 async function getHomeworkAll(channels,removeExpired=true){
-  const homeworkPromises = []
-  const channelNames = Object.keys(channels)
+  const homeworkPromises = [];
+  const channelNames = Object.keys(channels);
   for (const name of channelNames){
     homeworkPromises.push(getHomework(name,removeExpired))
   }
-  const homework2d = await Promise.all(homeworkPromises)
+  const homework2d = await Promise.all(homeworkPromises);
   //Join array of array of homework into single array of homework
   return [].concat(...homework2d)
 }
@@ -401,7 +429,7 @@ async function whenHomeworkExpires(channel,callback){
   const scheduler = require('node-schedule')
   let channelData = await getHomework(channel)
   //We do not want to remove homework that is due when testing
-  if(channelData.length==0 || testing){
+  if(channelData.length===0 || testing){
     return
   }
   channelData = channelData.sort(function(a,b){
@@ -421,7 +449,7 @@ async function whenHomeworkExpires(channel,callback){
 //Mitigate XSS
 async function removeXss(object){
   for (let property in object){
-    if(typeof object[property]=="string"){
+    if(typeof object[property]==="string"){
       object[property] = xss(object[property])
     }
   }
@@ -433,14 +461,14 @@ const arrayToObject = channelArrays => {
     result[channel.name] = channel
   }
   return result
-}
+};
 const getNumTables = () => {
   return Object.keys(tables).length
-}
+};
 
 //async filter
 async function filter(arr, callback) {
-  const fail = Symbol()
+  const fail = Symbol();
   return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i=>i!==fail)
 }
 module.exports={

@@ -20,4 +20,4 @@
     }
     location.reload()
   }
-})()
+})();
