@@ -5,7 +5,6 @@ function convertHomework(arrHomework) {
     let calendarEvents = [];
     for (const eachHomework of arrHomework) {
         const eventColor = subjectColors[0][subjectColors[1].findIndex(function (findSubject) {return findSubject === eachHomework.subject})];
-        console.log(eventColor)
         const event ={
             title: eachHomework.text,
             id: eachHomework.subject,
@@ -32,7 +31,6 @@ function updateHomework() {
         };
         $('#calendar').fullCalendar('addEventSource', eventsToRender);
         console.log("Homework Events rendered on calendar");
-        console.log(homeworkEvents);
     });
 }
 
