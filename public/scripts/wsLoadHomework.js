@@ -1,5 +1,5 @@
 //Db is init and user is authed
-conn.on("ready",loadHomework)
+conn.on("ready",loadHomework);
 
 function loadHomework(){
   if(typeof worker==="undefined"){
@@ -37,7 +37,7 @@ function loadHomework(){
       worker.postMessage({
         type:"setChannels",
         data
-      })
+      });
       //Add to localstorage as a fallback
       localStorage.setItem("channelData",JSON.stringify(data))
       setSubjectVariables(data)
@@ -59,6 +59,6 @@ conn.on("data",({channel,data:channelData})=>{
   console.log(channel,channelData)
   console.log("Data is pushed from server")
   updateChannelHomework(channel,channelData).then(newData=>{
-    reRender(newData)
+    reRender(newData);
   })
-})
+});

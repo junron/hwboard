@@ -5,9 +5,9 @@ ignore:
   'npm:shelljs:20140723':
     - pm2 > shelljs:
         reason: User input will not be passed to it
-        expires: '2018-10-09T01:27:12.034Z'
+        expires: '2018-10-21T12:23:10.233Z'
   'npm:chownr:20180731':
     - pm2 > chokidar > fsevents > node-pre-gyp > tar > chownr:
         reason: No user input given to pm2
-        expires: '2018-10-06T09:46:41.632Z'
+        expires: '2018-10-21T12:23:10.233Z'
 patch: {}
