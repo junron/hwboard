@@ -1,31 +1,30 @@
 const Raven = require('raven');
 
-let config;
-let reportErrors;
+let config
+let reportErrors
 //Catch errors in loading config
-
 try {
   //Load config
-    config = require("./loadConfig");
+  config = require("./loadConfig")
   reportErrors = config.REPORT_ERRORS
 }catch(e){
-    Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install();
+  Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install()
   Raven.captureException(e)
 }
 if(reportErrors){
   Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install()
 }
-const {HOSTNAME: hostName, PORT: port, CI: testing, COOKIE_SECRET: cookieSecret} = config;
+const {HOSTNAME:hostName,PORT:port,CI:testing,COOKIE_SECRET:cookieSecret} = config
 
 //Utils
-const http = require('http');
-const express = require("express");
-const app = express();
+const http = require('http')
+const express = require("express")
+const app = express()
 const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const websocket = require("./websocket");
+const websocket = require("./websocket")
 
 
 //Parsing request body
@@ -37,8 +36,8 @@ app.use(cookieParser(cookieSecret));
 
 
 // create servers
-const server = http.createServer(app);
-const io = websocket.createServer(server);
+const server = http.createServer(app)
+const io = websocket.createServer(server)
 
 //Content security policy settings
 //"unsafe-inline" for inline styles and scripts, aim to remove
@@ -58,7 +57,7 @@ frame-ancestors 'none';`.split("\n").join("")
 
 app.use(function(req,res,next){
   if(reportErrors){
-      const reportURI = "report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908;";
+    const reportURI = "report-uri https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908;"
     res.header("Content-Security-Policy",csp + reportURI)
   }else{
     res.header("Content-Security-Policy",csp)
@@ -76,7 +75,7 @@ app.use(function(req,res,next){
   res.header("Expect-CT",`max-age=31536000, enforce,  report-uri="https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908"`)
   res.header(`Feature-policy`,`geolocation 'none'; accelerometer 'none';ambient-light-sensor 'none'; sync-xhr 'none'; autoplay 'none'; picture-in-picture 'none';payment 'none'`)
   next()
-});
+})
 
 //routes
 const api = require("./routes/api")
@@ -107,7 +106,7 @@ if(testing){
 //express setup
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'node_modules')));
+app.use(express.static(path.join(__dirname, 'node_modules')))
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
