@@ -48,9 +48,8 @@ function setColors() {
                 allSubjects.push(eachSubject);
             }
         }
-        const spacing = Math.floor(colors.length - allSubjects.length);
         let a = 0;
-        for (let i = 0; i < colors.length; i += spacing){
+        for (let i = 0; i < colors.length; i++){
             subjectColors[0].push(colors[i]);
             subjectColors[1].push(allSubjects[a]);
             a++;
