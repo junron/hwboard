@@ -1,5 +1,5 @@
 //Db is init and user is authed
-conn.on("ready",loadHomework)
+conn.on("ready",loadHomework);
 
 //Server pushes data, re-render
 conn.on("data",({channel,data:channelData})=>{
@@ -7,6 +7,6 @@ conn.on("data",({channel,data:channelData})=>{
   console.log(channel,channelData)
   console.log("Data is pushed from server")
   updateChannelHomework(channel,channelData).then(newData=>{
-    reRender(newData)
+    reRender(newData);
   })
-})
+});
