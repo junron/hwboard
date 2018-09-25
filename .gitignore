@@ -4,5 +4,7 @@ node_modules
 !docker.config.json
 artifacts
 *~
-#*
+\#*
+.idea
+.map
 **/data.json

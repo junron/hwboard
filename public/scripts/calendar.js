@@ -20,7 +20,7 @@ function convertHomework(arrHomework) {
 
 
 function updateHomework() {
-    conn.emit("dataReq",{},(err,data)=>{
+    conn.emit("dataReq",{removeExpired:false},(err,data)=>{
         if(err)
             throw err;
         const hw = data;
@@ -63,8 +63,7 @@ function setColors() {
 conn.on("connect",function(){
     setColors();
 });
-let k
-setTimeout(function() {
+function calendarInit(){
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
 
@@ -72,33 +71,27 @@ setTimeout(function() {
         header: {
             left: 'title',
             center: '',
-            right: 'prev,next today',
-        },
-        buttonIcons: {
-            prev: 'left-single-arrow',
-            next: 'right-single-arrow',
+            right: '',
         },
         height: calendarHeight,
         editable: false,
         eventClick: (eventObj,e)=> {
-            console.log(eventObj,e.target)
             const formattedDate = new Date(eventObj.start).toDateString()
-             k = Framework7App.popover.create({
+            let popover = Framework7App.popover.create({
                 targetEl: e.target,
                 content: `<div class="popover">
                 <div class="popover-inner">
                 <div class="block">
                 <h1>${eventObj.title}</h1>
-                <p>${eventObj.id}<br/>${formattedDate}</p>
+                <p>${eventObj.id}<br/>Due ${formattedDate}</p>
                 </div>
                 </div>
                 </div>`
             });
-            k.open();
+            popover.open();
         }
 
     });
 
     setColors();
-
-}, 1000);
+}
