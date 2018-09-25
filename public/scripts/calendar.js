@@ -33,7 +33,7 @@ function updateHomework() {
             throw err;
         const hw = data;
         const homeworkEvents = convertHomework(hw);
-        $('#calendar').fullCalendar('removeEventSource', $('#calendar').fullCalendar('getEventSources'));
+        $('#calendar').fullCalendar('removeEventSources');
         const eventsToRender = {
             events: homeworkEvents,
             textColor: 'white'
@@ -66,9 +66,20 @@ function setColors() {
     });
 }
 
-conn.on("connect",function(){
-    setColors();
-});
+conn.on("ready",setColors);
+conn.on("data",setColors);
+function changeView(){
+    const {name:currView} = $('#calendar').fullCalendar( 'getView' )
+    if(currView==="basicWeek"){
+        $('#calendar').fullCalendar('changeView', 'month')
+        $("#calendar-next").text("Next month")
+        $("#calendar-prev").text("Prev month")
+    }else{
+        $('#calendar').fullCalendar('changeView', 'basicWeek')
+        $("#calendar-next").text("Next week")
+        $("#calendar-prev").text("Prev week")
+    }
+}
 function calendarInit(){
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
@@ -79,8 +90,20 @@ function calendarInit(){
             center: '',
             right: '',
         },
+        defaultView:"basicWeek",
         height: calendarHeight,
         editable: false,
+        viewRender: (view,elem)=>{
+            if(view.type==="basicWeek"){
+                dateParser.getTermXWeekY(new Date(view.end)).then(({term,week})=>{
+                    let weekText = ` (Term ${term} Week ${week})`
+                    if(term==="Holiday"){
+                        weekText = " (Holiday)"
+                    }
+                    $("#calendar .fc-toolbar .fc-left h2").text($("#calendar .fc-toolbar .fc-left h2").text()+weekText)
+                })
+            }
+        },
         eventClick: (eventObj,e)=> {
             const formattedDate = new Date(eventObj.start).toDateString()
             let popover = Framework7App.popover.create({

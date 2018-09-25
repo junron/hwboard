@@ -11,10 +11,11 @@
     </div>
     <div class="page-content block">
         <div class="row">
-        <button class="button col" onclick="$('#calendar').fullCalendar('prev');">Previous month</button>
+            <button class="button col" id="calendar-prev" onclick="$('#calendar').fullCalendar('prev');">Prev week</button>
             <button class="button col" onclick="$('#calendar').fullCalendar('today');">Today</button>
-            <button class="button col" onclick="$('#calendar').fullCalendar('next');">Next month</button>
+            <button class="button col" id="calendar-next" onclick="$('#calendar').fullCalendar('next');">Next week</button>
         </div>
+        <button class="button col" id="calendar-mode-toggle" onclick="changeView();">Switch display format</button>
         <div id='calendar'></div>
         <br>
         <br>
