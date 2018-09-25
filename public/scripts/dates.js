@@ -107,7 +107,32 @@ const dateParserFn = (timetable,subjectSelectionList)=>{
     }
     return thisStart
   }
-
+  /**
+   * Returns the term and week number, given a date
+   * @param {Date} date 
+   */
+  async function getTermXWeekY(date){
+    const terms = [new Date(2018,0,2),new Date(2018,2,19),new Date(2018,5,25), new Date(2018,8,10)]
+    const term = terms.filter(term => date>term).length
+    const termStart = terms[term-1]
+    if(termStart===undefined){
+      return {
+        term:"Holiday",
+        week:""
+      }
+    }
+    const week = Math.floor(Sugar.Date.daysUntil(termStart,date)/7)+1
+    if(week>10){
+      return {
+        term:"Holiday",
+        week:""
+      }
+    }
+    return {
+      term,
+      week
+    }
+  }
   /**
    * Ensures that the date given is not in the past.
    * Rounds the date if it is found to be in the past
@@ -241,7 +266,8 @@ const dateParserFn = (timetable,subjectSelectionList)=>{
   return {
     parseDate,
     daysUntil,
-    setSubject
+    setSubject,
+    getTermXWeekY
   }
 }
 
