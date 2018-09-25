@@ -23,6 +23,7 @@ const {MS_CLIENTID:clientId,MS_CLIENTSECRET:clientSecret,HOSTNAME:hostname,CI:te
 const basePushFiles = [
   "/styles/roboto.css",
   "/styles/icons.css",
+  "/scripts/core.js",
   "/fonts/material.ttf",
   "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
   "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
