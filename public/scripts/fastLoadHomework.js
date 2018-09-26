@@ -17,7 +17,3 @@ const sortOptions = {
   type:getCookie("sortType") || "Due date",
   order:parseInt(getCookie("sortOrder")) || 0
 }
-//Web worker for indexedDB
-//Use promise based messaging
-let worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-console.log("Worker created:",worker)
