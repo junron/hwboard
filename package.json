@@ -38,21 +38,20 @@
     "promise-worker": "^2.0.0",
     "raven": "^2.6.4",
     "request-promise-native": "^1.0.5",
-    "sequelize": "^4.38.1",
-    "simple-git": "^1.100.0",
+    "sequelize": "^4.39.0",
+    "simple-git": "^1.102.0",
     "socket.io": "^2.1.1",
     "socket.io-cookie-parser": "1.0.0",
     "sugar-date": "^2.0.4",
     "xss": "^1.0.3"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.3.1",
     "chai": "^4.1.2",
     "lighthouse": "^3.1.1",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.4",
     "puppeteer": "^1.8.0",
-    "snyk": "^1.97.0",
+    "snyk": "^1.98.0",
     "socket.io-client": "^2.1.1"
   }
 }
