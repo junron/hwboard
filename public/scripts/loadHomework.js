@@ -1,5 +1,8 @@
 //Turns channel data into variables
 function setSubjectVariables(channelData){
+  if(typeof channelData != "object" || channelData === null){
+   return false
+  }
   timetable = {}
   subjectChannelMapping = {}
   subjectSelectionList = []

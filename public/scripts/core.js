@@ -45,12 +45,19 @@ const hwboard = (()=>{
       }
       if(!data.length){
         //IndexedDB is empty, perhaps is first page load
-        return []
+        return false
       }
       return data
     }))
+    const quickest = await Promise.race(promises)
+    if(!quickest){
+      return {
+        quickest:((await promises[0]) || (await promises[1])),
+        promises
+      }
+    }
     return {
-      quickest:await Promise.race(promises),
+      quickest,
       promises
     }
   }
@@ -92,8 +99,15 @@ const hwboard = (()=>{
         })
       }))
     }
+    const quickest = await Promise.race(promises)
+    if(!quickest){
+      return {
+        quickest:((await promises[0]) || (await promises[1])),
+        promises
+      }
+    }
     return {
-      quickest:await Promise.race(promises),
+      quickest,
       promises
     }
   }
