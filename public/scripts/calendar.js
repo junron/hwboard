@@ -80,6 +80,7 @@ function changeView(){
         $("#calendar-prev").text("Prev week")
     }
 }
+let calendarWeekends = false;
 function calendarInit(){
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
@@ -90,9 +91,33 @@ function calendarInit(){
             center: '',
             right: '',
         },
+        weekends:false,
         defaultView:"basicWeek",
         height: calendarHeight,
         editable: false,
+        eventAfterRender: eventObj =>{
+            const start = new Date($('#calendar').fullCalendar('getView').start)
+            const end = new Date($('#calendar').fullCalendar('getView').end)
+            for(const homework of eventObj.source.rawEventDefs){
+                const date = new Date(homework.start)
+                if(date>end || date<start){
+                    continue
+                }
+                const dow = Sugar.Date.format(date,"{dow}")
+                if((dow === "sun" || dow === "sat")){
+                    if(!calendarWeekends){
+                        calendarWeekends = true
+                        $('#calendar').fullCalendar('option', {weekends:true})
+                        return
+                    }
+                    return
+                }
+            }
+            if(calendarWeekends){
+                calendarWeekends = false
+                $('#calendar').fullCalendar('option', {weekends:false})
+            }
+        },
         viewRender: (view,elem)=>{
             if(view.type==="basicWeek"){
                 dateParser.getTermXWeekY(new Date(view.end)).then(({term,week})=>{
