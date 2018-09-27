@@ -9,7 +9,9 @@ body {
   max-width: 95%;
   max-height: 80%;
   padding-top: 30px; }
-
+#calendar .fc-day-grid-event > .fc-content {
+  white-space: normal;
+}
 .fc-time-grid-event.fc-v-event.fc-event {
   border-radius: 4px;
   border: none;
