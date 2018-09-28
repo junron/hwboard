@@ -28,10 +28,15 @@ function convertHomework(arrHomework) {
 
 
 function updateHomework() {
-    conn.emit("dataReq",{removeExpired:false},(err,data)=>{
-        if(err)
-            throw err;
-        const hw = data;
+    hwboard.getHomework(false).then(async ({promises})=>{
+        const p1 = await promises[0]
+        const p2 = await promises[1]
+        let hw
+        if(p1.length>p2.length){
+            hw = p1
+        }else{
+            hw = p2
+        }
         const homeworkEvents = convertHomework(hw);
         $('#calendar').fullCalendar('removeEventSources');
         const eventsToRender = {
@@ -40,14 +45,13 @@ function updateHomework() {
         };
         $('#calendar').fullCalendar('addEventSource', eventsToRender);
         console.log("Homework Events rendered on calendar");
-    });
+    })
 }
 
 function setColors() {
     subjectColors = [[],[]];
-    conn.emit("channelDataReq",{},(err,data)=>{
-        if(err)
-            throw err;
+    hwboard.getChannelData().then(({quickest:data})=>{
+        console.log(data)
         let allSubjects = [];
         for (const channel of data) {
             const channelSubjects = channel.subjects;
@@ -63,7 +67,7 @@ function setColors() {
         }
         console.log("colours set");
         updateHomework();
-    });
+    })
 }
 
 conn.on("ready",setColors);
