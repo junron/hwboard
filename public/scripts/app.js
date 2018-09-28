@@ -1,6 +1,6 @@
 //WebKit bug where variable declared with const or let
 //Cant have the same name as an id
-const theme = "md"
+const theme = "md";
 const Framework7App = new Framework7({
   // App root element
   root: '#app',
@@ -53,11 +53,11 @@ const Framework7App = new Framework7({
         on :{
           pageInit: _=>{
             //Uncheck all
-            const radios = Array.from(document.querySelectorAll(`input[type=radio]`))
-            radios.forEach(radio => radio.checked=false)
-            const sortType = sortOptions.type || getCookie("sortType") || "Due date"
-            let sortOrder = sortOptions.order || 0
-            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true
+              const radios = Array.from(document.querySelectorAll(`input[type=radio]`));
+              radios.forEach(radio => radio.checked = false);
+              const sortType = sortOptions.type || getCookie("sortType") || "Due date";
+              let sortOrder = sortOptions.order || 0;
+              document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
             document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
           }
         }
@@ -86,7 +86,7 @@ const Framework7App = new Framework7({
             startEdit()
           },
           pageAfterIn:function(e,page){
-            console.log({e,page})
+              console.log({e, page});
             if(e.detail.route.url.includes("?edit=true")){
               Framework7App.router.navigate("/popups/edit/")
             }
@@ -193,6 +193,22 @@ const Framework7App = new Framework7({
         }
       }
     },
+      {
+          name: "calendar",
+          path: "/calendar/",
+          reloadPrevious: true,
+          animate: false,
+          url: "/calendar",
+          on: {
+              pageAfterIn: async e => {
+                  const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.css'];
+                  const target = e.currentTarget;
+                  await loadSources(target, sources)
+                  while (!$("#calendar").fullCalendar){}
+                  calendarInit()
+              }
+          }
+      },
     {
       name:"channelSettings",
       path:"/channels/:channelName/settings",
@@ -246,6 +262,7 @@ const Framework7App = new Framework7({
               // }
             }
           }
+
         }
       ]
     },
@@ -255,20 +272,20 @@ const Framework7App = new Framework7({
   }
 })
 
-function loadSources(target, sources) {
+async function loadSources(target, sources) {
   function loadSource(source){
     return new Promise((resolve,reject)=>{
       if (source.endsWith(".js")) {
         const scriptTag = document.createElement("script");
         scriptTag.src = source;
+        scriptTag.addEventListener("load",resolve);
         target.appendChild(scriptTag);
-        scriptTag.onload = resolve;
       } else if (source.endsWith(".css")) {
         const styleTag = document.createElement("link");
         styleTag.rel = "stylesheet";
         styleTag.href = source;
         target.appendChild(styleTag);
-        styleTag.onload = resolve
+        styleTag.addEventListener("load",resolve);
       }else{
         reject("Source type cannot be determined")
       }
