@@ -17,7 +17,7 @@ const latencyCheck = ()=>{
         data:id
       },(_,name)=>{
         latency.resolve = (performance.now()-start).toFixed(2)
-        if(name.id!==id){
+        if(name && name.id!==id){
           throw new Error("Id mismatch")
         }
         //Get channels

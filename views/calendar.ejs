@@ -1,0 +1,25 @@
+<body>
+<link rel="stylesheet" type="text/css" href="/fonts.googleapis.com/css?family=Raleway"/>
+<div class="page page-current">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <!-- bar icon and link -->
+            <a href="#" class="left panel-open" style="padding-left:10px"><i class="bar"
+                                                                             style="color:#ffffff">&#xe900;</i></a>
+            <div class="title">Calendar</div>
+        </div>
+    </div>
+    <div class="page-content block">
+        <div class="row">
+            <button class="button col" id="calendar-prev" onclick="$('#calendar').fullCalendar('prev');">Prev week</button>
+            <button class="button col" onclick="$('#calendar').fullCalendar('today');">Today</button>
+            <button class="button col" id="calendar-next" onclick="$('#calendar').fullCalendar('next');">Next week</button>
+        </div>
+        <button class="button col" id="calendar-mode-toggle" onclick="changeView();">Switch display format</button>
+        <div id='calendar'></div>
+        <br>
+        <br>
+        <br>
+    </div>
+</div>
+</body>
