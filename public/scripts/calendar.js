@@ -51,7 +51,6 @@ function updateHomework() {
 function setColors() {
     subjectColors = [[],[]];
     hwboard.getChannelData().then(({quickest:data})=>{
-        console.log(data)
         let allSubjects = [];
         for (const channel of data) {
             const channelSubjects = channel.subjects;
@@ -84,7 +83,8 @@ function changeView(){
         $("#calendar-prev").text("Prev week")
     }
 }
-let calendarWeekends = false;
+
+calendarWeekends = false;
 function calendarInit(){
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
