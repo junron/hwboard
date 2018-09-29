@@ -200,7 +200,7 @@ if(process.argv[2]==="restore"){
     ;(async ()=>{
       const {promisify} = require('util');
       const execFile  = promisify(require('child_process').execFile);
-      await execFile("cockroach",["cert","create-node","localhost","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
+      await execFile("cockroach",["cert","create-node","localhost","host.docker.internal","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
       console.log("Node key generated in `./cockroach/certs/node.key`.")
       console.log("Node cert generated in `./cockroach/certs/node.crt`.")
       console.log("Copy `./certs/node.key`,`./cockroach/certs/node.crt` and `./cockroach/certs/ca.crt`")
