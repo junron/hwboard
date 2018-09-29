@@ -57,7 +57,7 @@ async function getUserChannels(userEmail,permissionLevel=1){
       continue
     }
   }
-  return data
+  return data.filter(channel.permissions>0)
 }
 //Assumes that access has been granted
 //Check authorization before calling
