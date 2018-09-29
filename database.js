@@ -84,7 +84,7 @@ async function getUserChannels(userEmail,permissionLevel=1){
 async function getHomework(hwboardName,removeExpired=true){
   const Homework = tables[hwboardName]
   if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found")
+    throw new Error("Homework table cound not be found: "+hwboardName)
   }
   const data = await Homework.findAll({
     raw: true

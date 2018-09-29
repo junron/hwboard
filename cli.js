@@ -4,7 +4,25 @@
 //This file is very messy.
 //Please ignore it as it is only for the CLI
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
-if(process.argv[2]==="getData"){
+if(process.argv[2]==="backup"){
+  ;(async ()=>{
+    const fileName = process.argv[3]
+    const {sequelize} = require("./models")
+    await sequelize.sync()
+    const {getHomeworkAll,getUserChannels,init} = require("./database")
+    await init()
+    const fs  = require("fs")
+    const channelsRaw = await getUserChannels("*")
+    let channels = {}
+    for (const channel of channelsRaw){
+      channels[channel.name] = channel
+    }
+    const homework = await getHomeworkAll(channels,false)
+    fs.writeFileSync(fileName,JSON.stringify(homework,null,2))
+    console.log("Backup complete")
+    sequelize.close()
+  })()
+}else if(process.argv[2]==="getData"){
   function decryptData(password){
     var fs = require('fs')
     const crypto = require("crypto")
