@@ -10,20 +10,43 @@ function promisifyAll(moduleObj) {
 	return moduleObj
 }
 
+function uuid() {
+  var uuid = "", i, random;
+  for (i = 0; i < 32; i++) {
+    random = Math.random() * 16 | 0;
+
+    if (i == 8 || i == 12 || i == 16 || i == 20) {
+      uuid += "-"
+    }
+    uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+  }
+  return uuid;
+}
+
 //This file is very messy.
 //Please ignore it as it is only for the CLI
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
 if(process.argv[2]==="restore"){
-  const fileName = process.argv[3]
-  const {sequelize} = require("./models")
-  sequelize.sync()
-  const {addHomework} = require("./database")
-  const fs  = require("fs")
-  const json = JSON.parse(fs.readFileSync(fileName,'utf-8'))
-  for (const homework of json){
-    const {channel} = homework
-    addHomework(channel,homework)
-  }
+  ;(async ()=>{
+    const fileName = process.argv[3]
+    const {sequelize} = require("./models")
+    await sequelize.sync()
+    const {addHomework,init} = require("./database")
+    await init()
+    const fs  = require("fs")
+    const json = JSON.parse(fs.readFileSync(fileName,'utf-8'))
+    for (const homework of json){
+      const {channel} = homework
+      homework.id = uuid()
+      try{
+        await addHomework(channel,homework)
+      }catch(e){
+        console.log(e)
+      }
+    }
+    console.log("Restore complete")
+    sequelize.close()
+  })()
 }else if(process.argv[2]==="cockroach"){
   if(process.argv[3]==="config"){
     ;(async ()=>{
