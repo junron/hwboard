@@ -30,7 +30,7 @@ console.log({logging})
 if(logging===false){
   config.logging = false
 }
-if(cockroachSecure){
+if(cockroachSecure && process.env.CI_PROJECT_NAME!=="hwboard2"){
   const fs = require("fs")
   config.dialectOptions = {
     ssl: {
