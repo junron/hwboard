@@ -8,3 +8,4 @@ artifacts
 .idea
 .map
 **/data.json
+**/backup.json

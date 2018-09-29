@@ -202,15 +202,10 @@ const Framework7App = new Framework7({
           on: {
               pageAfterIn: async e => {
                   const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.css'];
-                  //const scriptTag = document.createElement("script")
                   const target = e.currentTarget;
                   await loadSources(target, sources)
+                  while (!$("#calendar").fullCalendar){}
                   calendarInit()
-                  //scriptTag.src = "/routes/scripts/add-channel.js"
-                  //const target = e.currentTarget
-                  //target.appendChild(scriptTag)
-                  // const qtip = ['/scripts/jquery.qtip.min.js', '/styles/jquery.qtip.min.css'];
-                  // loadSources(target,qtip);
               }
           }
       },
