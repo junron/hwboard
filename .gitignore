@@ -9,3 +9,6 @@ artifacts
 .map
 **/data.json
 **/backup.json
+cockroach/*
+!cockroach/Dockerfile
+cockroach-data
