@@ -73,8 +73,8 @@ if(gitlab||process.argv[4]=="default"){
     name:"testing",
     subjects:["math","chemistry"],
     roots:["tester@nushigh.edu.sg"],
-    admins:[],
-    members:[]
+    admins:[""],
+    members:[""]
   }
   console.log("Using config:")
   console.log(config)
@@ -117,12 +117,15 @@ if(gitlab||process.argv[4]=="default"){
         config.roots = answer.split(",")
         r1.question("Admin users (seperate with comma): ()  ",(answer)=>{
           if(answer==""){
-            config.admins = []
+            config.admins = [""]
           }else{
             config.admins = answer.split(",")
           }
           r1.question("Normal users (seperate with comma): ()  ",(answer="*")=>{
             config.members = answer.split(",").filter(notEmpty)
+            if(config.members===[]){
+              config.members = [""]
+            }
             console.log(config)
             r1.question("Is this okay? (Yes/no)  ",async answer=>{
               if(answer.toLowerCase()=="yes"){
