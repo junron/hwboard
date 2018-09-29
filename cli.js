@@ -4,7 +4,28 @@
 //This file is very messy.
 //Please ignore it as it is only for the CLI
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
-if(process.argv[2]==="backup"){
+if(process.argv[2]==="restore"){
+  ;(async ()=>{
+    const fileName = process.argv[3]
+    const {sequelize} = require("./models")
+    await sequelize.sync()
+    const {addHomework,init} = require("./database")
+    await init()
+    const fs  = require("fs")
+    const json = JSON.parse(fs.readFileSync(fileName,'utf-8'))
+    for (const homework of json){
+      const {channel} = homework
+      homework.id = uuid()
+      try{
+        await addHomework(channel,homework)
+      }catch(e){
+        console.log(e)
+      }
+    }
+    console.log("Restore complete")
+    sequelize.close()
+  })()
+}else if(process.argv[2]==="backup"){
   ;(async ()=>{
     const fileName = process.argv[3]
     const {sequelize} = require("./models")
