@@ -13,7 +13,18 @@ function promisifyAll(moduleObj) {
 //This file is very messy.
 //Please ignore it as it is only for the CLI
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
-if(process.argv[2]==="cockroach"){
+if(process.argv[2]==="restore"){
+  const fileName = process.argv[3]
+  const {sequelize} = require("./models")
+  sequelize.sync()
+  const {addHomework} = require("./database")
+  const fs  = require("fs")
+  const json = JSON.parse(fs.readFileSync(fileName,'utf-8'))
+  for (const homework of json){
+    const {channel} = homework
+    addHomework(channel,homework)
+  }
+}else if(process.argv[2]==="cockroach"){
   if(process.argv[3]==="config"){
     ;(async ()=>{
       const {promisify} = require("util")
