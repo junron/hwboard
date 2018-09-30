@@ -49,7 +49,7 @@ const getStats = async _=>{
   const idBytes = await crypto.subtle.digest("SHA-512",new TextEncoder("utf-8").encode(getCookie("name")+getCookie("email")))
   const idBase64 = btoa(new Uint8Array(idBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
   const release = (await (await fetch("/cd/version.json?useCache")).json()).commitSha
-  if(location.origin==="https://beta/nushhwboard.tk"){
+  if(location.origin==="https://beta.nushhwboard.tk"){
     Framework7App.toast.show({
       text:`Hwboard beta version ${JSON.stringify(release).slice(1,9)}`,
       closeTimeout:3000
