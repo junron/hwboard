@@ -36,4 +36,16 @@ module.exports = (socket)=>{
     //Error in handling error
     .catch(uncaughtErrorHandler)
   })
+  socket.on("getHostName",function(callback){
+    ;(async()=>{
+      if(process.env.IS_DOCKER){
+        callback(process.env.HOSTNAME)
+      }else{
+        throw new Error("Unauthorized")
+      }
+    })()
+    .catch(e => callback(e.toString()))
+    //Error in handling error
+    .catch(uncaughtErrorHandler)
+  })
 }

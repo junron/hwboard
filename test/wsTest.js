@@ -1,4 +1,5 @@
 const chai = require("chai")
+chai.use(require('chai-uuid'))
 const mocha = require("mocha")
 const expect = chai.expect
 //TODO actually use a token when auth is setup
@@ -20,7 +21,7 @@ describe("websocket",function(){
         client.on("error",console.log)
         client.on("connect",()=>{
           console.log("connected")
-          done()
+          client.on("ready",done)
         },1000)
       })
     })
@@ -29,7 +30,7 @@ describe("websocket",function(){
       done()
     })
     it("Should be able to echo text messages",function(done){
-      console.log(client.connected)
+      console.log("Connected: ",client.connected)
         client.emit("textMessage","helloworld",function(err,response){
             expect(err).to.equal(null)
             expect(response).to.equal("helloworldreceived")
@@ -48,9 +49,12 @@ describe("websocket",function(){
         client.emit("dataReq",{},function(err,homeworks){
             expect(err).to.equal(null)
             expect(homeworks).to.be.an("array")
+            if(homeworks.length<1){
+              console.log("\033[0;31m There is no homework to check format.\033[0m")
+            }
            for (let homework of homeworks){
                expect(homework).to.be.an("object")
-               expect(homework.id).to.be.a("number")
+               expect(homework.id).to.be.a.uuid('v4')
                expect(homework.subject).to.be.a("string")
                let dueDateNum = new Date(homework.dueDate).getTime()
                expect(dueDateNum).to.be.a("number")
