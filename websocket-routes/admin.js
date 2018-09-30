@@ -31,10 +31,10 @@ module.exports = (socket,io,db)=>{
       }
       const config = {
         name,
-        subjects:[],
+        subjects:[""],
         roots:[socket.userData.preferred_username],
-        admins:[],
-        members:[]
+        admins:[""],
+        members:[""]
       }
       const data = await Channels.findAll({
         where:{
@@ -188,7 +188,6 @@ module.exports = (socket,io,db)=>{
       //Get channel data from all channels
       if(!msg.channel){
         const channels = await db.getUserChannels(socket.userData.preferred_username)
-        //console.log(channels,)
         const arrayChannels = []
         for (channelName in channels){
           arrayChannels.push(channels[channelName])
@@ -198,7 +197,8 @@ module.exports = (socket,io,db)=>{
       msg = await checkPayloadAndPermissions(socket,msg,1)
       const {channel} = msg
       //Update cos why not
-      updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+      const channels = await db.getUserChannels("*")
+      updateChannels(db.arrayToObject(channels))
       const thisChannel = socket.channels[channel]
       return [null,thisChannel]
     })()

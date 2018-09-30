@@ -164,8 +164,9 @@ router.get('/', async (req, res, next) => {
   }else{
     reportErrors = true
   }
+  const beta = hostname === "beta.nushhwboard.tk"
 
-  res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors})
+  res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors,beta})
 });
 
 module.exports = router;
