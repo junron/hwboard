@@ -29,18 +29,32 @@ const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
 if(process.argv[2]==="restore"){
   ;(async ()=>{
     const fileName = process.argv[3]
-    const {sequelize} = require("./models")
+    const {sequelize,Channels} = require("./models")
     await sequelize.sync()
     const {addHomework,init} = require("./database")
     await init()
     const fs  = require("fs")
     const json = JSON.parse(fs.readFileSync(fileName,'utf-8'))
-    for (const homework of json){
-      const {channel} = homework
-      homework.id = uuid()
+    const {
+      homework,
+      channels
+    } = json
+    for(const channel of channels){
+      channel.id = uuid()
       try{
-        await addHomework(channel,homework)
+        await Channels.create(channel)
       }catch(e){
+        console.log(channel)
+        console.log(e)
+      }
+    }
+    for (const hw of homework){
+      const {channel} = hw
+      hw.id = uuid()
+      try{
+        await addHomework(channel,hw)
+      }catch(e){
+        console.log(hw)
         console.log(e)
       }
     }
@@ -61,7 +75,11 @@ if(process.argv[2]==="restore"){
       channels[channel.name] = channel
     }
     const homework = await getHomeworkAll(channels,false)
-    fs.writeFileSync(fileName,JSON.stringify(homework,null,2))
+    const json = {
+      homework,
+      channelsRaw
+    }
+    fs.writeFileSync(fileName,JSON.stringify(json,null,2))
     console.log("Backup complete")
     sequelize.close()
   })()
