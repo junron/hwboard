@@ -33,6 +33,7 @@ async function init(){
   console.log("pageloaad")
   await page.screenshot({path: './artifacts/initial.png'})
   await page._client.send('Emulation.clearDeviceMetricsOverride')
+  console.log("Browser + page ready")
 }
 
 async function remove(){
@@ -103,8 +104,9 @@ async function add(){
 describe("Hwboard",async function(){
   this.timeout(15000);
   before(async function(){
+    this.timeout(20000)
     server.listen(port)
-    await init()
+    return await init()
   })
   afterEach(async function(){
     if(!page.isClosed()){
