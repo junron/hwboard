@@ -49,6 +49,16 @@ test:
     - artifacts
     expire_in: 1 week
     when: always
+deploy_beta:
+  stage: deploy
+  script:
+  - apk add curl
+  - curl --header "X-Gitlab-Token:$GITLAB_TOKEN" https://beta.nushhwboard.tk/cd/update/?commitSHA=$CI_COMMIT_SHA
+  environment:
+    name: hwboard-beta
+    url: https://beta.nushhwboard.tk
+  only:
+    - dev
 auto_update:
   stage: deploy
   script:
