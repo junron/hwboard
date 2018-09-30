@@ -49,6 +49,10 @@ const variables = [
   {
     name:"SEQUELIZE_LOGGING",
     default:true
+  },
+  {
+    name:"GITLAB_SECURE_TOKEN",
+    default:null,
   }
 ]
 
