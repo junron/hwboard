@@ -25,7 +25,7 @@ const hwboard = (()=>{
           if(err) throw err;
           //Put data into client-side database for caching
           //But only for main page
-          if(channel==""){
+          if(channel=="" && removeExpired){
             worker.postMessage({
               type:"set",
               data

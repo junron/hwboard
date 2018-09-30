@@ -48,22 +48,38 @@ function renderCharts(){
   hwboard.getHomework(false).then(async ({promises})=>{
     const results = await Promise.all(promises)
     let data
-    if(results[0].length>results[1].length){
-      data = results[0]
-    }else{
+    if(results[0].length===undefined){
       data = results[1]
+    }
+    if(results[1].length===undefined){
+      data = results[0]
+    }
+    if(!data){
+      if(results[0].length>results[1].length){
+        data = results[0]
+      }else{
+        data = results[1]
+      }
     }
     renderHomeworkSubjectChart(homeworkSubjectData(data))
   })
   hwboard.getHomework(false).then(async ({promises})=>{
     const results = await Promise.all(promises)
     let data
-    if(results[0].length>results[1].length){
-      data = results[0]
-    }else{
+    if(results[0].length===undefined){
       data = results[1]
     }
-    renderHomeworkDateChart(homeworkDayData(data))
+    if(results[1].length===undefined){
+      data = results[0]
+    }
+    if(!data){
+      if(results[0].length>results[1].length){
+        data = results[0]
+      }else{
+        data = results[1]
+      }
+    }
+    renderHomeworkDateChart(filterOutWeekends(fillInDays(homeworkDayData(data))))
   })
 }
 
