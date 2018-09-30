@@ -15,6 +15,9 @@ const hwboard = (()=>{
     const promises = []
     if(typeof conn !== "undefined"){
       promises.push(new Promise((resolve,reject)=>{
+        if(conn.connected===false || navigator.onLine===false){
+          return resolve([])
+        }
         const settings = Object.assign({},channelSettings)
         settings.removeExpired = removeExpired
         conn.emit("dataReq",settings,function(err,data){
