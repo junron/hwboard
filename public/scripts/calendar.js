@@ -99,6 +99,15 @@ function calendarInit(){
         defaultView:"basicWeek",
         height: calendarHeight,
         editable: false,
+        firstDay:1,
+        views:{
+            month: {
+                columnHeaderFormat:"ddd"
+            },
+            basicWeek:{
+                columnHeaderFormat:"ddd D/M"
+            },
+        },
         eventAfterRender: eventObj =>{
             const start = new Date($('#calendar').fullCalendar('getView').start)
             const end = new Date($('#calendar').fullCalendar('getView').end)
