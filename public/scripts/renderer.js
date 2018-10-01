@@ -5,6 +5,7 @@ if(typeof Sugar =="undefined"){
     Sugar = require("sugar-date")
   }
 }
+useNew = false
 
 const filterDue = a => new Date(a.dueDate) >= (new Date() - 3600000)
 
@@ -235,12 +236,17 @@ parser.parseHomeworkMetaData =  function(homework){
     iconColor = "#ab47bc"
   }
   let icon = ""
-  let bgColor = ""
+  let bgColor =  "#bbdefb"
   let extra = ""
+  subject = `    <div class="chip" style="background-color:#26c6da">
+    <div class="chip-label" style="color:white">${subject}</div>
+  </div>`
   if (isTest) {
     icon = "&#xe900;"
-    bgColor = "#bbdefb"
-    extra = ", Graded"
+    extra = `    <div class="chip color-red">
+      <div class="chip-label">Graded</div>
+    </div>`
+
   } else {
     icon = "&#xe873;"
   }
