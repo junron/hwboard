@@ -49,7 +49,7 @@ async function getHomeworkData(id=false){
     throw new Error("Homework name not specified")
   }
   if(id){
-    const id = parseInt($(lastTouched).attr("sqlid"))
+    const id = $(lastTouched).attr("sqlid")
     return {
       subject,
       text,
@@ -69,22 +69,21 @@ async function getHomeworkData(id=false){
 }
 
 //load form with options
-function load(subject,graded,text,dueDate,title){
+function load(subject,graded,text,dueDate,pageSelector=".page-current"){
   subject = subject.trim()
-  //$("#edit-dialog-label").text(title)
-  $(".page-current #subject-name").val(subject)
+  $(`${pageSelector} #subject-name`).val(subject)
   //Keep the time also
-  $(".page-current #dueDate").val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
-  $(".page-current #homework-name").val(text.trim())
-  dateParser.parseDate()
+  $(`${pageSelector} #dueDate`).val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
+  $(`${pageSelector} #homework-name`).val(text.trim())
+  dateParser.parseDate($(`${pageSelector} #dueDate`).val())
   if(graded){
-    $(".page-current #toggle-is-graded-checkbox").attr("checked",true)
+    $(`${pageSelector} #toggle-is-graded-checkbox`).attr("checked",true)
     gradedCheckboxChecked = true
   }else{
-    $(".page-current #toggle-is-graded-checkbox").attr("checked",false)
+    $(`${pageSelector} #toggle-is-graded-checkbox`).attr("checked",false)
     gradedCheckboxChecked = false
   }
-  const textInputSelectors = [".page-current #subject-name",".page-current #dueDate",".page-current #homework-name"]
+  const textInputSelectors = [`${pageSelector} #subject-name`,`${pageSelector} #dueDate`,`${pageSelector} #homework-name`]
   textInputSelectors.forEach(addFloating)
 }
 
@@ -93,23 +92,42 @@ function startEdit(){
   getExistingInfo().then(data =>{
     const {subject,isTest,text,dueDate} = data
     console.log(data)
-    load(subject,isTest,text,dueDate,"Edit homework")
+    load(subject,isTest,text,dueDate,".page-next")
   })
 }
 
 async function backgroundSync(url,body){
+  async function hash(data){
+    const bytes = await crypto.subtle.digest("SHA-512",new TextEncoder("utf-8").encode(data))
+    return btoa(new Uint8Array(bytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
+  }
   return new Promise(async (resolve,reject)=>{
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
       const swRegistration = await navigator.serviceWorker.ready
 
+      let previousHomeworkHash
       let action
       if(url.includes("add")){
         action="added"
+        const allHomework = await worker.postMessage({
+          type:"get"
+        })
+        previousHomeworkHash = await hash(JSON.stringify(allHomework.filter(a=>a.subject===body.subject && a.channel===body.channel)))
       }else if(url.includes("edit")){
         action="edited"
       }else if(url.includes("delete")){
         action="deleted"
       }
+
+      if(previousHomeworkHash===undefined){
+        const homework = await worker.postMessage({
+          type:"getSingle",
+          id:body.id
+        })
+        console.log(JSON.stringify([homework]))
+        previousHomeworkHash = await hash(JSON.stringify([homework]))
+      }
+      body.previousHomeworkHash = previousHomeworkHash
 
       if(Notification.permission!=="granted"){
         //Request notifications for background sync
@@ -131,6 +149,19 @@ async function backgroundSync(url,body){
       }else{
         Framework7App.dialog.confirm("You are currently offline. Your homework will be "+action+" ASAP.")
       }
+      console.log({type:"sync",
+      data:{
+        url,
+        options:{
+            method:"POST",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(body)
+          }
+      }
+    })
       const id = promiseServiceWorker.postMessage({type:"sync",
         data:{
           url,
@@ -158,10 +189,11 @@ async function addHomework(){
     console.log("Repeated request rejected")
     return
   }
+  previousAddedHomework = homework
   if(navigator.onLine===false){
+    console.log("bg")
     return backgroundSync("/api/addReq",homework)
   }
-  previousAddedHomework = homework
   const promise = new Promise(function(resolve,reject){
     conn.emit('addReq',homework,function(err){
       if(err) return reject(err)

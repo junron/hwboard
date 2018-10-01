@@ -13,7 +13,7 @@ module.exports = socket=>{
     ;(async ()=>{
       const {method,data} = msg
       const methodList = {
-        "getStudentById":100,
+        "getStudentById":200,
         "getClasses":100,
         "getStudentByName":20,
         "getStudentsByClassName":4,

@@ -6,7 +6,6 @@
 
 const {app,server} = require('../app');
 const debug = require('debug')('homeworkboard:server');
-const http = require('http');
 
 /**
  * Get port from environment and store in Express.

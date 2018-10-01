@@ -29,9 +29,9 @@ const dueEarlierFirst = (a,b) => {
 }
 
 const subjectFirst = (a,b) => {
-  if(a.subject > b.subject){
+  if((a.subject+a.text).toLowerCase() > (b.subject+b.text).toLowerCase()){
     return 1
-  }else if(a.subject < b.subject){
+  }else if((a.subject+a.text).toLowerCase() < (b.subject+b.text).toLowerCase()){
     return -1
   }
   return 0
@@ -240,9 +240,7 @@ parser.parseHomeworkMetaData =  function(homework){
   if (isTest) {
     icon = "&#xe900;"
     bgColor = "#bbdefb"
-    extra = `    <div class="chip color-red">
-      <div class="chip-label">Graded</div>
-    </div>`
+    extra = ", Graded"
   } else {
     icon = "&#xe873;"
   }
@@ -255,7 +253,27 @@ parser.parseHomeworkMetaData =  function(homework){
       displayDate = "Due tomorrow"
       break;
     default:
-      displayDate = `${daysLeft} days left`
+      const getNumberOfSundays = date =>{
+        const absDate = Sugar.Date.create(Sugar.Date.format(date, "{d}/{M}/{yyyy}"), "en-GB")
+        const startDate = Sugar.Date.create("Today")
+        let num = 0
+        while (startDate < absDate){
+          if(startDate.getDay()==0){
+            num++
+          }
+          Sugar.Date.addDays(startDate,1)
+        }
+        return num
+      }
+      if(daysLeft<=14 && getNumberOfSundays(dueDate2)==1){
+        displayDate = ""
+        //if(getNumberOfSundays(dueDate2)>0){
+          displayDate+="Next "
+       // }
+        displayDate+=Sugar.Date.format(dueDate2,"%A")
+      }else{
+        displayDate = `${daysLeft} days left`
+      }
   }
   return {
     dueDate,

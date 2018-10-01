@@ -24,12 +24,6 @@ const getHtml = async selector => {
     return document.querySelector(selector).innerHTML
   },selector)
 }
-const getCoords = async elem =>{
-  return page.evaluate((header) => {
-    const {top, left, bottom, right} = header.getBoundingClientRect()
-    return {top, left, bottom, right}
-  }, elem)
-}
 async function init(){
   browser = await puppeteer.launch(options)
   console.log("browser launch")
@@ -39,6 +33,7 @@ async function init(){
   console.log("pageloaad")
   await page.screenshot({path: './artifacts/initial.png'})
   await page._client.send('Emulation.clearDeviceMetricsOverride')
+  console.log("Browser + page ready")
 }
 
 async function remove(){
@@ -90,6 +85,7 @@ async function info(){
 }
 async function add(){
   await page.click("#fab-add-homework")
+  await page.waitFor(1000)
   await page.waitFor("#subject-name")
   await page.type("#subject-name","math")
   await page.click(".item-content.input-toggle")
@@ -105,31 +101,14 @@ async function add(){
     return $($(".hwitem:contains('Add homework test')")[0]).addClass("targetHomework")
   })
 }
-async function checkDate(date){
-  console.log(date)
-  return page.evaluate(async (date)=>{
-    try{
-      console.log(date)
-      const parsedDate = await dateParser.parseDate(date)
-      return parsedDate.toString()
-    }catch(e){
-      return "error"
-    }
-  },date)
-}
-function getDate(date){
-  if(date=="error"){
-    return "error"
-  }
-  return date.getDate()+"/"+date.getMonth()+1+"/"+date.getFullYear()
-}
 describe("Hwboard",async function(){
-  this.timeout(20000);
+  this.timeout(15000);
   before(async function(){
+    this.timeout(20000)
     server.listen(port)
-    await init()
+    return await init()
   })
-  afterEach(async ()=>{
+  afterEach(async function(){
     if(!page.isClosed()){
       await page.goto('http://localhost:' + port)
       return await page.waitFor(2000)
@@ -171,7 +150,7 @@ describe("Hwboard",async function(){
     return await page.tracing.stop()
   })
 
-  it("Should perform decently for Lighthouse audits",async ()=>{
+  it("Should perform decently for Lighthouse audits",async function(){
     const url = 'http://localhost:' + port
     const lighthouse = require("lighthouse")
     page.close()
@@ -197,25 +176,9 @@ describe("Hwboard",async function(){
     expect(scores.pwa).to.be.greaterThan(0.6)
     expect(scores.accessibility).to.be.greaterThan(0.85)
     expect(scores["best-practices"]).to.be.greaterThan(0.85)
-    expect(scores.seo).to.be.greaterThan(0.95)
+    expect(scores.seo).to.be.greaterThan(0.89)
   })
-  // it("Should detect dates properly",async ()=>{
-  //   const today = new Date()
-  //   const tomorrow = new Date()
-  //   const wednesday = new Date()
-  //   const nextMonth = new Date()
-  //   tomorrow.setDate(today.getDate()+1)
-  //   wednesday.setDate(wednesday.getDate() + (3 + 7 - wednesday.getDay()) % 7)
-  //   nextMonth.setMonth(nextMonth.getMonth()+1)
-  //   const dates = ["tomorrow","wed","next month","wedneday","1970"]
-  //   const expectedResults = [tomorrow.toString(),wednesday.toString(),nextMonth.toString(),"error","error"]
-  //   let results = []
-  //   for (let date of dates){
-  //     results.push(await checkDate(date))
-  //   }
-  //   expect(JSON.stringify(results)).to.equal(JSON.stringify(expectedResults))
-  // })
-  after(async ()=>{
+  after(async function(){
     await browser.close()
     server.close()
     io.close()

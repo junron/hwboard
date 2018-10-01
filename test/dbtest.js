@@ -1,4 +1,5 @@
 const chai = require("chai")
+chai.use(require('chai-uuid'))
 const mocha = require("mocha")
 const expect = chai.expect
 const channels = {testing:{
@@ -12,9 +13,12 @@ describe("database.js",function(){
   it("Should be able to get homework in the correct format",function(done){
     getHomeworkAll(channels).then(function(homeworks){
       expect(homeworks).to.be.an("array")
+      if(homeworks.length<1){
+        console.log("\033[0;31m There is no homework to check format.\033[0m")
+      }
       for (let homework of homeworks){
         expect(homework).to.be.an("object")
-        expect(homework.id).to.be.a("number")
+        expect(homework.id).to.be.a.uuid('v4')
         expect(homework.subject).to.be.a("string")
         let dueDateNum = new Date(homework.dueDate).getTime()
         expect(dueDateNum).to.be.a("number")

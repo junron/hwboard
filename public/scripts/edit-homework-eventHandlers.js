@@ -35,14 +35,14 @@ const initEditHomeworkEvents = ()=>{
     }
     //The error handling should be the same
     actionPromise.then(_=>{
-      mainView.router.back()
       setTimeout(()=>{
         elem.disabled = false
         reset()
+        mainView.router.back()
       },100)
     }).catch(e=>{
       console.error(e)
-      const errorAlert = Framework7App.dialog.alert(e.message)
+      const errorAlert = Framework7App.dialog.alert(e.toString())
       errorAlert.on("closed",()=>{
         elem.disabled = false
       })

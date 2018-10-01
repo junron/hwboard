@@ -1,6 +1,5 @@
-const columnWidth = 10
-const timeNow = new Date();//new Date("8/9/2018 10:30")
-let table = document.querySelector("#app .page-current table")
+const columnWidth = Math.floor(innerWidth/20)
+const timeNow = new Date()
 const timingToPeriod = timing => {
   const period = (timing - 800)/50
   return Math.round(period)
@@ -58,7 +57,7 @@ const getDayClass = day =>{
     return [null,"<tr>"]
   }
 }
-const renderDay = ([concurrentLessons,day]) =>{
+const renderDay = (concurrentLessons,day,colorLessons=true,splitEveryHalfHour=false) =>{
   let html = ""
   const [now,dayHTML] = getDayClass(day)
   const rows = Array(concurrentLessons).fill(dayHTML)
@@ -76,7 +75,7 @@ const renderDay = ([concurrentLessons,day]) =>{
     const startTime = timingToPeriod(timing[0])
     const interval = timingToPeriod(timing[1]-timing[0]+800)
 
-    if(now){
+    if(now && colorLessons){
       if(now<timing[1]&&now>=timing[0]){
         lessonNowEndTime = timing[1]
         cssClass = "timetable-now"
@@ -85,7 +84,20 @@ const renderDay = ([concurrentLessons,day]) =>{
       }
     }
 
-    if(lesson.concurrentLessons==1){
+    if(subject==" "){
+      if(splitEveryHalfHour){
+        const startTime = timing[0]
+        for(let offset=0;offset<interval;offset++){
+          let thisStartTime = startTime
+          const hours = Math.floor(offset/2)
+          thisStartTime += hours*100
+          thisStartTime += (offset % 2)*30
+          rows[0] += `<td class='${cssClass}' style="width:${columnWidth}px;height:50px" data-day=${day.day} data-time-start=${thisStartTime} rowspan=1 colspan=1> </td>`
+        }
+      }else{
+        rows[0] += `<td class='${cssClass}' style="width:${interval*columnWidth}px;height:50px" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
+      }
+    }else if(lesson.concurrentLessons==1){
       rows[0] += `<td class='${cssClass}' style="width:${interval*columnWidth}px;height:50px" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
     }else{
       rows[lesson.position] += `<td class='${cssClass}' style="width:${interval*columnWidth}px;" rowspan=${concurrentLessons/lesson.concurrentLessons} colspan=${interval}>${subject}</td>`
@@ -96,7 +108,18 @@ const renderDay = ([concurrentLessons,day]) =>{
   //Lesson at the end of the day
   if(lastLessonTime<lessonEndTime){
     const breakInterval = timingToPeriod(lessonEndTime-lastLessonTime+800)
-    html +=`<td style="width:${breakInterval*columnWidth}px" colspan=${breakInterval}></td>`
+    if(breakInterval>1 && splitEveryHalfHour){
+      const startTime = lastLessonTime
+        for(let offset=0;offset<breakInterval;offset++){
+          let thisStartTime = startTime
+          const hours = Math.floor(offset/2)
+          thisStartTime += hours*100
+          thisStartTime += (offset % 2)*30
+          html += `<td style="width:${columnWidth}px;height:50px" data-day=${day.day} data-time-start=${thisStartTime} rowspan=1 colspan=1> </td>`
+        }
+    }else{
+      html += `<td style="width:${breakInterval*columnWidth}px" colspan=${breakInterval}> </td>`
+    }
   }
   return html
 }

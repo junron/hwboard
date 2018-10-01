@@ -19,7 +19,14 @@ router.post("/api/:method",(req, res, next) => {
 
     //Handle uncaught errors
     socket.on("uncaughtError",err=>{
-      res.status(500).end(err)
+      let code
+      if(err.toString().includes("Please check if the homework you want to")){
+        code = 409
+        console.log({err})
+      }else{
+        code = err.code || 500
+      }
+      res.status(code).end(err.toString().replace("Error: ",""))
     })
 
     try{
@@ -81,7 +88,6 @@ router.post("/api/:method",(req, res, next) => {
       "addMember",
     ]
     if(methods.includes(method)){
-      console.log(req.body)
       socket.emit(method,req.body,function(err,...results){
         if(err){
           throw err
@@ -93,9 +99,14 @@ router.post("/api/:method",(req, res, next) => {
     }
   })()
   .catch((e)=>{
-    const code = e.code || 500
-    res.status(code).end(e.toString())
-    console.log(e)
+    let code
+    if(err.toString().includes("Please check if the homework you want to")){
+      code = 409
+      console.log({err})
+    }else{
+      code = err.code || 500
+    }
+    res.status(code).end(err.toString().replace("Error: ",""))
   })
 })
 

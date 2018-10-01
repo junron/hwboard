@@ -56,7 +56,7 @@ router.get("/cd/update",(req, res) => {
   .catch((e)=>{
     const code = e.code || 500
     res.status(code).end(e.toString())
-    console.log(e.message)
+    console.log(e)
   })
 })
 

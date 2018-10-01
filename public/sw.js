@@ -4,14 +4,14 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.2.3"
+const version = "1.3.2"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
   console.log(`Installed service worker verison ${version}`)
-  self.skipWaiting()
-  e.waitUntil(
-    caches.open('cache1').then(function(cache) {
+  e.waitUntil((async()=>{
+    await self.skipWaiting()
+    return caches.open('cache1').then(function(cache) {
       const cacheArray = [
         "/styles/roboto.css",
         "/styles/icons.css",
@@ -21,6 +21,7 @@ self.addEventListener('install', function(e) {
         "/promise-worker/dist/promise-worker.js",
         "/jquery/dist/jquery.slim.min.js",
         "/scripts/app.js",
+        "/scripts/core.js",
         "/scripts/generalForms.js",
         "/scripts/worker.js",
         "/dexie/dist/dexie.min.js",
@@ -42,7 +43,7 @@ self.addEventListener('install', function(e) {
       ]
       return cache.addAll(cacheArray);
     })
-  );
+  })());
 });
 function addCacheHeader(response){
   if(response.status!=200||response.type=="opaque"){
@@ -62,7 +63,7 @@ function addCacheHeader(response){
       }
 }
 self.addEventListener('activate', event => {
-  event.waitUntil(clients.claim())
+  event.waitUntil(self.clients.claim())
 });
 self.addEventListener('fetch', function(event) {
   if(event.request.method=="GET"){
@@ -74,9 +75,10 @@ self.addEventListener('fetch', function(event) {
             return addCacheHeader(response)
           }
           console.log(`Loading ${url}`)
-          var fetchPromise = Promise.race([fetch(event.request),new Promise((_,reject)=>{
+          var fetchPromise = Promise.race([fetch(event.request),new Promise((resolve,reject)=>{
             setTimeout(()=>{
-              reject(new Error("Request timeout"))
+              //Use cache is network is slow
+              return resolve(false)
             },2000)
           })
           ])
@@ -95,8 +97,11 @@ self.addEventListener('fetch', function(event) {
               console.log(`Cached ${url}`)
               return networkResponse;
             }else{
+              if(networkResponse.ok!==false || networkResponse.type=="opaqueredirect"){
+                return networkResponse
+              }
               console.log(`Failed to fetch from network ${url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
-              return response || networkResponse
+              return response
             }
           })
           return response || fetchPromise;
@@ -146,11 +151,10 @@ self.addEventListener("sync",async event =>{
         if(action===undefined){
           notifOptions.body = "Your request has succeeded"
         }else{
-          notifOptions.body = "Your homework has been successfully " + action
+          notifOptions.body = "Homework " + action
         }
       }else{
-        console.log(response)
-        notifOptions.body = "Your request failed with error code " + response.status
+        notifOptions.body = "Failed: " + await response.text()
       }
       return self.registration.showNotification(title, notifOptions)
     }

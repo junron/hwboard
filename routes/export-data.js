@@ -87,7 +87,8 @@ router.get("/data.json",(req, res, next) => {
     const {channelData} = authData
     res.setHeader('Content-disposition', 'attachment; filename=data.json')
     res.type("json")
-    const data = await db.getHomeworkAll(channelData,false)
+    const data = (await db.getHomeworkAll(channelData,false))
+      .map(removePersonalData)
     res.send(JSON.stringify(data))
   })()
   .catch((e)=>{
@@ -106,7 +107,8 @@ router.get("/data.csv",(req, res) => {
     const {channelData} = authData
     res.setHeader('Content-disposition', 'attachment; filename=data.csv')
     res.type("csv")
-    const data = await db.getHomeworkAll(channelData,false)
+    const data = (await db.getHomeworkAll(channelData,false))
+      .map(removePersonalData)
     const dataStream = new Readable()
     dataStream._read = () => {};
     dataStream.push(JSON.stringify(data))

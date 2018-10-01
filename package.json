@@ -6,7 +6,7 @@
   "scripts": {
     "preinstall": "node cli.js preinstall",
     "start": "pm2 start ./bin/www --name hwboard2-web -i 0",
-    "test": "snyk test && mocha test/dbtest.js test/UITest.js test/wsTest.js test/datesTest.js --exit",
+    "test": "mocha test/dbtest.js test/UITest.js test/wsTest.js test/datesTest.js --exit",
     "start:dev": "nodemon ./bin/www",
     "hwboard": "node cli.js"
   },
@@ -18,13 +18,15 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "chai-uuid": "^1.0.6",
     "chart.js": "^2.7.2",
     "cookie-parser": "~1.4.3",
     "dexie": "^2.0.4",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
     "extend": "^3.0.2",
-    "framework7": "^3.3.2",
+    "framework7": "^3.4.0",
+    "fullcalendar": "^3.9.0",
     "fuse.js": "^3.2.1",
     "jquery": "^3.3.1",
     "json2csv": "^4.2.1",
@@ -37,20 +39,21 @@
     "promise-worker": "^2.0.0",
     "raven": "^2.6.4",
     "request-promise-native": "^1.0.5",
-    "sequelize": "^4.38.1",
-    "simple-git": "^1.100.0",
+    "sequelize-cockroachdb": "^1.0.3",
+    "sequelize": "^4.39.0",
+    "simple-git": "^1.103.0",
     "socket.io": "^2.1.1",
     "socket.io-cookie-parser": "1.0.0",
     "sugar-date": "^2.0.4",
     "xss": "^1.0.3"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "lighthouse": "^3.1.1",
+    "chai": "^4.2.0",
+    "lighthouse": "^3.2.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.4",
     "puppeteer": "^1.8.0",
-    "snyk": "^1.97.0",
+    "snyk": "^1.99.1",
     "socket.io-client": "^2.1.1"
   }
 }

@@ -20,6 +20,7 @@ async function authChannels(req,res){
       preferred_username:"tester@nushigh.edu.sg"
     }
   }else{
+    const scopes = ["user.read","openid","profile"]
     //Check auth here
     //Temp var to store fresh token
     let tempToken 
@@ -29,7 +30,6 @@ async function authChannels(req,res){
 
       //Check if authorization code is present
       //Auth codes can be exchanged for id_tokens
-      const scopes = ["user.read","openid","profile"]
       res.cookie("redirPath",req.url,{
         maxAge:10*60*60*1000,
         signed:true,
@@ -81,7 +81,20 @@ async function authChannels(req,res){
     }
     const token = req.signedCookies.token || tempToken
     //Verify token (check signature and decode)
+    try{
       decodedToken = await auth.verifyToken(token)
+    }catch(e){
+      console.log(e)
+      res.clearCookie("token")
+      res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
+      "response_type=code&"+
+      `scope=https%3A%2F%2Fgraph.microsoft.com%2F${scopes.join("%20")}&`+
+      `client_id=${clientId}&`+
+      `redirect_uri=https://${hostname}/&`+
+      "prompt=select_account&"+
+      `response_mode=query`)
+      return "redirected"
+    }
     if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
       throw new Error("You must log in with a NUSH email.")
     }
@@ -96,7 +109,7 @@ async function authChannels(req,res){
   //Get authorised channels
   const channelData = {}
   const channels = await db.getUserChannels(decodedToken.preferred_username)
-  for (let channel of channels){
+  for (const channel of channels){
     channelData[channel.name] = channel
   }
   //Yey my failed attempt at functional programming

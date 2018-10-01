@@ -2,8 +2,8 @@ module.exports = (sequelize, Sequelize,name) => {
   console.log('homework-'+name)
   const Homework = sequelize.define('homework-'+name, {
     id :{
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
       primaryKey: true
     },
     text: {
@@ -17,6 +17,9 @@ module.exports = (sequelize, Sequelize,name) => {
     },
     tags: {
       type: Sequelize.ARRAY(Sequelize.STRING)
+    },
+    isTest:{
+      type:Sequelize.BOOLEAN
     },
     lastEditPerson: {
       type: Sequelize.STRING

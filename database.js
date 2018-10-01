@@ -17,6 +17,7 @@ const tables = {}
 
 //Generate tables
 async function init(){
+  await sequelize.sync()
   await generateHomeworkTables()
   return sequelize.sync()
 }
@@ -26,42 +27,22 @@ async function generateHomeworkTables(){
   const channels = await getUserChannels("*")
   for (let channel of channels){
     //Could have curried but meh
-    tables[channel.name] = Homework(sequelize,Sequelize,channel.name)
+    tables[channel.name] = Homework(channel.name)
   }
 }
 async function getUserChannels(userEmail,permissionLevel=1){
-  if(userEmail=="*"){
-    return Channels.findAll({
-      raw: true,
-    })
-  }
-  const Op = Sequelize.Op
   const data = await Channels.findAll({
     raw: true,
-    where:{
-      [Op.or]:[
-        {
-          roots:{
-            [Op.contains]:[userEmail]
-          }
-        },
-        {
-          admins:{
-            [Op.contains]:[userEmail]
-          }
-        },
-        {
-          members:{
-            [Op.contains]:[userEmail]
-          }
-        }
-      ]
-    }
-  }) 
-  if(userEmail=="*"){
+  });
+  for(const channel of data){
+    channel.members = channel.members.filter(x => x.length>0)
+    channel.subjects = channel.subjects.filter(x => x.length>0)
+    channel.admins = channel.admins.filter(x => x.length>0)
+  }
+  if(userEmail==="*"){
     return data
   }
-  for(let channel of data){
+  for(const channel of data){
     if(channel.roots.includes(userEmail)){
       channel.permissions = 3
       //We want the highest permissions
@@ -76,14 +57,14 @@ async function getUserChannels(userEmail,permissionLevel=1){
       continue
     }
   }
-  return data
+  return data.filter(channel => channel.permissions!==undefined)
 }
 //Assumes that access has been granted
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
   const Homework = tables[hwboardName]
   if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found")
+    throw new Error("Homework table cound not be found: "+hwboardName)
   }
   const data = await Homework.findAll({
     raw: true

@@ -1,6 +1,6 @@
 //Get data from indexeddb about specific homework
 async function getExistingInfo(){
-  const id = parseInt($(lastTouched).attr("sqlid"))
+  const id = $(lastTouched).attr("sqlid")
   const result = await worker.postMessage({
     type:"getSingle",
     id
@@ -44,33 +44,47 @@ async function loadDetails(){
   const data = await getExistingInfo()
   const {subject,isTest,text,dueDate,lastEditTime:editTime,lastEditPerson:editPerson} = data
   $("#detailLastEdit").text(Sugar.Date.format(new Date(editTime),"{d}/{M}/{yyyy}")+" "+Sugar.Date.format(new Date(editTime),"%I:%M")+Sugar.Date.format(new Date(editTime),"%P")+" by "+editPerson)
-    $("#detailHomeworkName").text(text)
-    $("#detailSubject").text(subject)
-    if(isTest){
-      $("#detailGraded").text("Yes")
-    }else{
-      $("#detailGraded").text("No")
-    }
-    $("#detailDue").text(`${Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M")}, ${dateParser.daysUntil(new Date(dueDate))} days left.`)
-    detailsSheet.open()
+  $("#detailHomeworkName").text(text)
+  $("#detailSubject").text(subject)
+  if(isTest){
+    $("#detailGraded").text("Yes")
+  }else{
+    $("#detailGraded").text("No")
   }
+  $("#detailDue").text(`${Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M")}, ${dateParser.daysUntil(new Date(dueDate))} days left.`)
+  detailsSheet.open()
+}
 
+let prevDataHash = ""
 //Get cookies
 //Re-render homework
-function reRender(data){
+async function reRender(data){
+  async function computeHash(data){
+    const hashBytes = await crypto.subtle.digest("SHA-512",new TextEncoder("utf-8").encode(data))
+    const hash = btoa(new Uint8Array(hashBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
+    return hash
+  }
   const sortType = sortOptions.type || getCookie("sortType") || "Due date"
   let sortOrder = sortOptions.order || 0
-  console.log("called",subjectChannelMapping)
-  // let n =0
-  // while(!Object.keys(subjectChannelMapping).length && n<10000){
-  //   //Wait for channelData to be loaded
-  //   if(!n){
-  //     console.log("Waiting for subject channel map to load")
-  //   }
-  //   n++
-  // }
-  // console.log(n)
-  $("#hwboard-homework-list").html(renderer(data,sortType,sortOrder))
+  const hashHomeworkData = data.sort((a,b)=>{
+    aHash = a.id+a.text+a.subject+a.dueDate+a.lastEditPerson+a.lastEditTime
+    bHash = b.id+b.text+b.subject+b.dueDate+b.lastEditPerson+b.lastEditTime
+    if(aHash > bHash){
+      return -1
+    }else if(aHash < bHash){
+      return 1
+    }else{
+      return 0
+    }
+  })
+  const hashData = JSON.stringify(hashHomeworkData)+sortOrder+sortType
+  const hash = await computeHash(hashData)
+  if(hash!==prevDataHash){
+    const rendered = renderer(data,sortType,sortOrder)
+    $("#hwboard-homework-list").html(rendered)
+    console.log("rerendered")
+    prevDataHash = hash
+  }
 }
 
 //Details bottom sheet
