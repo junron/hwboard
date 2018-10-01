@@ -39,21 +39,36 @@ if(process.argv[2]==="restore"){
       homework,
       channels
     } = json
+    const existingChannels = (await Channels.findAll({raw: true})).map(channel=>channel.name)
     for(const channel of channels){
+      if(channel.members.length===0){
+        channel.members = [""]
+      }
+      if(channel.admins.length===0){
+        channel.admins = [""]
+      }
+      if(channel.subjects.length===0){
+        channel.subjects = [""]
+      }
       channel.id = uuid()
       try{
+        if(existingChannels.includes(channel.name)){
+          console.log(`Channel ${channel.name} already exists`)
+          continue
+        }
         await Channels.create(channel)
       }catch(e){
         console.log(channel)
         console.log(e)
       }
     }
+    await init()
     for (const hw of homework){
       const {channel} = hw
       if(hw.isTest){
         hw.tags = ["Graded"]
       }else{
-        hw.tags = []
+        hw.tags = [""]
       }
       hw.id = uuid()
       try{
