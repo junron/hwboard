@@ -216,16 +216,21 @@ parser.toHex = function(str){
   return result
 }
 parser.parseHomeworkMetaData =  function(homework){
+  const tagMapping = {
+    "Graded" : "red",
+    "Optional" : "green"
+  }
   let {
     id,
     subject,
     dueDate,
     isTest,
     text,
+    tags,
     lastEditPerson: editPerson,
     lastEditTime: editTime
   } = homework
-  
+  tags = tags.filter(tag => tag.length>0)
   let dueDate2 = Sugar.Date.create(dueDate)
   let daysLeft = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(dueDate2, "{d}/{M}/{yyyy}"), "en-GB"))
   let iconColor = ""
@@ -241,12 +246,14 @@ parser.parseHomeworkMetaData =  function(homework){
   subject = `    <div class="chip" style="background-color:#26c6da">
     <div class="chip-label" style="color:white">${subject}</div>
   </div>`
-  if (isTest) {
-    icon = "&#xe900;"
-    extra = `    <div class="chip color-red">
-      <div class="chip-label">Graded</div>
+  for(const tag of tags){
+    extra += `    <div class="chip color-${tagMapping[tag]}">
+      <div class="chip-label">${tag}</div>
     </div>`
 
+  }
+  if (isTest) {
+    icon = "&#xe900;"
   } else {
     icon = "&#xe873;"
   }
