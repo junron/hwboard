@@ -76,11 +76,7 @@ parser.parseBySubject = function (data,order=0) {
     if(html==""){
       return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
     }
-    html+="</ul></div>"
-    return html
-}
 parser.parseHomeworkSubject = function(homework) {
-  const {
     id,
     iconColor,
     bgColor,
@@ -158,7 +154,7 @@ parser.parseByDate = function(data,order=0) {
   if(html==""){
     return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
   }
-  html+="</ul></div>"
+  html+="</div></ul>"
   return html
 }
 parser.parseHomeworkDate = function(homework) {

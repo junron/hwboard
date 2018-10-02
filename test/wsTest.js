@@ -59,7 +59,7 @@ describe("websocket",function(){
                let dueDateNum = new Date(homework.dueDate).getTime()
                expect(dueDateNum).to.be.a("number")
                expect(dueDateNum).to.be.above(1500000000)
-               expect(homework.isTest).to.be.a("boolean")
+               expect(homework.tags).to.be.an("array")
                expect(homework.lastEditPerson).to.be.a("string")
                expect(new Date(homework.lastEditTime)).to.be.a.instanceof(Date)
                expect(homework.text).to.be.a("string")
@@ -74,7 +74,7 @@ describe("websocket",function(){
         channel:"testing",
         subject:"add homework via websocket test",
         dueDate:new Date().getTime()+10000000,
-        isTest:true,
+        tags:["Graded"],
         token
       }
       client.emit("addReq",newHomework,function(err){
@@ -98,7 +98,7 @@ describe("websocket",function(){
           channel:"testing",
           subject:"Edit homework via websocket test",
           dueDate:new Date().getTime()+10000000,
-          isTest:true,
+          tags:["Graded"],
           token,
           id:originalHomework.id
         }
