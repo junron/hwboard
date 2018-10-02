@@ -29,18 +29,52 @@ const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
 if(process.argv[2]==="restore"){
   ;(async ()=>{
     const fileName = process.argv[3]
-    const {sequelize} = require("./models")
+    const {sequelize,Channels} = require("./models")
     await sequelize.sync()
     const {addHomework,init} = require("./database")
     await init()
     const fs  = require("fs")
     const json = JSON.parse(fs.readFileSync(fileName,'utf-8'))
-    for (const homework of json){
-      const {channel} = homework
-      homework.id = uuid()
+    const {
+      homework,
+      channels
+    } = json
+    const existingChannels = (await Channels.findAll({raw: true})).map(channel=>channel.name)
+    for(const channel of channels){
+      if(channel.members.length===0){
+        channel.members = [""]
+      }
+      if(channel.admins.length===0){
+        channel.admins = [""]
+      }
+      if(channel.subjects.length===0){
+        channel.subjects = [""]
+      }
+      channel.id = uuid()
       try{
-        await addHomework(channel,homework)
+        if(existingChannels.includes(channel.name)){
+          console.log(`Channel ${channel.name} already exists`)
+          continue
+        }
+        await Channels.create(channel)
       }catch(e){
+        console.log(channel)
+        console.log(e)
+      }
+    }
+    await init()
+    for (const hw of homework){
+      const {channel} = hw
+      if(hw.isTest){
+        hw.tags = ["Graded"]
+      }else{
+        hw.tags = [""]
+      }
+      hw.id = uuid()
+      try{
+        await addHomework(channel,hw)
+      }catch(e){
+        console.log(hw)
         console.log(e)
       }
     }
@@ -61,7 +95,11 @@ if(process.argv[2]==="restore"){
       channels[channel.name] = channel
     }
     const homework = await getHomeworkAll(channels,false)
-    fs.writeFileSync(fileName,JSON.stringify(homework,null,2))
+    const json = {
+      homework,
+      channelsRaw
+    }
+    fs.writeFileSync(fileName,JSON.stringify(json,null,2))
     console.log("Backup complete")
     sequelize.close()
   })()
@@ -200,7 +238,7 @@ if(process.argv[2]==="restore"){
     ;(async ()=>{
       const {promisify} = require('util');
       const execFile  = promisify(require('child_process').execFile);
-      await execFile("cockroach",["cert","create-node","localhost","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
+      await execFile("cockroach",["cert","create-node","localhost","host.docker.internal","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
       console.log("Node key generated in `./cockroach/certs/node.key`.")
       console.log("Node cert generated in `./cockroach/certs/node.crt`.")
       console.log("Copy `./certs/node.key`,`./cockroach/certs/node.crt` and `./cockroach/certs/ca.crt`")
