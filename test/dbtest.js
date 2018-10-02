@@ -23,7 +23,7 @@ describe("database.js",function(){
         let dueDateNum = new Date(homework.dueDate).getTime()
         expect(dueDateNum).to.be.a("number")
         expect(dueDateNum).to.be.above(1500000000)
-        expect(homework.isTest).to.be.a("boolean")
+        expect(homework.tags).to.be.an("array")
         expect(homework.lastEditPerson).to.be.a("string")
         expect(homework.lastEditTime).to.be.a.instanceof(Date)
         expect(homework.text).to.be.a("string")
@@ -39,7 +39,7 @@ describe("database.js",function(){
       //Subject can be anything
       //Not restricted yet
       subject:"XSSTest",
-      isTest:true,
+      tags:["Graded"],
       dueDate:new Date().getTime()+100000,
       lastEditPerson:"tester@nushigh.edu.sg",
       token:"bleh"
@@ -60,7 +60,7 @@ describe("database.js",function(){
       //Subject can be anything
       //Not restricted yet
       subject:"SQLInjectionTest",
-      isTest:true,
+      tags:["Graded"],
       dueDate:new Date().getTime()+100000,
       lastEditPerson:"tester@nushigh.edu.sg",
       token:"bleh"
