@@ -73,14 +73,11 @@ conn.on("ready",setColors);
 conn.on("data",setColors);
 function changeView(){
     const {name:currView} = $('#calendar').fullCalendar( 'getView' )
+    
     if(currView==="basicWeek"){
         $('#calendar').fullCalendar('changeView', 'month')
-        $("#calendar-next").text("Next month")
-        $("#calendar-prev").text("Prev month")
     }else{
         $('#calendar').fullCalendar('changeView', 'basicWeek')
-        $("#calendar-next").text("Next week")
-        $("#calendar-prev").text("Prev week")
     }
 }
 
