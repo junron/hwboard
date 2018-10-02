@@ -150,3 +150,8 @@
        margin-left: 0px;
     }
   }
+  .md #app .chip {
+    font-size: 11px;
+    height: 16px;
+    line-height: 16px;
+  }

@@ -76,7 +76,7 @@ parser.parseBySubject = function (data,order=0) {
     if(html==""){
       return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
     }
-    html+="</ul></div>"
+    html+="</div></ul>"
     return html
 }
 parser.parseHomeworkSubject = function(homework) {
@@ -158,7 +158,7 @@ parser.parseByDate = function(data,order=0) {
   if(html==""){
     return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
   }
-  html+="</ul></div>"
+  html+="</div></ul>"
   return html
 }
 parser.parseHomeworkDate = function(homework) {
@@ -235,12 +235,35 @@ parser.parseHomeworkMetaData =  function(homework){
     iconColor = "#ab47bc"
   }
   let icon = ""
-  let bgColor = ""
+  let bgColor =  "#bbdefb"
   let extra = ""
+  let tagMode = "graded"
+  if(typeof location != "undefined"){
+    if(location.search.includes("tagMode=all")){
+      tagMode = "all"
+    }else if(location.search.includes("tagMode=original")){
+      tagMode = "original"
+    }
+  }
+  if(tagMode==="all"){
+    subject = `    <div class="chip" style="background-color:#26c6da">
+      <div class="chip-label" style="color:white">${subject}</div>
+    </div>`
+  }
+  if(tagMode==="original"){
+    bgColor = ""
+  }
   if (isTest) {
     icon = "&#xe900;"
-    bgColor = "#bbdefb"
-    extra = ", Graded"
+    if(tagMode==="original"){
+      bgColor = "#bbdefb"
+      extra = ", Graded"
+    }else{
+      extra = `    <div class="chip color-red">
+        <div class="chip-label">Graded</div>
+      </div>`
+    }
+
   } else {
     icon = "&#xe873;"
   }
