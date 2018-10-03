@@ -169,7 +169,8 @@ parser.parseHomeworkDate = function(homework) {
     bgColor,
     icon,
     text,
-    extra
+    extra,
+    subjectText
   } = parser.parseHomeworkMetaData(homework)
   let rendered = `
   <li class="hwitem swipeout" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
@@ -181,7 +182,7 @@ parser.parseHomeworkDate = function(homework) {
       <div class="item-title">
         ${text}
         <div class="item-footer">
-          ${subject}${extra}
+          ${subjectText}${extra}
         </div>
       </div>
     </div>
@@ -222,7 +223,7 @@ parser.parseHomeworkMetaData =  function(homework){
     isTest,
     text,
     lastEditPerson: editPerson,
-    lastEditTime: editTime
+    lastEditTime: editTime,
   } = homework
   
   let dueDate2 = Sugar.Date.create(dueDate)
@@ -245,8 +246,9 @@ parser.parseHomeworkMetaData =  function(homework){
       tagMode = "original"
     }
   }
+  let subjectText = subject
   if(tagMode==="all"){
-    subject = `    <div class="chip" style="background-color:#26c6da">
+    subjectText = `    <div class="chip" style="background-color:#26c6da">
       <div class="chip-label" style="color:white">${subject}</div>
     </div>`
   }
@@ -313,7 +315,8 @@ parser.parseHomeworkMetaData =  function(homework){
     displayDate,
     dueDate2,
     extra,
-    subject
+    subject,
+    subjectText
   }
 }
 const renderer = function(data,sortType="Due date",sortOrder=0,adminChannels){
