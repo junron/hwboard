@@ -73,7 +73,7 @@ app.use(function(req,res,next){
   res.header("Strict-Transport-Security","max-age=1576800; includeSubDomains")
   res.header("Referrer-Policy","strict-origin")
   res.header("Expect-CT",`max-age=31536000, enforce,  report-uri="https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908"`)
-  res.header(`Feature-policy`,`geolocation 'none'; accelerometer 'none';ambient-light-sensor 'none'; sync-xhr 'none'; autoplay 'none'; picture-in-picture 'none';payment 'none'`)
+  res.header(`Feature-policy`,`geolocation 'none'; accelerometer 'none';ambient-light-sensor 'none'; sync-xhr 'none'; autoplay 'none';payment 'none'`)
   next()
 })
 
