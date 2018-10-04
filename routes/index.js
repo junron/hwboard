@@ -29,14 +29,14 @@ const basePushFiles = [
   "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
   "/scripts/app.js",
   "/socket.io-client/dist/socket.io.slim.js",
-  "/framework7/css/framework7.min.css",
+  "/framework7/css/framework7.md.min.css",
   "/framework7/js/framework7.min.js",
 ];
 const pushFiles = [
   "/styles/roboto.css",
   "/styles/icons.css",
   "/socket.io-client/dist/socket.io.slim.js",
-  "/framework7/css/framework7.min.css",
+  "/framework7/css/framework7.md.min.css",
   "/framework7/js/framework7.min.js",
   "/promise-worker/dist/promise-worker.js",
   "/jquery/dist/jquery.slim.min.js",
