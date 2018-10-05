@@ -4,7 +4,6 @@ const express = require('express');
 const authChannels = require("./authChannels")
 const renderer = require('../public/scripts/renderer')
 const Sugar = require("sugar-date")
-let dbInit = false
 const router = express.Router();
 const db = require("../database")
 const config = require("../loadConfig")
@@ -106,13 +105,6 @@ router.get("/channels", async (req, res) => {
 });
 
 router.get("/calendar",async (req, res, next) => {
-
-  if(!dbInit){
-    //Create tables and stuffs
-      console.log("inited");
-      await db.init();
-    dbInit = true
-  }
   const authData = await authChannels(req, res);
   if (authData === "redirected") {
     return
@@ -126,13 +118,6 @@ router.get("/calendar",async (req, res, next) => {
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
-
-  if(!dbInit){
-    //Create tables and stuffs
-      console.log("inited");
-      await db.init();
-    dbInit = true
-  }
   const authData = await authChannels(req, res);
   if (authData === "redirected") {
     return

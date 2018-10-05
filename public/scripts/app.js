@@ -6,6 +6,7 @@ const Framework7App = new Framework7({
   root: '#app',
   theme,
   pushState:true,
+  lazyModulesPath: '/framework7/lazy-components',
   view: {
     pushState: true,
   },
@@ -32,7 +33,7 @@ const Framework7App = new Framework7({
         pageAfterIn:e=>{
           channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
         }
-      }
+      },
     },
     {
       name:"home",
@@ -46,21 +47,23 @@ const Framework7App = new Framework7({
           loadSources(e.currentTarget,["/scripts/loadHomework.js"])
         }
       },
-      routes:[{
+      routes:[
+      {
         name:"sort",
         path: "/popups/sort/",
         url:"/routes/sort.html",
         on :{
           pageInit: _=>{
             //Uncheck all
-              const radios = Array.from(document.querySelectorAll(`input[type=radio]`));
-              radios.forEach(radio => radio.checked = false);
-              const sortType = sortOptions.type || getCookie("sortType") || "Due date";
-              let sortOrder = sortOptions.order || 0;
-              document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
+            const radios = Array.from(document.querySelectorAll(`input[type=radio]`));
+            radios.forEach(radio => radio.checked = false);
+            const sortType = sortOptions.type || getCookie("sortType") || "Due date";
+            let sortOrder = sortOptions.order || 0;
+            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
             document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
           }
-        }
+        },
+        modules:['checkbox','input','grid',"radio"]
       },
       {
         name:"add-homework",
@@ -74,7 +77,8 @@ const Framework7App = new Framework7({
             gradedCheckboxChecked = false
             initEditHomeworkEvents()
           }
-        }
+        },
+        modules:['grid','toggle','input','dialog']
       },
       {
         name:"edit-homework",
@@ -93,7 +97,8 @@ const Framework7App = new Framework7({
             $(".page-current #edit-title").text("Edit homework")
             initEditHomeworkEvents()
           }
-        }
+        },
+        modules:['grid','toggle','input','dialog']
       }
     ]
     },
@@ -151,7 +156,8 @@ const Framework7App = new Framework7({
             }
           })
         }
-      }
+      },
+      modules:['checkbox','grid']
     },
     {
       name:"channelStats",
@@ -188,7 +194,8 @@ const Framework7App = new Framework7({
             }
           })
         }
-      }
+      },
+      modules:['checkbox','grid']
     },
     {
       name:"addChannel",
@@ -210,13 +217,14 @@ const Framework7App = new Framework7({
           url: "/calendar",
           on: {
               pageAfterIn: async e => {
-                  const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.css'];
-                  const target = e.currentTarget;
-                  await loadSources(target, sources)
-                  while (!$("#calendar").fullCalendar){}
-                  calendarInit()
+                const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.css'];
+                const target = e.currentTarget;
+                await loadSources(target, sources)
+                while (!$("#calendar").fullCalendar){}
+                calendarInit()
               }
-          }
+          },
+          modules:['grid']
       },
     {
       name:"channelSettings",
@@ -273,7 +281,8 @@ const Framework7App = new Framework7({
           }
 
         }
-      ]
+      ],
+    modules:['accordion']
     },
   ],
   dialog:{

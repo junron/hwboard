@@ -141,18 +141,20 @@ function calendarInit(){
         },
         eventClick: (eventObj,e)=> {
             const formattedDate = new Date(eventObj.start).toDateString()
-            let popover = Framework7App.popover.create({
-                targetEl: e.target,
-                content: `<div class="popover">
-                <div class="popover-inner">
-                <div class="block">
-                <h1>${eventObj.title}</h1>
-                <p>${eventObj.id}<br/>Due ${formattedDate}</p>
-                </div>
-                </div>
-                </div>`
-            });
-            popover.open();
+            Framework7App.loadModules(['popover']).then(()=>{
+                const popover = Framework7App.popover.create({
+                    targetEl: e.target,
+                    content: `<div class="popover">
+                    <div class="popover-inner">
+                    <div class="block">
+                    <h1>${eventObj.title}</h1>
+                    <p>${eventObj.id}<br/>Due ${formattedDate}</p>
+                    </div>
+                    </div>
+                    </div>`
+                });
+                popover.open();
+            })
         }
 
     });
