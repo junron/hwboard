@@ -88,9 +88,12 @@ async function reRender(data){
 }
 
 //Details bottom sheet
-const detailsSheet = Framework7App.sheet.create({
-  el:".sheet-modal",
-  backdrop:true
+let detailsSheet
+Framework7App.loadModules(["sheet"]).then(()=>{
+  detailsSheet = Framework7App.sheet.create({
+    el:".sheet-modal",
+    backdrop:true
+  })
 })
 function rerenderSort(){
   if(document.getElementById("sort-set-default").checked){

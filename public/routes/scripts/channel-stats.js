@@ -249,6 +249,7 @@ function renderHomeworkDateChart(data){
         backgroundColor:"rgb(138,43,226,0.2)",
         borderColor:"rgb(138,43,226)",
         lineTension:0,
+        pointStyle:"cross",
       }]
     }
     homeworkDateChart.update()
@@ -264,6 +265,7 @@ function renderHomeworkDateChart(data){
         data:Object.values(data),
         backgroundColor:"rgb(138,43,226,0.2)",
         borderColor:"rgb(138,43,226)",
+        pointStyle:"cross",
       }]
     },
     options:{

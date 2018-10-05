@@ -139,7 +139,9 @@ app.use((req, res, next) => {
       error: {}
     });
   });
-  
+  require("./database").init().then(()=>{
+    console.log("Inited")
+  })
   module.exports= {
     server,
     app,
