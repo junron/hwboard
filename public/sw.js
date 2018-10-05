@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.3.1"
+const version = "1.3.2"
 
 console.log(`Service worker verison ${version}`)
 self.addEventListener('install', function(e) {
@@ -21,6 +21,7 @@ self.addEventListener('install', function(e) {
         "/promise-worker/dist/promise-worker.js",
         "/jquery/dist/jquery.slim.min.js",
         "/scripts/app.js",
+        "/scripts/core.js",
         "/scripts/generalForms.js",
         "/scripts/worker.js",
         "/dexie/dist/dexie.min.js",
