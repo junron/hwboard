@@ -22,8 +22,12 @@ const variables = [
     default:"",
   },
   {
-    name:"POSTGRES_DB",
-    default:"hwboard",
+    name:"COCKROACH_DB_PORT",
+    default:26257,
+  },
+  {
+    name:"COCKROACH_DB_SECURE",
+    default:true,
   },
   {
     name:"CI",

@@ -17,14 +17,17 @@ const latencyCheck = ()=>{
         data:id
       },(_,name)=>{
         latency.resolve = (performance.now()-start).toFixed(2)
-        if(name.id!==id){
+        if(name && name.id!==id){
           throw new Error("Id mismatch")
         }
         //Get channels
         start = performance.now()
         conn.emit("channelDataReq",{},_=>{
           latency.database = (performance.now()-start).toFixed(2)
-          resolve({latency})
+          conn.emit("getHostName",hostname=>{
+            latency.nodeId = hostname
+            resolve({latency})
+          })
         })
       })
     })

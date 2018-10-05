@@ -2,16 +2,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>HwBoard</title>
-    <meta name="description" content="Homework board">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="manifest" href="/manifest.json">
+    <% if(!beta) { %>
+        <meta name="description" content="Homework board">
+        <link rel="manifest" href="/manifest.json">
+        <meta name="apple-mobile-web-app-title" content="HwBoard">
+    <%}else{ %>
+        <meta name="description" content="Homework board beta">
+        <link rel="manifest" href="/manifest.beta.json">
+        <meta name="apple-mobile-web-app-title" content="HwBoard beta">
+    <%}%>
     <!-- Disable tap highlight on IE -->
     <meta name="msapplication-tap-highlight" content="no">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="HwBoard">
     <link rel="apple-touch-icon" href="/images/icons/favicon.png">
 
     <!-- Tile icon for Win8 (144x144 + tile color) -->

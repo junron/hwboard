@@ -5,7 +5,7 @@ function picktextColor(bgColor, lightColor, darkColor) {
     var r = parseInt(color.substring(0, 2), 16); // hexToR
     var g = parseInt(color.substring(2, 4), 16); // hexToG
     var b = parseInt(color.substring(4, 6), 16); // hexToB
-    return (Math.round(((r * 0.299) + (g * 0.587) + (b * 0.114))) >= 186) ?
+    return (Math.round(((r * 0.299) + (g * 0.587) + (b * 0.114))) >= 180) ?
       darkColor : lightColor;
   }
 
@@ -28,10 +28,15 @@ function convertHomework(arrHomework) {
 
 
 function updateHomework() {
-    conn.emit("dataReq",{removeExpired:false},(err,data)=>{
-        if(err)
-            throw err;
-        const hw = data;
+    hwboard.getHomework(false).then(async ({promises})=>{
+        const p1 = await promises[0]
+        const p2 = await promises[1]
+        let hw
+        if(p1.length>p2.length){
+            hw = p1
+        }else{
+            hw = p2
+        }
         const homeworkEvents = convertHomework(hw);
         $('#calendar').fullCalendar('removeEventSources');
         const eventsToRender = {
@@ -40,14 +45,12 @@ function updateHomework() {
         };
         $('#calendar').fullCalendar('addEventSource', eventsToRender);
         console.log("Homework Events rendered on calendar");
-    });
+    })
 }
 
 function setColors() {
     subjectColors = [[],[]];
-    conn.emit("channelDataReq",{},(err,data)=>{
-        if(err)
-            throw err;
+    hwboard.getChannelData().then(({quickest:data})=>{
         let allSubjects = [];
         for (const channel of data) {
             const channelSubjects = channel.subjects;
@@ -63,7 +66,7 @@ function setColors() {
         }
         console.log("colours set");
         updateHomework();
-    });
+    })
 }
 
 conn.on("ready",setColors);
@@ -80,6 +83,8 @@ function changeView(){
         $("#calendar-prev").text("Prev week")
     }
 }
+
+calendarWeekends = false;
 function calendarInit(){
     const calendarPadding = 100;
     const calendarHeight = window.innerHeight - calendarPadding;
@@ -90,9 +95,42 @@ function calendarInit(){
             center: '',
             right: '',
         },
+        weekends:false,
         defaultView:"basicWeek",
         height: calendarHeight,
         editable: false,
+        firstDay:1,
+        views:{
+            month: {
+                columnHeaderFormat:"ddd"
+            },
+            basicWeek:{
+                columnHeaderFormat:"ddd D/M"
+            },
+        },
+        eventAfterRender: eventObj =>{
+            const start = new Date($('#calendar').fullCalendar('getView').start)
+            const end = new Date($('#calendar').fullCalendar('getView').end)
+            for(const homework of eventObj.source.rawEventDefs){
+                const date = new Date(homework.start)
+                if(date>end || date<start){
+                    continue
+                }
+                const dow = Sugar.Date.format(date,"{dow}")
+                if((dow === "sun" || dow === "sat")){
+                    if(!calendarWeekends){
+                        calendarWeekends = true
+                        $('#calendar').fullCalendar('option', {weekends:true})
+                        return
+                    }
+                    return
+                }
+            }
+            if(calendarWeekends){
+                calendarWeekends = false
+                $('#calendar').fullCalendar('option', {weekends:false})
+            }
+        },
         viewRender: (view,elem)=>{
             if(view.type==="basicWeek"){
                 dateParser.getTermXWeekY(new Date(view.end)).then(({term,week})=>{

@@ -23,6 +23,7 @@ const {MS_CLIENTID:clientId,MS_CLIENTSECRET:clientSecret,HOSTNAME:hostname,CI:te
 const basePushFiles = [
   "/styles/roboto.css",
   "/styles/icons.css",
+  "/scripts/core.js",
   "/fonts/material.ttf",
   "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
   "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
@@ -163,8 +164,9 @@ router.get('/', async (req, res, next) => {
   }else{
     reportErrors = true
   }
+  const beta = hostname === "beta.nushhwboard.tk"
 
-  res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors})
+  res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors,beta})
 });
 
 module.exports = router;
