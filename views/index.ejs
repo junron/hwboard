@@ -3,7 +3,7 @@
 <%- include("./partials/head",{beta}) %>
 <body>
   <script src="/scripts/checkVersion.js"></script>
-  <div id="app" style="display:none">
+  <div id="app" style="opacity:0">
   <!-- menu -->
     <div class="panel panel-left">
     <div class="list links-list">
@@ -81,12 +81,10 @@
     <link rel="stylesheet" href="/framework7/css/framework7-lazy.min.css">
     <link rel="stylesheet" href="/framework7/lazy-components/list-index.css">
     <link rel="stylesheet" href="/framework7/lazy-components/fab.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/panel.css">
     <link rel="stylesheet" href="/framework7/lazy-components/chip.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/input.css">
     <!-- unhide rendered page -->
     <script>
-      document.getElementById("app").style.display = "block"
+      document.getElementById("app").style.opacity = 1
     </script>
     <!-- critical styles and scripts cannot be deferred-->
     
@@ -120,6 +118,7 @@
     <script defer src="/framework7/lazy-components/fab.js"></script>
     <script defer src="/framework7/lazy-components/swipeout.js"></script>
     <script defer src="/framework7/lazy-components/input.js"></script>
+    <script defer src="/framework7/lazy-components/dialog.js"></script>
     <script defer src="/scripts/app.js"></script>
     <script defer src="/scripts/framework7Load.js"></script>
 
@@ -137,6 +136,10 @@
     <!-- Styles are not so critical -->
     <link rel="stylesheet" href="/styles/index.css">
     <link rel="stylesheet" href="/framework7/lazy-components/swipeout.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/panel.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/input.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/dialog.css">
+
     <%- include("./partials/dialogs.ejs") %>
 
     <!-- styles and scripts for later pages -->

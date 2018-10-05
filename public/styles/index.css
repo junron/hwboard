@@ -49,7 +49,7 @@
 
 .md li.item-content.item-input {
   padding-bottom: 15px; }
-#app .page-content .autocomplete-dropdown-inner .list{
+#app .page-current .autocomplete-dropdown-inner .list{
     padding-left: 0px; 
     margin-top: 0px;
     margin-bottom: 0px;}
