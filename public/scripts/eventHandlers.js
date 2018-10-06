@@ -15,3 +15,5 @@ $(document).on("click",".swipeout-edit-button",function(){
   lastTouched = this.parentElement.parentElement
   mainView.router.navigate("/popups/edit/")
 })
+
+Framework7App.swipeout.init()
