@@ -130,12 +130,16 @@ function calendarInit(){
         },
         viewRender: (view,elem)=>{
             if(view.type==="basicWeek"){
-                dateParser.getTermXWeekY(new Date(view.end)).then(({term,week})=>{
+                dateParser.getTermXWeekY(new Date(view.end - 24 * 60 * 60 * 1000)).then(({term,week})=>{
                     let weekText = ` (Term ${term} Week ${week})`
                     if(term==="Holiday"){
                         weekText = " (Holiday)"
                     }
-                    $("#calendar .fc-toolbar .fc-left h2").text($("#calendar .fc-toolbar .fc-left h2").text()+weekText)
+                    let title = $("#calendar .fc-toolbar .fc-left h2").text().replace(/\((.*?)\)/,weekText)
+                    if(!title.includes(weekText)){
+                        title+=weekText
+                    }
+                    $("#calendar .fc-toolbar .fc-left h2").text(title)
                 })
             }
         },
