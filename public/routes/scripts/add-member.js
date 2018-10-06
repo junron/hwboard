@@ -1,3 +1,4 @@
+let searchData
 ;(async ()=>{
   const permissionOptions = {
     shouldSort: true,
@@ -20,22 +21,6 @@
   }
   const permissionLvls = ["Root","Admin","Member"]
 
-  //Search within mg first
-  const toTitle = string => string.toLowerCase().replace(/^(.)|\s(.)/g, a => a.toUpperCase())
-  const userName = toTitle(decodeURI(getCookie("name")))
-  let userMG
-  let level
-  const student = await studentsExport.getStudentByName(userName)
-  userMG = student.mentorGrp
-  level = parseInt(userMG[3])
-  const userMGStudentIDs = await studentsExport.getStudentsByClassName(userMG)
-  const mgStudents = userMGStudentIDs
-    .map(studentsExport.getStudentByIdSync)
-
-  const levelStudents = (await studentsExport.getStudentsByLevel(level))
-    .map(studentsExport.getStudentByIdSync)
-  let fuse = new Fuse(mgStudents, options)
-  let fuseLevel = "MG"
 
   const namesDropdown= Framework7App.autocomplete.create({
     openIn:"dropdown",
@@ -153,6 +138,6 @@ document.getElementById("add-member").addEventListener("click",()=>{
     })
   }).catch(e=>{
     console.log(e)
-    Framework7App.dialog.alert(e.toString())
+    Framework7App.dialog.alert(e.message)
   })
 })
