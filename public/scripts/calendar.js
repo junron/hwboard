@@ -1,4 +1,4 @@
-colors = ["#c44736", "#c47836", "#c4c436", "#7dc436", "#36c48b", "#36bcc4", "#3681c4", "#3641c4", "#7d36c4", "#c43692", "#c43636"];
+colors = ["#c44736", "#c47836", "#c4c436", "#7dc436", "#36c48b", "#36bcc4", "#3681c4", "#3641c4", "#7d36c4", "#c43692", "#c43636"];//["#5ebd3e","#ffb900","#f78200","#e23838","#973999","#009cdf"]//
 
 function picktextColor(bgColor, lightColor, darkColor) {
     var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
