@@ -70,17 +70,21 @@ const initEditHomeworkEvents = ()=>{
     minMatchCharLength: 1,
   }
   const indexToString = index => subjectSelectionList[index]
-  const fuse = new Fuse(subjectSelectionList,options)
-  const subjectDropdown= Framework7App.autocomplete.create({
-  openIn:"dropdown",
-  source:(query,render)=>{
-    if(query==""){
-      return render(subjectSelectionList)
-    }else{
-      const result = fuse.search(query).map(indexToString)
-      return render(result)
-    }
-  },
-  inputEl:"#subject-name"
-})
+  Framework7App.loadModules(["autocomplete","list-index"]).then(()=>{
+    let fuse = new Fuse(subjectSelectionList,options)
+    subDropdown = Framework7App.autocomplete.create({
+      openIn:"dropdown",
+      source:(query,render)=>{
+        if(query==""){
+          fuse = new Fuse(subjectSelectionList,options)
+          return render(subjectSelectionList)
+        }else{
+          const result = fuse.search(query).map(indexToString)
+          console.log(result)
+          return render(result)
+        }
+      },
+      inputEl:"#subject-name"
+    })
+  })
 }

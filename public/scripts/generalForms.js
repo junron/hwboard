@@ -55,42 +55,13 @@ async function loadDetails(){
   detailsSheet.open()
 }
 
-let prevDataHash = ""
-//Get cookies
-//Re-render homework
-async function reRender(data){
-  async function computeHash(data){
-    const hashBytes = await crypto.subtle.digest("SHA-512",new TextEncoder("utf-8").encode(data))
-    const hash = btoa(new Uint8Array(hashBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
-    return hash
-  }
-  const sortType = sortOptions.type || getCookie("sortType") || "Due date"
-  let sortOrder = sortOptions.order || 0
-  const hashHomeworkData = data.sort((a,b)=>{
-    aHash = a.id+a.text+a.subject+a.dueDate+a.lastEditPerson+a.lastEditTime
-    bHash = b.id+b.text+b.subject+b.dueDate+b.lastEditPerson+b.lastEditTime
-    if(aHash > bHash){
-      return -1
-    }else if(aHash < bHash){
-      return 1
-    }else{
-      return 0
-    }
-  })
-  const hashData = JSON.stringify(hashHomeworkData)+sortOrder+sortType
-  const hash = await computeHash(hashData)
-  if(hash!==prevDataHash){
-    const rendered = renderer(data,sortType,sortOrder)
-    $("#hwboard-homework-list").html(rendered)
-    console.log("rerendered")
-    prevDataHash = hash
-  }
-}
-
 //Details bottom sheet
-const detailsSheet = Framework7App.sheet.create({
-  el:".sheet-modal",
-  backdrop:true
+let detailsSheet
+Framework7App.loadModules(["sheet"]).then(()=>{
+  detailsSheet = Framework7App.sheet.create({
+    el:".sheet-modal",
+    backdrop:true
+  })
 })
 function rerenderSort(){
   if(document.getElementById("sort-set-default").checked){
@@ -104,6 +75,9 @@ function rerenderSort(){
       //Perhaps indexeddb screwed up 
       data = JSON.parse(localStorage.getItem("data"))
     }
-    reRender(data)
+    reRender(data).then(()=>{
+      $(".swipeout-actions-left").css("visibility","visible")
+      $(".swipeout-actions-right").css("visibility","visible")
+    })
   })
 }

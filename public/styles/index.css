@@ -49,7 +49,10 @@
 
 .md li.item-content.item-input {
   padding-bottom: 15px; }
-
+#app .page-current .autocomplete-dropdown-inner .list{
+    padding-left: 0px; 
+    margin-top: 0px;
+    margin-bottom: 0px;}
 #app .list ul .input-toggle .item-title {
   color: #000000b0; }
 
@@ -149,4 +152,9 @@
     .md #app .list .item-media+.item-inner {
        margin-left: 0px;
     }
+  }
+  .md #app .chip {
+    font-size: 11px;
+    height: 16px;
+    line-height: 16px;
   }

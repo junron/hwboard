@@ -1,12 +1,13 @@
-const hwboard = (()=>{
-  //Web worker for indexedDB
-  //Use promise based messaging
-  worker = new PromiseWorker(new Worker("/scripts/worker.js"))
+//Web worker for indexedDB
+//Use promise based messaging
+worker = new PromiseWorker(new Worker("/scripts/worker.js"))
+
+const hwboard = {
   /**
    * Gets homework from websocket or cache
    * @param {Boolean} removeExpired Whether to remove expired homework
    */
-  async function getHomework(removeExpired=true){
+  async getHomework(removeExpired=true){
     if(typeof worker==="undefined"){
       worker = new PromiseWorker(new Worker("/scripts/worker.js"))
       console.log("Worker was not initalized.")
@@ -15,6 +16,9 @@ const hwboard = (()=>{
     const promises = []
     if(typeof conn !== "undefined"){
       promises.push(new Promise((resolve,reject)=>{
+        if(conn.connected===false || navigator.onLine===false){
+          return resolve([])
+        }
         const settings = Object.assign({},channelSettings)
         settings.removeExpired = removeExpired
         conn.emit("dataReq",settings,function(err,data){
@@ -22,7 +26,7 @@ const hwboard = (()=>{
           if(err) throw err;
           //Put data into client-side database for caching
           //But only for main page
-          if(channel==""){
+          if(channel=="" && removeExpired){
             worker.postMessage({
               type:"set",
               data
@@ -60,11 +64,11 @@ const hwboard = (()=>{
       quickest,
       promises
     }
-  }
+  },
   /**
    * Gets channel data from websocket or cache, whichever is fastest
    */
-  async function getChannelData(){
+  async getChannelData(){
     if(typeof worker==="undefined"){
       worker = new PromiseWorker(new Worker("/scripts/worker.js"))
       console.log("Worker was not initalized.")
@@ -111,8 +115,4 @@ const hwboard = (()=>{
       promises
     }
   }
-  return {
-    getHomework,
-    getChannelData
-  }
-})()
+}

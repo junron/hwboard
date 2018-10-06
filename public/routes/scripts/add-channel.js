@@ -5,7 +5,9 @@ document.getElementById("add-channel").addEventListener("click",()=>{
   }
   conn.emit("addChannel",input.trim(),(err,channelName)=>{
     if(err){
-      Framework7App.dialog.alert(err)
+      Framework7App.loadModules(['dialog']).then(()=>{
+        Framework7App.dialog.alert(err)
+      })
       throw err
     }
     document.getElementById("status").innerHTML = `

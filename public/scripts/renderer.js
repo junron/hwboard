@@ -76,6 +76,8 @@ parser.parseBySubject = function (data,order=0) {
   if(html==""){
     return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
   }
+  html+="</div></ul>"
+  return html
 }
 parser.parseHomeworkSubject = function(homework) {
   let {
@@ -167,7 +169,8 @@ parser.parseHomeworkDate = function(homework) {
     bgColor,
     icon,
     text,
-    extra
+    extra,
+    subjectText
   } = parser.parseHomeworkMetaData(homework)
   let rendered = `
   <li class="hwitem swipeout" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
@@ -179,7 +182,7 @@ parser.parseHomeworkDate = function(homework) {
       <div class="item-title">
         ${text}
         <div class="item-footer">
-          ${subject}${extra}
+          ${subjectText}${extra}
         </div>
       </div>
     </div>
@@ -220,7 +223,7 @@ parser.parseHomeworkMetaData =  function(homework){
     isTest,
     text,
     lastEditPerson: editPerson,
-    lastEditTime: editTime
+    lastEditTime: editTime,
   } = homework
   
   let dueDate2 = Sugar.Date.create(dueDate)
@@ -233,12 +236,36 @@ parser.parseHomeworkMetaData =  function(homework){
     iconColor = "#ab47bc"
   }
   let icon = ""
-  let bgColor = ""
+  let bgColor =  "#bbdefb"
   let extra = ""
+  let tagMode = "graded"
+  if(typeof location != "undefined"){
+    if(location.search.includes("tagMode=all")){
+      tagMode = "all"
+    }else if(location.search.includes("tagMode=original")){
+      tagMode = "original"
+    }
+  }
+  let subjectText = subject
+  if(tagMode==="all"){
+    subjectText = `    <div class="chip" style="background-color:#26c6da">
+      <div class="chip-label" style="color:white">${subject}</div>
+    </div>`
+  }
+  if(tagMode==="original"){
+    bgColor = ""
+  }
   if (isTest) {
     icon = "&#xe900;"
-    bgColor = "#bbdefb"
-    extra = ", Graded"
+    if(tagMode==="original"){
+      bgColor = "#bbdefb"
+      extra = ", Graded"
+    }else{
+      extra = `    <div class="chip color-red">
+        <div class="chip-label">Graded</div>
+      </div>`
+    }
+
   } else {
     icon = "&#xe873;"
   }
@@ -288,7 +315,8 @@ parser.parseHomeworkMetaData =  function(homework){
     displayDate,
     dueDate2,
     extra,
-    subject
+    subject,
+    subjectText
   }
 }
 const renderer = function(data,sortType="Due date",sortOrder=0,adminChannels){

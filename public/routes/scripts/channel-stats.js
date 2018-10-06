@@ -10,14 +10,76 @@ conn.on("ready",()=>{
   }
 })
 
-function renderCharts(){
-  conn.emit("homeworkSubjectData",{channel},(err,data)=>{
-    if(err) throw err
-    homeworkSubjectChart = renderHomeworkSubjectChart(data)
+function homeworkDayData(data){
+  const result = {}
+  const upper = Math.floor(new Date(new Date().getFullYear(),11,31).getTime()/(24*60*60*1000))
+  const lower = Math.floor(new Date(new Date().getFullYear(),0,1).getTime()/(24*60*60*1000))
+  for (const homework of data){
+    const date = Math.floor(new Date(homework.dueDate).getTime()/(24*60*60*1000))
+    if(date>=lower && date<=upper){
+      if(result[date]){
+        result[date]++
+      }else{
+        result[date]=1
+      }
+    }
+  }
+  return result
+}
+function homeworkSubjectData(data){
+  const subjects = {}
+  for(const homework of data){
+    if(subjects[homework.subject]===undefined){
+      subjects[homework.subject] = 1
+    }else{
+      subjects[homework.subject]++
+    }
+  }
+  return Object.entries(subjects).sort(([_1,n1],[_2,n2])=>{
+    if(n1>n2){
+      return -1
+    }else if(n1<n2){
+      return 1
+    }
+    return 0
   })
-  conn.emit("homeworkDayData",{channel},(err,data)=>{
-    if(err) throw err
-    homeworkDateChart = renderHomeworkDateChart(filterOutWeekends(fillInDays(data)))
+}
+function renderCharts(){
+  hwboard.getHomework(false).then(async ({promises})=>{
+    const results = await Promise.all(promises)
+    let data
+    if(results[0].length===undefined){
+      data = results[1]
+    }
+    if(results[1].length===undefined){
+      data = results[0]
+    }
+    if(!data){
+      if(results[0].length>results[1].length){
+        data = results[0]
+      }else{
+        data = results[1]
+      }
+    }
+    renderHomeworkSubjectChart(homeworkSubjectData(data))
+  })
+  hwboard.getHomework(false).then(async ({promises})=>{
+    const results = await Promise.all(promises)
+    let data
+    if(results[0].length===undefined){
+      data = results[1]
+    }
+    if(results[1].length===undefined){
+      data = results[0]
+    }
+    if(!data){
+      if(results[0].length>results[1].length){
+        data = results[0]
+      }else{
+        data = results[1]
+      }
+    }
+    renderHomeworkDateChart(filterOutWeekends(fillInDays(homeworkDayData(data))))
   })
 }
 
@@ -184,12 +246,10 @@ function renderHomeworkDateChart(data){
       labels:Object.keys(data).map(toDate),
       datasets:[{
         data:Object.values(data),
-        backgroundColor:getColors(Object.keys(data)),
         backgroundColor:"rgb(138,43,226,0.2)",
         borderColor:"rgb(138,43,226)",
-        pointRadius:0,
-        pointStyle:"cross",
         lineTension:0,
+        pointStyle:"cross",
       }]
     }
     homeworkDateChart.update()
@@ -205,8 +265,7 @@ function renderHomeworkDateChart(data){
         data:Object.values(data),
         backgroundColor:"rgb(138,43,226,0.2)",
         borderColor:"rgb(138,43,226)",
-        pointRadius:0,
-        pointStyle:"cross"
+        pointStyle:"cross",
       }]
     },
     options:{
