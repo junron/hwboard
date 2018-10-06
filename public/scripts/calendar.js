@@ -32,10 +32,14 @@ function updateHomework() {
         const p1 = await promises[0]
         const p2 = await promises[1]
         let hw
-        if(p1.length>p2.length){
+        if(p1 && (p1.length>p2.length || !p2)){
             hw = p1
         }else{
-            hw = p2
+            if(p2){
+                hw = p2
+            }else{
+                hw = []
+            }
         }
         const homeworkEvents = convertHomework(hw);
         $('#calendar').fullCalendar('removeEventSources');
