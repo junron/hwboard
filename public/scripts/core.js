@@ -1,12 +1,13 @@
-const hwboard = (()=>{
-  //Web worker for indexedDB
-  //Use promise based messaging
-  worker = new PromiseWorker(new Worker("/scripts/worker.js"))
+//Web worker for indexedDB
+//Use promise based messaging
+worker = new PromiseWorker(new Worker("/scripts/worker.js"))
+
+const hwboard = {
   /**
    * Gets homework from websocket or cache
    * @param {Boolean} removeExpired Whether to remove expired homework
    */
-  async function getHomework(removeExpired=true){
+  async getHomework(removeExpired=true){
     if(typeof worker==="undefined"){
       worker = new PromiseWorker(new Worker("/scripts/worker.js"))
       console.log("Worker was not initalized.")
@@ -63,11 +64,11 @@ const hwboard = (()=>{
       quickest,
       promises
     }
-  }
+  },
   /**
    * Gets channel data from websocket or cache, whichever is fastest
    */
-  async function getChannelData(){
+  async getChannelData(){
     if(typeof worker==="undefined"){
       worker = new PromiseWorker(new Worker("/scripts/worker.js"))
       console.log("Worker was not initalized.")
@@ -114,8 +115,4 @@ const hwboard = (()=>{
       promises
     }
   }
-  return {
-    getHomework,
-    getChannelData
-  }
-})()
+}

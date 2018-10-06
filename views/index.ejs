@@ -10,36 +10,6 @@
   .fouc {
     display:none;
   }
-  .list ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: relative;
-  }
-  .list .item-inner {
-    position: relative;
-    width: 100%;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    min-width: 0;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-pack: justify;
-    -webkit-justify-content: space-between;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-align-self: stretch;
-    -ms-flex-item-align: stretch;
-    align-self: stretch;
-  }
   </style>
   <div id="app">
   <!-- menu -->
@@ -93,7 +63,7 @@
         </div>
       </div>
         <div class="page-content block" style="padding-top:0px" role="main">
-          <div class="list" id="hwboard-homework-list">
+          <div class="list fouc" id="hwboard-homework-list">
             <%- renderer(data,sortType,sortOrder,adminChannels) %>
           </div>
         </div>
@@ -119,6 +89,7 @@
     <!-- unhide rendered page -->
     <script>
       document.querySelector(".page-current .navbar.fouc").classList.remove("fouc")
+      document.querySelector(".page-current .list.fouc").classList.remove("fouc")
       document.querySelector("#hwboard-homework-list").style.position = "relative"
       document.querySelector("#hwboard-homework-list").style.top = "60px"
       console.log("Navbar")
