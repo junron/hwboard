@@ -17,3 +17,4 @@ $(document).on("click",".swipeout-edit-button",function(){
 })
 
 Framework7App.swipeout.init()
+Framework7App.input.init()

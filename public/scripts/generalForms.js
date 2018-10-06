@@ -75,6 +75,9 @@ function rerenderSort(){
       //Perhaps indexeddb screwed up 
       data = JSON.parse(localStorage.getItem("data"))
     }
-    reRender(data)
+    reRender(data).then(()=>{
+      $(".swipeout-actions-left").css("visibility","visible")
+      $(".swipeout-actions-right").css("visibility","visible")
+    })
   })
 }
