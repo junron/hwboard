@@ -205,7 +205,7 @@ const Framework7App = new Framework7({
           url: "/calendar",
           on: {
               pageAfterIn: async e => {
-                const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.css'];
+                const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.min.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.min.css'];
                 const target = e.currentTarget;
                 await loadSources(target, sources)
                 while (!$("#calendar").fullCalendar){}
