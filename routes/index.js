@@ -125,25 +125,25 @@ router.get('/', async (req, res, next) => {
   if(req.query.code && req.signedCookies.redirPath){
     return res.redirect(req.signedCookies.redirPath)
   }
-    const {channelData, adminChannels} = authData;
+  const {channelData, adminChannels} = authData;
   // console.log(channelData)
   //Check if user is admin in any channel
   //This prevents us from sending the add homework form unnecessarily
-    const admin = Object.keys(adminChannels).length > 0 || testing;
+  const admin = Object.keys(adminChannels).length > 0 || testing;
   //Get sort options
-    let {sortOrder, sortType} = req.cookies;
+  let {sortOrder, sortType} = req.cookies;
   if(sortOrder){
     sortOrder = parseInt(sortOrder)
   }
   //Server push
-    res.header("Link", parsePushHeaders(indexPushFiles));
+  res.header("Link", parsePushHeaders(indexPushFiles));
 
   //Get homework for rendering
-    let data = await db.getHomeworkAll(channelData);
+  let data = await db.getHomeworkAll(channelData);
 
   //Report errors in production or mobile
-    let reportErrors = false;
-    const mobile = isMobile(req.headers['user-agent']);
+  let reportErrors = false;
+  const mobile = isMobile(req.headers['user-agent']);
   if(hostname!=="nushhwboard.tk"){
     reportErrors = mobile
   }else{

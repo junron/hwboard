@@ -42,8 +42,16 @@ const Framework7App = new Framework7({
       animate:false,
       url:"/",
       on:{
+        pageBeforeIn:()=>{
+          if(document.querySelector(".page-next .navbar.fouc")){
+            document.querySelector(".page-next .navbar.fouc").classList.remove("fouc")
+          }
+          document.querySelector("#hwboard-homework-list").style.position = "relative"
+          document.querySelector("#hwboard-homework-list").style.top = "60px"
+        },
         pageAfterIn:e=>{
           prevDataHash = ""
+          console.log("Navbar")
           loadSources(e.currentTarget,["/scripts/loadHomework.js"])
         }
       },

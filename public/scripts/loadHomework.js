@@ -1,6 +1,6 @@
 //Turns channel data into variables
 function setSubjectVariables(channelData){
-  if(typeof channelData != "object" || channelData === null){
+  if(typeof channelData != "object" || channelData === null || channelData.null){
    return false
   }
   timetable = {}
@@ -25,9 +25,65 @@ channelSettings = {
   removeExpired:true
 }
 
+prevDataHash = ""
+//Get cookies
+//Re-render homework
+async function reRender(data){
+  if(data.null){
+    return
+  }
+  async function computeHash(data){
+    const hashBytes = await crypto.subtle.digest("SHA-512",new TextEncoder("utf-8").encode(data))
+    const hash = btoa(new Uint8Array(hashBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
+    return hash
+  }
+  const sortType = sortOptions.type || getCookie("sortType") || "Due date"
+  let sortOrder = sortOptions.order || 0
+  const hashHomeworkData = data.sort((a,b)=>{
+    aHash = a.id+a.text+a.subject+a.dueDate+a.lastEditPerson+a.lastEditTime
+    bHash = b.id+b.text+b.subject+b.dueDate+b.lastEditPerson+b.lastEditTime
+    if(aHash > bHash){
+      return -1
+    }else if(aHash < bHash){
+      return 1
+    }else{
+      return 0
+    }
+  })
+  const hashData = JSON.stringify(hashHomeworkData)+sortOrder+sortType
+  const hash = await computeHash(hashData)
+  if(hash!==prevDataHash){
+    const rendered = renderer(data,sortType,sortOrder)
+    $("#hwboard-homework-list").html(rendered)
+    console.log("rerendered")
+    prevDataHash = hash
+  }
+}
+
 async function loadHomework(){
-  const [homeworkData,channelData] = (await Promise.all([hwboard.getHomework(),hwboard.getChannelData()])).map(res=>res.quickest)
+  async function getBestPromise(obj){
+    if(obj.quickest && obj.quickest.length && obj.quickest.length>0){
+      return obj.quickest
+    }
+    const results = await Promise.all(obj.promises)
+    if(results[0] && results[0].length && (!results[1].length || results[0].length>results[1].length)){
+      return results[0]
+    }
+    if(!results[1]){
+      const res = []
+      res["null"] = true
+      return res
+    }
+    return results[1]
+  }
+  const results = await Promise.all([
+    hwboard.getHomework(),
+    hwboard.getChannelData()
+  ]);
+  const [homeworkData,channelData] = await Promise.all(results.map(getBestPromise));
   setSubjectVariables(channelData);
-  reRender(homeworkData)
+  reRender(homeworkData);
+  $(".swipeout-actions-left").css("visibility","visible")
+  $(".swipeout-actions-right").css("visibility","visible")
 }
 loadHomework()
