@@ -82,7 +82,7 @@ async function loadHomework(){
   ]);
   const [homeworkData,channelData] = await Promise.all(results.map(getBestPromise));
   setSubjectVariables(channelData);
-  reRender(homeworkData);
+  await reRender(homeworkData)
   $(".swipeout-actions-left").css("visibility","visible")
   $(".swipeout-actions-right").css("visibility","visible")
 }

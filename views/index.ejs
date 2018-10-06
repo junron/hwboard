@@ -4,7 +4,7 @@
 <body>
   <script defer async src="/scripts/checkVersion.js"></script>
   <style>
-  .swipeout-actions-left, .swipeout-actions-right{
+  #hwboard-homework-list .swipeout-actions-left,#hwboard-homework-list .swipeout-actions-right{
     visibility:hidden;
   }
   .fouc {
@@ -130,6 +130,7 @@
     <script async defer src="/framework7/lazy-components/fab.js"></script>
     <script async defer src="/framework7/lazy-components/swipeout.js"></script>
     <script async defer src="/framework7/lazy-components/dialog.js"></script>
+    <script async defer src="/framework7/lazy-components/input.js"></script>
     <script async defer src="/scripts/framework7Load.js"></script>
     <!-- unhide rendered page -->
     <script>
@@ -152,6 +153,7 @@
     <link rel="stylesheet" href="/framework7/lazy-components/swipeout.css">
     <link rel="stylesheet" href="/framework7/lazy-components/panel.css">
     <link rel="stylesheet" href="/framework7/lazy-components/dialog.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/input.css">
 
     <%- include("./partials/dialogs.ejs") %>
 

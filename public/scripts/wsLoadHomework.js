@@ -7,6 +7,9 @@ conn.on("data",({channel,data:channelData})=>{
   console.log(channel,channelData)
   console.log("Data is pushed from server")
   updateChannelHomework(channel,channelData).then(newData=>{
-    reRender(newData);
+    reRender(newData).then(()=>{
+      $(".swipeout-actions-left").css("visibility","visible");
+      $(".swipeout-actions-right").css("visibility","visible");
+    })
   })
 });

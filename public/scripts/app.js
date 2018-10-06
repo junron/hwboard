@@ -131,16 +131,6 @@ const Framework7App = new Framework7({
           channel = ""
           if(typeof conn==="undefined" || conn.connected===false){
             renderCharts()
-          //   //SHow offline message
-          //   const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-          //   homeworkSubject.font = "15px Helvetica"
-          //   homeworkSubject.textAlign = "center"
-          //   homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
-            
-          //   const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-          //   homeworkDate.font = "15px Helvetica"
-          //   homeworkDate.textAlign = "center"
-          //   homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
           homeworkDateChart = false
           homeworkSubjectChart = false
@@ -178,16 +168,6 @@ const Framework7App = new Framework7({
           channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
           if(typeof conn==="undefined" || conn.connected===false){
             renderCharts()
-          //   //SHow offline message
-          //   const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-          //   homeworkSubject.font = "15px Helvetica"
-          //   homeworkSubject.textAlign = "center"
-          //   homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
-            
-          //   const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-          //   homeworkDate.font = "15px Helvetica"
-          //   homeworkDate.textAlign = "center"
-          //   homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
           homeworkDateChart = false
           homeworkSubjectChart = false
@@ -265,7 +245,8 @@ const Framework7App = new Framework7({
             pageAfterIn:e=>{
               loadSources(e.currentTarget,["/routes/scripts/add-member.js"])
             }
-          }
+          },
+          modules:['grid','input','dialog','autocomplete']
         },
         {
           name:"add-subject",
@@ -274,20 +255,10 @@ const Framework7App = new Framework7({
           on:{
             pageAfterIn:e=>{
               const target = e.currentTarget
-              // const scriptTag2 = document.createElement("script")
-              // scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
-              // target.appendChild(scriptTag2)
-              loadSources(target,["/routes/scripts/add-subject.js"])//,"/routes/styles/timetable.css"])
-              // scriptTag2.onload = ()=>{
-              //   addSubjectRenderTimetable().then(_=>{
-              //     $("#app .page-current table#homeworkboard-timetable td").filter(function(){
-              //       return this.innerHTML === " "
-              //     }).css("background-color","#d8ffe0")
-              //   })
-              // }
+              loadSources(target,["/routes/scripts/add-subject.js"])
             }
-          }
-
+          },
+          modules:['grid','input','dialog','swiper']
         }
       ],
     modules:['accordion']
