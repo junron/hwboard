@@ -3,18 +3,10 @@
 <%- include("./partials/head",{beta}) %>
 <body>
   <script defer async src="/scripts/checkVersion.js"></script>
-  <style>
-  #hwboard-homework-list .swipeout-actions-left,#hwboard-homework-list .swipeout-actions-right{
-    visibility:hidden;
-  }
-  .fouc {
-    display:none;
-  }
-  </style>
-  <div id="app">
+  <div id="app" style="transform:translateY(1000%)">
   <!-- menu -->
-    <div class="panel panel-left fouc">
-    <div class="list links-list">
+    <div class="panel panel-left">
+    <div class="list links-list" style="transform:translateX(100%)">
       <ul>
         <li>
           <a href="/" class="panel-close">
@@ -49,7 +41,7 @@
     <div class="view view-main">
 
     <div class="page page-current">
-      <div class="navbar fouc">
+      <div class="navbar">
         <div class="navbar-inner">
         <!-- bar icon and link -->
         <a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>
@@ -63,7 +55,7 @@
         </div>
       </div>
         <div class="page-content block" style="padding-top:0px" role="main">
-          <div class="list fouc" id="hwboard-homework-list">
+          <div class="list" id="hwboard-homework-list" style="position:relative;top:57px">
             <%- renderer(data,sortType,sortOrder,adminChannels) %>
           </div>
         </div>
@@ -88,11 +80,7 @@
     <link rel="stylesheet" href="/framework7/css/framework7-lazy.min.css">
     <!-- unhide rendered page -->
     <script>
-      document.querySelector(".page-current .navbar.fouc").classList.remove("fouc")
-      document.querySelector(".page-current .list.fouc").classList.remove("fouc")
-      document.querySelector("#hwboard-homework-list").style.position = "relative"
-      document.querySelector("#hwboard-homework-list").style.top = "60px"
-      console.log("Navbar")
+      document.querySelector("#app").style.transform = ""
     </script>
     <link rel="stylesheet" href="/framework7/lazy-components/fab.css">
     <link href="/styles/roboto.css" rel="stylesheet">
@@ -133,11 +121,7 @@
     <script async defer src="/framework7/lazy-components/dialog.js"></script>
     <script async defer src="/framework7/lazy-components/input.js"></script>
     <script async defer src="/scripts/framework7Load.js"></script>
-    <!-- unhide rendered page -->
-    <script>
-      document.querySelector(".panel.fouc").classList.remove("fouc")
-      console.log("panel")
-    </script>
+
     <!-- non critical styles and scripts can be deferred-->
     <script async defer src="/scripts/eventHandlers.js"></script>
     <script async defer src="/fuse.js/dist/fuse.min.js"></script>
@@ -155,7 +139,9 @@
     <link rel="stylesheet" href="/framework7/lazy-components/panel.css">
     <link rel="stylesheet" href="/framework7/lazy-components/dialog.css">
     <link rel="stylesheet" href="/framework7/lazy-components/input.css">
-
+    <script>
+    document.querySelector(".panel.panel-left .list").style.transform = ""
+    </script>
     <%- include("./partials/dialogs.ejs") %>
 
     <!-- styles and scripts for later pages -->
