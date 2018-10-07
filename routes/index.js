@@ -80,7 +80,7 @@ function parsePushHeaders(files){
 
 //Channel lists
 router.get("/channels", async (req, res) => {
-    const renderer = require("../public/scripts/render-channels");
+  const renderer = require("../public/scripts/render-channels");
   if(testing && req.cookies.username){
       const email = req.cookies.username;
     res.cookie("username",email,{
@@ -94,7 +94,8 @@ router.get("/channels", async (req, res) => {
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
+    const url = require('url')
+    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
   }
     const {channelData} = authData;
     res.header("Link", parsePushHeaders(basePushFiles));
@@ -110,7 +111,8 @@ router.get("/calendar",async (req, res, next) => {
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
+    const url = require('url')
+    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
   }
   res.render("calendar")
 })
@@ -123,7 +125,8 @@ router.get('/', async (req, res, next) => {
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
+    const url = require('url')
+    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
   }
   const {channelData, adminChannels} = authData;
   // console.log(channelData)
