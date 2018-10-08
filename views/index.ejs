@@ -3,7 +3,7 @@
 <%- include("./partials/head",{beta}) %>
 <body>
   <script defer async src="/scripts/checkVersion.js"></script>
-  <div id="app" style="transform:translateY(1000%)">
+  <div id="app" style="transform:translateY(10000%)">
   <!-- menu -->
     <div class="panel panel-left">
     <div class="list links-list" style="transform:translateX(100%)">
@@ -112,20 +112,26 @@
 
     <!-- framework7 scripts can be deferred -->
     <script src="/framework7/js/framework7-lazy.min.js"></script>
-    <script src="/scripts/app.js"></script>
     <script async defer src="/framework7/lazy-components/list-index.js"></script>
     <script async defer src="/framework7/lazy-components/chip.js"></script>
     <script async defer src="/framework7/lazy-components/panel.js"></script>
     <script async defer src="/framework7/lazy-components/fab.js"></script>
-    <script async defer src="/framework7/lazy-components/swipeout.js"></script>
+    <script defer src="/framework7/lazy-components/swipeout.js"></script>
     <script async defer src="/framework7/lazy-components/dialog.js"></script>
-    <script async defer src="/framework7/lazy-components/input.js"></script>
-    <script async defer src="/scripts/framework7Load.js"></script>
+    <script defer src="/framework7/lazy-components/input.js"></script>
+    <script defer src="/scripts/app.js"></script>
+    <script defer src="/scripts/framework7Load.js"></script>
 
+    <!-- Hidden styles are not so critical -->
+    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/swipeout.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/panel.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/dialog.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/input.css">
     <!-- non critical styles and scripts can be deferred-->
     <script async defer src="/scripts/eventHandlers.js"></script>
     <script async defer src="/fuse.js/dist/fuse.min.js"></script>
-    <script async defer src="/scripts/generalForms.js"></script>
+    <script defer src="/scripts/generalForms.js"></script>
     <script async defer src="/scripts/loadSW.js"></script>
     <% if (admin){ %>
       <!-- non admins wont need these -->
@@ -133,12 +139,6 @@
       <script defer src="/scripts/edit-homework-eventHandlers.js"></script>
     <% } %>
 
-    <!-- Styles are not so critical -->
-    <link rel="stylesheet" href="/styles/index.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/swipeout.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/panel.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/dialog.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/input.css">
     <script>
     document.querySelector(".panel.panel-left .list").style.transform = ""
     </script>

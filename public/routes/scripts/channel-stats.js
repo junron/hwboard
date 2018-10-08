@@ -4,7 +4,7 @@ let gradedMode = 0
 
 //Db inited, can get data
 conn.on("ready",()=>{
-  if(location.hash.endsWith("/analytics")){
+  if(location.hash.endsWith("/analytics") || location.hash.endsWith("/analytics/")){
     console.log("ready")
     renderCharts()
   }
