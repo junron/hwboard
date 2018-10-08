@@ -114,7 +114,7 @@ self.addEventListener('fetch',function(event) {
                     return new Promise(resolve=>{
                       setTimeout(_=>{
                         resolve(networkResponse)
-                      },1000)
+                      },3000)
                     })
                   }
                 }
