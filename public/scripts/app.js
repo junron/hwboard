@@ -134,7 +134,6 @@ const Framework7App = new Framework7({
           }
           homeworkDateChart = false
           homeworkSubjectChart = false
-          
           $("a[href='/channels'").parent().html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`)
           $("a[href='/channelName/data.json'").attr("download",`data.json`)
           $("a[href='/channelName/data.json'").attr("href",`/data.json`)
@@ -143,15 +142,26 @@ const Framework7App = new Framework7({
           conn.emit("isReady",null,res=>{
             if(res){
               console.log("ready before page load")
-              renderCharts()
+              const i = setInterval(()=>{
+                //Allow canvas to render and exist
+                if(document.getElementById("homework-subject-chart")){
+                  renderCharts()
+                  clearInterval(i)
+                }
+              },500)
             }
           })
           //Db inited, can get data
           conn.on("ready",()=>{
-            if(location.hash.endsWith("/analytics")){
-              console.log("ready")
-              renderCharts()
-            }
+            console.log("ready")
+            const i = setInterval(()=>{
+              //Allow canvas to render and exist
+              if(document.getElementById("homework-subject-chart")){
+                renderCharts()
+                clearInterval(i)
+              }
+            },500)
+            renderCharts()
           })
         }
       },
@@ -290,3 +300,5 @@ async function loadSources(target, sources) {
   }
   return Promise.all(sources.map(loadSource))
 }
+Framework7App.swipeout.init()
+Framework7App.input.init()
