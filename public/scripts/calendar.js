@@ -1,4 +1,4 @@
-colors = ["#c44736", "#c47836", "#c4c436", "#7dc436", "#36c48b", "#36bcc4", "#3681c4", "#3641c4", "#7d36c4", "#c43692", "#c43636"];//["#5ebd3e","#ffb900","#f78200","#e23838","#973999","#009cdf"]//
+colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC']
 
 function picktextColor(bgColor, lightColor, darkColor) {
     var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
