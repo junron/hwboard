@@ -14,6 +14,9 @@ module.exports = (sequelize, Sequelize) => {
     timetable: {
         type: Sequelize.JSON
     },
+    tags:{
+        type: Sequelize.JSON
+    },
     roots: {
         type: Sequelize.ARRAY(Sequelize.STRING)
     },
