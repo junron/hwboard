@@ -132,14 +132,14 @@ function calendarInit(){
                 $('#calendar').fullCalendar('option', {weekends:false})
             }
         },
-        viewRender: (view,elem)=>{
+        viewRender: view=>{
             if(view.type==="basicWeek"){
                 dateParser.getTermXWeekY(new Date(view.end - 24 * 60 * 60 * 1000)).then(({term,week})=>{
                     let weekText = ` (Term ${term} Week ${week})`
                     if(term==="Holiday"){
                         weekText = " (Holiday)"
                     }
-                    let title = $("#calendar .fc-toolbar .fc-left h2").text().replace(/\((.*?)\)/,weekText)
+                    let title = $("#calendar .fc-toolbar .fc-left h2").text().split("undefined").join("").replace(/\((.*?)\)/,weekText)
                     if(!title.includes(weekText)){
                         title+=weekText
                     }
