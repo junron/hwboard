@@ -6,15 +6,17 @@ function setSubjectVariables(channelData){
   timetable = {}
   subjectChannelMapping = {}
   subjectSelectionList = []
+  subjectTagMapping = {}
   for(const channelName in channelData){
     const channel = channelData[channelName]
     timetable = Object.assign(timetable,channel.timetable)
-    //User is admin or higher of channel
-    if(channel.permissions>=2){
-      for (const subject of channel.subjects){
+    for (const subject of channel.subjects){
+      //User is admin or higher of channel
+      if(channel.permissions>=2){
         subjectSelectionList.push(subject)
         subjectChannelMapping[subject] = channel.name
       }
+      subjectTagMapping[subject] = channel.tags
     }
   }
   dateParser = Object.freeze(dateParserFn(timetable,subjectSelectionList))

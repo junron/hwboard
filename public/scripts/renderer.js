@@ -256,6 +256,12 @@ parser.parseHomeworkMetaData =  function(homework){
     subjectText = `    <div class="chip" style="background-color:#26c6da">
       <div class="chip-label" style="color:white">${subject}</div>
     </div>`
+    for(const tag of tags){
+      extra += `    <div class="chip color-${tagMapping[tag]}">
+        <div class="chip-label">${tag}</div>
+      </div>`
+  
+    }  
   }
   if(tagMode==="original"){
     bgColor = ""
@@ -265,7 +271,7 @@ parser.parseHomeworkMetaData =  function(homework){
     if(tagMode==="original"){
       bgColor = "#bbdefb"
       extra = ", Graded"
-    }else{
+    }else if(tagMode!=="all"){
       extra = `    <div class="chip color-red">
         <div class="chip-label">Graded</div>
       </div>`
