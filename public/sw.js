@@ -16,7 +16,7 @@ self.addEventListener('install', function(e) {
         "/styles/roboto.css",
         "/styles/icons.css",
         "/socket.io-client/dist/socket.io.slim.js",
-        "/framework7/css/framework7.min.css",
+        "/framework7/css/framework7.md.min.css",
         "/framework7/js/framework7.min.js",
         "/promise-worker/dist/promise-worker.js",
         "/jquery/dist/jquery.slim.min.js",
@@ -65,17 +65,26 @@ function addCacheHeader(response){
 self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim())
 });
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch',function(event) {
   if(event.request.method=="GET"){
     event.respondWith(
-      caches.open('cache1').then(function(cache) {
+      caches.open('cache1').then(async function(cache) {
+        let queryString
+        const client = await clients.get(event.clientId)
+        if(!client){
+          queryString = ""
+        }else{
+          const clientURL = client.url
+          queryString = clientURL.split("?")[clientURL.split("?").length-1]
+        }
+
         return cache.match(event.request).then(function(response) {
           const {url} = event.request
           if((url.endsWith(".css")||url.endsWith(".ttf")||url.indexOf("min")>-1||url.indexOf("io")>-1)&&response){
             return addCacheHeader(response)
           }
           console.log(`Loading ${url}`)
-          var fetchPromise = Promise.race([fetch(event.request),new Promise((resolve,reject)=>{
+          const fetchPromise = Promise.race([fetch(event.request),new Promise(resolve=>{
             setTimeout(()=>{
               //Use cache is network is slow
               return resolve(false)
@@ -95,7 +104,26 @@ self.addEventListener('fetch', function(event) {
             if(networkResponse.ok){
               cache.put(event.request, networkResponse.clone());
               console.log(`Cached ${url}`)
-              return networkResponse;
+              if(queryString.includes("delay=")){
+                const delayScripts = queryString.replace("delay=","").split(",")
+                let delay = false
+                for(const delayScript of delayScripts){
+                  if(url.includes(delayScript)){
+                    delay = true
+                    console.log(`%c Delayed ${url.split("/")[url.split("/").length-1]}`,"color:red")
+                    return new Promise(resolve=>{
+                      setTimeout(_=>{
+                        resolve(networkResponse)
+                      },3000)
+                    })
+                  }
+                }
+                if(!delay){
+                  return networkResponse
+                }
+              }else{
+                return networkResponse
+              }
             }else{
               if(networkResponse.ok!==false || networkResponse.type=="opaqueredirect"){
                 return networkResponse
@@ -104,7 +132,11 @@ self.addEventListener('fetch', function(event) {
               return response
             }
           })
-          return response || fetchPromise;
+          if(queryString.includes("delay=")){
+            return fetchPromise
+          }else{
+            return response || fetchPromise
+          }
         })
       })
     );

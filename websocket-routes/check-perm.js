@@ -29,6 +29,13 @@ async function checkPayloadAndPermissions(socket,msg,minPermissionLevel=2){
   //Collisions like Cheng Yi may occur
   msg.lastEditPerson = socket.userData.preferred_username
   msg.isTest = msg.isTest || false
+  msg.tags = msg.tags || [""]
+  if(msg.isTest){
+    msg.tags.push("Graded")
+  }
+  if(msg.tags.length===0){
+    msg.tags = [""]
+  }
   if(Object.values(msg).indexOf(null)>-1){
     throw "Params cannot be null"
   }

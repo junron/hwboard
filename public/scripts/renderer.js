@@ -5,7 +5,6 @@ if(typeof Sugar =="undefined"){
     Sugar = require("sugar-date")
   }
 }
-useNew = false
 
 const filterDue = a => new Date(a.dueDate) >= (new Date() - 3600000)
 
@@ -170,7 +169,8 @@ parser.parseHomeworkDate = function(homework) {
     bgColor,
     icon,
     text,
-    extra
+    extra,
+    subjectText
   } = parser.parseHomeworkMetaData(homework)
   let rendered = `
   <li class="hwitem swipeout" sqlID="${id}" style="color:${iconColor};background-color:${bgColor}">
@@ -182,7 +182,7 @@ parser.parseHomeworkDate = function(homework) {
       <div class="item-title">
         ${text}
         <div class="item-footer">
-          ${subject}${extra}
+          ${subjectText}${extra}
         </div>
       </div>
     </div>
@@ -228,7 +228,7 @@ parser.parseHomeworkMetaData =  function(homework){
     text,
     tags,
     lastEditPerson: editPerson,
-    lastEditTime: editTime
+    lastEditTime: editTime,
   } = homework
   tags = tags.filter(tag => tag.length>0)
   let dueDate2 = Sugar.Date.create(dueDate)
@@ -243,13 +243,33 @@ parser.parseHomeworkMetaData =  function(homework){
   let icon = ""
   let bgColor =  "#bbdefb"
   let extra = ""
-  subject = `    <div class="chip" style="background-color:#26c6da">
-    <div class="chip-label" style="color:white">${subject}</div>
-  </div>`
-  for(const tag of tags){
-    extra += `    <div class="chip color-${tagMapping[tag]}">
-      <div class="chip-label">${tag}</div>
+  let tagMode = "graded"
+  if(typeof location != "undefined"){
+    if(location.search.includes("tagMode=all")){
+      tagMode = "all"
+    }else if(location.search.includes("tagMode=original")){
+      tagMode = "original"
+    }
+  }
+  let subjectText = subject
+  if(tagMode==="all"){
+    subjectText = `    <div class="chip" style="background-color:#26c6da">
+      <div class="chip-label" style="color:white">${subject}</div>
     </div>`
+  }
+  if(tagMode==="original"){
+    bgColor = ""
+  }
+  if (isTest) {
+    icon = "&#xe900;"
+    if(tagMode==="original"){
+      bgColor = "#bbdefb"
+      extra = ", Graded"
+    }else{
+      extra = `    <div class="chip color-red">
+        <div class="chip-label">Graded</div>
+      </div>`
+    }
 
   }
   if (isTest) {
@@ -303,7 +323,8 @@ parser.parseHomeworkMetaData =  function(homework){
     displayDate,
     dueDate2,
     extra,
-    subject
+    subject,
+    subjectText
   }
 }
 const renderer = function(data,sortType="Due date",sortOrder=0,adminChannels){

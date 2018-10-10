@@ -1,4 +1,4 @@
-colors = ["#FEA47F", "#25CCF7", "#EAB543", "#55E6C1", "#CAD3C8", "#F97F51", "#1B9CFC", "#F8EFBA", "#58B19F", "#2C3A47", "#B33771", "#3B3B98", "#FD7272", "#9AECDB", "#D6A2E8", "#6D214F", "#182C61", "#FC427B", "#BDC581", "#82589F"];
+colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC']
 
 function picktextColor(bgColor, lightColor, darkColor) {
     var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
@@ -32,10 +32,14 @@ function updateHomework() {
         const p1 = await promises[0]
         const p2 = await promises[1]
         let hw
-        if(p1.length>p2.length){
+        if(p1 && (p1.length>p2.length || !p2)){
             hw = p1
         }else{
-            hw = p2
+            if(p2){
+                hw = p2
+            }else{
+                hw = []
+            }
         }
         const homeworkEvents = convertHomework(hw);
         $('#calendar').fullCalendar('removeEventSources');
@@ -73,14 +77,11 @@ conn.on("ready",setColors);
 conn.on("data",setColors);
 function changeView(){
     const {name:currView} = $('#calendar').fullCalendar( 'getView' )
+    
     if(currView==="basicWeek"){
         $('#calendar').fullCalendar('changeView', 'month')
-        $("#calendar-next").text("Next month")
-        $("#calendar-prev").text("Prev month")
     }else{
         $('#calendar').fullCalendar('changeView', 'basicWeek')
-        $("#calendar-next").text("Next week")
-        $("#calendar-prev").text("Prev week")
     }
 }
 
@@ -131,31 +132,37 @@ function calendarInit(){
                 $('#calendar').fullCalendar('option', {weekends:false})
             }
         },
-        viewRender: (view,elem)=>{
+        viewRender: view=>{
             if(view.type==="basicWeek"){
-                dateParser.getTermXWeekY(new Date(view.end)).then(({term,week})=>{
+                dateParser.getTermXWeekY(new Date(view.end - 24 * 60 * 60 * 1000)).then(({term,week})=>{
                     let weekText = ` (Term ${term} Week ${week})`
                     if(term==="Holiday"){
                         weekText = " (Holiday)"
                     }
-                    $("#calendar .fc-toolbar .fc-left h2").text($("#calendar .fc-toolbar .fc-left h2").text()+weekText)
+                    let title = $("#calendar .fc-toolbar .fc-left h2").text().split("undefined").join("").replace(/\((.*?)\)/,weekText)
+                    if(!title.includes(weekText)){
+                        title+=weekText
+                    }
+                    $("#calendar .fc-toolbar .fc-left h2").text(title)
                 })
             }
         },
         eventClick: (eventObj,e)=> {
             const formattedDate = new Date(eventObj.start).toDateString()
-            let popover = Framework7App.popover.create({
-                targetEl: e.target,
-                content: `<div class="popover">
-                <div class="popover-inner">
-                <div class="block">
-                <h1>${eventObj.title}</h1>
-                <p>${eventObj.id}<br/>Due ${formattedDate}</p>
-                </div>
-                </div>
-                </div>`
-            });
-            popover.open();
+            Framework7App.loadModules(['popover']).then(()=>{
+                const popover = Framework7App.popover.create({
+                    targetEl: e.target,
+                    content: `<div class="popover">
+                    <div class="popover-inner">
+                    <div class="block">
+                    <h1>${eventObj.title}</h1>
+                    <p>${eventObj.id}<br/>Due ${formattedDate}</p>
+                    </div>
+                    </div>
+                    </div>`
+                });
+                popover.open();
+            })
         }
 
     });

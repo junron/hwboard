@@ -4,7 +4,7 @@ let gradedMode = 0
 
 //Db inited, can get data
 conn.on("ready",()=>{
-  if(location.hash.endsWith("/analytics")){
+  if(location.hash.endsWith("/analytics") || location.hash.endsWith("/analytics/")){
     console.log("ready")
     renderCharts()
   }
@@ -249,6 +249,7 @@ function renderHomeworkDateChart(data){
         backgroundColor:"rgb(138,43,226,0.2)",
         borderColor:"rgb(138,43,226)",
         lineTension:0,
+        pointStyle:"cross",
       }]
     }
     homeworkDateChart.update()
@@ -264,6 +265,7 @@ function renderHomeworkDateChart(data){
         data:Object.values(data),
         backgroundColor:"rgb(138,43,226,0.2)",
         borderColor:"rgb(138,43,226)",
+        pointStyle:"cross",
       }]
     },
     options:{

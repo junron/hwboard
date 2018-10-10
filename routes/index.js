@@ -4,7 +4,6 @@ const express = require('express');
 const authChannels = require("./authChannels")
 const renderer = require('../public/scripts/renderer')
 const Sugar = require("sugar-date")
-let dbInit = false
 const router = express.Router();
 const db = require("../database")
 const config = require("../loadConfig")
@@ -29,14 +28,14 @@ const basePushFiles = [
   "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
   "/scripts/app.js",
   "/socket.io-client/dist/socket.io.slim.js",
-  "/framework7/css/framework7.min.css",
+  "/framework7/css/framework7.md.min.css",
   "/framework7/js/framework7.min.js",
 ];
 const pushFiles = [
   "/styles/roboto.css",
   "/styles/icons.css",
   "/socket.io-client/dist/socket.io.slim.js",
-  "/framework7/css/framework7.min.css",
+  "/framework7/css/framework7.md.min.css",
   "/framework7/js/framework7.min.js",
   "/promise-worker/dist/promise-worker.js",
   "/jquery/dist/jquery.slim.min.js",
@@ -81,7 +80,7 @@ function parsePushHeaders(files){
 
 //Channel lists
 router.get("/channels", async (req, res) => {
-    const renderer = require("../public/scripts/render-channels");
+  const renderer = require("../public/scripts/render-channels");
   if(testing && req.cookies.username){
       const email = req.cookies.username;
     res.cookie("username",email,{
@@ -95,7 +94,8 @@ router.get("/channels", async (req, res) => {
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
+    const url = require('url')
+    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
   }
     const {channelData} = authData;
     res.header("Link", parsePushHeaders(basePushFiles));
@@ -106,19 +106,13 @@ router.get("/channels", async (req, res) => {
 });
 
 router.get("/calendar",async (req, res, next) => {
-
-  if(!dbInit){
-    //Create tables and stuffs
-      console.log("inited");
-      await db.init();
-    dbInit = true
-  }
   const authData = await authChannels(req, res);
   if (authData === "redirected") {
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
+    const url = require('url')
+    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
   }
   res.render("calendar")
 })
@@ -126,39 +120,33 @@ router.get("/calendar",async (req, res, next) => {
 
 /* GET home page. */
 router.get('/', async (req, res, next) => {
-
-  if(!dbInit){
-    //Create tables and stuffs
-      console.log("inited");
-      await db.init();
-    dbInit = true
-  }
   const authData = await authChannels(req, res);
   if (authData === "redirected") {
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
+    const url = require('url')
+    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
   }
-    const {channelData, adminChannels} = authData;
+  const {channelData, adminChannels} = authData;
   // console.log(channelData)
   //Check if user is admin in any channel
   //This prevents us from sending the add homework form unnecessarily
-    const admin = Object.keys(adminChannels).length > 0 || testing;
+  const admin = Object.keys(adminChannels).length > 0 || testing;
   //Get sort options
-    let {sortOrder, sortType} = req.cookies;
+  let {sortOrder, sortType} = req.cookies;
   if(sortOrder){
     sortOrder = parseInt(sortOrder)
   }
   //Server push
-    res.header("Link", parsePushHeaders(indexPushFiles));
+  res.header("Link", parsePushHeaders(indexPushFiles));
 
   //Get homework for rendering
-    let data = await db.getHomeworkAll(channelData);
+  let data = await db.getHomeworkAll(channelData);
 
   //Report errors in production or mobile
-    let reportErrors = false;
-    const mobile = isMobile(req.headers['user-agent']);
+  let reportErrors = false;
+  const mobile = isMobile(req.headers['user-agent']);
   if(hostname!=="nushhwboard.tk"){
     reportErrors = mobile
   }else{
