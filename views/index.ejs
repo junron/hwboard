@@ -2,11 +2,11 @@
 <html lang="en" class="md">
 <%- include("./partials/head",{beta}) %>
 <body>
-  <script src="/scripts/checkVersion.js"></script>
-  <div id="app" style="display:none">
+  <script defer async src="/scripts/checkVersion.js"></script>
+  <div id="app" style="transform:translateY(10000%)">
   <!-- menu -->
     <div class="panel panel-left">
-    <div class="list links-list">
+    <div class="list links-list" style="transform:translateX(100%)">
       <ul>
         <li>
           <a href="/" class="panel-close">
@@ -39,9 +39,6 @@
     </div>
 
     <div class="view view-main">
-    <link href="/styles/roboto.css" rel="stylesheet">
-    <link rel="stylesheet" href = "/styles/icons.css">
-    <link rel="stylesheet" href = "/styles/bars.css">
 
     <div class="page page-current">
       <div class="navbar">
@@ -58,7 +55,7 @@
         </div>
       </div>
         <div class="page-content block" style="padding-top:0px" role="main">
-          <div class="list" id="hwboard-homework-list" style="position:relative;top:60px">
+          <div class="list" id="hwboard-homework-list" style="position:relative;top:57px">
             <%- renderer(data,sortType,sortOrder,adminChannels) %>
           </div>
         </div>
@@ -78,11 +75,17 @@
       </div>
       </div>
     </div>
-    <link rel="stylesheet" href="/framework7/css/framework7.min.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/list-index.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/chip.css">
+    <link rel="stylesheet" href="/framework7/css/framework7-lazy.min.css">
     <!-- unhide rendered page -->
     <script>
-      document.getElementById("app").style.display = "block"
+      document.querySelector("#app").style.transform = ""
     </script>
+    <link rel="stylesheet" href="/framework7/lazy-components/fab.css">
+    <link href="/styles/roboto.css" rel="stylesheet">
+    <link rel="stylesheet" href = "/styles/icons.css">
+    <link rel="stylesheet" href = "/styles/bars.css">
     <!-- critical styles and scripts cannot be deferred-->
     
     <!-- required for load of homework from cache-->
@@ -108,36 +111,51 @@
     <% } %>
 
     <!-- framework7 scripts can be deferred -->
-    <script defer src="/framework7/js/framework7.min.js"></script>
+    <script src="/framework7/js/framework7-lazy.min.js"></script>
+    <script async defer src="/framework7/lazy-components/list-index.js"></script>
+    <script async defer src="/framework7/lazy-components/chip.js"></script>
+    <script async defer src="/framework7/lazy-components/panel.js"></script>
+    <script async defer src="/framework7/lazy-components/fab.js"></script>
+    <script async defer src="/framework7/lazy-components/dialog.js"></script>
+    <script src="/framework7/lazy-components/input.js"></script>
+    <script src="/framework7/lazy-components/swipeout.js"></script>
     <script defer src="/scripts/app.js"></script>
     <script defer src="/scripts/framework7Load.js"></script>
 
+    <!-- Hidden styles are not so critical -->
+    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/swipeout.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/panel.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/dialog.css">
+    <link rel="stylesheet" href="/framework7/lazy-components/input.css">
+    
     <!-- non critical styles and scripts can be deferred-->
-    <script defer src="/scripts/eventHandlers.js"></script>
-    <script defer src="/fuse.js/dist/fuse.min.js"></script>
+    <script async defer src="/scripts/eventHandlers.js"></script>
+    <script async defer src="/fuse.js/dist/fuse.min.js"></script>
     <script defer src="/scripts/generalForms.js"></script>
-    <script defer src="/scripts/loadSW.js"></script>
+    <script async defer src="/scripts/loadSW.js"></script>
     <% if (admin){ %>
       <!-- non admins wont need these -->
       <script defer src="/scripts/adminForms.js"></script>
       <script defer src="/scripts/edit-homework-eventHandlers.js"></script>
     <% } %>
 
-    <!-- Styles are not so critical -->
-    <link rel="stylesheet" href="/styles/index.css">
+    <script>
+    document.querySelector(".panel.panel-left .list").style.transform = ""
+    </script>
     <%- include("./partials/dialogs.ejs") %>
 
     <!-- styles and scripts for later pages -->
 
     <!-- channel stats -->
-    <script defer src="/chart.js/dist/Chart.bundle.min.js"></script>
-    <script defer src="/routes/scripts/channel-stats.js"></script>
+    <script async defer src="/chart.js/dist/Chart.bundle.min.js"></script>
+    <script async defer src="/routes/scripts/channel-stats.js"></script>
     <link href="/routes/styles/channel-stats.css" rel="stylesheet">
 
     <!-- channel settings -->
-    <script defer src="/routes/scripts/render-admins.js"></script>
-    <script defer src="/routes/scripts/render-subjects.js"></script>
-    <script defer src="/routes/scripts/channel-settings.js"></script>
+    <script async defer src="/routes/scripts/render-admins.js"></script>
+    <script async defer src="/routes/scripts/render-subjects.js"></script>
+    <script async defer src="/routes/scripts/channel-settings.js"></script>
     <link href="/routes/styles/channel-settings.css" rel="stylesheet">
 
     <!-- timetable
@@ -145,6 +163,7 @@
     -->
 
     <!-- latency checking -->
-    <script defer src="/scripts/latencyCheck.js"></script>
+    <link rel="preconnect" href="https://latency-check.nushhwboard.tk">
+    <script async defer src="/scripts/latencyCheck.js"></script>
 </body>
 </html>

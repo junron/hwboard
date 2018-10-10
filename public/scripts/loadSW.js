@@ -1,7 +1,6 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js', {scope: '/'}).then
   (reg=>{
-    reg.update()
     console.log('Registration succeeded. Scope is ' + reg.scope)
   })
   .then(function () {
@@ -25,4 +24,5 @@ if ('serviceWorker' in navigator) {
   .catch(function(error) {
     console.log('Registration failed with ' + error)
   })
+  //navigator.serviceWorker.ready.then(sw => sw.update())
 }

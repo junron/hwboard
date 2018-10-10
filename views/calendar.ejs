@@ -4,18 +4,19 @@
     <div class="navbar">
         <div class="navbar-inner">
             <!-- bar icon and link -->
-            <a href="#" class="left panel-open" style="padding-left:10px"><i class="bar"
-                                                                             style="color:#ffffff">&#xe900;</i></a>
+            <a href="#" class="left panel-open" style="padding-left:10px">
+                <i class="bar"style="color:#ffffff">&#xe900;</i>
+            </a>
             <div class="title">Calendar</div>
         </div>
     </div>
     <div class="page-content block">
         <div class="row">
-            <button class="button col" id="calendar-prev" onclick="$('#calendar').fullCalendar('prev');">Prev week</button>
+            <button class="button col" id="calendar-prev" onclick="$('#calendar').fullCalendar('prev');">Previous</button>
             <button class="button col" onclick="$('#calendar').fullCalendar('today');">Today</button>
-            <button class="button col" id="calendar-next" onclick="$('#calendar').fullCalendar('next');">Next week</button>
+            <button class="button col" id="calendar-next" onclick="$('#calendar').fullCalendar('next');">Next</button>
         </div>
-        <button class="button col" id="calendar-mode-toggle" onclick="changeView();">Switch display format</button>
+        <button class="button col" id="calendar-mode-toggle" onclick="changeView();">week/month</button>
         <div id='calendar'></div>
         <br>
         <br>

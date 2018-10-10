@@ -50,10 +50,12 @@ const getStats = async _=>{
   const idBase64 = btoa(new Uint8Array(idBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
   const release = (await (await fetch("/cd/version.json?useCache")).json()).commitSha
   if(location.origin==="https://beta.nushhwboard.tk"){
-    Framework7App.toast.show({
-      text:`Hwboard beta version ${JSON.stringify(release).slice(1,9)}`,
-      closeTimeout:3000
-    })
+    Framework7App.loadModules(["toast"]).then(()=>{
+      Framework7App.toast.show({
+        text:`Hwboard beta version ${JSON.stringify(release).slice(1,9)}`,
+        closeTimeout:3000
+      })
+   })
   }
   let storageUsage = "Not supported"
   //Navigator.storage.estimate not supporte in Safari and Opera

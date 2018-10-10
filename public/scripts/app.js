@@ -6,6 +6,7 @@ const Framework7App = new Framework7({
   root: '#app',
   theme,
   pushState:true,
+  lazyModulesPath: '/framework7/lazy-components',
   view: {
     pushState: true,
   },
@@ -32,7 +33,7 @@ const Framework7App = new Framework7({
         pageAfterIn:e=>{
           channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
         }
-      }
+      },
     },
     {
       name:"home",
@@ -41,26 +42,36 @@ const Framework7App = new Framework7({
       animate:false,
       url:"/",
       on:{
+        pageBeforeIn:()=>{
+          if(document.querySelector(".page-next .navbar.fouc")){
+            document.querySelector(".page-next .navbar.fouc").classList.remove("fouc")
+          }
+          document.querySelector("#hwboard-homework-list").style.position = "relative"
+          document.querySelector("#hwboard-homework-list").style.top = "60px"
+        },
         pageAfterIn:e=>{
           prevDataHash = ""
+          console.log("Navbar")
           loadSources(e.currentTarget,["/scripts/loadHomework.js"])
         }
       },
-      routes:[{
+      routes:[
+      {
         name:"sort",
         path: "/popups/sort/",
         url:"/routes/sort.html",
         on :{
           pageInit: _=>{
             //Uncheck all
-              const radios = Array.from(document.querySelectorAll(`input[type=radio]`));
-              radios.forEach(radio => radio.checked = false);
-              const sortType = sortOptions.type || getCookie("sortType") || "Due date";
-              let sortOrder = sortOptions.order || 0;
-              document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
+            const radios = Array.from(document.querySelectorAll(`input[type=radio]`));
+            radios.forEach(radio => radio.checked = false);
+            const sortType = sortOptions.type || getCookie("sortType") || "Due date";
+            let sortOrder = sortOptions.order || 0;
+            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
             document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
           }
-        }
+        },
+        modules:['checkbox','input','grid',"radio"]
       },
       {
         name:"add-homework",
@@ -74,7 +85,8 @@ const Framework7App = new Framework7({
             gradedCheckboxChecked = false
             initEditHomeworkEvents()
           }
-        }
+        },
+        modules:['grid','toggle','input','dialog']
       },
       {
         name:"edit-homework",
@@ -93,7 +105,8 @@ const Framework7App = new Framework7({
             $(".page-current #edit-title").text("Edit homework")
             initEditHomeworkEvents()
           }
-        }
+        },
+        modules:['grid','toggle','input','dialog']
       }
     ]
     },
@@ -118,20 +131,9 @@ const Framework7App = new Framework7({
           channel = ""
           if(typeof conn==="undefined" || conn.connected===false){
             renderCharts()
-          //   //SHow offline message
-          //   const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-          //   homeworkSubject.font = "15px Helvetica"
-          //   homeworkSubject.textAlign = "center"
-          //   homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
-            
-          //   const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-          //   homeworkDate.font = "15px Helvetica"
-          //   homeworkDate.textAlign = "center"
-          //   homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
           homeworkDateChart = false
           homeworkSubjectChart = false
-          
           $("a[href='/channels'").parent().html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`)
           $("a[href='/channelName/data.json'").attr("download",`data.json`)
           $("a[href='/channelName/data.json'").attr("href",`/data.json`)
@@ -140,18 +142,30 @@ const Framework7App = new Framework7({
           conn.emit("isReady",null,res=>{
             if(res){
               console.log("ready before page load")
-              renderCharts()
+              const i = setInterval(()=>{
+                //Allow canvas to render and exist
+                if(document.getElementById("homework-subject-chart")){
+                  renderCharts()
+                  clearInterval(i)
+                }
+              },500)
             }
           })
           //Db inited, can get data
           conn.on("ready",()=>{
-            if(location.hash.endsWith("/analytics")){
-              console.log("ready")
-              renderCharts()
-            }
+            console.log("ready")
+            const i = setInterval(()=>{
+              //Allow canvas to render and exist
+              if(document.getElementById("homework-subject-chart")){
+                renderCharts()
+                clearInterval(i)
+              }
+            },500)
+            renderCharts()
           })
         }
-      }
+      },
+      modules:['checkbox','grid']
     },
     {
       name:"channelStats",
@@ -164,16 +178,6 @@ const Framework7App = new Framework7({
           channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
           if(typeof conn==="undefined" || conn.connected===false){
             renderCharts()
-          //   //SHow offline message
-          //   const homeworkSubject = $("#homework-subject-chart")[0].getContext("2d")
-          //   homeworkSubject.font = "15px Helvetica"
-          //   homeworkSubject.textAlign = "center"
-          //   homeworkSubject.fillText("Can't load data offline",$("#homework-subject-chart")[0].width/2,$("#homework-subject-chart")[0].height/2)
-            
-          //   const homeworkDate = $("#homework-date-chart")[0].getContext("2d")
-          //   homeworkDate.font = "15px Helvetica"
-          //   homeworkDate.textAlign = "center"
-          //   homeworkDate.fillText("Can't load data offline",$("#homework-date-chart")[0].width/2,$("#homework-date-chart")[0].height/2)
           }
           homeworkDateChart = false
           homeworkSubjectChart = false
@@ -188,7 +192,8 @@ const Framework7App = new Framework7({
             }
           })
         }
-      }
+      },
+      modules:['checkbox','grid']
     },
     {
       name:"addChannel",
@@ -210,13 +215,14 @@ const Framework7App = new Framework7({
           url: "/calendar",
           on: {
               pageAfterIn: async e => {
-                  const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.css'];
-                  const target = e.currentTarget;
-                  await loadSources(target, sources)
-                  while (!$("#calendar").fullCalendar){}
-                  calendarInit()
+                const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.min.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.min.css'];
+                const target = e.currentTarget;
+                await loadSources(target, sources)
+                while (!$("#calendar").fullCalendar){}
+                calendarInit()
               }
-          }
+          },
+          modules:['grid']
       },
     {
       name:"channelSettings",
@@ -249,7 +255,8 @@ const Framework7App = new Framework7({
             pageAfterIn:e=>{
               loadSources(e.currentTarget,["/routes/scripts/add-member.js"])
             }
-          }
+          },
+          modules:['grid','input','dialog','autocomplete']
         },
         {
           name:"add-subject",
@@ -258,22 +265,13 @@ const Framework7App = new Framework7({
           on:{
             pageAfterIn:e=>{
               const target = e.currentTarget
-              // const scriptTag2 = document.createElement("script")
-              // scriptTag2.src = "/routes/scripts/add-subject-timetable.js"
-              // target.appendChild(scriptTag2)
-              loadSources(target,["/routes/scripts/add-subject.js"])//,"/routes/styles/timetable.css"])
-              // scriptTag2.onload = ()=>{
-              //   addSubjectRenderTimetable().then(_=>{
-              //     $("#app .page-current table#homeworkboard-timetable td").filter(function(){
-              //       return this.innerHTML === " "
-              //     }).css("background-color","#d8ffe0")
-              //   })
-              // }
+              loadSources(target,["/routes/scripts/add-subject.js"])
             }
-          }
-
+          },
+          modules:['grid','input','dialog','swiper']
         }
-      ]
+      ],
+    modules:['accordion']
     },
   ],
   dialog:{
@@ -302,3 +300,5 @@ async function loadSources(target, sources) {
   }
   return Promise.all(sources.map(loadSource))
 }
+Framework7App.swipeout.init()
+Framework7App.input.init()
