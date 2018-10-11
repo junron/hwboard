@@ -23,7 +23,7 @@
     "cookie-parser": "~1.4.3",
     "dexie": "^2.0.4",
     "ejs": "^2.6.1",
-    "express": "^4.16.3",
+    "express": "^4.16.4",
     "extend": "^3.0.2",
     "framework7": "^3.4.0",
     "fullcalendar": "^3.9.0",
@@ -53,7 +53,7 @@
     "mocha": "^5.2.0",
     "nodemon": "^1.18.4",
     "puppeteer": "^1.9.0",
-    "snyk": "^1.103.0",
+    "snyk": "^1.103.2",
     "socket.io-client": "^2.1.1"
   }
 }

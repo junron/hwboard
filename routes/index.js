@@ -24,29 +24,30 @@ const basePushFiles = [
   "/styles/icons.css",
   "/scripts/core.js",
   "/fonts/material.ttf",
-  "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
-  "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
+  // "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
+  // "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
   "/scripts/app.js",
   "/socket.io-client/dist/socket.io.slim.js",
-  "/framework7/css/framework7.md.min.css",
-  "/framework7/js/framework7.min.js",
+  "/framework7/css/framework7-lazy.min.css",
+  "/framework7/js/framework7-lazy.min.js",
 ];
 const pushFiles = [
   "/styles/roboto.css",
   "/styles/icons.css",
   "/socket.io-client/dist/socket.io.slim.js",
-  "/framework7/css/framework7.md.min.css",
-  "/framework7/js/framework7.min.js",
+  "/framework7/css/framework7-lazy.min.css",
+  "/framework7/js/framework7-lazy.min.js",
   "/promise-worker/dist/promise-worker.js",
   "/jquery/dist/jquery.slim.min.js",
   "/scripts/app.js",
   "/scripts/generalForms.js",
-  "/scripts/worker.js",
-  "/dexie/dist/dexie.min.js",
-  "/promise-worker/dist/promise-worker.register.js",
-  "/fonts/material.ttf",
-  "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
-  "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf"
+  "scripts/loadHomework.js",
+  // "/scripts/worker.js",//
+  // "/dexie/dist/dexie.min.js",//
+  // "/promise-worker/dist/promise-worker.register.js",//
+  // "/fonts/material.ttf",//
+  // "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",//
+  // "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf"//
 ];
 
 const indexPushFiles = [...pushFiles,
