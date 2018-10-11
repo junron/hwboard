@@ -242,14 +242,12 @@ parser.parseHomeworkMetaData =  function(homework){
   let extra = ""
   let tagMode = "graded"
   if(typeof location != "undefined"){
-    if(location.search.includes("tagMode=all")){
-      tagMode = "all"
-    }else if(location.search.includes("tagMode=original")){
+    if(location.search.includes("tagMode=original")){
       tagMode = "original"
     }
   }
   let subjectText = subject
-  if(tagMode==="all"){
+  if(tagMode!=="original"){
     subjectText = `    <div class="chip" style="background-color:#26c6da">
       <div class="chip-label" style="color:white">${subject}</div>
     </div>`
@@ -268,12 +266,7 @@ parser.parseHomeworkMetaData =  function(homework){
     if(tagMode==="original"){
       bgColor = "#bbdefb"
       extra = ", Graded"
-    }else if(tagMode!=="all"){
-      extra = `    <div class="chip color-red">
-        <div class="chip-label">Graded</div>
-      </div>`
     }
-
   }
   if (isTest) {
     icon = "&#xe900;"
