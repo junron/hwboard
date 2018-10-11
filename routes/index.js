@@ -153,8 +153,19 @@ router.get('/', async (req, res, next) => {
     reportErrors = true
   }
   const beta = hostname === "beta.nushhwboard.tk"
-  
-  res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors,beta})
+  const subjectChannelMapping = {}
+  const subjectTagMapping = {}
+  for(const channelName in channelData){
+    const channel = channelData[channelName]
+    for (const subject of channel.subjects){
+      //User is admin or higher of channel
+      if(channel.permissions>=2){
+        subjectChannelMapping[subject] = channelName
+      }
+      subjectTagMapping[subject] = channel.tags
+    }
+  }
+  res.render('index', {renderer,sortType,data,sortOrder,admin,subjectChannelMapping,subjectTagMapping,reportErrors,beta})
 });
 
 module.exports = router;

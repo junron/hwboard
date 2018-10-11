@@ -1,5 +1,4 @@
 let parser ={}
-let subjectChannelMap ={}
 if(typeof Sugar =="undefined"){
   if(typeof navigator=="undefined"){
     Sugar = require("sugar-date")
@@ -109,7 +108,7 @@ parser.parseHomeworkSubject = function(homework) {
       <div class="swipeout-actions-left">
         <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
       </div>`
-      if(subjectChannelMap[subject]){
+      if(subjectChannelMapping[subject]){
         rendered += `<div class="swipeout-actions-right">
           <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
           <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
@@ -190,7 +189,7 @@ parser.parseHomeworkDate = function(homework) {
   <div class="swipeout-actions-left">
     <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
   </div>`
-  if(subjectChannelMap[subject]){
+  if(subjectChannelMapping[subject]){
     rendered += `<div class="swipeout-actions-right">
         <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
         <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
@@ -216,10 +215,6 @@ parser.toHex = function(str){
   return result
 }
 parser.parseHomeworkMetaData =  function(homework){
-  const tagMapping = {
-    "Graded" : "red",
-    "Optional" : "green"
-  }
   let {
     id,
     subject,
@@ -230,6 +225,8 @@ parser.parseHomeworkMetaData =  function(homework){
     lastEditPerson: editPerson,
     lastEditTime: editTime,
   } = homework
+  const tagMapping = subjectTagMapping[subject]
+
   tags = tags.filter(tag => tag.length>0)
   let dueDate2 = Sugar.Date.create(dueDate)
   let daysLeft = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(dueDate2, "{d}/{M}/{yyyy}"), "en-GB"))
@@ -333,15 +330,12 @@ parser.parseHomeworkMetaData =  function(homework){
     subjectText
   }
 }
-const renderer = function(data,sortType="Due date",sortOrder=0,adminChannels){
-  if(typeof adminChannels =="undefined"){
-    subjectChannelMap = subjectChannelMapping
-  }else{
-    for (const channel in adminChannels){
-      for (const subject of adminChannels[channel]){
-        subjectChannelMap[subject]=channel
-      }
-    }
+const renderer = function(data,sortType="Due date",sortOrder=0,subjectChannelMap,subjectTagMap){
+  if(subjectChannelMap){
+    subjectChannelMapping = subjectChannelMap
+  }
+  if(subjectTagMap){
+    subjectTagMapping = subjectTagMap
   }
   if(sortType=="Due date"){
     return parser.parseByDate(data,sortOrder)
