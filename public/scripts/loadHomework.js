@@ -9,7 +9,7 @@ function setSubjectVariables(channelData){
   subjectTagMapping = {}
   for(const channelName in channelData){
     const channel = channelData[channelName]
-    timetable = channel.timetable
+    timetable = Object.assign(timetable,channel.timetable)
     for (const subject of channel.subjects){
       //User is admin or higher of channel
       if(channel.permissions>=2){
