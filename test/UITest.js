@@ -119,7 +119,7 @@ describe("Hwboard",async function(){
     }
   })
   it("Should load channel data",async function (){
-    const [subjectChannelMapping,subjectTagMapping] = (await Promise.all([
+    const [subjectChannelMapping,subjectTagMapping] = await Promise.all((await Promise.all([
       page.waitForFunction(()=>{
         if(typeof subjectChannelMapping==="undefined"){
           return false
@@ -132,7 +132,7 @@ describe("Hwboard",async function(){
         }
         return subjectTagMapping
       })
-    ])).map(handle => handle.jsonValue())
+    ])).map(handle => handle.jsonValue()))
     console.log({subjectChannelMapping,subjectTagMapping})
     expect(subjectChannelMapping).to.be.an("object")
     expect(subjectTagMapping).to.be.an("object")
