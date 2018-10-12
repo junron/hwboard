@@ -4,7 +4,7 @@ const mocha = require("mocha")
 const {expect} = require("chai")
 const port = require("../loadConfig").PORT
 const {server,io} = require("../app")
-const {sequelize} = require("../models")
+
 const options = {
   headless:false,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -25,6 +25,8 @@ const getHtml = async selector => {
   },selector)
 }
 async function init(){
+  const {init:dbInit} = require("../database")
+  await dbInit()
   browser = await puppeteer.launch(options)
   console.log("browser launch")
   page = await browser.newPage()
@@ -116,9 +118,38 @@ describe("Hwboard",async function(){
       return console.log("Page has been closed, not refreshing")
     }
   })
+  it("Should load channel data",async function (){
+    await page.waitFor(1000);
+    const [subjectChannelMapping,subjectTagMapping] = await Promise.all([
+      page.evaluate(()=>{
+        return subjectChannelMapping
+      }),
+      page.evaluate(()=>{
+        return subjectTagMapping
+      })
+    ])
+    expect(subjectChannelMapping).to.be.an("object")
+    expect(subjectTagMapping).to.be.an("object")
+    expect(subjectChannelMapping).to.deep.equal({ 
+      math: 'testing', 
+      chemistry: 'testing' 
+    })
+    expect(subjectTagMapping).to.deep.equal({ 
+      math: { 
+        Graded: 'red', 
+        Optional: 'green' 
+      },
+      chemistry: { 
+        Graded: 'red', 
+        Optional: 'green' 
+      } 
+    })
+  })
   it("Should be able to add homework",async function(){
+    // this.timeout(0)
     await page.tracing.start({path: 'artifacts/add.json', screenshots: true});
     await add()
+    // await page.waitFor(100000000)
     return await page.tracing.stop()
   })
   it("Should be able to show info dialog",function(done){
