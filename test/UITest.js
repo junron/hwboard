@@ -122,9 +122,15 @@ describe("Hwboard",async function(){
     await page.waitFor(1000);
     const [subjectChannelMapping,subjectTagMapping] = (await Promise.all([
       page.waitForFunction(()=>{
+        if(typeof subjectChannelMapping==="undefined"){
+          return false
+        }
         return subjectChannelMapping
       }),
       page.waitForFunction(()=>{
+        if(typeof subjectTagMapping==="undefined"){
+          return false
+        }
         return subjectTagMapping
       })
     ])).map(handle => handle.jsonValue())
