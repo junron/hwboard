@@ -291,14 +291,23 @@ if(process.argv[2]==="restore"){
     r1.close()
   })
 }else if(process.argv[2]+process.argv[3]=="addchannel"){
-let config ={}
+let config ={
+  tags : {
+    "Graded" : "red",
+    "Optional" : "green"
+  }
+}
 if(gitlab||process.argv[4]=="default"){
   config = {
     name:"testing",
     subjects:["math","chemistry"],
     roots:["tester@nushigh.edu.sg"],
     admins:[""],
-    members:[""]
+    members:[""],
+    tags : {
+      "Graded" : "red",
+      "Optional" : "green"
+    }
   }
   console.log("Using config:")
   console.log(config)

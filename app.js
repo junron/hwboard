@@ -105,7 +105,15 @@ if(testing){
 }
 
 //express setup
-app.use(logger('dev'));
+if(hostName==="nushhwboard.tk"){
+  app.use(logger('common'));
+}else if(testing){
+  app.use(logger("dev",{
+    skip:function (req, res) { return res.statusCode < 400 }
+  }))
+}else{
+  app.use(logger("dev"))
+}
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'node_modules')))
 
