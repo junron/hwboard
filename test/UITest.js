@@ -119,7 +119,6 @@ describe("Hwboard",async function(){
     }
   })
   it("Should load channel data",async function (){
-    await page.waitFor(1000);
     const [subjectChannelMapping,subjectTagMapping] = (await Promise.all([
       page.waitForFunction(()=>{
         if(typeof subjectChannelMapping==="undefined"){
