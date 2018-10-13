@@ -1,5 +1,4 @@
 let parser ={}
-let subjectChannelMap ={}
 if(typeof Sugar =="undefined"){
   if(typeof navigator=="undefined"){
     Sugar = require("sugar-date")
@@ -109,7 +108,7 @@ parser.parseHomeworkSubject = function(homework) {
       <div class="swipeout-actions-left">
         <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
       </div>`
-      if(subjectChannelMap[subject]){
+      if(subjectChannelMapping[subject]){
         rendered += `<div class="swipeout-actions-right">
           <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
           <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
@@ -190,7 +189,7 @@ parser.parseHomeworkDate = function(homework) {
   <div class="swipeout-actions-left">
     <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
   </div>`
-  if(subjectChannelMap[subject]){
+  if(subjectChannelMapping[subject]){
     rendered += `<div class="swipeout-actions-right">
         <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
         <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
@@ -222,10 +221,17 @@ parser.parseHomeworkMetaData =  function(homework){
     dueDate,
     isTest,
     text,
+    tags,
     lastEditPerson: editPerson,
     lastEditTime: editTime,
   } = homework
-  
+  const defaultTagMapping = {
+    "Graded" : "red",
+    "Optional" : "green"
+  }
+  const tagMapping = subjectTagMapping[subject] || defaultTagMapping
+
+  tags = tags.filter(tag => tag.length>0)
   let dueDate2 = Sugar.Date.create(dueDate)
   let daysLeft = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(dueDate2, "{d}/{M}/{yyyy}"), "en-GB"))
   let iconColor = ""
@@ -240,17 +246,21 @@ parser.parseHomeworkMetaData =  function(homework){
   let extra = ""
   let tagMode = "graded"
   if(typeof location != "undefined"){
-    if(location.search.includes("tagMode=all")){
-      tagMode = "all"
-    }else if(location.search.includes("tagMode=original")){
+    if(location.search.includes("tagMode=original")){
       tagMode = "original"
     }
   }
   let subjectText = subject
-  if(tagMode==="all"){
+  if(tagMode!=="original"){
     subjectText = `    <div class="chip" style="background-color:#26c6da">
       <div class="chip-label" style="color:white">${subject}</div>
     </div>`
+    for(const tag of tags){
+      extra += `    <div class="chip color-${tagMapping[tag]}">
+        <div class="chip-label">${tag}</div>
+      </div>`
+  
+    }  
   }
   if(tagMode==="original"){
     bgColor = ""
@@ -260,12 +270,10 @@ parser.parseHomeworkMetaData =  function(homework){
     if(tagMode==="original"){
       bgColor = "#bbdefb"
       extra = ", Graded"
-    }else{
-      extra = `    <div class="chip color-red">
-        <div class="chip-label">Graded</div>
-      </div>`
     }
-
+  }
+  if (isTest) {
+    icon = "&#xe900;"
   } else {
     icon = "&#xe873;"
   }
@@ -319,15 +327,12 @@ parser.parseHomeworkMetaData =  function(homework){
     subjectText
   }
 }
-const renderer = function(data,sortType="Due date",sortOrder=0,adminChannels){
-  if(typeof adminChannels =="undefined"){
-    subjectChannelMap = subjectChannelMapping
-  }else{
-    for (const channel in adminChannels){
-      for (const subject of adminChannels[channel]){
-        subjectChannelMap[subject]=channel
-      }
-    }
+const renderer = function(data,sortType="Due date",sortOrder=0,subjectChannelMap,subjectTagMap){
+  if(subjectChannelMap){
+    subjectChannelMapping = subjectChannelMap
+  }
+  if(subjectTagMap){
+    subjectTagMapping = subjectTagMap
   }
   if(sortType=="Due date"){
     return parser.parseByDate(data,sortOrder)
