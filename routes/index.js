@@ -24,29 +24,30 @@ const basePushFiles = [
   "/styles/icons.css",
   "/scripts/core.js",
   "/fonts/material.ttf",
-  "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
-  "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
+  // "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
+  // "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf",
   "/scripts/app.js",
   "/socket.io-client/dist/socket.io.slim.js",
-  "/framework7/css/framework7.md.min.css",
-  "/framework7/js/framework7.min.js",
+  "/framework7/css/framework7-lazy.min.css",
+  "/framework7/js/framework7-lazy.min.js",
 ];
 const pushFiles = [
   "/styles/roboto.css",
   "/styles/icons.css",
   "/socket.io-client/dist/socket.io.slim.js",
-  "/framework7/css/framework7.md.min.css",
-  "/framework7/js/framework7.min.js",
+  "/framework7/css/framework7-lazy.min.css",
+  "/framework7/js/framework7-lazy.min.js",
   "/promise-worker/dist/promise-worker.js",
   "/jquery/dist/jquery.slim.min.js",
   "/scripts/app.js",
   "/scripts/generalForms.js",
-  "/scripts/worker.js",
-  "/dexie/dist/dexie.min.js",
-  "/promise-worker/dist/promise-worker.register.js",
-  "/fonts/material.ttf",
-  "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",
-  "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf"
+  "scripts/loadHomework.js",
+  // "/scripts/worker.js",//
+  // "/dexie/dist/dexie.min.js",//
+  // "/promise-worker/dist/promise-worker.register.js",//
+  // "/fonts/material.ttf",//
+  // "/fonts/KFOlCnqEu92Fr1MmSU5fBBc9.ttf",//
+  // "/fonts/KFOmCnqEu92Fr1Mu4mxP.ttf"//
 ];
 
 const indexPushFiles = [...pushFiles,
@@ -80,7 +81,7 @@ function parsePushHeaders(files){
 
 //Channel lists
 router.get("/channels", async (req, res) => {
-    const renderer = require("../public/scripts/render-channels");
+  const renderer = require("../public/scripts/render-channels");
   if(testing && req.cookies.username){
       const email = req.cookies.username;
     res.cookie("username",email,{
@@ -94,7 +95,8 @@ router.get("/channels", async (req, res) => {
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
+    const url = require('url')
+    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
   }
     const {channelData} = authData;
     res.header("Link", parsePushHeaders(basePushFiles));
@@ -110,7 +112,8 @@ router.get("/calendar",async (req, res, next) => {
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
+    const url = require('url')
+    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
   }
   res.render("calendar")
 })
@@ -123,7 +126,8 @@ router.get('/', async (req, res, next) => {
     return
   }
   if(req.query.code && req.signedCookies.redirPath){
-    return res.redirect(req.signedCookies.redirPath)
+    const url = require('url')
+    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
   }
   const {channelData, adminChannels} = authData;
   // console.log(channelData)
@@ -150,7 +154,19 @@ router.get('/', async (req, res, next) => {
     reportErrors = true
   }
   const beta = hostname === "beta.nushhwboard.tk"
-  res.render('index', {renderer,sortType,data,sortOrder,admin,adminChannels,reportErrors,beta})
+  const subjectChannelMapping = {}
+  const subjectTagMapping = {}
+  for(const channelName in channelData){
+    const channel = channelData[channelName]
+    for (const subject of channel.subjects){
+      //User is admin or higher of channel
+      if(channel.permissions>=2){
+        subjectChannelMapping[subject] = channelName
+      }
+      subjectTagMapping[subject] = channel.tags
+    }
+  }
+  res.render('index', {renderer,sortType,data,sortOrder,admin,subjectChannelMapping,subjectTagMapping,reportErrors,beta})
 });
 
 module.exports = router;

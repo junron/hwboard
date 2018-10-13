@@ -37,7 +37,7 @@ if(process.argv[2]==="restore"){
     const json = JSON.parse(fs.readFileSync(fileName,'utf-8'))
     const {
       homework,
-      channels
+      channelsRaw:channels
     } = json
     const existingChannels = (await Channels.findAll({raw: true})).map(channel=>channel.name)
     for(const channel of channels){
@@ -49,6 +49,12 @@ if(process.argv[2]==="restore"){
       }
       if(channel.subjects.length===0){
         channel.subjects = [""]
+      }
+      if(!channel.tags){
+        channel.tags =  {
+          "Graded" : "red",
+          "Optional" : "green"
+        }
       }
       channel.id = uuid()
       try{
@@ -65,7 +71,7 @@ if(process.argv[2]==="restore"){
     await init()
     for (const hw of homework){
       const {channel} = hw
-      if(hw.isTest){
+      if(hw.isTest || (hw.tags && hw.tags.includes("Graded"))){
         hw.tags = ["Graded"]
       }else{
         hw.tags = [""]
@@ -285,14 +291,23 @@ if(process.argv[2]==="restore"){
     r1.close()
   })
 }else if(process.argv[2]+process.argv[3]=="addchannel"){
-let config ={}
+let config ={
+  tags : {
+    "Graded" : "red",
+    "Optional" : "green"
+  }
+}
 if(gitlab||process.argv[4]=="default"){
   config = {
     name:"testing",
     subjects:["math","chemistry"],
     roots:["tester@nushigh.edu.sg"],
     admins:[""],
-    members:[""]
+    members:[""],
+    tags : {
+      "Graded" : "red",
+      "Optional" : "green"
+    }
   }
   console.log("Using config:")
   console.log(config)
