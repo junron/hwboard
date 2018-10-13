@@ -225,7 +225,11 @@ parser.parseHomeworkMetaData =  function(homework){
     lastEditPerson: editPerson,
     lastEditTime: editTime,
   } = homework
-  const tagMapping = subjectTagMapping[subject]
+  const defaultTagMapping = {
+    "Graded" : "red",
+    "Optional" : "green"
+  }
+  const tagMapping = subjectTagMapping[subject] || defaultTagMapping
 
   tags = tags.filter(tag => tag.length>0)
   let dueDate2 = Sugar.Date.create(dueDate)
