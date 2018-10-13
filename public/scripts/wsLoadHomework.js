@@ -13,3 +13,7 @@ conn.on("data",({channel,data:channelData})=>{
     })
   })
 });
+
+conn.on("channelData",_=>{
+  conn.emit("channelDataReq",{},setSubjectVariables)
+})
