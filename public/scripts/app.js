@@ -259,6 +259,17 @@ const Framework7App = new Framework7({
           modules:['grid','input','dialog','autocomplete']
         },
         {
+          name:"add-tag",
+          path: "/popups/add-tag/",
+          url:"/routes/add-tag.html",
+          on:{
+            pageAfterIn:e=>{
+              loadSources(e.currentTarget,["/routes/scripts/add-tag.js"])
+            }
+          },
+          modules:['grid','input','dialog','autocomplete']
+        },
+        {
           name:"add-subject",
           path: "/popups/add-subject/",
           url:"/routes/add-subject.html",
