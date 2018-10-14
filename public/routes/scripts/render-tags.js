@@ -14,7 +14,7 @@ function renderTags(data){
     html+=`<li class="item-content">
       <div class="item-inner">
         <div class="chip item-title" 
-        style="font-size:14px;background-color:${tags[tag]};color:${tagTextColor}">
+        style="font-size:13px;background-color:${tags[tag]};color:${tagTextColor}">
             ${tag}
         </div>
       </div>
