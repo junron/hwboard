@@ -22,7 +22,7 @@ let searchData
   const permissionLvls = ["Root","Admin","Member"]
 
 
-  const namesDropdown= Framework7App.autocomplete.create({
+  Framework7App.autocomplete.create({
     openIn:"dropdown",
     renderItem:(item,index)=>{
       if(searchData && typeof searchData[index].mentorGrp==="string"){
