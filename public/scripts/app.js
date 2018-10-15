@@ -9,6 +9,7 @@ const Framework7App = new Framework7({
   lazyModulesPath: '/framework7/lazy-components',
   view: {
     pushState: true,
+    mdSwipeBack:true
   },
   routes:[
     // {
@@ -86,7 +87,7 @@ const Framework7App = new Framework7({
             initEditHomeworkEvents()
           }
         },
-        modules:['grid','toggle','input','dialog']
+        modules:['grid','input','dialog','smart-select','popup']
       },
       {
         name:"edit-homework",
@@ -98,7 +99,6 @@ const Framework7App = new Framework7({
             startEdit()
           },
           pageAfterIn:function(e,page){
-              console.log({e, page});
             if(e.detail.route.url.includes("?edit=true")){
               Framework7App.router.navigate("/popups/edit/")
             }
@@ -106,7 +106,7 @@ const Framework7App = new Framework7({
             initEditHomeworkEvents()
           }
         },
-        modules:['grid','toggle','input','dialog']
+        modules:['grid','input','dialog','smart-select','popup']
       }
     ]
     },
