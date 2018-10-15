@@ -4,7 +4,6 @@ conn.on("ready",loadHomework);
 //Server pushes data, re-render
 conn.on("data",({channel,data:channelData})=>{
   //Add data to client side db
-  console.log(channel,channelData)
   console.log("Data is pushed from server")
   updateChannelHomework(channel,channelData).then(newData=>{
     reRender(newData).then(()=>{
@@ -15,5 +14,8 @@ conn.on("data",({channel,data:channelData})=>{
 });
 
 conn.on("channelData",_=>{
-  conn.emit("channelDataReq",{},setSubjectVariables)
+  conn.emit("channelDataReq",{},(err,data)=>{
+    if(err) throw err
+    setSubjectVariables(data)
+  })
 })
