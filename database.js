@@ -283,6 +283,34 @@ async function addMember(channel,members,permissionLevel){
     }
   })
 }
+async function addTag(channel,tagName,tagColor){
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }))
+  if(originalDataArray.length==0){
+    throw new Error("Channel does not exist")
+  }
+  const originalData = originalDataArray[0]
+  //Ensure that tag does not already exist
+  tagName = xss(tagName)
+  tagColor = xss(tagColor)
+  const existingTags = originalData.tags
+  if(Object.keys(existingTags).includes(tagName)){
+    throw new Error(`Tag ${tagName} already exists.`)
+  }
+  if(Object.values(existingTags).includes(tagColor)){
+    throw new Error(`A tag with color ${tagColor} already exists.`)
+  }
+  originalData.tags[tagName] = tagColor
+  return Channels.update(originalData,{
+    where:{
+      name:originalData.name
+    }
+  })
+}
 async function getHomeworkAll(channels,removeExpired=true){
   const homeworkPromises = []
   const channelNames = Object.keys(channels)
@@ -301,13 +329,19 @@ async function addHomework(hwboardName,newHomework){
   }
   //Very important step...
   newHomework = await removeXss(newHomework)
-  //Disallow invalid subjects
+  //Disallow invalid subjects or tags
   //Except in testing
   if(!testing){
     const userData = await getUserChannels(newHomework.lastEditPerson)
-    const {subjects} = userData.find(channel => channel.name===hwboardName)
+    const {subjects,tags} = userData.find(channel => channel.name===hwboardName)
     if(!subjects.includes(newHomework.subject)){
       throw new Error("Invalid subject")
+    }
+    const allowedTags = Object.keys(tags)
+    for(const tag of newHomework.tags){
+      if(!allowedTags.includes(tag) && tag!==""){
+        throw new Error("Invalid tag: "+tag)
+      }
     }
   }
   return Homework.create(newHomework)
@@ -321,13 +355,19 @@ async function editHomework(hwboardName,newHomework){
   }
   newHomework = await removeXss(newHomework)
   //Disallow the modification of overdue homework
-  //Also disallow invalid subjects
+  //Also disallow invalid subjects or tags
   //Except in testing
   if(!testing){
     const userData = await getUserChannels(newHomework.lastEditPerson)
-    const {subjects} = userData.find(channel => channel.name===hwboardName)
+    const {subjects,tags} = userData.find(channel => channel.name===hwboardName)
     if(!subjects.includes(newHomework.subject)){
       throw new Error("Invalid subject")
+    }
+    const allowedTags = Object.keys(tags)
+    for(const tag of newHomework.tags){
+      if(!allowedTags.includes(tag) && tag!==""){
+        throw new Error("Invalid tag: "+tag)
+      }
     }
     const numCount = await Homework.count({
       where:{
@@ -441,5 +481,6 @@ module.exports={
   getNumTables,
   whenHomeworkExpires,
   getNumHomework,
-  removeSubject
+  removeSubject,
+  addTag
 }

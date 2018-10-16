@@ -8,6 +8,7 @@
  * - Demoting member -> demoteMember
  * - Removing member -> removeMember
  * - Adding members -> addMember
+ * - Adding tags -> addTag
  * - Getting channel data -> channelDataReq
  */
 
@@ -34,7 +35,11 @@ module.exports = (socket,io,db)=>{
         subjects:[""],
         roots:[socket.userData.preferred_username],
         admins:[""],
-        members:[""]
+        members:[""],
+        tags : {
+          "Graded" : "red",
+          "Optional" : "green"
+        }
       }
       const data = await Channels.findAll({
         where:{
@@ -88,6 +93,22 @@ module.exports = (socket,io,db)=>{
       msg = await checkPayloadAndPermissions(socket,msg,3)
       const {channel} = msg
       await db.addSubject(msg)
+      updateChannels(db.arrayToObject(await db.getUserChannels("*")))
+      const thisChannel = socket.channels[channel]
+      io.to(channel).emit("channelData",{[channel]:thisChannel})
+      return null
+    })()
+    .then(callback)
+    .catch(e => callback(e.toString()))
+    //Error in handling error
+    .catch(uncaughtErrorHandler)
+  })
+  //Add tag
+  socket.on("addTag",function(msg,callback){
+    ;(async ()=>{
+      msg = await checkPayloadAndPermissions(socket,msg,3)
+      const {channel,name,color} = msg
+      await db.addTag(channel,name,color)
       updateChannels(db.arrayToObject(await db.getUserChannels("*")))
       const thisChannel = socket.channels[channel]
       io.to(channel).emit("channelData",{[channel]:thisChannel})
