@@ -90,10 +90,17 @@ async function add(){
   await page.waitFor(1000)
   await page.waitFor("#subject-name")
   await page.type("#subject-name","math")
-  await page.click(".item-content.input-toggle")
-  await page.click(".toggle.color-red.toggle-init")
-  console.log("Waiting for checkbox to be checked")
-  //await page.waitFor("#toggle-is-graded-checkbox:checked")
+  console.log("waited")
+  await page.click('.md > li > #selectTagsElem > .item-content > .item-inner')
+  await page.click('.md > li > #selectTagsElem')
+  console.log("clicked")
+  await page.waitFor(1000)
+  const elem = await page.waitForFunction(()=>{
+    return $(`.smart-select-page label.item-checkbox:has(input[value=Graded])`)[0]
+  })
+  await elem.click()
+  await page.click(`.smart-select-page .navbar .left a`)
+  await page.waitFor(1000)
   await page.type("#dueDate","tomorrow")
   await page.type("#homework-name","Add homework test")
   await page.screenshot({path: './artifacts/add.png'})
@@ -119,7 +126,8 @@ describe("Hwboard",async function(){
     }
   })
   it("Should load channel data",async function (){
-    const [subjectChannelMapping,subjectTagMapping] = await Promise.all((await Promise.all([
+    this.timeout(0)
+    const [subjectChannelMapping,subjectTagMapping,subjectSelectionList] = await Promise.all((await Promise.all([
       page.waitForFunction(()=>{
         if(typeof subjectChannelMapping==="undefined"){
           return false
@@ -131,15 +139,24 @@ describe("Hwboard",async function(){
           return false
         }
         return subjectTagMapping
+      }),
+      page.waitForFunction(()=>{
+        if(typeof subjectSelectionList==="undefined"){
+          return false
+        }
+        return subjectSelectionList
       })
     ])).map(handle => handle.jsonValue()))
     console.log({subjectChannelMapping,subjectTagMapping})
     expect(subjectChannelMapping).to.be.an("object")
     expect(subjectTagMapping).to.be.an("object")
+    expect(subjectSelectionList).to.be.an("array")
     expect(subjectChannelMapping).to.deep.equal({ 
       math: 'testing', 
       chemistry: 'testing' 
     })
+
+    expect(subjectSelectionList).to.deep.equal(["math","chemistry"])
     expect(subjectTagMapping).to.deep.equal({ 
       math: { 
         Graded: 'red', 
