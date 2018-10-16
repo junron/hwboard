@@ -42,8 +42,8 @@ async function reRender(data){
   const sortType = sortOptions.type || getCookie("sortType") || "Due date"
   let sortOrder = sortOptions.order || 0
   const hashHomeworkData = data.sort((a,b)=>{
-    aHash = a.id+a.text+a.subject+a.dueDate+a.lastEditPerson+a.lastEditTime
-    bHash = b.id+b.text+b.subject+b.dueDate+b.lastEditPerson+b.lastEditTime
+    aHash = a.id+a.text+a.subject+a.dueDate+a.lastEditPerson+a.lastEditTime+a.tags
+    bHash = b.id+b.text+b.subject+b.dueDate+b.lastEditPerson+b.lastEditTime+b.tags
     if(aHash > bHash){
       return -1
     }else if(aHash < bHash){

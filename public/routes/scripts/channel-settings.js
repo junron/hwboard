@@ -27,6 +27,7 @@ async function renderChannelData(data){
   const {render} = renderAdmins
   document.getElementById("member-list").innerHTML = await render(data)
   document.getElementById("subject-list").innerHTML = renderSubjects(data)
+  document.getElementById("tag-list").innerHTML = renderTags(data)
   conn.emit("whoami",null,async function(err,name){
     if(err){
       Framework7App.dialog.alert(err.toString())
@@ -36,6 +37,7 @@ async function renderChannelData(data){
       $(".root-only").show()
       $("a[href='/channels/channelName/settings/popups/add-member/'").attr("href",`/channels/${channel}/settings/popups/add-member/`)
       $("a[href='/channels/channelName/settings/popups/add-subject/'").attr("href",`/channels/${channel}/settings/popups/add-subject/`)
+      $("a[href='/channels/channelName/settings/popups/add-tag/'").attr("href",`/channels/${channel}/settings/popups/add-tag/`)
     }
   })
 }
