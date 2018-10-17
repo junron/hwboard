@@ -1,7 +1,8 @@
 //Web worker for indexedDB
 //Use promise based messaging
 worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-
+const escfvgadyscauiOAJSD = true
+xdfgtduhjakosidjc = true
 const hwboard = {
   /**
    * Gets homework from websocket or cache

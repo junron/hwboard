@@ -7,7 +7,7 @@ const Sugar = require("sugar-date")
 const router = express.Router();
 const db = require("../database")
 const config = require("../loadConfig")
-const {MS_CLIENTID:clientId,MS_CLIENTSECRET:clientSecret,HOSTNAME:hostname,CI:testing,REPORT_ERRORS:reportErrors} = config
+const {HOSTNAME:hostname,CI:testing} = config
 //Files to HTTP2 push for quicker page loading
 //TODO: find a library to auto push required files
  

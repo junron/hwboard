@@ -78,6 +78,10 @@ async function loadHomework(){
     }
     return results[1]
   }
+  console.log({xdfgtduhjakosidjc})
+  console.log({escfvgadyscauiOAJSD})
+  console.log(typeof hwboard,"async")
+  console.log(Object.keys(hwboard),"async")
   const results = await Promise.all([
     hwboard.getHomework(),
     hwboard.getChannelData()
@@ -88,4 +92,10 @@ async function loadHomework(){
   $(".swipeout-actions-left").css("visibility","visible")
   $(".swipeout-actions-right").css("visibility","visible")
 }
+//This is a test for iOS users
+function loadHw(){
+  console.log(typeof hwboard,"sync")
+  console.log(Object.keys(hwboard),"sync")
+}
+loadHw()
 loadHomework()
