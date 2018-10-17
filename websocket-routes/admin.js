@@ -26,11 +26,15 @@ module.exports = (socket,io,db)=>{
   socket.on("addChannel",function(msg,callback){
     ;(async ()=>{
       let name = xss(msg)
-      if(!/^[a-z0-9]+$/i.test(name)){
-        if(!/^[a-z0-9_]+$/i.test(name) || /^[a-z0-9_]+$/i.test(name) && name.includes("__")){
-          //Channel will be part of url
-          return callback("Channel name invalid")
-        }
+      if(encodeURI(name)!==name){
+        //Channel will be part of url
+        return callback("Channel name invalid")
+      }
+      const k = {}
+      if(k[name]!==undefined){
+        //Channel name will be object key
+        //Prevent overwriting of built in object properties such as __proto__ and toString
+        return callback("Channel name invalid")
       }
       const config = {
         name,
