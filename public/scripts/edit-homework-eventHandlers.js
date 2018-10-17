@@ -1,12 +1,4 @@
-let gradedCheckboxChecked = false
 const initEditHomeworkEvents = ()=>{
-  document.getElementById("toggle-is-graded-checkbox").addEventListener("click",(e)=>{
-    gradedCheckboxChecked = !gradedCheckboxChecked
-  })
-  document.getElementsByClassName("toggle-icon")[0].addEventListener("touchstart",(e)=>{
-    gradedCheckboxChecked = !gradedCheckboxChecked
-  })
-
   const entered = (event) => {
     if(event.key=="Enter"){
       const elem = document.getElementById("update-hwboard-button")
@@ -70,9 +62,10 @@ const initEditHomeworkEvents = ()=>{
     minMatchCharLength: 1,
   }
   const indexToString = index => subjectSelectionList[index]
+  let subjectDropDown
   Framework7App.loadModules(["autocomplete","list-index"]).then(()=>{
     let fuse = new Fuse(subjectSelectionList,options)
-    subDropdown = Framework7App.autocomplete.create({
+    subjectDropDown = Framework7App.autocomplete.create({
       openIn:"dropdown",
       source:(query,render)=>{
         if(query==""){
@@ -80,11 +73,31 @@ const initEditHomeworkEvents = ()=>{
           return render(subjectSelectionList)
         }else{
           const result = fuse.search(query).map(indexToString)
-          console.log(result)
           return render(result)
         }
       },
       inputEl:"#subject-name"
     })
+    subjectDropDown.on("close",subjectChanged)
+  })
+  const subjectChanged = ()=>{
+    const subjectName = $("#subject-name").val()
+    if($("#dueDate").val().trim()!==""){
+      $("#dueDate").trigger("input")
+    }
+    if(subjectSelectionList.includes(subjectName)){
+      $("#selectTagsElem").removeClass("disabled")
+      const tags = Object.keys(subjectTagMapping[subjectName])
+      $("#selectTagsElem select").html(tags.map(tag=>`<option>${tag}</option>`).join(""))
+    }else{
+      $("#selectTagsElem").addClass("disabled")
+    }
+  }
+  $("#subject-name").keypress(subjectChanged)
+  Framework7App.loadModules(["smart-select","checkbox"]).then(()=>{
+    console.log(Framework7App.smartSelect.create({
+      el:document.getElementById("selectTagsElem"),
+      openIn:"popup"
+    }))
   })
 }

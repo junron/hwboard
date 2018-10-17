@@ -7,7 +7,7 @@ function picktextColor(bgColor, lightColor, darkColor) {
     var b = parseInt(color.substring(4, 6), 16); // hexToB
     return (Math.round(((r * 0.299) + (g * 0.587) + (b * 0.114))) >= 180) ?
       darkColor : lightColor;
-  }
+}
 
 function convertHomework(arrHomework) {
     let calendarEvents = [];

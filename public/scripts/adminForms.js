@@ -6,10 +6,8 @@ function reset(){
   $(".page-current #dueDate").val("")
   $(".page-current #date-input-info").text('Relative dates such as "next lesson" are accepted')
   $(".page-current #homework-name").val("")
-  document.getElementById("toggle-is-graded-checkbox").checked = false
   const textInputSelectors = [".page-current #subject-name",".page-current #dueDate",".page-current #homework-name"]
   textInputSelectors.forEach(removeFloating)
-  gradedCheckboxChecked = false
 }
 
 const removeFloating = elem=>{
@@ -33,10 +31,7 @@ async function getHomeworkData(id=false){
   if(subject===""){
     throw new Error("No subject selected")
   }
-  const tags = []
-  if(gradedCheckboxChecked){
-    tags.push("Graded")
-  }
+  const tags = $(".page-current #selectTagsElem .item-inner .item-after").text().split(", ")
   //Remove lines
   const text = $(".page-current #homework-name").val().split("\n").join("").trim()
   const channel = subjectChannelMapping[subject]
@@ -69,20 +64,19 @@ async function getHomeworkData(id=false){
 }
 
 //load form with options
-function load(subject,graded,text,dueDate,pageSelector=".page-current"){
+function load(subject,tags,text,dueDate,pageSelector=".page-current"){
   subject = subject.trim()
   $(`${pageSelector} #subject-name`).val(subject)
+  $(`${pageSelector} #selectTagsElem`).removeClass("disabled")
+  const availableTags = Object.keys(subjectTagMapping[subject])
+  $(`${pageSelector} #selectTagsElem select`).html(availableTags.map(tag=>{
+    return `<option ${tags.includes(tag) ? "selected" : ""}>${tag}</option>`
+  }).join(""))
   //Keep the time also
   $(`${pageSelector} #dueDate`).val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
   $(`${pageSelector} #homework-name`).val(text.trim())
-  dateParser.parseDate($(`${pageSelector} #dueDate`).val())
-  if(graded){
-    $(`${pageSelector} #toggle-is-graded-checkbox`).attr("checked",true)
-    gradedCheckboxChecked = true
-  }else{
-    $(`${pageSelector} #toggle-is-graded-checkbox`).attr("checked",false)
-    gradedCheckboxChecked = false
-  }
+  const dateVal = $(`${pageSelector} #dueDate`).val() || $(`.page-current #dueDate`).val() || $(`.page-previous #dueDate`).val()
+  dateParser.parseDate(dateVal)
   const textInputSelectors = [`${pageSelector} #subject-name`,`${pageSelector} #dueDate`,`${pageSelector} #homework-name`]
   textInputSelectors.forEach(addFloating)
 }
@@ -90,9 +84,8 @@ function load(subject,graded,text,dueDate,pageSelector=".page-current"){
 //Load edit dialog
 function startEdit(){
   getExistingInfo().then(data =>{
-    const {subject,isTest,text,dueDate} = data
-    console.log(data)
-    load(subject,isTest,text,dueDate,".page-next")
+    const {subject,tags,text,dueDate} = data
+    load(subject,tags,text,dueDate,".page-next")
   })
 }
 
