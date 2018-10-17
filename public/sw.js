@@ -109,7 +109,7 @@ self.addEventListener('fetch',function(event) {
                 const delayScripts = queryString.replace("delay=","").split(",")
                 let delay = false
                 for(const delayScript of delayScripts){
-                  if(url.includes(delayScript)){
+                  if(url.includes(delayScript) /* || Math.random()>0.5 */){
                     delay = true
                     console.log(`%c Delayed ${url.split("/")[url.split("/").length-1]}`,"color:red")
                     return new Promise(resolve=>{
