@@ -15,12 +15,14 @@ const hwboard = {
     }
     const promises = []
     if(typeof conn !== "undefined"){
-      promises.push(new Promise((resolve,reject)=>{
+      promises.push(new Promise(resolve=>{
         if(conn.connected===false || navigator.onLine===false){
           return resolve([])
         }
-        const settings = Object.assign({},channelSettings)
-        settings.removeExpired = removeExpired
+        const settings = {
+          channel,
+          removeExpired
+        }
         conn.emit("dataReq",settings,function(err,data){
           //Always check if error occurred
           if(err) throw err;
@@ -87,7 +89,7 @@ const hwboard = {
     }))
     if(typeof conn!="undefined"&&conn.connected){
       //Connected before page load
-      promises.push(new Promise((resolve,reject)=>{
+      promises.push(new Promise(resolve=>{
         conn.emit("channelDataReq",{},function(err,data){
           //Always check if error occurred
           if(err) throw err;
