@@ -49,7 +49,7 @@ sequelize.authenticate()
   console.error('Unable to connect to the database:', err)
 })
 
-//Export the model creator becos we may need to create more tables later, on demand
+//Export the model creator because we may need to create more tables later, on demand
 //Should i curry this?
 const Homework = require("./Homework")(sequelize, Sequelize)
 

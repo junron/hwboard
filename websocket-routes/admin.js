@@ -26,8 +26,14 @@ module.exports = (socket,io,db)=>{
   socket.on("addChannel",function(msg,callback){
     ;(async ()=>{
       let name = xss(msg)
-      if(encodeURI(name)!=name){
+      if(encodeURI(name)!==name){
         //Channel will be part of url
+        return callback("Channel name invalid")
+      }
+      const k = {}
+      if(k[name]!==undefined){
+        //Channel name will be object key
+        //Prevent overwriting of built in object properties such as __proto__ and toString
         return callback("Channel name invalid")
       }
       const config = {

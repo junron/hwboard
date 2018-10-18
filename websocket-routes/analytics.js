@@ -6,7 +6,6 @@
  */
 
 const checkPayloadAndPermissions = require("./check-perm")
-const {updateChannels,getPermissionLvl} = require("../websocket")
 
 
 module.exports = (socket,db)=>{

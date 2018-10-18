@@ -58,7 +58,7 @@ const getStats = async _=>{
    })
   }
   let storageUsage = "Not supported"
-  //Navigator.storage.estimate not supporte in Safari and Opera
+  //Navigator.storage.estimate not supported in Safari and Opera
   try{
     if(navigator.storage && typeof navigator.storage.estimate==="function"){
       storageUsage = await navigator.storage.estimate()
