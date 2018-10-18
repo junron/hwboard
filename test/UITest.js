@@ -236,7 +236,6 @@ describe("Hwboard",async function(){
     }
     //Note: scores for performance and PWA are significantly lower 
     //This is due to lack of HTTPS and NGINX compression and h2
-    expect(scores.performance).to.be.greaterThan(0.3)
     expect(scores.pwa).to.be.greaterThan(0.6)
     expect(scores.accessibility).to.be.greaterThan(0.85)
     expect(scores["best-practices"]).to.be.greaterThan(0.85)
