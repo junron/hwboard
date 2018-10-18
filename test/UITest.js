@@ -30,9 +30,9 @@ async function init(){
   browser = await puppeteer.launch(options)
   console.log("browser launch")
   page = await browser.newPage()
-  console.log("pageopen")
+  console.log("pageOpen")
   await page.goto('http://localhost:' + port)
-  console.log("pageloaad")
+  console.log("pageLoad")
   await page.screenshot({path: './artifacts/initial.png'})
   await page._client.send('Emulation.clearDeviceMetricsOverride')
   console.log("Browser + page ready")
@@ -226,7 +226,7 @@ describe("Hwboard",async function(){
     }
     console.log(scores)
     //Note: scores for performance and PWA are significantly lower 
-    //This isdue to lack of HTTPS and NGINX compression and h2
+    //This is due to lack of HTTPS and NGINX compression and h2
     expect(scores.pwa).to.be.greaterThan(0.6)
     expect(scores.accessibility).to.be.greaterThan(0.85)
     expect(scores["best-practices"]).to.be.greaterThan(0.85)

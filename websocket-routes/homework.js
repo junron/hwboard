@@ -130,7 +130,7 @@ module.exports = (socket,io,db)=>{
       //Notify users
       const data = await db.getHomework(channel)
       io.to(channel).emit("data",{channel,data})
-      //Notifiy user when homework expires
+      //Notify user when homework expires
       await db.whenHomeworkExpires(channel,async()=>{
         const data = await db.getHomework(channel)
         io.to(channel).emit("data",{channel,data})

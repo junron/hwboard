@@ -168,7 +168,7 @@ const dateParserFn = (timetable,subjectSelectionList)=>{
   /**
    * Takes an object of {day:[[start,end],[start,end]]} and flattens it into a 1d array of dates
    * @param {Object} daysObject 
-   * @param {Date} mustBeAfter Mininum time for date
+   * @param {Date} mustBeAfter Minimum time for date
    * @async
    */
   async function rankDays(daysObject,mustBeAfter=new Date()){
