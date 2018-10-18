@@ -10,6 +10,32 @@
 const checkPayloadAndPermissions = require("./check-perm")
 const {isObject} = require("../utils")
 const crypto = require('crypto')
+
+const checkHomeworkValid = homework => {
+  if(!isObject(homework)){
+    throw "Homework is not an object"
+  }
+  if(typeof homework.text !== "string"){
+    throw "Homework text is not a string"
+  }
+  if(homework.text.trim().length === 0){
+    throw "Homework text length is 0"
+  }
+  if(!homework.dueDate || new Date(homework.dueDate).toString()==="Invalid Date"){
+    throw "Homework date is not valid"
+  }
+  if(new Date(homework.dueDate)<=new Date()){
+    throw "Homework date must be in the future"
+  }
+  if(typeof homework.tags !== "object" || !homework.tags instanceof Array){
+    throw "Homework tags is not an array"
+  }
+  if(homework.tags.length===0){
+    throw "There must be at least 1 homework tag"
+  }
+  return true
+}
+
 module.exports = (socket,io,db)=>{
 
   //Send uncaught errors, eg `callback is not a function` to client
@@ -66,6 +92,7 @@ module.exports = (socket,io,db)=>{
           throw e
         }
       }
+      checkHomeworkValid(msg)
       await db.addHomework(channel,msg)
       //Notify users
       const data = await db.getHomework(channel)
@@ -98,11 +125,12 @@ module.exports = (socket,io,db)=>{
           throw e
         }
       }
+      checkHomeworkValid(msg)
       await db.editHomework(channel,msg)
       //Notify users
       const data = await db.getHomework(channel)
       io.to(channel).emit("data",{channel,data})
-      //Notifiy user when homework expires
+      //Notify user when homework expires
       await db.whenHomeworkExpires(channel,async()=>{
         const data = await db.getHomework(channel)
         io.to(channel).emit("data",{channel,data})

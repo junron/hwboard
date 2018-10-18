@@ -139,7 +139,7 @@ app.use((req, res, next) => {
   }
   
   // production error handler
-  // no stacktraces leaked to user
+  // no stackTraces leaked to user
   app.use((err, req, res, next) => {
     Raven.captureException(err)
     res.status(err.status || 500);

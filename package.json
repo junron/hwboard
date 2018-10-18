@@ -12,7 +12,7 @@
   },
   "repository": "https://gitlab.therealorange.com/Jro/hwboard2.git",
   "author": "junron",
-  "license": "ISC",
+  "license": "MIT",
   "bin": {
     "hwboard": "./cli.js"
   },

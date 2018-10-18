@@ -30,9 +30,9 @@ async function init(){
   browser = await puppeteer.launch(options)
   console.log("browser launch")
   page = await browser.newPage()
-  console.log("pageopen")
+  console.log("pageOpen")
   await page.goto('http://localhost:' + port)
-  console.log("pageloaad")
+  console.log("pageLoad")
   await page.screenshot({path: './artifacts/initial.png'})
   await page._client.send('Emulation.clearDeviceMetricsOverride')
   console.log("Browser + page ready")
@@ -132,16 +132,25 @@ describe("Hwboard",async function(){
         if(typeof subjectChannelMapping==="undefined"){
           return false
         }
+        if(Object.keys(subjectChannelMapping).length===0){
+          return false
+        }
         return subjectChannelMapping
       }),
       page.waitForFunction(()=>{
         if(typeof subjectTagMapping==="undefined"){
           return false
         }
+        if(Object.keys(subjectTagMapping).length===0){
+          return false
+        }
         return subjectTagMapping
       }),
       page.waitForFunction(()=>{
         if(typeof subjectSelectionList==="undefined"){
+          return false
+        }
+        if(subjectSelectionList.length===0){
           return false
         }
         return subjectSelectionList
@@ -155,7 +164,6 @@ describe("Hwboard",async function(){
       math: 'testing', 
       chemistry: 'testing' 
     })
-
     expect(subjectSelectionList).to.deep.equal(["math","chemistry"])
     expect(subjectTagMapping).to.deep.equal({ 
       math: { 
@@ -223,10 +231,11 @@ describe("Hwboard",async function(){
     }
     if(console.table){
       console.table(scores)
+    }else{
+      console.log(scores)
     }
-    console.log(scores)
     //Note: scores for performance and PWA are significantly lower 
-    //This isdue to lack of HTTPS and NGINX compression and h2
+    //This is due to lack of HTTPS and NGINX compression and h2
     expect(scores.pwa).to.be.greaterThan(0.6)
     expect(scores.accessibility).to.be.greaterThan(0.85)
     expect(scores["best-practices"]).to.be.greaterThan(0.85)

@@ -12,8 +12,8 @@ const xss = require('xss')
 //Map emails to names
 const {getStudentById} = require("./students")
 
-//Object to store hwboard channel tables
-const tables = {}
+//Map to store hwboard channel tables
+const tables = new Map()
 
 //Generate tables
 async function init(){
@@ -27,7 +27,7 @@ async function generateHomeworkTables(){
   const channels = await getUserChannels("*")
   for (let channel of channels){
     //Could have curried but meh
-    tables[channel.name] = Homework(channel.name)
+    tables.set(channel.name,Homework(channel.name))
   }
 }
 async function getUserChannels(userEmail,permissionLevel=1){
@@ -62,10 +62,10 @@ async function getUserChannels(userEmail,permissionLevel=1){
 //Assumes that access has been granted
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
-  const Homework = tables[hwboardName]
-  if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found: "+hwboardName)
+  if(!tables.has(hwboardName)){
+    throw new Error("Homework table could not be found: "+hwboardName)
   }
+  const Homework = tables.get(hwboardName)
   const data = await Homework.findAll({
     raw: true
   })
@@ -94,10 +94,10 @@ async function getHomework(hwboardName,removeExpired=true){
   }
 }
 async function getNumHomework({channel,subject,graded=0,startDate=Infinity,endDate=Infinity}){
-  const Homework = tables[channel]
-  if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found")
+  if(!tables.has(channel)){
+    throw new Error("Homework table could not be found: "+channel)
   }
+  const Homework = tables.get(channel)
   const Op = Sequelize.Op
   const where = {
     subject,
@@ -323,10 +323,10 @@ async function getHomeworkAll(channels,removeExpired=true){
 }
 
 async function addHomework(hwboardName,newHomework){
-  const Homework = tables[hwboardName]
-  if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found")
+  if(!tables.has(hwboardName)){
+    throw new Error("Homework table could not be found: "+hwboardName)
   }
+  const Homework = tables.get(hwboardName)
   //Very important step...
   newHomework = await removeXss(newHomework)
   //Disallow invalid subjects or tags
@@ -348,11 +348,11 @@ async function addHomework(hwboardName,newHomework){
 }
 
 async function editHomework(hwboardName,newHomework){
-  const Homework = tables[hwboardName]
   const Op = Sequelize.Op
-  if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found")
+  if(!tables.has(hwboardName)){
+    throw new Error("Homework table could not be found: "+hwboardName)
   }
+  const Homework = tables.get(hwboardName)
   newHomework = await removeXss(newHomework)
   //Disallow the modification of overdue homework
   //Also disallow invalid subjects or tags
@@ -389,11 +389,11 @@ async function editHomework(hwboardName,newHomework){
   })
 }
 async function deleteHomework(hwboardName,homeworkId){
-  const Homework = tables[hwboardName]
   const Op = Sequelize.Op
-  if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found")
+  if(!tables.has(hwboardName)){
+    throw new Error("Homework table could not be found: "+hwboardName)
   }
+  const Homework = tables.get(hwboardName)
   //Disallow the modification of overdue homework
   //Except in testing
   if(!testing){
@@ -457,7 +457,7 @@ const arrayToObject = channelArrays => {
   return result
 }
 const getNumTables = () => {
-  return Object.keys(tables).length
+  return tables.size
 }
 
 //async filter

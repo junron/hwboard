@@ -1,5 +1,5 @@
 function getChannelData(){
-  //Load data from indexeddb, in case there is no internet
+  //Load data from indexedDB, in case there is no internet
   worker.postMessage({
     type:"getSingleChannelByName",
     name:channel
@@ -8,7 +8,7 @@ function getChannelData(){
       //IndexedDB is empty, perhaps is first page load
       return
     }
-    console.log("Load channels from Indexeddb")
+    console.log("Load channels from IndexedDB")
     return renderChannelData(data)
   })
   //Load data from websocket

@@ -1,8 +1,9 @@
 //Web worker for indexedDB
 //Use promise based messaging
 worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-
-const hwboard = {
+escfvgadyscauiOAJSD = true
+xdfgtduhjakosidjc = true
+hwboard = {
   /**
    * Gets homework from websocket or cache
    * @param {Boolean} removeExpired Whether to remove expired homework
@@ -10,17 +11,19 @@ const hwboard = {
   async getHomework(removeExpired=true){
     if(typeof worker==="undefined"){
       worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-      console.log("Worker was not initalized.")
+      console.log("Worker was not initialized.")
       console.log("Worker is now a(n)",typeof worker)
     }
     const promises = []
     if(typeof conn !== "undefined"){
-      promises.push(new Promise((resolve,reject)=>{
+      promises.push(new Promise(resolve=>{
         if(conn.connected===false || navigator.onLine===false){
           return resolve([])
         }
-        const settings = Object.assign({},channelSettings)
-        settings.removeExpired = removeExpired
+        const settings = {
+          channel,
+          removeExpired
+        }
         conn.emit("dataReq",settings,function(err,data){
           //Always check if error occurred
           if(err) throw err;
@@ -42,7 +45,7 @@ const hwboard = {
     promises.push(worker.postMessage({
       type:"get",
     }).then(data=>{
-      console.log("Load homework from Indexeddb")
+      console.log("Load homework from IndexedDB")
       if(channel!=""){
         //Only show homework for current channel
         data = data.filter(a=>a.channel == channel)
@@ -71,14 +74,14 @@ const hwboard = {
   async getChannelData(){
     if(typeof worker==="undefined"){
       worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-      console.log("Worker was not initalized.")
+      console.log("Worker was not initialized.")
       console.log("Worker is now a(n)",typeof worker)
     }
     const promises = []
     promises.push(worker.postMessage({
       type:"getChannels",
     }).then(data=>{
-      console.log("Load channels from Indexeddb")
+      console.log("Load channels from IndexedDB")
       if(!data.length){
         //IndexedDB is empty, perhaps is first page load
         return false
@@ -87,7 +90,7 @@ const hwboard = {
     }))
     if(typeof conn!="undefined"&&conn.connected){
       //Connected before page load
-      promises.push(new Promise((resolve,reject)=>{
+      promises.push(new Promise(resolve=>{
         conn.emit("channelDataReq",{},function(err,data){
           //Always check if error occurred
           if(err) throw err;

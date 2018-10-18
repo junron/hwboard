@@ -1,5 +1,5 @@
 function renderTags(data){
-  function picktextColor(bgColor, lightColor, darkColor) {
+  function pickTextColor(bgColor, lightColor, darkColor) {
     var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
     var r = parseInt(color.substring(0, 2), 16); // hexToR
     var g = parseInt(color.substring(2, 4), 16); // hexToG
@@ -10,7 +10,7 @@ function renderTags(data){
   const {tags} = data
   let html = ""
   for(const tag in tags){
-    const tagTextColor = picktextColor(tags[tag],"white","black")
+    const tagTextColor = pickTextColor(tags[tag],"white","black")
     html+=`<li class="item-content">
       <div class="item-inner">
         <div class="chip item-title" 

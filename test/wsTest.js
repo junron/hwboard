@@ -1,9 +1,7 @@
 const chai = require("chai")
 chai.use(require('chai-uuid'))
 const mocha = require("mocha")
-const expect = chai.expect
-//TODO actually use a token when auth is setup
-const token = `bleh`
+const {expect} = chai
 const io = require('socket.io-client')
 const websocket = require("../app").server
 const port = require("../loadConfig").PORT
@@ -31,17 +29,17 @@ describe("websocket",function(){
     })
     it("Should be able to echo text messages",function(done){
       console.log("Connected: ",client.connected)
-        client.emit("textMessage","helloworld",function(err,response){
+        client.emit("textMessage","hello, world!",function(err,response){
             expect(err).to.equal(null)
-            expect(response).to.equal("helloworldreceived")
+            expect(response).to.equal("hello, world!received")
             done()
         })
     })
     it("Should be able to echo binary data",function(done){
-        client.emit("binaryMessage",Buffer.from("hello","utf8"),function(err,response){
+        client.emit("binaryMessage",Buffer.from("hello, world!","utf8"),function(err,response){
             expect(err).to.equal(null)
             expect(response).to.be.instanceOf(Buffer)
-            expect(response.toString()).to.equal("helloreceived")
+            expect(response.toString()).to.equal("hello, world!received")
             done()
         })
     })
@@ -74,8 +72,7 @@ describe("websocket",function(){
         channel:"testing",
         subject:"add homework via websocket test",
         dueDate:new Date().getTime()+10000000,
-        tags:["Graded"],
-        token
+        tags:["Graded"]
       }
       client.emit("addReq",newHomework,function(err){
         expect(err).to.equal(null)
@@ -99,7 +96,6 @@ describe("websocket",function(){
           subject:"Edit homework via websocket test",
           dueDate:new Date().getTime()+10000000,
           tags:["Graded"],
-          token,
           id:originalHomework.id
         }
         client.emit("editReq",newHomework,function(err){
