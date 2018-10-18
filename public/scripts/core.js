@@ -1,9 +1,9 @@
 //Web worker for indexedDB
 //Use promise based messaging
 worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-const escfvgadyscauiOAJSD = true
+escfvgadyscauiOAJSD = true
 xdfgtduhjakosidjc = true
-const hwboard = {
+hwboard = {
   /**
    * Gets homework from websocket or cache
    * @param {Boolean} removeExpired Whether to remove expired homework
@@ -11,7 +11,7 @@ const hwboard = {
   async getHomework(removeExpired=true){
     if(typeof worker==="undefined"){
       worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-      console.log("Worker was not initalized.")
+      console.log("Worker was not initialized.")
       console.log("Worker is now a(n)",typeof worker)
     }
     const promises = []
@@ -45,7 +45,7 @@ const hwboard = {
     promises.push(worker.postMessage({
       type:"get",
     }).then(data=>{
-      console.log("Load homework from Indexeddb")
+      console.log("Load homework from IndexedDB")
       if(channel!=""){
         //Only show homework for current channel
         data = data.filter(a=>a.channel == channel)
@@ -74,14 +74,14 @@ const hwboard = {
   async getChannelData(){
     if(typeof worker==="undefined"){
       worker = new PromiseWorker(new Worker("/scripts/worker.js"))
-      console.log("Worker was not initalized.")
+      console.log("Worker was not initialized.")
       console.log("Worker is now a(n)",typeof worker)
     }
     const promises = []
     promises.push(worker.postMessage({
       type:"getChannels",
     }).then(data=>{
-      console.log("Load channels from Indexeddb")
+      console.log("Load channels from IndexedDB")
       if(!data.length){
         //IndexedDB is empty, perhaps is first page load
         return false

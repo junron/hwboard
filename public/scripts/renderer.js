@@ -35,7 +35,7 @@ const subjectFirst = (a,b) => {
   }
   return 0
 }
-parser.picktextColor = (bgColor, lightColor, darkColor) => {
+parser.pickTextColor = (bgColor, lightColor, darkColor) => {
   var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
   var r = parseInt(color.substring(0, 2), 16); // hexToR
   var g = parseInt(color.substring(2, 4), 16); // hexToG
@@ -264,7 +264,7 @@ parser.parseHomeworkMetaData =  function(homework){
       <div class="chip-label" style="color:white">${subject}</div>
     </div>`
     for(const tag of tags){
-      const tagTextColor = parser.picktextColor(tagMapping[tag],"white","black")
+      const tagTextColor = parser.pickTextColor(tagMapping[tag],"white","black")
       extra += `    <div class="chip" 
       style="background-color:${tagMapping[tag]};color:${tagTextColor}">
         <div class="chip-label">${tag}</div>

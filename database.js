@@ -63,7 +63,7 @@ async function getUserChannels(userEmail,permissionLevel=1){
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
   if(!tables.has(hwboardName)){
-    throw new Error("Homework table cound not be found: "+hwboardName)
+    throw new Error("Homework table could not be found: "+hwboardName)
   }
   const Homework = tables.get(hwboardName)
   const data = await Homework.findAll({
@@ -95,7 +95,7 @@ async function getHomework(hwboardName,removeExpired=true){
 }
 async function getNumHomework({channel,subject,graded=0,startDate=Infinity,endDate=Infinity}){
   if(!tables.has(channel)){
-    throw new Error("Homework table cound not be found: "+channel)
+    throw new Error("Homework table could not be found: "+channel)
   }
   const Homework = tables.get(channel)
   const Op = Sequelize.Op
@@ -324,7 +324,7 @@ async function getHomeworkAll(channels,removeExpired=true){
 
 async function addHomework(hwboardName,newHomework){
   if(!tables.has(hwboardName)){
-    throw new Error("Homework table cound not be found: "+hwboardName)
+    throw new Error("Homework table could not be found: "+hwboardName)
   }
   const Homework = tables.get(hwboardName)
   //Very important step...
@@ -350,7 +350,7 @@ async function addHomework(hwboardName,newHomework){
 async function editHomework(hwboardName,newHomework){
   const Op = Sequelize.Op
   if(!tables.has(hwboardName)){
-    throw new Error("Homework table cound not be found: "+hwboardName)
+    throw new Error("Homework table could not be found: "+hwboardName)
   }
   const Homework = tables.get(hwboardName)
   newHomework = await removeXss(newHomework)
@@ -391,7 +391,7 @@ async function editHomework(hwboardName,newHomework){
 async function deleteHomework(hwboardName,homeworkId){
   const Op = Sequelize.Op
   if(!tables.has(hwboardName)){
-    throw new Error("Homework table cound not be found: "+hwboardName)
+    throw new Error("Homework table could not be found: "+hwboardName)
   }
   const Homework = tables.get(hwboardName)
   //Disallow the modification of overdue homework

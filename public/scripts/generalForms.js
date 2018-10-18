@@ -1,4 +1,4 @@
-//Get data from indexeddb about specific homework
+//Get data from indexedDB about specific homework
 async function getExistingInfo(){
   const id = $(lastTouched).attr("sqlid")
   const result = await worker.postMessage({
@@ -6,7 +6,7 @@ async function getExistingInfo(){
     id
   })
   if((!result)||result.length==0){
-    //Perhaps indexeddb screwed up 
+    //Perhaps indexedDB screwed up 
     return JSON.parse(localStorage.getItem("data")).filter((homework)=>{
       return homework.id == id
     })[0]
@@ -72,7 +72,7 @@ function rerenderSort(){
     type:"get"
   }).then(data=>{
     if((!data)||data.length==0){
-      //Perhaps indexeddb screwed up 
+      //Perhaps indexedDB screwed up 
       data = JSON.parse(localStorage.getItem("data"))
     }
     reRender(data).then(()=>{

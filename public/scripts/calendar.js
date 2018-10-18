@@ -1,6 +1,6 @@
 colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC']
 
-function picktextColor(bgColor, lightColor, darkColor) {
+function pickTextColor(bgColor, lightColor, darkColor) {
     var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
     var r = parseInt(color.substring(0, 2), 16); // hexToR
     var g = parseInt(color.substring(2, 4), 16); // hexToG
@@ -19,7 +19,7 @@ function convertHomework(arrHomework) {
             start: eachHomework.dueDate.slice(0, 10),
             allDay: true,
             color: eventColor,
-            textColor:picktextColor(eventColor,"#ffffff","#000000")
+            textColor:pickTextColor(eventColor,"#ffffff","#000000")
         };
         calendarEvents.push(event);
     }

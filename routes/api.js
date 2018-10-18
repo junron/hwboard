@@ -52,7 +52,7 @@ router.post("/api/:method",(req, res, next) => {
       console.log("Forced disconnect")
       return res.status(403).end("Auth error")
     }
-    //Admininstration
+    //Administration
     require("../websocket-routes/admin")(socket,io,db)
 
     //Homework ops
