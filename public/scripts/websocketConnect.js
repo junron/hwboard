@@ -35,6 +35,10 @@ conn.on("disconnect",function(){
 });
 conn.on("connect",function(){
     $("#connection-status").text("Connected");
+    if(location.search.includes("websocketOffline=true")){
+        conn.disconnect()
+        $("#connection-status").text("Simulated offline");
+    }
 });
 
 //Uncaught error that could not be handled via callback etc
