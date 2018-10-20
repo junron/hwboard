@@ -12,18 +12,22 @@ const Framework7App = new Framework7({
     mdSwipeBack:true
   },
   routes:[
-    // {
-    //   name:"timetable",
-    //   path:"/timetable",
-    //   url:"/routes/timetable.html",
-    //   reloadPrevious:true,
-    //   animate:false,
-    //   on:{
-    //     pageAfterIn:e=>{
-    //       loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css"])
-    //     }
-    //   }
-    // },
+    {
+      name:"timetable",
+      path:"/timetable",
+      url:"/routes/timetable.html",
+      reloadPrevious:true,
+      animate:false,
+      on:{
+        pageAfterIn:e=>{
+          loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css",'/fullcalendar/dist/fullcalendar.min.css'])
+          .then(()=>{
+              while (!$("#hwboard-timetable").fullCalendar){}
+              renderTimetable()
+          })
+        }
+      }
+    },
     {
       name:"channels",
       path:"/channels",
@@ -215,7 +219,7 @@ const Framework7App = new Framework7({
           url: "/calendar",
           on: {
               pageAfterIn: async e => {
-                const sources = ['/moment/min/moment.min.js', '/fullcalendar/dist/fullcalendar.min.js', '/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.min.css'];
+                const sources = ['/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.min.css'];
                 const target = e.currentTarget;
                 await loadSources(target, sources)
                 while (!$("#calendar").fullCalendar){}
