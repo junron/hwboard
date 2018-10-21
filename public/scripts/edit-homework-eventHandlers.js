@@ -52,7 +52,7 @@ const initEditHomeworkEvents = ()=>{
   })
 
 
-  //Dropdown for subjects
+  //DropDown for subjects
   const options = {
     shouldSort: true,
     threshold: 0.4,
@@ -95,9 +95,9 @@ const initEditHomeworkEvents = ()=>{
   }
   $("#subject-name").keypress(subjectChanged)
   Framework7App.loadModules(["smart-select","checkbox"]).then(()=>{
-    console.log(Framework7App.smartSelect.create({
+    Framework7App.smartSelect.create({
       el:document.getElementById("selectTagsElem"),
       openIn:"popup"
-    }))
+    })
   })
 }

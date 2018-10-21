@@ -14,7 +14,7 @@ try {
 if(reportErrors){
   Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install()
 }
-const {HOSTNAME:hostName,PORT:port,CI:testing,COOKIE_SECRET:cookieSecret} = config
+const {HOSTNAME:hostName,PORT:port,CI:testing,COOKIE_SECRET:cookieSecret,REDUCE_EXPRESS_LOGS:reduceExpressLogs} = config
 
 //Utils
 const http = require('http')
@@ -107,7 +107,7 @@ if(testing){
 //express setup
 if(hostName==="nushhwboard.tk"){
   app.use(logger('common'));
-}else if(testing){
+}else if(testing || reduceExpressLogs){
   app.use(logger("dev",{
     skip:function (req, res) { return res.statusCode < 400 }
   }))
