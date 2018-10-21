@@ -13,10 +13,24 @@ async function renderTimetable(){
   }
   const modifiedTimetable = Object.assign(assemblyAndCCA,timetable)
   const events = []
-  const colors = tinygradient(['#00e5bc', '#8ed200', '#c42700']).hsv(Object.keys(modifiedTimetable).length)
-  for(let subject in modifiedTimetable){
+  const colors = tinygradient(['#FF0000','#FF7F00','#FFFF00','#00FF00','#0000FF','#4B0082','#9400D3']).hsv(Object.keys(modifiedTimetable).length).map(c=>c.toHexString())
+  const getStartTime = subjectName =>{
+    const lessons = modifiedTimetable[subjectName]
+    return lessons[Object.keys(lessons)[0]][0][0]
+  }
+  const subjects = Object.keys(modifiedTimetable).sort((subjectA,subjectB)=>{
+    const subjectATime = getStartTime(subjectA)
+    const subjectBTime = getStartTime(subjectB)
+    if(subjectATime>subjectBTime){
+      return 1
+    }else if(subjectATime<subjectBTime){
+      return -1
+    }
+    return 0
+  })
+  for(let subject of subjects){
     const lessons = modifiedTimetable[subject]
-    const color = colors[Object.keys(modifiedTimetable).indexOf(subject)].toHexString()
+    const color = colors[subjects.indexOf(subject)]
     for (const dayName in lessons){
       const day = lessons[dayName][0]
       const eventStart = Sugar.Date.create(`${dayName} ${Math.floor(day[0]/100)}:${(day[0] % 100).toString().padStart(2,"0")}`)
@@ -24,7 +38,9 @@ async function renderTimetable(){
       //Ensure that subjects do not get cutoff in a weird way
       if(window.innerWidth<450){
         const cutoff = 4
-        if(subject.length>cutoff){
+        if(subject==="Assembly"){
+          subject = "Assem"
+        }else if(subject.length>cutoff){
           const subjectParts = subject.split(" ")
           subject = subjectParts[0].slice(0,cutoff)
           if(subject[subject.length-1]==="l"){
