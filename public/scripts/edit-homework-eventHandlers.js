@@ -52,7 +52,7 @@ const initEditHomeworkEvents = ()=>{
   })
 
 
-  //Dropdown for subjects
+  //DropDown for subjects
   const options = {
     shouldSort: true,
     threshold: 0.4,

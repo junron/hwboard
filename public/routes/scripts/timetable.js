@@ -22,13 +22,24 @@ async function renderTimetable(){
   }
   const modifiedTimetable = Object.assign(assemblyAndCCA,timetable)
   const events = []
-  for(const subject in modifiedTimetable){
+  for(let subject in modifiedTimetable){
     const lessons = modifiedTimetable[subject]
+    const color = colors[Object.keys(modifiedTimetable).indexOf(subject)] || "#3B3EAC"
     for (const dayName in lessons){
       const day = lessons[dayName][0]
       const eventStart = Sugar.Date.create(`${dayName} ${Math.floor(day[0]/100)}:${(day[0] % 100).toString().padStart(2,"0")}`)
       const eventEnd = Sugar.Date.create(`${dayName} ${Math.floor(day[1]/100)}:${(day[1] % 100).toString().padStart(2,"0")}`)
-      const color = colors[Object.keys(modifiedTimetable).indexOf(subject)] || "#3B3EAC"
+      //Ensure that subjects do not get cutoff in a weird way
+      if(window.innerWidth<450){
+        const cutoff = 4
+        if(subject.length>cutoff){
+          const subjectParts = subject.split(" ")
+          subject = subjectParts[0].slice(0,cutoff)
+          if(subject[subject.length-1]==="l"){
+            subject = subject.slice(0,3)
+          }
+        }
+      }
       events.push({
         title:subject,
         start:eventStart,
