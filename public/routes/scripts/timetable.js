@@ -67,6 +67,7 @@ async function renderTimetable(){
     slotLabelInterval:{minutes:30},
     slotLabelFormat:'h:mma',
     allDaySlot: false,
+    slotEventOverlap:false,
     nowIndicator:true
   })
 }
