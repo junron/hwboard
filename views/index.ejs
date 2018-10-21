@@ -18,12 +18,11 @@
           Channels
         </a>
       </li>
-      <!--
       <li>
-      <a href="/timetable/" class="panel-close">
-        Timetable
-      </a>
-    </li>-->
+        <a href="/timetable/" class="panel-close">
+          Timetable
+        </a>
+      </li>
       <li>
         <a href="/calendar/" class="panel-close">
           Calendar
@@ -159,12 +158,13 @@
     <script async defer src="/routes/scripts/channel-settings.js"></script>
     <link href="/routes/styles/channel-settings.css" rel="stylesheet">
 
-    <!-- timetable
-    <script defer src="/routes/scripts/render-timetable.js"></script>
-    -->
-
+    <!-- timetable and calendar -->
+    <script async defer src='/moment/min/moment.min.js'></script>
+    <script async defer src="/tinygradient/bower_components/tinycolor/tinycolor.js"></script>
+    <script async defer src='/tinygradient/tinygradient.min.js'></script>
     <!-- latency checking -->
     <link rel="preconnect" href="https://latency-check.nushhwboard.tk">
     <script async defer src="/scripts/latencyCheck.js"></script>
+    <script async defer src='/fullcalendar/dist/fullcalendar.min.js'></script>
 </body>
 </html>

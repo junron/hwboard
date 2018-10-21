@@ -1,6 +1,9 @@
 //Get data from indexedDB about specific homework
-async function getExistingInfo(){
-  const id = $(lastTouched).attr("sqlid")
+async function getExistingInfo(homeworkDataElement){
+  if(typeof homeworkDataElement==="undefined"){
+    homeworkDataElement = lastTouched
+  }
+  const id = $(homeworkDataElement).attr("sqlid")
   const result = await worker.postMessage({
     type:"getSingle",
     id
@@ -40,8 +43,8 @@ async function updateChannelHomework(channel,channelData){
 }
 
 //Show info about homework
-async function loadDetails(){
-  const data = await getExistingInfo()
+async function loadDetails(element){
+  const data = await getExistingInfo(element)
   const {subject,isTest,text,dueDate,lastEditTime:editTime,lastEditPerson:editPerson} = data
   $("#detailLastEdit").text(Sugar.Date.format(new Date(editTime),"{d}/{M}/{yyyy}")+" "+Sugar.Date.format(new Date(editTime),"%I:%M")+Sugar.Date.format(new Date(editTime),"%P")+" by "+editPerson)
   $("#detailHomeworkName").text(text)

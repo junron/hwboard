@@ -53,6 +53,10 @@ const variables = [
   {
     name:"GITLAB_SECURE_TOKEN",
     default:null,
+  },
+  {
+    name:"REDUCE_EXPRESS_LOGS",
+    default:true
   }
 ]
 

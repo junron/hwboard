@@ -11,7 +11,26 @@ td {
   margin-bottom: 15px;
   font-size: 12px;
 }
-
+#hwboard-timetable tr td.fc-widget-content div.fc-time-grid-container {
+  /* Override element style */
+  height:initial !important;
+}
+#hwboard-timetable tr td.fc-widget-content div.fc-content div.fc-time {
+  display: none;
+}
+#hwboard-timetable tr td.fc-widget-content div.fc-content{
+  height: 100%;
+}
+#hwboard-timetable tr td.fc-widget-content div.fc-content div.fc-title {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+  align-items: center;
+}
+#hwboard-timetable .fc-time-grid-event.fc-v-event.fc-event {
+  opacity: 0.7;
+}
 .timetable-today td,.timetable-today{
   color:red;
   font-weight:900;

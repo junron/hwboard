@@ -4,11 +4,11 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.3.2"
+const version = "1.3.4"
 
-console.log(`Service worker verison ${version}`)
+console.log(`Service worker version ${version}`)
 self.addEventListener('install', function(e) {
-  console.log(`Installed service worker verison ${version}`)
+  console.log(`Installed service worker version ${version}`)
   e.waitUntil((async()=>{
     await self.skipWaiting()
     return caches.open('cache1').then(function(cache) {
@@ -40,7 +40,6 @@ self.addEventListener('install', function(e) {
         "/routes/channel-settings.html",
         "/manifest.json",
         "/images/icons/favicon.png",
-        "/routes/channel-settings.html",
       ]
       return cache.addAll(cacheArray);
     })
