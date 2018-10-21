@@ -44,7 +44,7 @@ async function getHomeworkData(id=false){
     throw new Error("Homework name not specified")
   }
   if(id){
-    const id = $(lastTouched).attr("sqlid")
+    const id = $(".page-current #homework-id").val()
     return {
       subject,
       text,
@@ -64,9 +64,10 @@ async function getHomeworkData(id=false){
 }
 
 //load form with options
-function load(subject,tags,text,dueDate,pageSelector=".page-current"){
+function load(subject,tags,text,dueDate,id,pageSelector=".page-current"){
   subject = subject.trim()
   $(`${pageSelector} #subject-name`).val(subject)
+  $(`${pageSelector} #homework-id`).val(id)
   $(`${pageSelector} #selectTagsElem`).removeClass("disabled")
   const availableTags = Object.keys(subjectTagMapping[subject])
   $(`${pageSelector} #selectTagsElem select`).html(availableTags.map(tag=>{
@@ -75,17 +76,16 @@ function load(subject,tags,text,dueDate,pageSelector=".page-current"){
   //Keep the time also
   $(`${pageSelector} #dueDate`).val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"))
   $(`${pageSelector} #homework-name`).val(text.trim())
-  const dateVal = $(`${pageSelector} #dueDate`).val() || $(`.page-current #dueDate`).val() || $(`.page-previous #dueDate`).val()
-  dateParser.parseDate(dateVal)
+  dateParser.parseDate(dueDate)
   const textInputSelectors = [`${pageSelector} #subject-name`,`${pageSelector} #dueDate`,`${pageSelector} #homework-name`]
   textInputSelectors.forEach(addFloating)
 }
 
 //Load edit dialog
-function startEdit(){
-  getExistingInfo().then(data =>{
-    const {subject,tags,text,dueDate} = data
-    load(subject,tags,text,dueDate,".page-next")
+function startEdit(elem,pageSelector=".page-next"){
+  getExistingInfo(elem).then(data =>{
+    const {subject,tags,text,dueDate,id} = data
+    load(subject,tags,text,dueDate,id,pageSelector)
   })
 }
 
@@ -211,13 +211,13 @@ async function editHomework(){
   })
   return promise
 }
-function startDelete(){
+function startDelete(element){
   Framework7App.dialog.confirm("Are you sure you want to delete this homework?","Deletion confirmation",()=>{
-    deleteHomework()
+    deleteHomework(element)
   })
 }
-function deleteHomework(){
-  getExistingInfo().then(homeworkData=>{
+function deleteHomework(element){
+  getExistingInfo(element).then(homeworkData=>{
     if(navigator.onLine===false){
       backgroundSync("/api/deleteReq",homeworkData).then(console.log)
       return

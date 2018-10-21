@@ -12,6 +12,24 @@ $(document).on("change","input[type='radio']",function(){
 //Edit button clicked
 //TODO put this in a admin only js file
 $(document).on("click",".swipeout-edit-button",function(){
-  lastTouched = this.parentElement.parentElement
+  const homeworkElement = this.parentElement.parentElement
   mainView.router.navigate("/popups/edit/")
+  //Sometimes init event may not trigger
+  const manualTrigger = setTimeout(()=>{
+    console.log("Force trigger")
+    startEdit(homeworkElement,".page-current")
+  },2000)
+  Dom7(document).on("page:init",e=>{
+    if(e.detail.route.url==="/popups/edit/"){
+      clearTimeout(manualTrigger)
+      startEdit(homeworkElement)
+    }
+  })
+})
+
+$(document).on("click",".hwboard-item-info",function(){
+  loadDetails(this.parentElement)
+})
+$(document).on("click",".hwboard-item-delete",function(){
+  startDelete(this.parentElement.parentElement)
 })

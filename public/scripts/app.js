@@ -58,6 +58,9 @@ const Framework7App = new Framework7({
           prevDataHash = ""
           console.log("Navbar")
           loadSources(e.currentTarget,["/scripts/loadHomework.js"])
+          if(location.search.includes("websocketOffline=true")){
+            $("#connection-status").text("Simulated offline");
+          }
         }
       },
       routes:[
@@ -98,15 +101,10 @@ const Framework7App = new Framework7({
         path: "/popups/edit/",
         url:"/routes/edit-homework.html",
         on :{
-          pageBeforeIn:function(e,page){
+          pageBeforeIn:(_,page)=>{
             $(page.el.querySelector("#edit-title")).text("Edit homework")
-            startEdit()
           },
-          pageAfterIn:function(e,page){
-            if(e.detail.route.url.includes("?edit=true")){
-              Framework7App.router.navigate("/popups/edit/")
-            }
-            $(".page-current #edit-title").text("Edit homework")
+          pageAfterIn:e=>{
             initEditHomeworkEvents()
           }
         },
