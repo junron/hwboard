@@ -113,16 +113,16 @@ parser.parseHomeworkSubject = function(homework) {
         </div>
         </div>
       </div>
-      <div class="swipeout-actions-left">
-        <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
-      </div>`
-      if(subjectChannelMapping[subject]){
-        rendered += `<div class="swipeout-actions-right">
-          <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
-          <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
+    <div class="swipeout-actions-left hwboard-item-info">
+      <a class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
+    </div>`
+    if(subjectChannelMapping[subject]){
+      rendered += `<div class="swipeout-actions-right">
+          <a class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
+          <a class="swipeout-close hwboard-item-delete" style="background-color:#f44336">Delete</a>
         </div>
-      </li> 
-    `
+      </li>
+      `
       }
     return rendered
 }
@@ -194,16 +194,16 @@ parser.parseHomeworkDate = function(homework) {
       </div>
     </div>
   </div>
-  <div class="swipeout-actions-left">
-    <a onclick="lastTouched = this.parentElement.parentElement;loadDetails()" class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
+  <div class="swipeout-actions-left hwboard-item-info">
+    <a class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
   </div>`
   if(subjectChannelMapping[subject]){
     rendered += `<div class="swipeout-actions-right">
-        <a href="/popups/edit/" class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
-        <a onclick="lastTouched = this.parentElement.parentElement;startDelete()" class="swipeout-close" style="background-color:#f44336">Delete</a>
+        <a class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
+        <a class="swipeout-close hwboard-item-delete" style="background-color:#f44336">Delete</a>
       </div>
     </li>
-      `
+    `
   }
   return rendered
 } 
