@@ -2,7 +2,7 @@ let homeworkSubjectChart
 let homeworkDateChart
 let gradedMode = 0
 
-//Db inited, can get data
+//Db initialized, can get data
 conn.on("ready",()=>{
   if(location.hash.endsWith("/analytics") || location.hash.endsWith("/analytics/")){
     console.log("ready")
@@ -44,7 +44,7 @@ function homeworkSubjectData(data){
     return 0
   })
 }
-function renderCharts(){
+function renderCharts(gradedMode=0){
   hwboard.getHomework(false).then(async ({promises})=>{
     const results = await Promise.all(promises)
     let data
@@ -60,6 +60,9 @@ function renderCharts(){
       }else{
         data = results[1]
       }
+    }
+    if(gradedMode===-1){
+      data = data.filter(hw=>!hw.tags.includes("Graded"))
     }
     renderHomeworkSubjectChart(homeworkSubjectData(data))
   })
@@ -78,6 +81,9 @@ function renderCharts(){
       }else{
         data = results[1]
       }
+    }
+    if(gradedMode===-1){
+      data = data.filter(hw=>!hw.tags.includes("Graded"))
     }
     renderHomeworkDateChart(filterOutWeekends(fillInDays(homeworkDayData(data))))
   })
@@ -99,10 +105,7 @@ $(document).on("change","input[type=checkbox][value=regular]",e=>{
       gradedMode = 0
     }
   }
-  conn.emit("homeworkSubjectData",{channel,graded:gradedMode},(err,data)=>{
-    if(err) throw err
-    homeworkSubjectChart = renderHomeworkSubjectChart(data)
-  })
+  renderCharts(gradedMode)
 })
 
 $(document).on("change","input[type=checkbox][value=tests]",e=>{
@@ -121,10 +124,7 @@ $(document).on("change","input[type=checkbox][value=tests]",e=>{
       gradedMode = 0
     }
   }
-  conn.emit("homeworkSubjectData",{channel,graded:gradedMode},(err,data)=>{
-    if(err) throw err
-    homeworkSubjectChart = renderHomeworkSubjectChart(data)
-  })
+  renderCharts(gradedMode)
 })
 
 const getKeysAndValues = array =>{
