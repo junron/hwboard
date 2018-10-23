@@ -64,6 +64,9 @@ function renderCharts(gradedMode=0){
     if(gradedMode===-1){
       data = data.filter(hw=>!hw.tags.includes("Graded"))
     }
+    if(gradedMode===1){
+      data = data.filter(hw=>hw.tags.includes("Graded"))
+    }
     renderHomeworkSubjectChart(homeworkSubjectData(data))
   })
   hwboard.getHomework(false).then(async ({promises})=>{
@@ -84,6 +87,9 @@ function renderCharts(gradedMode=0){
     }
     if(gradedMode===-1){
       data = data.filter(hw=>!hw.tags.includes("Graded"))
+    }
+    if(gradedMode===1){
+      data = data.filter(hw=>hw.tags.includes("Graded"))
     }
     renderHomeworkDateChart(filterOutWeekends(fillInDays(homeworkDayData(data))))
   })
