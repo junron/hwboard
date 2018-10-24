@@ -18,7 +18,6 @@ const Framework7App = new Framework7({
       name:"timetable",
       path:"/timetable",
       url:"/routes/timetable.html",
-      reloadPrevious:true,
       animate:false,
       on:{
         pageAfterIn:e=>{
