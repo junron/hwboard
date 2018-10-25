@@ -48,8 +48,7 @@ async function renderTimetable(){
           }
         }
       }
-      let textColor = tinycolor.mostReadable(color,["#fff","#000"]).toHexString()
-      textColor = (textColor==="#000000" && tinycolor.readability(textColor,color)<5) ? "#fff" : textColor
+      let textColor = tinycolor.readability(color,"#fff") < 3 ? "black" : "white" //tinycolor.mostReadable(color,["#fff","#000"]).toHexString()
       events.push({
         title:subject,
         start:eventStart,
