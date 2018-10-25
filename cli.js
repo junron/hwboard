@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 function promisifyAll(moduleObj) {
   const {promisify} = require('util')
   for(const thing in moduleObj){
@@ -71,10 +70,12 @@ if(process.argv[2]==="restore"){
     await init()
     for (const hw of homework){
       const {channel} = hw
-      if(hw.isTest || (hw.tags && hw.tags.includes("Graded"))){
-        hw.tags = ["Graded"]
-      }else{
-        hw.tags = [""]
+      if(!hw.tags){
+        if(hw.isTest){
+          hw.tags = ["Graded"]
+        }else{
+          hw.tags = [""]
+        }
       }
       hw.id = uuid()
       try{
@@ -108,6 +109,24 @@ if(process.argv[2]==="restore"){
     fs.writeFileSync(fileName,JSON.stringify(json,null,2))
     console.log("Backup complete")
     sequelize.close()
+  })()
+}else if(process.argv[2]==="clear-old"){
+  ;(async ()=>{
+    const dirName = process.argv[3]
+    const fs  = promisifyAll(require('fs'));
+    const path = require("path")
+    const files = await fs.readdir(dirName)
+    const deletes = []
+    for(const file of files){
+      const date = new Date(file.split("backup-")[1].split(".json")[0].replace("_"," "))
+      if(date.getHours()!==0){
+        if((new Date() - date.getTime())>2.592e+8){
+          deletes.push(path.join(__dirname,dirName,file))
+        }
+      }
+    }
+    await Promise.all(deletes.map(name=>fs.unlink(name)))
+    console.log("Cleared "+deletes.length+" old backup(s)")
   })()
 }else if(process.argv[2]==="cockroach"){
   if(process.argv[3]==="config"){
