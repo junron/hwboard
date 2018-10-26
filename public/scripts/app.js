@@ -6,6 +6,8 @@ const Framework7App = new Framework7({
   root: '#app',
   theme,
   pushState:true,
+  name:"Hwboard",
+  id:"web.hwboard.hwboard2",
   lazyModulesPath: '/framework7/lazy-components',
   view: {
     pushState: true,
@@ -16,7 +18,6 @@ const Framework7App = new Framework7({
       name:"timetable",
       path:"/timetable",
       url:"/routes/timetable.html",
-      reloadPrevious:true,
       animate:false,
       on:{
         pageAfterIn:e=>{

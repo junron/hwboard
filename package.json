@@ -25,7 +25,7 @@
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "extend": "^3.0.2",
-    "framework7": "^3.4.3",
+    "framework7": "^3.5.0",
     "fullcalendar": "^3.9.0",
     "fuse.js": "^3.3.0",
     "jquery": "^3.3.1",
@@ -52,9 +52,9 @@
     "chai": "^4.2.0",
     "lighthouse": "^3.2.1",
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.4",
+    "nodemon": "^1.18.5",
     "puppeteer": "^1.9.0",
-    "snyk": "^1.104.1",
+    "snyk": "^1.105.0",
     "socket.io-client": "^2.1.1"
   }
 }
