@@ -294,9 +294,9 @@ async function addTag(channel,tagName,tagColor){
     throw new Error("Channel does not exist")
   }
   const originalData = originalDataArray[0]
-  //Ensure that tag does not already exist
   tagName = xss(tagName)
   tagColor = xss(tagColor)
+  //Ensure that tag does not already exist
   const existingTags = originalData.tags
   if(Object.keys(existingTags).includes(tagName)){
     throw new Error(`Tag ${tagName} already exists.`)
