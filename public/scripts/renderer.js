@@ -62,7 +62,7 @@ const renderer = (()=>{
         if(subjects.length!=0){
           html += subjectEnd
         }
-        const subjectId = "hex" + parser.toHex(subject)
+        const subjectId = "hex" + toHex(subject)
         html += `
         <div class="list-group">
           <ul id="${subjectId}">
@@ -200,7 +200,6 @@ const renderer = (()=>{
     }
     return rendered
   } 
-  const toTitle = str => str.substring(0,1).toUpperCase()+str.substring(1,10000)
   const toHex = str=>{
     var hex, i;
 
@@ -299,10 +298,7 @@ const renderer = (()=>{
           return num
         }
         if(daysLeft<=14 && getNumberOfSundays(dueDate2)==1){
-          displayDate = ""
-          //if(getNumberOfSundays(dueDate2)>0){
-            displayDate+="Next "
-        // }
+          displayDate = "Next "
           displayDate+=Sugar.Date.format(dueDate2,"%A")
         }else{
           displayDate = `${daysLeft} days left`

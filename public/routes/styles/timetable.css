@@ -11,6 +11,10 @@ td {
   margin-bottom: 15px;
   font-size: 12px;
 }
+#hwboard-timetable div.fc-toolbar {
+  /* DO not display buttons */
+  display:none;
+}
 #hwboard-timetable tr td.fc-widget-content div.fc-time-grid-container {
   /* Override element style */
   height:initial !important;
