@@ -118,7 +118,7 @@ function calendarInit(){
                     continue
                 }
                 const dow = Sugar.Date.format(date,"{dow}")
-                if((dow === "sun" || dow === "sat")){
+                if((dow[0] === "s")){
                     if(!calendarWeekends){
                         calendarWeekends = true
                         $('#calendar').fullCalendar('option', {weekends:true})
@@ -166,7 +166,10 @@ function calendarInit(){
         }
 
     });
-
+    const todayDow = Sugar.Date.format(new Date(),"{dow}")
+    if(todayDow[0] === "s" && $('#calendar').fullCalendar( 'getView' ).name==="basicWeek"){
+        $('#calendar').fullCalendar("next")
+    }
     setColors();
 }
 

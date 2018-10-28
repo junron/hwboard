@@ -298,10 +298,7 @@ const renderer = (()=>{
           return num
         }
         if(daysLeft<=14 && getNumberOfSundays(dueDate2)==1){
-          displayDate = ""
-          //if(getNumberOfSundays(dueDate2)>0){
-            displayDate+="Next "
-        // }
+          displayDate = "Next "
           displayDate+=Sugar.Date.format(dueDate2,"%A")
         }else{
           displayDate = `${daysLeft} days left`
