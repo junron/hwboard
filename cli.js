@@ -121,7 +121,7 @@ if(process.argv[2]==="restore"){
       const date = new Date(file.split("backup-")[1].split(".json")[0].replace("_"," "))
       if(date.getHours()!==0){
         if((new Date() - date.getTime())>2.592e+8){
-          deletes.push(path.join(__dirname,dirName,file))
+          deletes.push(path.resolve(__dirname,dirName,file))
         }
       }
     }
