@@ -200,7 +200,7 @@ if(process.argv[2]==="restore"){
       },base)
       const shebang = `#!/usr/bin/env bash
       `
-      const runForever = "--background --advertise-host host.docker.internal;while :; do sleep 2073600; done"
+      const runForever = " --advertise-host host.docker.internal"
       if(openUFWPorts.slice(-1)==","){
         openUFWPorts = openUFWPorts.slice(0,-1)
       }
@@ -208,23 +208,23 @@ if(process.argv[2]==="restore"){
       const setHostDockerInternal = 'echo -e "`/sbin/ip route|awk \'/default/ { print $3 }\'`\thost.docker.internal" | tee -a /etc/hosts > /dev/null;'
       const writeSSHTunnel = fs.writeFile("cockroach/ssh-tunnel-init.sh",shebang+openUFWPorts+sshTunnelInit)
       const writeRunFile = fs.writeFile("cockroach/run.sh",shebang+setHostDockerInternal+cockroachInit+runForever)
-      const readDockerCompose = fs.readFile("./docker-compose.yml","utf-8")
+      const readDockerCompose = fs.readFile("./.env","utf-8")
       const readConfig = fs.readFile("./config.json","utf-8")
 
       let [dockerCompose,config] = await Promise.all([readDockerCompose,readConfig,writeSSHTunnel,writeRunFile])
       config = JSON.parse(config)
       config.COCKROACH_DB_SECURE = options.secure
       config.COCKROACH_DB_PORT = port
-      dockerCompose = dockerCompose.replace(`26257:26257`,`${port}:${port}`)
-      dockerCompose = dockerCompose.replace(`cockroachdb:26257`,`cockroachdb:${port}`)
+      dockerCompose = dockerCompose.split("\n")
+      dockerCompose[1]=`COCKROACHDB_PORT=${port}`
       if(exposeHTTP){
-        dockerCompose = dockerCompose.replace(`8080:8080`,`${httpPort}:${httpPort}`)
+        dockerCompose[2] = `COCKROACH_DB_EXPOSE_HTTP_PORT=${httpPort}:${httpPort}`
       }else{
-        dockerCompose = dockerCompose.replace(`      - "8080:8080"`,``)
+        dockerCompose[2] = "COCKROACH_DB_EXPOSE_HTTP_PORT="
       }
-
+      dockerCompose = dockerCompose.join("\n")
       const chmodFiles = [fs.chmod("cockroach/run.sh",0o755),fs.chmod("cockroach/ssh-tunnel-init.sh",0o755)]
-      await [...chmodFiles,fs.writeFile("./docker-compose.yml",dockerCompose),fs.writeFile("./config.json",JSON.stringify(config,null,2))]
+      await [...chmodFiles,fs.writeFile(".env",dockerCompose),fs.writeFile("./config.json",JSON.stringify(config,null,2))]
       r1.close()
       console.log(`
       
