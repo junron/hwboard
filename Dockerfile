@@ -1,16 +1,12 @@
 FROM node:alpine
 
-RUN apk update
-RUN apk upgrade
-RUN apk add bash
-RUN apk add git
-RUN apk add nano
-RUN apk add curl
+RUN adduser hwboard
+USER hwboard
+
+RUN apk update && apk upgrade && apk add bash git nano curl --no-cache
 
 RUN mkdir -p /hwboard2
 WORKDIR /hwboard2
 COPY . .
 
-RUN npm ci --production
-
-RUN npm install --global pm2
+RUN npm install && npm install --global pm2 && rm -r /hwboard2/node_modules/puppeteer
