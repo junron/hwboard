@@ -6,7 +6,7 @@ services:
       context: .
     ports:
       - "$COCKROACHDB_PORT:$COCKROACHDB_PORT"
-      - "$COCKROACH_DB_EXPOSE_HTTP_PORT"
+      - "$COCKROACH_DB_EXPOSE_HTTP_PORT:$COCKROACH_DB_EXPOSE_HTTP_PORT"
     command: "./cockroach/run.sh"
     environment:
       - COCKROACH_USER=hwboard
