@@ -40,15 +40,6 @@ if(process.argv[2]==="restore"){
     } = json
     const existingChannels = (await Channels.findAll({raw: true})).map(channel=>channel.name)
     for(const channel of channels){
-      if(channel.members.length===0){
-        channel.members = [""]
-      }
-      if(channel.admins.length===0){
-        channel.admins = [""]
-      }
-      if(channel.subjects.length===0){
-        channel.subjects = [""]
-      }
       if(!channel.tags){
         channel.tags =  {
           "Graded" : "red",
@@ -74,7 +65,7 @@ if(process.argv[2]==="restore"){
         if(hw.isTest){
           hw.tags = ["Graded"]
         }else{
-          hw.tags = [""]
+          hw.tags = []
         }
       }
       hw.id = uuid()
@@ -321,8 +312,8 @@ if(gitlab||process.argv[4]=="default"){
     name:"testing",
     subjects:["math","chemistry"],
     roots:["tester@nushigh.edu.sg"],
-    admins:[""],
-    members:[""],
+    admins:[],
+    members:[],
     tags : {
       "Graded" : "red",
       "Optional" : "green"
@@ -363,7 +354,7 @@ if(gitlab||process.argv[4]=="default"){
     r1.question("Subjects (seperate with comma): ()  ",(answer)=>{
       config.subjects = answer.split(",").filter(notEmpty)
       if(config.subjects.length==0){
-        config.subjects = [""]
+        config.subjects = []
       }
       r1.question("Root users (seperate with comma): (h1710074@nushigh.edu.sg)  ",(answer="h1710074@nushigh.edu.sg")=>{
         if(answer==""){
@@ -371,16 +362,9 @@ if(gitlab||process.argv[4]=="default"){
         }
         config.roots = answer.split(",")
         r1.question("Admin users (seperate with comma): ()  ",(answer)=>{
-          if(answer==""){
-            config.admins = [""]
-          }else{
-            config.admins = answer.split(",")
-          }
+          config.admins = answer.split(",")
           r1.question("Normal users (seperate with comma): ()  ",(answer="*")=>{
             config.members = answer.split(",").filter(notEmpty)
-            if(config.members.length==0){
-              config.members = [""]
-            }
             console.log(config)
             r1.question("Is this okay? (Yes/no)  ",async answer=>{
               if(answer.toLowerCase()=="yes"){
