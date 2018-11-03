@@ -17,9 +17,10 @@
     openIn:"dropdown",
     renderItem:item=>{
       const color = colors.find(e=>e.name===item.value)
+      const background = tinycolor.readability(color.hexVal,"#fff")<2 ? "#aaaaaa" : "white"
       return `<li>
         <label class="item-radio item-content" data-value="${item.value}" 
-        style="color:${color.hexVal}">
+        style="color:${color.hexVal};background-color:${background}">
           <div class="item-inner">
             <div class="item-title">
               ${item.value}

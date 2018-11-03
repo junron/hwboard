@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 function promisifyAll(moduleObj) {
   const {promisify} = require('util')
   for(const thing in moduleObj){
@@ -41,15 +40,6 @@ if(process.argv[2]==="restore"){
     } = json
     const existingChannels = (await Channels.findAll({raw: true})).map(channel=>channel.name)
     for(const channel of channels){
-      if(channel.members.length===0){
-        channel.members = [""]
-      }
-      if(channel.admins.length===0){
-        channel.admins = [""]
-      }
-      if(channel.subjects.length===0){
-        channel.subjects = [""]
-      }
       if(!channel.tags){
         channel.tags =  {
           "Graded" : "red",
@@ -71,10 +61,12 @@ if(process.argv[2]==="restore"){
     await init()
     for (const hw of homework){
       const {channel} = hw
-      if(hw.isTest || (hw.tags && hw.tags.includes("Graded"))){
-        hw.tags = ["Graded"]
-      }else{
-        hw.tags = [""]
+      if(!hw.tags){
+        if(hw.isTest){
+          hw.tags = ["Graded"]
+        }else{
+          hw.tags = []
+        }
       }
       hw.id = uuid()
       try{
@@ -108,6 +100,24 @@ if(process.argv[2]==="restore"){
     fs.writeFileSync(fileName,JSON.stringify(json,null,2))
     console.log("Backup complete")
     sequelize.close()
+  })()
+}else if(process.argv[2]==="clear-old"){
+  ;(async ()=>{
+    const dirName = process.argv[3]
+    const fs  = promisifyAll(require('fs'));
+    const path = require("path")
+    const files = await fs.readdir(dirName)
+    const deletes = []
+    for(const file of files){
+      const date = new Date(file.split("backup-")[1].split(".json")[0].replace("_"," "))
+      if(date.getHours()!==0){
+        if((new Date() - date.getTime())>2.592e+8){
+          deletes.push(path.resolve(__dirname,dirName,file))
+        }
+      }
+    }
+    await Promise.all(deletes.map(name=>fs.unlink(name)))
+    console.log("Cleared "+deletes.length+" old backup(s)")
   })()
 }else if(process.argv[2]==="cockroach"){
   if(process.argv[3]==="config"){
@@ -181,7 +191,7 @@ if(process.argv[2]==="restore"){
       },base)
       const shebang = `#!/usr/bin/env bash
       `
-      const runForever = "--background --advertise-host host.docker.internal;while :; do sleep 2073600; done"
+      const runForever = " --advertise-host host.docker.internal"
       if(openUFWPorts.slice(-1)==","){
         openUFWPorts = openUFWPorts.slice(0,-1)
       }
@@ -189,23 +199,23 @@ if(process.argv[2]==="restore"){
       const setHostDockerInternal = 'echo -e "`/sbin/ip route|awk \'/default/ { print $3 }\'`\thost.docker.internal" | tee -a /etc/hosts > /dev/null;'
       const writeSSHTunnel = fs.writeFile("cockroach/ssh-tunnel-init.sh",shebang+openUFWPorts+sshTunnelInit)
       const writeRunFile = fs.writeFile("cockroach/run.sh",shebang+setHostDockerInternal+cockroachInit+runForever)
-      const readDockerCompose = fs.readFile("./docker-compose.yml","utf-8")
+      const readDockerCompose = fs.readFile("./.env","utf-8")
       const readConfig = fs.readFile("./config.json","utf-8")
 
       let [dockerCompose,config] = await Promise.all([readDockerCompose,readConfig,writeSSHTunnel,writeRunFile])
       config = JSON.parse(config)
       config.COCKROACH_DB_SECURE = options.secure
       config.COCKROACH_DB_PORT = port
-      dockerCompose = dockerCompose.replace(`26257:26257`,`${port}:${port}`)
-      dockerCompose = dockerCompose.replace(`cockroachdb:26257`,`cockroachdb:${port}`)
+      dockerCompose = dockerCompose.split("\n")
+      dockerCompose[1]=`COCKROACHDB_PORT=${port}`
       if(exposeHTTP){
-        dockerCompose = dockerCompose.replace(`8080:8080`,`${httpPort}:${httpPort}`)
+        dockerCompose[2] = `COCKROACH_DB_EXPOSE_HTTP_PORT=${httpPort}:${httpPort}`
       }else{
-        dockerCompose = dockerCompose.replace(`      - "8080:8080"`,``)
+        dockerCompose[2] = "COCKROACH_DB_EXPOSE_HTTP_PORT="
       }
-
+      dockerCompose = dockerCompose.join("\n")
       const chmodFiles = [fs.chmod("cockroach/run.sh",0o755),fs.chmod("cockroach/ssh-tunnel-init.sh",0o755)]
-      await [...chmodFiles,fs.writeFile("./docker-compose.yml",dockerCompose),fs.writeFile("./config.json",JSON.stringify(config,null,2))]
+      await [...chmodFiles,fs.writeFile(".env",dockerCompose),fs.writeFile("./config.json",JSON.stringify(config,null,2))]
       r1.close()
       console.log(`
       
@@ -302,8 +312,8 @@ if(gitlab||process.argv[4]=="default"){
     name:"testing",
     subjects:["math","chemistry"],
     roots:["tester@nushigh.edu.sg"],
-    admins:[""],
-    members:[""],
+    admins:[],
+    members:[],
     tags : {
       "Graded" : "red",
       "Optional" : "green"
@@ -344,7 +354,7 @@ if(gitlab||process.argv[4]=="default"){
     r1.question("Subjects (seperate with comma): ()  ",(answer)=>{
       config.subjects = answer.split(",").filter(notEmpty)
       if(config.subjects.length==0){
-        config.subjects = [""]
+        config.subjects = []
       }
       r1.question("Root users (seperate with comma): (h1710074@nushigh.edu.sg)  ",(answer="h1710074@nushigh.edu.sg")=>{
         if(answer==""){
@@ -352,16 +362,9 @@ if(gitlab||process.argv[4]=="default"){
         }
         config.roots = answer.split(",")
         r1.question("Admin users (seperate with comma): ()  ",(answer)=>{
-          if(answer==""){
-            config.admins = [""]
-          }else{
-            config.admins = answer.split(",")
-          }
+          config.admins = answer.split(",")
           r1.question("Normal users (seperate with comma): ()  ",(answer="*")=>{
             config.members = answer.split(",").filter(notEmpty)
-            if(config.members.length==0){
-              config.members = [""]
-            }
             console.log(config)
             r1.question("Is this okay? (Yes/no)  ",async answer=>{
               if(answer.toLowerCase()=="yes"){

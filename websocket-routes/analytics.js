@@ -20,13 +20,6 @@ module.exports = (socket,db)=>{
     }
     return result
   }
-  const arrayToObject = array =>{
-    const result = {}
-    for(const pair of array){
-      result[pair[0]] = pair[1]
-    }
-    return result
-  }
   const sortArray = (a,b)=>{
     if(a[1]>b[1]){
       return -1
@@ -64,7 +57,6 @@ module.exports = (socket,db)=>{
       }
 
       const result = await Promise.all(promises)
-      console.log(result)
       const combined = keyValueToArray(subjects,result)
       const sorted = combined.sort(sortArray)
       callback(null,sorted)

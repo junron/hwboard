@@ -1,17 +1,18 @@
+const {promisify} = require('util')
+function promisifyAll(moduleObj) {
+  for(const thing in moduleObj){
+    if(typeof moduleObj[thing]==="function"){
+      moduleObj[thing] = promisify(moduleObj[thing])
+    }
+  }
+	return moduleObj
+}
+
 const express = require('express')
 const router = express.Router()
-const simpleGit = require('simple-git')()
-const {promisify} = require("util")
-const pm2 = require("pm2")
-const {connect,disconnect,reload} = pm2
-const {fetch,revparse,reset} = simpleGit
-
-simpleGit.fetch = promisify(fetch)
-simpleGit.revparse = promisify(revparse)
-simpleGit.reset = promisify(reset)
-pm2.connect = promisify(connect)
-pm2.disconnect = promisify(disconnect)
-pm2.reload = promisify(reload)
+const simpleGit = promisifyAll(require('simple-git')())
+const pm2 = promisifyAll(require("pm2"))
+const {resolve} = require("path")
 
 const {GITLAB_SECRET_TOKEN:gitlabToken} = require("../loadConfig")
 const {timingSafeEqual} = require("crypto")
@@ -41,22 +42,26 @@ async function auth(req){
 router.get("/cd/update",(req, res) => {
   ;(async ()=>{
     const {commitSHA} = req.query
+    const rename = promisify(require("fs").rename)
+    pm2.connect = promisify(pm2.connect)
     const promiseArr = [simpleGit.revparse(["--abbrev-ref","HEAD"]),auth(req),simpleGit.fetch(),pm2.connect()]
     let [branch] = await Promise.all(promiseArr)
     branch = branch.trim()
-    const resetResult = await simpleGit.reset(["--hard",commitSHA])
+    await rename(resolve(__dirname,"../.env"),resolve(__dirname,"../../.env"))
+    await simpleGit.reset(["--hard",commitSHA])
+    await rename(resolve(__dirname,"../../.env"),resolve(__dirname,"../.env"))
     res.end(`
     Resetting branch ${branch}
     To commit ${commitSHA}
     `)
-    const reloadResult = await pm2.reload("hwboard2-web")
+    await pm2.reload("hwboard2-web")
     await pm2.disconnect()
     console.log("Done")
   })()
   .catch((e)=>{
+    console.log(e)
     const code = e.code || 500
     res.status(code).end(e.toString())
-    console.log(e)
   })
 })
 
