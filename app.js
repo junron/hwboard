@@ -62,7 +62,7 @@ app.use(function(req,res,next){
   }else{
     res.header("Content-Security-Policy",csp)
   }
-  //Stop clickjacking
+  //Stop clickJacking
   //https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet
   res.header("X-Frame-Options","deny")
 
