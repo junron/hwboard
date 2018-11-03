@@ -3,6 +3,7 @@ const router = express.Router()
 const {getNumTables} = require("../database")
 router.get("/cd/info",(_, res) => {
   ;(async ()=>{
+    res.set('Content-Type','text/plain')
     let hostName
     if(process.env.IS_DOCKER){
       hostName = process.env.HOSTNAME
