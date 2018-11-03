@@ -33,6 +33,7 @@ router.get("/cd/version.json",(req, res) => {
 })
 router.get("/cd/version",(req, res) => {
   ;(async ()=>{
+    res.set('Content-Type','text/plain')
     await simpleGit.fetch()
     const promiseArr = [
       simpleGit.revparse(["--abbrev-ref","HEAD"]),
