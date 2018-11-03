@@ -1,9 +1,7 @@
 'use strict';
-const path = require("path");
 const express = require('express');
 const authChannels = require("./authChannels")
 const renderer = require('../public/scripts/renderer')
-const Sugar = require("sugar-date")
 const router = express.Router();
 const db = require("../database")
 const config = require("../loadConfig")

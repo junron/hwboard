@@ -2,7 +2,9 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url(../fonts/material.ttf) format("truetype"); }
+  src: url(../fonts/material.ttf) format("truetype");
+}
+
 .material-icons {
   font-family: 'Material Icons';
   font-display: swap;
@@ -15,6 +17,5 @@
   display: inline-block;
   white-space: nowrap;
   word-wrap: normal;
-  direction: ltr; }
-
-/*# sourceMappingURL=icons.css.map */
+  direction: ltr;
+}

@@ -15,6 +15,7 @@
 const checkPayloadAndPermissions = require("./check-perm")
 const {updateChannels,getPermissionLvl} = require("../websocket")
 const {sequelize,Channels} = require("../models")
+const tinycolor = require("tinycolor2")
 const xss = require("xss")
 
 module.exports = (socket,io,db)=>{
@@ -38,10 +39,10 @@ module.exports = (socket,io,db)=>{
       }
       const config = {
         name,
-        subjects:[""],
+        subjects:[],
         roots:[socket.userData.preferred_username],
-        admins:[""],
-        members:[""],
+        admins:[],
+        members:[],
         tags : {
           "Graded" : "red",
           "Optional" : "green"
@@ -109,11 +110,18 @@ module.exports = (socket,io,db)=>{
     //Error in handling error
     .catch(uncaughtErrorHandler)
   })
+
   //Add tag
   socket.on("addTag",function(msg,callback){
     ;(async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3)
       const {channel,name,color} = msg
+      if(name.trim().length===0){
+        throw new Error("Tag name cannot be empty")
+      }
+      if(!tinycolor(color).isValid()){
+        throw new Error("Color is invalid")
+      }
       await db.addTag(channel,name,color)
       updateChannels(db.arrayToObject(await db.getUserChannels("*")))
       const thisChannel = socket.channels[channel]
