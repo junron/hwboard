@@ -132,15 +132,17 @@ async function renderTimetable(calendarSelector='#hwboard-timetable',showBreaks=
     allDaySlot: false,
     slotEventOverlap:false,
     nowIndicator:true,
-    eventClick: function({title,end,start}) {
+    eventClick: function({title,start}) {
       if(title===" " && showBreaks){
         const selected = $(this).css("background-color") === "rgb(3, 169, 244)"
         if(!selected){
           $(this).css("background-color","#03a9f4")
           $(this).css("border-color","#03a9f4")
+          addSubjectTiming(start)
         }else{
           $(this).css("background-color","#009624")
           $(this).css("border-color","#009624")
+          removeSubjectTiming(start)
         }
       }
     }
