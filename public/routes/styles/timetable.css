@@ -32,6 +32,10 @@ td {
   height: 100%;
   align-items: center;
 }
+.hwboard-timetable-display .fc-time-grid-event.fc-v-event.fc-event {
+  opacity: 0.85;
+}
+
 .timetable-today td,.timetable-today{
   color:red;
   font-weight:900;
