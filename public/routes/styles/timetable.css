@@ -11,30 +11,31 @@ td {
   margin-bottom: 15px;
   font-size: 12px;
 }
-#hwboard-timetable div.fc-toolbar {
+.hwboard-timetable-display div.fc-toolbar {
   /* DO not display buttons */
   display:none;
 }
-#hwboard-timetable tr td.fc-widget-content div.fc-time-grid-container {
+.hwboard-timetable-display tr td.fc-widget-content div.fc-time-grid-container {
   /* Override element style */
   height:initial !important;
 }
-#hwboard-timetable tr td.fc-widget-content div.fc-content div.fc-time {
+.hwboard-timetable-display tr td.fc-widget-content div.fc-content div.fc-time {
   display: none;
 }
-#hwboard-timetable tr td.fc-widget-content div.fc-content{
+.hwboard-timetable-display tr td.fc-widget-content div.fc-content{
   height: 100%;
 }
-#hwboard-timetable tr td.fc-widget-content div.fc-content div.fc-title {
+.hwboard-timetable-display tr td.fc-widget-content div.fc-content div.fc-title {
   display: flex;
   justify-content: center;
   align-content: center;
   height: 100%;
   align-items: center;
 }
-#hwboard-timetable .fc-time-grid-event.fc-v-event.fc-event {
-  opacity: 0.7;
+.hwboard-timetable-display .fc-time-grid-event.fc-v-event.fc-event {
+  opacity: 0.85;
 }
+
 .timetable-today td,.timetable-today{
   color:red;
   font-weight:900;
