@@ -1,5 +1,5 @@
 const renderer = (()=>{
-  if(typeof Sugar =="undefined"){
+  if(typeof Sugar == "undefined" || typeof tinycolor == "undefined"){
     if(typeof navigator=="undefined"){
       Sugar = require("sugar-date")
       tinycolor = require("tinycolor2")
