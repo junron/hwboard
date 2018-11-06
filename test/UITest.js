@@ -14,7 +14,7 @@ const options = {
 if(process.env.CI_PROJECT_NAME=="hwboard2"){
   console.log("Gitlab env")
   //No display in CI
-  options.headless = true
+  // options.headless = true
 }
 let browser
 let page
@@ -33,12 +33,18 @@ async function init(){
   browser = await puppeteer.launch(options)
   console.log("browser launch")
   page = await browser.newPage()
+  await page.setRequestInterception(true)
+  page.on('requestfailed', request =>{
+    console.log(Object.entries(request))
+  })
+  page.on('request', req =>req.continue())
   console.log("pageOpen")
   await page.goto('http://localhost:' + port)
   console.log("pageLoad")
   await page.screenshot({path: './artifacts/initial.png'})
   await page._client.send('Emulation.clearDeviceMetricsOverride')
   console.log("Browser + page ready")
+  console.log("Browser version:",await browser.version())
 }
 
 async function remove(){
@@ -186,12 +192,11 @@ describe("Hwboard",async function(){
     })
   })
   it("Should be able to add homework",async function(){
-    // this.timeout(0)
+    this.timeout(0)
     await page.tracing.start({path: 'artifacts/add.json', screenshots: true});
     currentlyRecordingTrace = true
     await add()
-    // await page.waitFor(100000000)
-    return await page.tracing.stop()
+    // await page.waitFor(1000000000)
   })
   it("Should be able to show info dialog",function(done){
     console.log('\x1b[36m%s\x1b[0m',"Attempt to show info dialog")
@@ -211,7 +216,6 @@ describe("Hwboard",async function(){
       }else{
         console.log({name,subject,dueDate,graded,lastEdit})
       }
-      await page.tracing.stop()
     })().catch(e=>{
       throw e
     }).then(done)
@@ -221,7 +225,6 @@ describe("Hwboard",async function(){
     currentlyRecordingTrace = true
     console.log('\x1b[36m%s\x1b[0m',"Attempt to remove homework")
     await remove()
-    return await page.tracing.stop()
   })
 
   it("Should perform decently for Lighthouse audits",async function(){
