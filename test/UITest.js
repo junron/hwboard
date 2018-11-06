@@ -18,6 +18,9 @@ if(process.env.CI_PROJECT_NAME=="hwboard2"){
 }
 let browser
 let page
+
+let currentlyRecordingTrace = false
+
 const getHtml = async selector => {
   return page.evaluate((selector)=>{
     console.log(selector)
@@ -118,6 +121,10 @@ describe("Hwboard",async function(){
     return await init()
   })
   afterEach(async function(){
+    if(currentlyRecordingTrace){
+      await page.tracing.stop()
+      currentlyRecordingTrace = false
+    }
     if(!page.isClosed()){
       await page.goto('http://localhost:' + port)
       return await page.waitFor(2000)
