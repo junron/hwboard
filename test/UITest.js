@@ -89,7 +89,9 @@ async function info(){
   await page.screenshot({path: './artifacts/info.png'})
 }
 async function add(){
+  console.log("Called")
   await page.click("#fab-add-homework")
+  console.log("Clicked")
   await page.waitFor(1000)
   await page.waitFor("#subject-name")
   await page.type("#subject-name","math")
