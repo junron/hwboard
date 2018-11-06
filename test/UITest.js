@@ -186,6 +186,7 @@ describe("Hwboard",async function(){
   it("Should be able to add homework",async function(){
     // this.timeout(0)
     await page.tracing.start({path: 'artifacts/add.json', screenshots: true});
+    currentlyRecordingTrace = true
     await add()
     // await page.waitFor(100000000)
     return await page.tracing.stop()
@@ -194,6 +195,7 @@ describe("Hwboard",async function(){
     console.log('\x1b[36m%s\x1b[0m',"Attempt to show info dialog")
     ;(async ()=>{
       await page.tracing.start({path: 'artifacts/info.json', screenshots: true});
+      currentlyRecordingTrace = true
       await info()
       const name = await getHtml("#detailHomeworkName")
       const subject = await getHtml("#detailSubject")
@@ -214,6 +216,7 @@ describe("Hwboard",async function(){
   })
   it("Should be able to remove homework",async function(){
     await page.tracing.start({path: 'artifacts/remove.json', screenshots: true});
+    currentlyRecordingTrace = true
     console.log('\x1b[36m%s\x1b[0m',"Attempt to remove homework")
     await remove()
     return await page.tracing.stop()
