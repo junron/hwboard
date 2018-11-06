@@ -27,4 +27,4 @@ services:
     depends_on:
       - "cockroachdb"
     volumes:
-      - ./:/hwboard2
+      - ./:/home/hwboard/hwboard2
