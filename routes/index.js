@@ -10,13 +10,9 @@ const {HOSTNAME:hostname,CI:testing} = config
 //TODO: find a library to auto push required files
  
 //Server config
-//@caddy users:
-//caddy automatically pushes
-//https://caddyserver.com/docs/push
-
-//@nginx users
-//add http2 directive
-//And add `http2_push_preload on;` within location block
+// For nginx:
+//Add http2 directive
+//Add `http2_push_preload on;` within location block
 const basePushFiles = [
   "/styles/roboto.css",
   "/styles/icons.css",
@@ -82,7 +78,7 @@ router.get("/channels", async (req, res) => {
   return (async ()=>{
     const renderer = require("../public/scripts/render-channels");
     if(testing && req.cookies.username){
-        const email = req.cookies.username;
+      const email = req.cookies.username;
       res.cookie("username",email,{
         signed:true,
         httpOnly:true,
@@ -105,7 +101,7 @@ router.get("/channels", async (req, res) => {
     })
   })()
   .catch(e=>{
-    res.render("error",e)
+    res.render("error",{message:e.message||e.name,error:e})
     console.log(e)
     return
   })
@@ -128,7 +124,7 @@ router.get("/calendar",async (req, res) => {
     res.render("calendar")
   })()
   .catch(e=>{
-    res.render("error",e)
+    res.render("error",{message:e.message||e.name,error:e})
     console.log(e)
     return
   })
@@ -151,7 +147,6 @@ router.get('/', async (req, res) => {
       return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
     }
     const {channelData, adminChannels} = authData;
-    // console.log(channelData)
     //Check if user is admin in any channel
     //This prevents us from sending the add homework form unnecessarily
     const admin = Object.keys(adminChannels).length > 0 || testing;
@@ -190,7 +185,7 @@ router.get('/', async (req, res) => {
     return res.render('index', {renderer,sortType,data,sortOrder,admin,subjectChannelMapping,subjectTagMapping,reportErrors,beta})
   })()
   .catch(e=>{
-    res.render("error",e)
+    res.render("error",{message:e.message||e.name,error:e})
     console.log(e)
     return
   })
