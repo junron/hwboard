@@ -39,10 +39,10 @@ module.exports = (socket,io,db)=>{
       }
       const config = {
         name,
-        subjects:[""],
+        subjects:[],
         roots:[socket.userData.preferred_username],
-        admins:[""],
-        members:[""],
+        admins:[],
+        members:[],
         tags : {
           "Graded" : "red",
           "Optional" : "green"

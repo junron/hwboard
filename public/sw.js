@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.3.4"
+const version = "1.3.6"
 
 console.log(`Service worker version ${version}`)
 self.addEventListener('install', function(e) {
@@ -87,8 +87,9 @@ self.addEventListener('fetch',function(event) {
           const fetchPromise = Promise.race([fetch(event.request),new Promise(resolve=>{
             setTimeout(()=>{
               //Use cache is network is slow
+              console.log("Network timeout")
               return resolve(false)
-            },2000)
+            },2500)
           })
           ])
           .then(networkResponse=>{
@@ -102,8 +103,10 @@ self.addEventListener('fetch',function(event) {
               return networkResponse;
             }
             if(networkResponse.ok){
+              //Request successful, add to cache
               cache.put(event.request, networkResponse.clone());
               console.log(`Cached ${url}`)
+              //For debugging and testing - Delay loading
               if(queryString.includes("delay=")){
                 const delayScripts = queryString.replace("delay=","").split(",")
                 let delay = false
@@ -124,13 +127,27 @@ self.addEventListener('fetch',function(event) {
               }else{
                 return networkResponse
               }
+            //Something went wrong
             }else{
+              //Redirect user to microsoft login
+              //https://github.com/whatwg/fetch/issues/127
               if(networkResponse.ok!==false || networkResponse.type=="opaqueredirect"){
                 return networkResponse
               }
+              //Other network error
               console.log(`Failed to fetch from network ${url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
+              if(!response){
+                //Likely 404
+                console.log("No cached response, returning errored response")
+                return networkResponse
+              }
+              //Maybe server down
               return response
             }
+          })
+          .catch(e=>{
+            console.log("An error occurred:",e)
+            return response
           })
           if(queryString.includes("delay=")){
             return fetchPromise

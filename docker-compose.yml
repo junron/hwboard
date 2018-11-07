@@ -5,8 +5,8 @@ services:
       dockerfile: cockroach/Dockerfile
       context: .
     ports:
-      - "26257:26257"
-      - "8080:8080"
+      - "$COCKROACHDB_PORT:$COCKROACHDB_PORT"
+      - "$COCKROACH_DB_EXPOSE_HTTP_PORT:$COCKROACH_DB_EXPOSE_HTTP_PORT"
     command: "./cockroach/run.sh"
     environment:
       - COCKROACH_USER=hwboard
@@ -17,8 +17,8 @@ services:
     restart: always
     build: .
     ports:
-      - "3001:3001"
-    command: "./wait-for-it.sh cockroachdb:26257 -- /bin/bash -c 'npm start;while :; do sleep 2073600; done'"
+      - "$HWBOARD_PORT:$HWBOARD_PORT"
+    command: "/bin/bash -c 'npm start;while :; do sleep 2073600; done'"
     environment:
       - IS_DOCKER=true
       - POSTGRES_DB=hwboard
@@ -27,4 +27,4 @@ services:
     depends_on:
       - "cockroachdb"
     volumes:
-      - ./:/hwboard2
+      - ./:/home/hwboard/hwboard2

@@ -95,7 +95,7 @@ async function authChannels(req,res){
       `response_mode=query`)
       return "redirected"
     }
-    if(!decodedToken.preferred_username.includes("nushigh.edu.sg")){
+    if(!decodedToken.preferred_username.endsWith("nushigh.edu.sg")){
       throw new Error("You must log in with a NUSH email.")
     }
 

@@ -1,101 +1,79 @@
-swiper = Framework7App.swiper.create(".swiper-container",{
-  speed:100,
-  spaceBetween:0,
-  pagination: {
-    el: '.swiper-pagination',
-  }
-})
-function canAddTiming(id){
-  let can = true
-  const currentId = id || document.querySelector(".swiper-slide.swiper-slide-active").id
-  const inputs = Array.from(document.querySelectorAll(`#${currentId} input`))
-  let day
-  for(const input of inputs){
-    if(input.classList.contains("day-input")){
-      day = input.value
-    }else{
-      const isValid = Sugar.Date.isValid(Sugar.Date.create(day + " " + input.value))
-      if(isValid||input.value==""){
-          input.parentElement.parentElement.parentElement.classList.remove("item-input-invalid")
-          input.parentElement.querySelector(".item-input-error-message").innerText = ""
-      }else{ 
-        input.parentElement.parentElement.parentElement.classList.add("item-input-invalid")
-        input.parentElement.querySelector(".item-input-error-message").innerText = "Invalid date/time"
-      }
-      can = can && !!input.value && isValid
-    }
-  }
-  return can
+const addSubjectTimings = {}
+const addSubjectTiming = start => {
+  start = new Date(start)
+  const day = ["sun","mon","tue","wed","thu","fri","sat"][start.getDay()]
+  const startTime = start.getHours() * 100 + start.getMinutes()
+  const endTime = (startTime + 30) % 100==60 ? startTime + 70 : startTime + 30
+  addSubjectTimings[day] = addSubjectTimings[day] === undefined 
+  ? [[startTime,endTime]]
+  : [...addSubjectTimings[day],[startTime,endTime]]
+  addSubjectTimings[day] = addSubjectTimings[day].sort(([a],[b])=>{
+    return a>b ? 1 
+    : b>a ? -1 
+    : 0
+  })
+  updateDisabledStatus()
 }
-function changeStatus(){
-  const button = document.getElementById("add-timing-button")
-  if(!canAddTiming()){
-    button.classList.add("color-gray","disabled")
-  }else{
-    button.classList.remove("color-gray","disabled")
-  }
-}
-function getTimingData(timingId){
-  const data = {}
-  let day
-  const inputs = Array.from(document.querySelectorAll(`#${timingId} input`))
-  for(const input of inputs){
-    if(input.classList.contains("day-input")){
-      day = Sugar.Date.format(Sugar.Date.create(input.value),"{dow}")
-      data[day] = [[]]
-    }else{
-      const time = parseInt(Sugar.Date.format(Sugar.Date.create(input.value),"%H%M"))
-      data[day][0].push(time)
-    }
-  }
-  return data
-}
-function getSubjectData(){
-  const data = {}
-  const subjectName = document.getElementById("subjectInput").value
-  data.subject = subjectName
-  data.data = {}
-  const timingCount = swiper.slides.length
-  for(let i = 1;i<=timingCount;i++){
-    const thisId = "timing-"+i
-    if(canAddTiming(thisId)){
-      const timingData = getTimingData(thisId)
-      data.data = Object.assign(data.data,timingData)
-    }
-  }
-  return data
+const removeSubjectTiming = start => {
+  start = new Date(start)
+  const day = ["sun","mon","tue","wed","thu","fri","sat"][start.getDay()]
+  const startTime = start.getHours() * 100 + start.getMinutes()
+  const index =  addSubjectTimings[day].findIndex(([start,_])=>start===startTime)
+  addSubjectTimings[day].splice(index,1)
+  addSubjectTimings[day] = addSubjectTimings[day].sort(([a],[b])=>{
+    return a>b ? 1 
+    : b>a ? -1 
+    : 0
+  })
+  if(addSubjectTimings[day].length===0) delete addSubjectTimings[day]
+  updateDisabledStatus()
 }
 
-function addTiming(){
-  const newId = "timing-" + (swiper.slides.length + 1)
-  const clone = document.getElementById("timing-1").cloneNode(true)
-  clone.id = newId
-  const swiperWrapper = document.querySelector(".swiper-wrapper")
-  swiperWrapper.appendChild(clone)
-  const newInputs = Array.from(document.querySelectorAll(`#${newId} input`))
-  for(const input of newInputs){
-    input.addEventListener("input",changeStatus)
-    input.parentElement.parentElement.parentElement.classList.remove("item-input-with-value")
-    input.value = ""
+const parseTimeIntervalArray = array =>{
+  const output = [array[0]]
+  for(let i =1;i<array.length;i++){
+    //Start is same as previous end
+    if(array[i][0]==output[output.length-1][1]){
+      //Extend previous time interval to end of current one
+      output[output.length-1][1] = array[i][1]
+    }else{
+      //New time interval
+      output.push(array[i])
+    }
   }
-  swiper.appendSlide(clone)
-  swiper.slideNext()
-  changeStatus()
+  return output
 }
-function init(){
-  const inputs = Array.from(document.querySelectorAll(`#timing-1 input`))
-  for(const input of inputs){
-    input.addEventListener("input",changeStatus)
+
+const addSubject = _ =>{
+  const subject = $("#subjectInput").val().trim()
+  const times = {}
+  for(const day in addSubjectTimings){
+    console.log(day)
+    times[day] = parseTimeIntervalArray(JSON.parse(JSON.stringify(addSubjectTimings[day])))
   }
-  document.getElementById("add-subject").addEventListener("click",()=>{
-    const data = getSubjectData()
-    data.channel = channel
-    console.log(data)
-    conn.emit("addSubject",data,(err)=>{
-      if(err) throw new Error(err)
-      mainView.router.back()
-    })
+  const subjectData = {
+    subject,
+    channel,
+    data:times
+  }
+  conn.emit("addSubject",subjectData,(err)=>{
+    if(err) throw new Error(err)
+    mainView.router.back()
   })
-  changeStatus()
 }
-init()
+
+const updateDisabledStatus = _ =>{
+  checkIfComplete() 
+  ? $(".page-current #add-subject").removeClass("disabled") 
+  : $(".page-current #add-subject").addClass("disabled")
+}
+
+const checkIfComplete = _ => $("#subjectInput").val().trim().length === 0 
+? false 
+: Object.keys(addSubjectTimings).length !== 0
+? true : false
+
+//Event listeners
+$(document).on("input",".page-current #subjectInput",updateDisabledStatus)
+$(document).on("click",".page-current #add-subject",addSubject)
+updateDisabledStatus()

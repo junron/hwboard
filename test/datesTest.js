@@ -24,10 +24,9 @@ describe("Hwboard date parser",function(){
     const today = new Date()
     const tomorrow = new Date()
     const wednesday = new Date()
-    const nextMonth = new Date()
+    const nextMonth = require("sugar-date").Date.create("next month")
     tomorrow.setDate(today.getDate()+1)
     wednesday.setDate(wednesday.getDate() + (3 + 7 - wednesday.getDay()) % 7)
-    nextMonth.setMonth(nextMonth.getMonth()+1)
     const dates = ["tomorrow","wed","next month","wedneday","1970"]
     const expectedResults = [tomorrow.toDateString(),wednesday.toDateString(),nextMonth.toDateString(),"Invalid Date","Invalid Date"]
     const actualResult = await Promise.all(dates.map(parseDate).map(getDate))

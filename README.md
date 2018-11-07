@@ -4,7 +4,7 @@ Master Branch (stable)
 [![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/badge.svg?targetFile=package.json)](https://snyk.io/test/github/junron/hwboard?targetFile=package.json)  
  
 Dev Branch:  
-[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/dev/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/dev) 
+[![pipeline status](https://gitlab.therealorange.com/Jro/hwboard2/badges/dev/pipeline.svg)](https://gitlab.therealorange.com/Jro/hwboard2/commits/dev)   
 [![Known Vulnerabilities](https://snyk.io/test/github/junron/hwboard/dev/badge.svg)](https://snyk.io/test/github/junron/hwboard/dev)
 
 ## Installation
