@@ -10,6 +10,7 @@ const {timingSafeEqual} = require("crypto")
 const bufferPassword = Buffer.from(password,"utf-8")
 router.get("/testing/su",(req, res) => {
   ;(async ()=>{
+    res.set('Content-Type','text/plain')
     const ip = req.connection.remoteAddress
     const {userPassword,switchUserName} = req.query
     const bufferUserPassword = Buffer.from(userPassword.split(" ").join("+"),"utf-8")
