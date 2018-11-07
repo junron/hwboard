@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.3.6"
+const version = "1.3.7"
 
 console.log(`Service worker version ${version}`)
 self.addEventListener('install', function(e) {
@@ -45,6 +45,11 @@ self.addEventListener('install', function(e) {
     })
   })());
 });
+
+const createResponse = (data,headers) => new Response(
+  data ? new Blob(data.data,{type:data.type}) : new Blob(),
+  headers)
+
 function addCacheHeader(response){
   if(response.status!=200||response.type=="opaque"){
     return response
@@ -84,14 +89,23 @@ self.addEventListener('fetch',function(event) {
             return addCacheHeader(response)
           }
           console.log(`Loading ${url}`)
-          const fetchPromise = Promise.race([fetch(event.request),new Promise(resolve=>{
-            setTimeout(()=>{
-              //Use cache is network is slow
-              console.log("Network timeout")
-              return resolve(false)
-            },2500)
+          const fetchPromise = new Promise(resolve=>{
+            const timer = setTimeout(()=>{
+              console.log(`Network timed out for ${url}`)
+              resolve(createResponse({
+                data:["<h1>Request timed out</h1><h2>Please try again later</h2>"],
+                type:"text/html"
+              },{
+                status:500,
+                statusText:"Request timed out"
+              }))
+            },1000)
+            fetch(event.request)
+            .then(response=>{
+              clearTimeout(timer)
+              resolve(response)
+            })
           })
-          ])
           .then(networkResponse=>{
             //Dont cache stuffs
             if((!url.includes("?useCache")) &&

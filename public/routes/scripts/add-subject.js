@@ -76,4 +76,3 @@ const checkIfComplete = _ => $("#subjectInput").val().trim().length === 0
 //Event listeners
 $(document).on("input",".page-current #subjectInput",updateDisabledStatus)
 $(document).on("click",".page-current #add-subject",addSubject)
-updateDisabledStatus()
