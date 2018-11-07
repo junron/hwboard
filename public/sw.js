@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js")
 
-const version = "1.3.5"
+const version = "1.3.6"
 
 console.log(`Service worker version ${version}`)
 self.addEventListener('install', function(e) {
@@ -87,8 +87,9 @@ self.addEventListener('fetch',function(event) {
           const fetchPromise = Promise.race([fetch(event.request),new Promise(resolve=>{
             setTimeout(()=>{
               //Use cache is network is slow
+              console.log("Network timeout")
               return resolve(false)
-            },2000)
+            },2500)
           })
           ])
           .then(networkResponse=>{
