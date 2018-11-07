@@ -13,13 +13,18 @@ async function verifyToken(token){
     //Grr why cant ppl use promises all da way
     client.getSigningKey(kid, async function(err, key) {
       if(err) return reject(err)
-      const signingKey = key.publicKey || key.rsaPublicKey
-      const options = { 
-        algorithms: ['RS256'],
-        ignoreExpiration: true,
-        maxAge: "1 year"
+      try{
+        const signingKey = key.publicKey || key.rsaPublicKey
+        const options = { 
+          algorithms: ['RS256'],
+          ignoreExpiration: true,
+          maxAge: "1 year"
+        }
+        const result = verify(token, signingKey ,options)
+        resolve(result)
+      }catch(e){
+        reject(e)
       }
-      resolve(verify(token, signingKey,options))
     });
   })
 }

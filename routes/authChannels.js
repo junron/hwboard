@@ -84,16 +84,16 @@ async function authChannels(req,res){
     try{
       decodedToken = await auth.verifyToken(token)
     }catch(e){
-      console.log(e)
-      res.clearCookie("token")
-      res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
-      "response_type=code&"+
-      `scope=https%3A%2F%2Fgraph.microsoft.com%2F${scopes.join("%20")}&`+
-      `client_id=${clientId}&`+
-      `redirect_uri=https://${hostname}/&`+
-      "prompt=select_account&"+
-      `response_mode=query`)
-      return "redirected"
+      console.log("Token error:",e.toString())
+      // res.clearCookie("token")
+      // res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
+      // "response_type=code&"+
+      // `scope=https%3A%2F%2Fgraph.microsoft.com%2F${scopes.join("%20")}&`+
+      // `client_id=${clientId}&`+
+      // `redirect_uri=https://${hostname}/&`+
+      // "prompt=select_account&"+
+      // `response_mode=query`)
+      throw e
     }
     if(!decodedToken.preferred_username.endsWith("nushigh.edu.sg")){
       throw new Error("You must log in with a NUSH email.")

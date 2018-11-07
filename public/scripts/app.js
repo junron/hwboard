@@ -279,8 +279,9 @@ const Framework7App = new Framework7({
           on:{
             pageAfterIn:e=>{
               const target = e.currentTarget
-              loadSources(target,["/routes/scripts/timetable.js","/routes/styles/timetable.css",'/fullcalendar/dist/fullcalendar.min.css',"/routes/scripts/add-subject.js"]).then(()=>{
+              loadSources(target,["/routes/scripts/timetable.js","/routes/styles/timetable.css",'/fullcalendar/dist/fullcalendar.min.css']).then(()=>{
                 renderTimetable("#hwboard-add-subject-timetable",true)
+                updateDisabledStatus()
               })
             }
           },

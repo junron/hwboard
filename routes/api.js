@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const authChannels = require("./authChannels")
 const db = require("../database")
 const EventEmitter = require('events');
 const auth = require("../auth")
