@@ -20,7 +20,7 @@ cache:
 
 
 test:
-  image: zenika/alpine-chrome
+  image: zenika/alpine-chrome:with-node
   variables:
     CI: "true"
     HWBOARD_COOKIE_SECRET: "totallyVerySecureSecretWhatCouldPossiblyGoWrong"
