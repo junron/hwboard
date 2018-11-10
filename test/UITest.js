@@ -35,9 +35,7 @@ async function init(){
   console.log("browser launch")
   page = await browser.newPage()
   await page.setRequestInterception(true)
-  page.on('requestfailed', request =>{
-    console.log(Object.entries(request))
-  })
+  page.on('requestfailed', ()=>true)
   page.on('request', req =>req.continue())
   console.log("pageOpen")
   await page.goto('http://localhost:' + port)
