@@ -6,7 +6,7 @@ const port = require("../loadConfig").PORT
 const {server,io} = require("../app")
 
 const options = {
-  // headless:false,
+  headless:false,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
   //Slow down so you can see whats happening
   slowMo:10
@@ -15,6 +15,7 @@ if(process.env.CI_PROJECT_NAME=="hwboard2"){
   console.log("Gitlab env")
   //No display in CI
   options.headless = true
+  options.executablePath = '/usr/bin/chromium-browser'
 }
 let browser
 let page
