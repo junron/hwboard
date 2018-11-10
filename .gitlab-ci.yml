@@ -30,8 +30,6 @@ test:
   - pwd  
   - chromium-browser --version
   - npm -v
-  - npm i -g npm
-  - npm -v
   - node --version
   - npm install
   - npm audit
