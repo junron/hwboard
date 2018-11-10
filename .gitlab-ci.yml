@@ -20,7 +20,7 @@ cache:
 
 
 test:
-  image: zenika/alpine-chrome:with-puppeteer
+  image: jro11/alpine-chrome
   variables:
     CI: "true"
     HWBOARD_COOKIE_SECRET: "totallyVerySecureSecretWhatCouldPossiblyGoWrong"
@@ -28,6 +28,7 @@ test:
   stage: test
   script:
   - pwd  
+  - chromium-browser --version
   - npm -v
   - npm i -g npm
   - npm -v
