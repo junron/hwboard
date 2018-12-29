@@ -24,11 +24,9 @@ test:
   variables:
     CI: "true"
     HWBOARD_COOKIE_SECRET: "totallyVerySecureSecretWhatCouldPossiblyGoWrong"
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
   stage: test
   script:
   - pwd  
-  - chromium-browser --version
   - npm -v
   - node --version
   - npm install
