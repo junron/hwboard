@@ -30,7 +30,6 @@ test:
   - node --version
   - npm install
   - npm audit
-  - npm run hwboard add channel
   - npm run hwboard getData
   - mkdir artifacts
   - npm test
