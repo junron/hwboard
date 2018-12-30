@@ -417,7 +417,6 @@ if(gitlab||process.argv[4]=="default"){
         name:"testing"
       }
     })
-    await Channels.create(config)
     await require("./database").init()
     sequelize.close()
   }()
