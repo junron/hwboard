@@ -93,4 +93,30 @@ describe("Admin API",function(){
       })
     })
   })
+  it("Should be able to add admins and members",function(done){
+    const channel= "testing"
+    client.emit("addMember",{
+      channel,
+      students:["admin"],
+      permissions:"admin"
+    },err=>{
+      expect(err).to.be.null
+      client.emit("addMember",{
+        channel,
+        students:["member"],
+        permissions:"member"
+      },err=>{
+        expect(err).to.be.null
+        client.emit("channelDataReq",{},function(err,channels){
+          expect(err).to.be.null
+          const testChannel = channels.find(c=>c.name===channel)
+          console.log(testChannel)
+          expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"])
+          expect(testChannel.admins).to.deep.equal(["admin@nushigh.edu.sg"])
+          expect(testChannel.members).to.deep.equal(["member@nushigh.edu.sg"])
+          done()
+        })
+      })
+    })
+  })
 })
