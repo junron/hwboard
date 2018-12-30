@@ -110,7 +110,6 @@ describe("websocket",function(){
       })
     })
     it("Should be able to delete homework",function(done){
-      const promises = []
       client.emit("dataReq",{removeExpired:false},async function(err,homeworks){
         let homeworkCount = 0
         for(let homework of homeworks){

@@ -8,6 +8,7 @@ const channels = {testing:{
 const {getHomeworkAll,init,addHomework} = require("../database")
 describe("database.js",function(){
   before(function(){
+    this.timeout(4000)
     return init()
   })
   it("Should be able to get homework in the correct format",function(done){
