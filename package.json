@@ -4,7 +4,6 @@
   "description": "version 2 of homeworkboard",
   "main": "app.js",
   "scripts": {
-    "preinstall": "node cli.js preinstall",
     "start": "pm2 start ./bin/www --name hwboard2-web -i 0",
     "test": "mocha test --exit",
     "start:dev": "nodemon ./bin/www",
@@ -24,6 +23,7 @@
     "dexie": "^2.0.4",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
+    "express-minify": "^1.0.0",
     "extend": "^3.0.2",
     "framework7": "^3.6.3",
     "fullcalendar": "^3.9.0",
@@ -46,6 +46,7 @@
     "socket.io-cookie-parser": "1.0.0",
     "sugar-date": "^2.0.6",
     "tinygradient": "^0.4.3",
+    "uglify-es": "^3.3.9",
     "xss": "^1.0.3"
   },
   "devDependencies": {
