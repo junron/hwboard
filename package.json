@@ -6,7 +6,7 @@
   "scripts": {
     "preinstall": "node cli.js preinstall",
     "start": "pm2 start ./bin/www --name hwboard2-web -i 0",
-    "test": "mocha test/UITest.js --exit",
+    "test": "mocha test --exit",
     "start:dev": "nodemon ./bin/www",
     "hwboard": "node cli.js"
   },
@@ -50,10 +50,8 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "lighthouse": "^4.0.0-alpha.2-3.2.1",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.9",
-    "puppeteer": "^1.11.0",
     "snyk": "^1.119.0",
     "socket.io-client": "^2.2.0"
   }
