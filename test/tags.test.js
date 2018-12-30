@@ -6,7 +6,7 @@ const io = require('socket.io-client')
 const websocket = require("../app").server
 const port = require("../loadConfig").PORT
 let client
-describe("websocket",function(){
+describe("Hwboard tags",function(){
   this.timeout(10000)
   before(function(done){
     websocket.listen(port)
