@@ -78,7 +78,7 @@ const dateParserFn = (timetable,subjectSelectionList)=>{
     if(parsed===null){
       return null
     }
-    const terms = [new Date(2019,0,2),new Date(2019,2,25),new Date(2019,6,1), new Date(2019,8,16)]
+    const terms = [new Date(2019,0,7),new Date(2019,2,25),new Date(2019,6,1), new Date(2019,8,16)]
     const term = parseInt(parsed[2])
     let week = parseInt(parsed[4])
     if(term>4 || term<1){
@@ -112,7 +112,7 @@ const dateParserFn = (timetable,subjectSelectionList)=>{
    * @param {Date} date 
    */
   async function getTermXWeekY(date){
-    const terms = [new Date(2019,0,2),new Date(2019,2,25),new Date(2019,6,1), new Date(2019,8,16)]
+    const terms = [new Date(2019,0,7),new Date(2019,2,25),new Date(2019,6,1), new Date(2019,8,16)]
     const term = terms.filter(term => date>term).length
     const termStart = terms[term-1]
     if(termStart===undefined){
