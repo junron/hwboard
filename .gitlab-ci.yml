@@ -26,6 +26,7 @@ test:
     HWBOARD_COOKIE_SECRET: "totallyVerySecureSecretWhatCouldPossiblyGoWrong"
   stage: test
   script:
+  - rm $(which chromium-browser)
   - pwd  
   - npm -v
   - node --version
