@@ -29,10 +29,14 @@ router.get("/:channelName/data.json",(req, res, next) => {
       res.status(404).end("Channel not found")
     }
   })()
-  .catch((e)=>{
-    const code = e.code || 500
-    res.status(code).end(e.toString())
+  .catch(e=>{
+    res.render("error",{message:e.message||e.name,error:e})
     console.log(e)
+    return
+  })
+  .catch(e=>{
+    res.status(500).end(e.toString())
+    console.log("Unhandled error: ",e.toString())
   })
 })
 
@@ -71,10 +75,14 @@ router.get("/:channelName/data.csv",(req, res) => {
       res.status(404).end("Channel not found")
     }
   })()
-  .catch((e)=>{
-    const code = e.code || 500
-    res.status(code).end(e.toString())
+  .catch(e=>{
+    res.render("error",{message:e.message||e.name,error:e})
     console.log(e)
+    return
+  })
+  .catch(e=>{
+    res.status(500).end(e.toString())
+    console.log("Unhandled error: ",e.toString())
   })
 })
 
@@ -91,10 +99,14 @@ router.get("/data.json",(req, res, next) => {
       .map(removePersonalData)
     res.send(JSON.stringify(data))
   })()
-  .catch((e)=>{
-    const code = e.code || 500
-    res.status(code).end(e.toString())
+  .catch(e=>{
+    res.render("error",{message:e.message||e.name,error:e})
     console.log(e)
+    return
+  })
+  .catch(e=>{
+    res.status(500).end(e.toString())
+    console.log("Unhandled error: ",e.toString())
   })
 })
 
@@ -124,10 +136,14 @@ router.get("/data.csv",(req, res) => {
     .pipe(toCSV)
     .pipe(res)
   })()
-  .catch((e)=>{
-    const code = e.code || 500
-    res.status(code).end(e.toString())
+  .catch(e=>{
+    res.render("error",{message:e.message||e.name,error:e})
     console.log(e)
+    return
+  })
+  .catch(e=>{
+    res.status(500).end(e.toString())
+    console.log("Unhandled error: ",e.toString())
   })
 })
 module.exports = router

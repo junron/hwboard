@@ -10,13 +10,9 @@ const {HOSTNAME:hostname,CI:testing} = config
 //TODO: find a library to auto push required files
  
 //Server config
-//@caddy users:
-//caddy automatically pushes
-//https://caddyserver.com/docs/push
-
-//@nginx users
-//add http2 directive
-//And add `http2_push_preload on;` within location block
+// For nginx:
+//Add http2 directive
+//Add `http2_push_preload on;` within location block
 const basePushFiles = [
   "/styles/roboto.css",
   "/styles/icons.css",
@@ -79,92 +75,123 @@ function parsePushHeaders(files){
 
 //Channel lists
 router.get("/channels", async (req, res) => {
-  const renderer = require("../public/scripts/render-channels");
-  if(testing && req.cookies.username){
+  return (async ()=>{
+    const renderer = require("../public/scripts/render-channels");
+    if(testing && req.cookies.username){
       const email = req.cookies.username;
-    res.cookie("username",email,{
-      signed:true,
-      httpOnly:true,
-      sameSite:"lax"
-    })
-  }
+      res.cookie("username",email,{
+        signed:true,
+        httpOnly:true,
+        sameSite:"lax"
+      })
+    }
     const authData = await authChannels(req, res);
-  if(authData==="redirected"){
-    return
-  }
-  if(req.query.code && req.signedCookies.redirPath){
-    const url = require('url')
-    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
-  }
+    if(authData==="redirected"){
+      return
+    }
+    if(req.query.code && req.signedCookies.redirPath){
+      const url = require('url')
+      return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
+    }
     const {channelData} = authData;
     res.header("Link", parsePushHeaders(basePushFiles));
-  return res.render("channels",{
-    channels:channelData,
-    renderer
+    return res.render("channels",{
+      channels:channelData,
+      renderer
+    })
+  })()
+  .catch(e=>{
+    res.render("error",{message:e.message||e.name,error:e})
+    console.log(e)
+    return
+  })
+  .catch(e=>{
+    res.status(500).end(e.toString())
+    console.log("Unhandled error: ",e.toString())
   })
 });
 
-router.get("/calendar",async (req, res, next) => {
-  const authData = await authChannels(req, res);
-  if (authData === "redirected") {
+router.get("/calendar",async (req, res) => {
+  return (async ()=>{
+    const authData = await authChannels(req, res);
+    if (authData === "redirected") {
+      return
+    }
+    if(req.query.code && req.signedCookies.redirPath){
+      const url = require('url')
+      return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
+    }
+    res.render("calendar")
+  })()
+  .catch(e=>{
+    res.render("error",{message:e.message||e.name,error:e})
+    console.log(e)
     return
-  }
-  if(req.query.code && req.signedCookies.redirPath){
-    const url = require('url')
-    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
-  }
-  res.render("calendar")
+  })
+  .catch(e=>{
+    res.status(500).end(e.toString())
+    console.log("Unhandled error: ",e.toString())
+  })
 })
 
 
 /* GET home page. */
-router.get('/', async (req, res, next) => {
-  const authData = await authChannels(req, res);
-  if (authData === "redirected") {
-    return
-  }
-  if(req.query.code && req.signedCookies.redirPath){
-    const url = require('url')
-    return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
-  }
-  const {channelData, adminChannels} = authData;
-  // console.log(channelData)
-  //Check if user is admin in any channel
-  //This prevents us from sending the add homework form unnecessarily
-  const admin = Object.keys(adminChannels).length > 0 || testing;
-  //Get sort options
-  let {sortOrder, sortType} = req.cookies;
-  if(sortOrder){
-    sortOrder = parseInt(sortOrder)
-  }
-  //Server push
-  res.header("Link", parsePushHeaders(indexPushFiles));
-
-  //Get homework for rendering
-  let data = await db.getHomeworkAll(channelData);
-
-  //Report errors in production or mobile
-  let reportErrors = false;
-  const mobile = isMobile(req.headers['user-agent']);
-  if(hostname!=="nushhwboard.tk"){
-    reportErrors = mobile
-  }else{
-    reportErrors = true
-  }
-  const beta = hostname === "beta.nushhwboard.tk"
-  const subjectChannelMapping = {}
-  const subjectTagMapping = {}
-  for(const channelName in channelData){
-    const channel = channelData[channelName]
-    for (const subject of channel.subjects){
-      //User is admin or higher of channel
-      if(channel.permissions>=2){
-        subjectChannelMapping[subject] = channelName
-      }
-      subjectTagMapping[subject] = channel.tags
+router.get('/', async (req, res) => {
+  return (async ()=>{
+    const authData = await authChannels(req, res);
+    if (authData === "redirected") {
+      return
     }
-  }
-  res.render('index', {renderer,sortType,data,sortOrder,admin,subjectChannelMapping,subjectTagMapping,reportErrors,beta})
-});
+    if(req.query.code && req.signedCookies.redirPath){
+      const url = require('url')
+      return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
+    }
+    const {channelData, adminChannels} = authData;
+    //Check if user is admin in any channel
+    //This prevents us from sending the add homework form unnecessarily
+    const admin = Object.keys(adminChannels).length > 0 || testing;
+    //Get sort options
+    let {sortOrder, sortType} = req.cookies;
+    if(sortOrder){
+      sortOrder = parseInt(sortOrder)
+    }
+    //Server push
+    res.header("Link", parsePushHeaders(indexPushFiles));
 
+    //Get homework for rendering
+    let data = await db.getHomeworkAll(channelData);
+
+    //Report errors in production or mobile
+    let reportErrors = false;
+    const mobile = isMobile(req.headers['user-agent']);
+    if(hostname!=="nushhwboard.tk"){
+      reportErrors = mobile
+    }else{
+      reportErrors = true
+    }
+    const beta = hostname === "beta.nushhwboard.tk"
+    const subjectChannelMapping = {}
+    const subjectTagMapping = {}
+    for(const channelName in channelData){
+      const channel = channelData[channelName]
+      for (const subject of channel.subjects){
+        //User is admin or higher of channel
+        if(channel.permissions>=2){
+          subjectChannelMapping[subject] = channelName
+        }
+        subjectTagMapping[subject] = channel.tags
+      }
+    }
+    return res.render('index', {renderer,sortType,data,sortOrder,admin,subjectChannelMapping,subjectTagMapping,reportErrors,beta})
+  })()
+  .catch(e=>{
+    res.render("error",{message:e.message||e.name,error:e})
+    console.log(e)
+    return
+  })
+  .catch(e=>{
+    res.status(500).end(e.toString())
+    console.log("Unhandled error: ",e.toString())
+  })
+});
 module.exports = router;

@@ -8,6 +8,7 @@ RUN mkdir -p /home/hwboard/hwboard2
 WORKDIR /home/hwboard/hwboard2
 COPY --chown=hwboard:root . .
 ENV IS_DOCKER=true
+ENV NODE_ENV=production
 RUN npm install && rm -r /home/hwboard/hwboard2/node_modules/puppeteer
 
 USER root
