@@ -31,6 +31,24 @@ const websocket = require("./websocket")
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// Minify css and js
+// Only in production
+if(app.get("env")==="production"){
+  app.use((req,res,next)=>{
+    if(req.url.includes("/framework7/")){
+      res.minifyOptions = { 
+        minify:false
+      }
+    }
+    next()
+  })
+  app.use(require('express-minify')({
+    cache:__dirname+"/public/cache",
+    uglifyJsModule:require('uglify-es'),
+    jsonMatch:false
+  }))
+}
+
 //Cookie parser must be before routes
 app.use(cookieParser(cookieSecret));
 
