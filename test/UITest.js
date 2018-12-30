@@ -15,7 +15,6 @@ if(process.env.CI_PROJECT_NAME=="hwboard2"){
   console.log("Gitlab env")
   //No display in CI
   options.headless = true
-  options.executablePath = '/usr/bin/chromium-browser'
 }
 let browser
 let page
