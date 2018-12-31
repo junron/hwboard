@@ -1,4 +1,4 @@
-const addSubjectTimings = {}
+let addSubjectTimings = {}
 const addSubjectTiming = start => {
   start = new Date(start)
   const day = ["sun","mon","tue","wed","thu","fri","sat"][start.getDay()]
@@ -48,7 +48,6 @@ const addSubject = _ =>{
   const subject = $("#subjectInput").val().trim()
   const times = {}
   for(const day in addSubjectTimings){
-    console.log(day)
     times[day] = parseTimeIntervalArray(JSON.parse(JSON.stringify(addSubjectTimings[day])))
   }
   const subjectData = {
@@ -56,6 +55,7 @@ const addSubject = _ =>{
     channel,
     data:times
   }
+  addSubjectTimings = {}
   conn.emit("addSubject",subjectData,(err)=>{
     if(err) throw new Error(err)
     mainView.router.back()
