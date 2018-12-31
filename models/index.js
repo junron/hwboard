@@ -5,12 +5,13 @@ const {
   DB_PASSWORD:dbPassword,
   DB_USER:dbUser,
   DB_NAME:dbName="hwboard",
-  USE_POSTGRES:psql,
+  USE_POSTGRES:psqlEnabled,
   SEQUELIZE_LOGGING:logging,
   DB_PORT:dbPort,
   COCKROACH_DB_SECURE:cockroachSecure
 } = require("../loadConfig")
 
+const psql = psqlEnabled === "true" || psqlEnabled === true
 const Sequelize = psql ? require("sequelize") : require('sequelize-cockroachdb');
 
 if(!psql){
