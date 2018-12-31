@@ -10,20 +10,24 @@ const variables = [
     default:"VeryInsecureCookieSecret",
   },
   {
-    name:"POSTGRES_USER",
+    name:"DB_USER",
     default:"hwboard",
   },
   {
-    name:"POSTGRES_DB",
+    name:"DB_NAME",
     default:"hwboard",
   },
   {
-    name:"POSTGRES_PASSWORD",
+    name:"DB_PASSWORD",
     default:"",
   },
   {
-    name:"COCKROACH_DB_PORT",
-    default:26257,
+    name:"DB_PORT",
+    default:5432,
+  },
+  {
+    name:"USE_POSTGRES",
+    default:true
   },
   {
     name:"COCKROACH_DB_SECURE",
