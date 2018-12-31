@@ -23,6 +23,8 @@ test:
   variables:
     CI: "true"
     HWBOARD_COOKIE_SECRET: "totallyVerySecureSecretWhatCouldPossiblyGoWrong"
+    USE_POSTGRES: "false"
+    DB_PORT: "26257"
   stage: test
   script:
   - pwd  

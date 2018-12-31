@@ -64,7 +64,13 @@ async function renderTimetable(calendarSelector='#hwboard-timetable',showBreaks=
   }
   const modifiedTimetable = showBreaks ? insertBreaks(Object.assign(assemblyAndCCA,timetable)) : Object.assign(assemblyAndCCA,timetable)
   const events = []
-  const colors = tinygradient(['#FF0000','#FF7F00','#FFFF00','#00FF00','#0000FF','#4B0082','#9400D3']).hsv(Object.keys(modifiedTimetable).length).map(c=>c.toHexString())
+  const numSubjects = Object.keys(modifiedTimetable).length
+  let range = ['#FF0000','#FF7F00','#FFFF00','#00FF00','#0000FF','#4B0082','#9400D3']
+  if(numSubjects<7){
+    const num = Math.floor(numSubjects/2)
+    range = range.slice(0,num).concat(range.slice(7-num))
+  }
+  const colors = tinygradient(range).hsv(numSubjects).map(c=>c.toHexString())
   const getStartTime = subjectName =>{
     const lessons = modifiedTimetable[subjectName]
     return lessons[Object.keys(lessons)[0]][0][0]
