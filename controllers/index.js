@@ -48,8 +48,8 @@ async function filter(arr, callback) {
     return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i=>i!==fail)
 }
 
-const admin = require("admin.js");
-const homework = require("homework.js");
+const admin = require("./admin");
+const homework = require("./homework");
 
 module.exports={
     sequelize,
