@@ -1,5 +1,5 @@
 const xss = require("xss");
-const {Channels} = require("./models");
+const {Channels} = require("../models");
 
 async function getUserChannels(userEmail,permissionLevel=1){
     const data = await Channels.findAll({
