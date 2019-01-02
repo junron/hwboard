@@ -1,15 +1,6 @@
 const xss = require("xss");
 const {Sequelize} = require("../models");
 
-//Creates tables based on `Homework` model dynamically
-async function generateHomeworkTables() {
-    const channels = await getUserChannels("*");
-    for (let channel of channels){
-        //Could have curried but meh
-        tables[channel.name] = Homework(channel.name);
-    }
-}
-
 //Assumes that access has been granted
 //Check authorization before calling
 async function getHomework(hwboardName,removeExpired=true){
@@ -181,7 +172,6 @@ async function whenHomeworkExpires(channel,callback){
 }
 
 module.exports = {
-    generateHomeworkTables,
     getHomework,
     getNumHomework,
     getHomeworkAll,
