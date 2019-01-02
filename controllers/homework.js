@@ -2,7 +2,7 @@ const xss = require("xss");
 const {Sequelize} = require("./models");
 
 //Creates tables based on `Homework` model dynamically
-async function generateHomeworkTables(){
+async function generateHomeworkTables() {
     const channels = await getUserChannels("*");
     for (let channel of channels){
         //Could have curried but meh
@@ -51,11 +51,7 @@ async function getNumHomework({channel,subject,graded=0,startDate=Infinity,endDa
         subject,
     };
     if(graded){
-        if(graded===-1){
-            where.isTest = false
-        }else{
-            where.isTest = true
-        }
+        where.isTest = !(graded===-1);
     }
     if(startDate!==Infinity && startDate !== endDate){
         where.dueDate = {
@@ -167,13 +163,13 @@ async function whenHomeworkExpires(channel,callback){
     let channelData = await getHomework(channel);
     //We do not want to remove homework that is due when testing
     if(channelData.length===0 || testing){
-        return
+        return;
     }
     channelData = channelData.sort(function(a,b){
         if(a.dueDate>b.dueDate){
-            return -1
+            return -1;
         }else{
-            return 1
+            return 1;
         }
     });
     const dueDate = channelData.pop().dueDate;
