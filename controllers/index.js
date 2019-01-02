@@ -8,6 +8,8 @@ const {CI:testing} = require("../loadConfig");
 
 //Prevent xss
 const xss = require("xss");
+const admin = require("./admin");
+const homework = require("./homework");
 
 //Map emails to names
 const {getStudentById} = require("../students");
@@ -18,38 +20,35 @@ const tables = {};
 //Generate tables
 async function init(){
     await sequelize.sync();
-    await generateHomeworkTables();
+    await homework.generateHomeworkTables();
     return sequelize.sync()
 }
 
 //Mitigate XSS
 async function removeXss(object){
     for (let property in object){
-        if(typeof object[property]=="string"){
+        if(typeof object[property]==="string"){
             object[property] = xss(object[property])
         }
     }
     return object
 }
 const arrayToObject = channelArrays => {
-    const result = {}
+    const result = {};
     for (const channel of channelArrays){
         result[channel.name] = channel
     }
     return result
-}
+};
 const getNumTables = () => {
     return Object.keys(tables).length
-}
+};
 
 //async filter
 async function filter(arr, callback) {
-    const fail = Symbol()
+    const fail = Symbol();
     return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i=>i!==fail)
 }
-
-const admin = require("./admin");
-const homework = require("./homework");
 
 module.exports={
     sequelize,
