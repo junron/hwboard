@@ -42,9 +42,10 @@ describe("database.js",function(){
       isTest:true,
       dueDate:new Date().getTime()+100000,
       lastEditPerson:"tester@nushigh.edu.sg",
+      tags:['Optional'],
       token:"bleh"
     }
-    const output = await addHomework("testing",payload);
+    await addHomework("testing",payload);
     const homeworks = await getHomeworkAll(channels);
     expect(homeworks).to.be.an("array");
     for (let homework of homeworks){
@@ -63,9 +64,10 @@ describe("database.js",function(){
       isTest:true,
       dueDate:new Date().getTime()+100000,
       lastEditPerson:"tester@nushigh.edu.sg",
+      tags:['Optional'],
       token:"bleh"
     };
-    const output = await addHomework("testing",payload);
+    await addHomework("testing",payload);
     const homeworks = await getHomeworkAll(channels);
     expect(homeworks).to.be.an("array");
     for (let homework of homeworks){

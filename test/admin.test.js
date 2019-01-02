@@ -7,7 +7,7 @@ const websocket = require("../app").server
 const port = require("../loadConfig").PORT
 let client
 describe("Admin API",function(){
-  this.timeout(10000)
+  this.timeout(3000)
   before(function(done){
     websocket.listen(port)
     setTimeout(()=>{

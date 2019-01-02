@@ -7,7 +7,7 @@ const websocket = require("../app").server
 const port = require("../loadConfig").PORT
 let client
 describe("websocket",function(){
-  this.timeout(10000)
+  this.timeout(3000)
   before(function(done){
     websocket.listen(port)
     setTimeout(()=>{
@@ -51,16 +51,19 @@ describe("websocket",function(){
             console.log("\033[0;31m There is no homework to check format.\033[0m")
           }
           for (let homework of homeworks){
-              expect(homework).to.be.an("object")
-              expect(homework.id).to.be.a.uuid('v4')
-              expect(homework.subject).to.be.a("string")
-              let dueDateNum = new Date(homework.dueDate).getTime()
-              expect(dueDateNum).to.be.a("number")
-              expect(dueDateNum).to.be.above(1500000000)
-              expect(homework.tags).to.be.an("array")
-              expect(homework.lastEditPerson).to.be.a("string")
-              expect(new Date(homework.lastEditTime)).to.be.a.instanceof(Date)
-              expect(homework.text).to.be.a("string")
+            if(!homework.tags){
+              console.log(homework)
+            }
+            expect(homework).to.be.an("object")
+            expect(homework.id).to.be.a.uuid('v4')
+            expect(homework.subject).to.be.a("string")
+            let dueDateNum = new Date(homework.dueDate).getTime()
+            expect(dueDateNum).to.be.a("number")
+            expect(dueDateNum).to.be.above(1500000000)
+            expect(homework.tags).to.be.an("array")
+            expect(homework.lastEditPerson).to.be.a("string")
+            expect(new Date(homework.lastEditTime)).to.be.a.instanceof(Date)
+            expect(homework.text).to.be.a("string")
           }
           done()
       })

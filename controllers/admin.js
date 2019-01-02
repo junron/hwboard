@@ -31,6 +31,35 @@ async function getUserChannels(userEmail,permissionLevel=1){
     return data.filter(channel => channel.permissions!==undefined)
 }
 
+async function addTag(channel,tagName,tagColor){
+    const originalDataArray = (await Channels.findAll({
+        where:{
+        name:channel
+        },
+        raw: true
+    }))
+    if(originalDataArray.length==0){
+        throw new Error("Channel does not exist")
+    }
+    const originalData = originalDataArray[0]
+    tagName = xss(tagName)
+    tagColor = xss(tagColor)
+    //Ensure that tag does not already exist
+    const existingTags = originalData.tags
+    if(Object.keys(existingTags).includes(tagName)){
+        throw new Error(`Tag ${tagName} already exists.`)
+    }
+    if(Object.values(existingTags).includes(tagColor)){
+        throw new Error(`A tag with color ${tagColor} already exists.`)
+    }
+    originalData.tags[tagName] = tagColor
+    return Channels.update(originalData,{
+        where:{
+        name:originalData.name
+        }
+    })
+}
+  
 async function addSubject(channelData){
     let {channel,data,subject} = channelData;
     const days = ["mon","tue","wed","thu","fri"];
@@ -202,5 +231,6 @@ module.exports = {
     addSubject,
     removeSubject,
     addMember,
-    removeMember
+    removeMember,
+    addTag
 };

@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "pm2 start ./bin/www --name hwboard2-web -i 0",
-    "test": "mocha test --exit",
+    "test": "CI=true mocha test --exit",
     "start:dev": "nodemon ./bin/www",
     "hwboard": "node cli.js"
   },
@@ -45,7 +45,7 @@
     "socket.io": "^2.2.0",
     "socket.io-cookie-parser": "1.0.0",
     "sugar-date": "^2.0.6",
-    "tinygradient": "^0.4.3",
+    "tinygradient": "^1.0.0",
     "uglify-es": "^3.3.9",
     "xss": "^1.0.3"
   },
@@ -53,7 +53,7 @@
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.9",
-    "snyk": "^1.119.0",
+    "snyk": "^1.120.0",
     "socket.io-client": "^2.2.0"
   }
 }

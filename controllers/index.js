@@ -3,45 +3,18 @@
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 
 //Load models and stuffs
-const {sequelize,Sequelize,Channels,Homework} = require("../models");
-const {CI:testing} = require("../loadConfig");
+const {sequelize} = require("../models");
 
-//Prevent xss
-const xss = require("xss");
 const admin = require("./admin");
 const homework = require("./homework");
-
-//Map emails to names
-const {getStudentById} = require("../students");
-
-//Object to store hwboard channel tables
-const tables = {};
-
-//Creates tables based on `Homework` model dynamically
-async function generateHomeworkTables() {
-    const channels = await admin.getUserChannels("*");
-    for (let channel of channels){
-        //Could have curried but meh
-        tables[channel.name] = Homework(channel.name);
-    }
-}
 
 //Generate tables
 async function init(){
     await sequelize.sync();
-    await generateHomeworkTables();
+    await homework.generateHomeworkTables();
     return sequelize.sync()
 }
 
-//Mitigate XSS
-async function removeXss(object){
-    for (let property in object){
-        if(typeof object[property]==="string"){
-            object[property] = xss(object[property])
-        }
-    }
-    return object
-}
 const arrayToObject = channelArrays => {
     const result = {};
     for (const channel of channelArrays){
@@ -49,15 +22,6 @@ const arrayToObject = channelArrays => {
     }
     return result
 };
-const getNumTables = () => {
-    return Object.keys(tables).length
-};
-
-//async filter
-async function filter(arr, callback) {
-    const fail = Symbol();
-    return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i=>i!==fail)
-}
 
 module.exports={
     sequelize,
@@ -72,8 +36,9 @@ module.exports={
     arrayToObject,
     removeMember:admin.removeMember,
     addSubject:admin.addSubject,
-    getNumTables,
+    getNumTables: homework.getNumTables,
     whenHomeworkExpires:homework.whenHomeworkExpires,
     getNumHomework:homework.getNumHomework,
-    removeSubject:admin.removeSubject
-}
+    removeSubject:admin.removeSubject,
+    addTag:admin.addTag
+};
