@@ -1,5 +1,5 @@
 const xss = require("xss");
-const {Sequelize} = require("./models");
+const {Sequelize} = require("../models");
 
 //Creates tables based on `Homework` model dynamically
 async function generateHomeworkTables() {
