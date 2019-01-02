@@ -30,7 +30,7 @@ const switchUser = name=>{
 
 let rootClient,adminClient,memberClient
 describe("Hwboard user access control",function(){
-  this.timeout(10000)
+  this.timeout(3000)
   before(async function(){
     websocket.listen(port)
     rootClient = io("http://localhost:" + port)

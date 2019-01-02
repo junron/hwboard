@@ -9,7 +9,7 @@ const {COOKIE_SECRET:password,PORT:port} = require("../loadConfig")
 
 let client
 describe("Hwboard switch user functionality",function(){
-  this.timeout(10000)
+  this.timeout(3000)
   before(function(done){
     websocket.listen(port)
     done()

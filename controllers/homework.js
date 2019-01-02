@@ -1,5 +1,41 @@
 const xss = require("xss");
-const {Sequelize} = require("../models");
+const {Sequelize,Homework} = require("../models");
+const {getUserChannels} = require("./admin");
+const {CI:testing} = require("../loadConfig");
+
+//Map emails to names
+const {getStudentById} = require("../students");
+
+let tables = {};
+
+//Mitigate XSS
+async function removeXss(object){
+    for (let property in object){
+        if(typeof object[property]==="string"){
+            object[property] = xss(object[property])
+        }
+    }
+    return object
+}
+
+//async filter
+async function filter(arr, callback) {
+    const fail = Symbol();
+    return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i=>i!==fail)
+}
+
+//Creates tables based on `Homework` model dynamically
+async function generateHomeworkTables() {
+    const channels = await getUserChannels("*");
+    for (let channel of channels){
+        //Could have curried but meh
+        tables[channel.name] = Homework(channel.name);
+    }
+}
+
+const getNumTables = () => {
+    return Object.keys(tables).length
+};
 
 //Assumes that access has been granted
 //Check authorization before calling
@@ -24,7 +60,7 @@ async function getHomework(hwboardName,removeExpired=true){
                 return true;
             }
             return false
-        })
+        });
     } else {
         for(const homework of data){
             homework.channel = hwboardName;
@@ -172,6 +208,8 @@ async function whenHomeworkExpires(channel,callback){
 }
 
 module.exports = {
+    getNumTables,
+    generateHomeworkTables,
     getHomework,
     getNumHomework,
     getHomeworkAll,
