@@ -1,6 +1,6 @@
 const config = require("../loadConfig")
 const auth = require("../auth")
-const db = require("../database")
+const db = require("../controllers")
 const {MS_CLIENTID:clientId,MS_CLIENTSECRET:clientSecret,HOSTNAME:hostname,CI:testing} = config
 const request = require("request-promise-native")
 

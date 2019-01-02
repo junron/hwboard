@@ -3,12 +3,11 @@ const express = require('express');
 const authChannels = require("./authChannels")
 const renderer = require('../public/scripts/renderer')
 const router = express.Router();
-const db = require("../database")
+const db = require("../controllers")
 const config = require("../loadConfig")
 const {HOSTNAME:hostname,CI:testing} = config
 //Files to HTTP2 push for quicker page loading
 //TODO: find a library to auto push required files
- 
 //Server config
 // For nginx:
 //Add http2 directive
@@ -143,7 +142,7 @@ router.get('/', async (req, res) => {
       return
     }
     if(req.query.code && req.signedCookies.redirPath){
-      const url = require('url')
+      const url = require('url');
       return res.redirect(url.parse(req.signedCookies.redirPath).pathname)
     }
     const {channelData, adminChannels} = authData;
@@ -169,11 +168,11 @@ router.get('/', async (req, res) => {
     }else{
       reportErrors = true
     }
-    const beta = hostname === "beta.nushhwboard.tk"
-    const subjectChannelMapping = {}
-    const subjectTagMapping = {}
+    const beta = hostname === "beta.nushhwboard.tk";
+    const subjectChannelMapping = {};
+    const subjectTagMapping = {};
     for(const channelName in channelData){
-      const channel = channelData[channelName]
+      const channel = channelData[channelName];
       for (const subject of channel.subjects){
         //User is admin or higher of channel
         if(channel.permissions>=2){
@@ -185,12 +184,12 @@ router.get('/', async (req, res) => {
     return res.render('index', {renderer,sortType,data,sortOrder,admin,subjectChannelMapping,subjectTagMapping,reportErrors,beta})
   })()
   .catch(e=>{
-    res.render("error",{message:e.message||e.name,error:e})
-    console.log(e)
-    return
+    res.render("error",{message:e.message||e.name,error:e});
+    console.log(e);
+    return;
   })
   .catch(e=>{
-    res.status(500).end(e.toString())
+    res.status(500).end(e.toString());
     console.log("Unhandled error: ",e.toString())
   })
 });

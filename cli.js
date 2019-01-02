@@ -30,7 +30,7 @@ if(process.argv[2]==="restore"){
     const fileName = process.argv[3]
     const {sequelize,Channels} = require("./models")
     await sequelize.sync()
-    const {addHomework,init} = require("./database")
+    const {addHomework,init} = require("./controllers")
     await init()
     const fs  = require("fs")
     const json = JSON.parse(fs.readFileSync(fileName,'utf-8'))
@@ -84,7 +84,7 @@ if(process.argv[2]==="restore"){
     const fileName = process.argv[3]
     const {sequelize} = require("./models")
     await sequelize.sync()
-    const {getHomeworkAll,getUserChannels,init} = require("./database")
+    const {getHomeworkAll,getUserChannels,init} = require("./controllers")
     await init()
     const fs  = require("fs")
     const channelsRaw = await getUserChannels("*")
@@ -368,7 +368,7 @@ if(gitlab||process.argv[4]=="default"){
             console.log(config)
             r1.question("Is this okay? (Yes/no)  ",async answer=>{
               if(answer.toLowerCase()=="yes"){
-                const {init} = require("./database")
+                const {init} = require("./controllers")
                 const {sequelize,Channels} = require("./models")
                 await sequelize.sync()
                 const data = await Channels.findAll({
@@ -417,7 +417,7 @@ if(gitlab||process.argv[4]=="default"){
         name:"testing"
       }
     })
-    await require("./database").init()
+    await require("./controllers").init()
     sequelize.close()
   }()
 
