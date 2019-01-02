@@ -17,10 +17,19 @@ const {getStudentById} = require("../students");
 //Object to store hwboard channel tables
 const tables = {};
 
+//Creates tables based on `Homework` model dynamically
+async function generateHomeworkTables() {
+    const channels = await admin.getUserChannels("*");
+    for (let channel of channels){
+        //Could have curried but meh
+        tables[channel.name] = Homework(channel.name);
+    }
+}
+
 //Generate tables
 async function init(){
     await sequelize.sync();
-    await homework.generateHomeworkTables();
+    await generateHomeworkTables();
     return sequelize.sync()
 }
 
