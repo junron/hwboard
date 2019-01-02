@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const authChannels = require("./authChannels")
-const db = require("../database")
+const db = require("../controllers")
 const {Readable} = require("stream")
 const Json2csvStream = require('json2csv').Transform
 

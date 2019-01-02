@@ -29,8 +29,8 @@ function convertHomework(arrHomework) {
 
 function updateHomework() {
     hwboard.getHomework(false).then(async ({promises})=>{
-        const p1 = await promises[0]
-        const p2 = await promises[1]
+        const p1 = await promises[0];
+        const p2 = await promises[1];
         let hw
         if(p1 && (p1.length>p2.length || !p2)){
             hw = p1

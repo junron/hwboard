@@ -1,8 +1,8 @@
-const express = require('express')
-const router = express.Router()
-const db = require("../database")
+const express = require('express');
+const router = express.Router();
+const db = require("../controllers");
 const EventEmitter = require('events');
-const auth = require("../auth")
+const auth = require("../auth");
 let io
 
 class socketIO extends EventEmitter {}
@@ -13,8 +13,8 @@ router.post("/api/:method",(req, res, next) => {
     if(!io){
       io = require("../app").io
     }
-    const socket = new socketIO()
-    const {method} = req.params
+    const socket = new socketIO();
+    const {method} = req.params;
 
     //Handle uncaught errors
     socket.on("uncaughtError",err=>{
@@ -29,15 +29,15 @@ router.post("/api/:method",(req, res, next) => {
     })
 
     try{
-      if(db.getNumTables()==0){
+      if(db.getNumTables()===0){
         await db.init()
       }
-      const token = req.signedCookies.token
-      const tokenClaims = await auth.verifyToken(token)
-      socket.userData = tokenClaims
-      const channels = await db.getUserChannels(socket.userData.preferred_username)
+      const token = req.signedCookies.token;
+      const tokenClaims = await auth.verifyToken(token);
+      socket.userData = tokenClaims;
+      const channels = await db.getUserChannels(socket.userData.preferred_username);
       //Client cannot access socket object, so authorization data is safe and trustable.
-      socket.channels = {}
+      socket.channels = {};
       for (let channel of channels){
         //Add user to rooms
         //Client will receive relevant events emitted to these rooms,
@@ -98,15 +98,15 @@ router.post("/api/:method",(req, res, next) => {
     }
   })()
   .catch((e)=>{
-    let code
+    let code;
     if(err.toString().includes("Please check if the homework you want to")){
-      code = 409
+      code = 409;
       console.log({err})
     }else{
       code = err.code || 500
     }
     res.status(code).end(err.toString().replace("Error: ",""))
   })
-})
+});
 
-module.exports = router
+module.exports = router;

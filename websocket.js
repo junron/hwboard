@@ -1,4 +1,4 @@
-const db = require("./database")
+const db = require("./controllers")
 const auth = require("./auth")
 const cookieParser = require('socket.io-cookie-parser')
 
