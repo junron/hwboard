@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 router.get("/cache/reset",(req, res) => {
-  ;(async ()=>{
+  (async ()=>{
     res.type("html")
     res.end(`
     <script>
@@ -16,11 +16,11 @@ router.get("/cache/reset",(req, res) => {
     </script>
     `)
   })()
-  .catch((e)=>{
-    const code = e.code || 500
-    res.status(code).end(e.toString())
-    console.log(e)
-  })
+    .catch((e)=>{
+      const code = e.code || 500
+      res.status(code).end(e.toString())
+      console.log(e)
+    })
 })
 
 module.exports = router

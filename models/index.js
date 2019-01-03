@@ -79,12 +79,12 @@ if(!psql && cockroachSecure && process.env.CI_PROJECT_NAME!=="hwboard2"){
 }
 const sequelize = new Sequelize(dbName,dbUser,dbPassword,config)
 sequelize.authenticate()
-.then(() => {
-  console.log('Connection has been established successfully.')
-})
-.catch(err => {
-  console.error('Unable to connect to the database:', err)
-})
+  .then(() => {
+    console.log('Connection has been established successfully.')
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err)
+  })
 
 //Export the model creator because we may need to create more tables later, on demand
 //Should i curry this?

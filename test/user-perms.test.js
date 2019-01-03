@@ -1,14 +1,13 @@
 const chai = require("chai")
 const request = require("request")
 chai.use(require('chai-uuid'))
-const mocha = require("mocha")
 const {expect} = chai
 const io = require('socket.io-client')
 const websocket = require("../app").server
 const {COOKIE_SECRET:password,PORT:port} = require("../loadConfig")
 
 const switchUser = name=>{
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     request.get("http://localhost:" + port+"/testing/su/",{
       qs:{
         switchUserName:name,
@@ -112,6 +111,18 @@ describe("Hwboard user access control",function(){
     }
     memberClient.emit("addReq",homework,err=>{
       expect(err).to.not.be.null
+      done()
+    })
+  })
+
+  it("Should not allow subject to be deleted if homework still exists",function(done){
+    const req = {
+      channel:"testing",
+      subject:"math"
+    }
+    rootClient.emit("removeSubject",req,err=>{
+      expect(err).to.not.be.null
+      expect(err.toString()).to.equal("Error: Subjects with homework existing cannot be removed")
       done()
     })
   })

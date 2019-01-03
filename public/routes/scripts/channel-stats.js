@@ -281,8 +281,8 @@ function renderHomeworkDateChart(data){
         yAxes: [{
           display: true,
           ticks: {
-              suggestedMax: 10,    
-              beginAtZero: true
+            suggestedMax: 10,    
+            beginAtZero: true
           }
         }]
       },

@@ -1,9 +1,9 @@
-;(async ()=>{
+(async ()=>{
   const promises = [
     fetch("/cd/version.json?useCache")
-    .then(res=>res.json()),
+      .then(res=>res.json()),
     fetch("/cd/version.json?noCache")
-    .then(res=>res.json())
+      .then(res=>res.json())
   ]
   const result = await Promise.all(promises)
   if(typeof setSentryRelease === "function"){

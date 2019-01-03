@@ -5,7 +5,7 @@ function promisifyAll(moduleObj) {
       moduleObj[thing] = promisify(moduleObj[thing])
     }
   }
-	return moduleObj
+  return moduleObj
 }
 
 const express = require('express')
@@ -40,7 +40,7 @@ async function auth(req){
   }
 }
 router.get("/cd/update",(req, res) => {
-  ;(async ()=>{
+  (async ()=>{
     const {commitSHA} = req.query
     const rename = promisify(require("fs").rename)
     pm2.connect = promisify(pm2.connect)
@@ -58,11 +58,11 @@ router.get("/cd/update",(req, res) => {
     await pm2.disconnect()
     console.log("Done")
   })()
-  .catch((e)=>{
-    console.log(e)
-    const code = e.code || 500
-    res.status(code).end(e.toString())
-  })
+    .catch((e)=>{
+      console.log(e)
+      const code = e.code || 500
+      res.status(code).end(e.toString())
+    })
 })
 
 module.exports = router

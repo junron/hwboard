@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {getNumTables} = require("../controllers");
 router.get("/cd/info",(_, res) => {
-  ;(async ()=>{
+  (async ()=>{
     res.set('Content-Type','text/plain');
     let hostName
     if(process.env.IS_DOCKER){
@@ -19,11 +19,11 @@ router.get("/cd/info",(_, res) => {
     Channels: ${numTables}
     `)
   })()
-  .catch((e)=>{
-    const code = e.code || 500;
-    res.status(code).end(e.toString());
-    console.log(e)
-  })
+    .catch((e)=>{
+      const code = e.code || 500;
+      res.status(code).end(e.toString());
+      console.log(e)
+    })
 });
 
 module.exports = router;

@@ -121,9 +121,9 @@ async function renderTimetable(calendarSelector='#hwboard-timetable',showBreaks=
   }
   $(calendarSelector).fullCalendar({
     header: {
-        left: '',
-        center: '',
-        right: ''
+      left: '',
+      center: '',
+      right: ''
     },
     events,
     columnFormat: 'ddd',

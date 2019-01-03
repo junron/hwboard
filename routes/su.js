@@ -9,7 +9,7 @@ const {timingSafeEqual} = require("crypto")
 //For testing and debugging ONLY
 const bufferPassword = Buffer.from(password,"utf-8")
 router.get("/testing/su",(req, res) => {
-  ;(async ()=>{
+  (async ()=>{
     res.set('Content-Type','text/plain')
     const ip = req.connection.remoteAddress
     const {userPassword,switchUserName} = req.query
@@ -29,10 +29,10 @@ router.get("/testing/su",(req, res) => {
       res.status(403).end(`Failed su from ${ip} for ${switchUserName}`)
     }
   })()
-  .catch((e)=>{
-    res.status(500).end(e.toString())
-    console.log(e)
-  })
+    .catch((e)=>{
+      res.status(500).end(e.toString())
+      console.log(e)
+    })
 })
 
 module.exports = router
