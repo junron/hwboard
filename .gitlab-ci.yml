@@ -40,6 +40,12 @@ test:
     - artifacts
     expire_in: 1 week
     when: always
+lint:
+  stage: test
+  script:
+  - npm -v
+  - node --version
+  - npm run lint
 # deploy_beta:
 #   stage: deploy
 #   script:

@@ -42,7 +42,7 @@ const getNumTables = () => {
 async function getHomework(hwboardName,removeExpired=true){
   const Homework = tables[hwboardName];
   if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found: "+hwboardName);
+    throw new Error("Homework table could not be found: "+hwboardName);
   }
   const data = await Homework.findAll({
     raw: true
@@ -73,7 +73,7 @@ async function getHomework(hwboardName,removeExpired=true){
 async function getNumHomework({channel,subject,graded=0,startDate=Infinity,endDate=Infinity}){
   const Homework = tables[channel];
   if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found");
+    throw new Error("Homework table could not be found");
   }
   const Op = Sequelize.Op;
   const where = {
@@ -105,7 +105,7 @@ async function getHomeworkAll(channels,removeExpired=true){
 async function addHomework(hwboardName,newHomework){
   const Homework = tables[hwboardName];
   if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found")
+    throw new Error("Homework table could not be found")
   }
   //Very important step...
   newHomework = await removeXss(newHomework);
@@ -125,7 +125,7 @@ async function editHomework(hwboardName,newHomework){
   const Homework = tables[hwboardName];
   const Op = Sequelize.Op;
   if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found");
+    throw new Error("Homework table could not be found");
   }
   newHomework = await removeXss(newHomework);
   //Disallow the modification of overdue homework
@@ -160,7 +160,7 @@ async function deleteHomework(hwboardName,homeworkId){
   const Homework = tables[hwboardName];
   const Op = Sequelize.Op;
   if(typeof Homework==="undefined"){
-    throw new Error("Homework table cound not be found");
+    throw new Error("Homework table could not be found");
   }
   //Disallow the modification of overdue homework
   //Except in testing
