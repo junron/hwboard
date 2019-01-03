@@ -81,7 +81,13 @@ module.exports = (socket,io,db)=>{
     ;(async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3)
       const {channel} = msg
-      console.log(msg)
+      const numHomework = await db.getNumHomework({
+        channel,
+        subject:msg.subject
+      })
+      if(numHomework!==0){
+        throw new Error("Subjects with homework existing cannot be removed")
+      }
       await db.removeSubject(msg)
       updateChannels(db.arrayToObject(await db.getUserChannels("*")))
       const thisChannel = socket.channels[channel]

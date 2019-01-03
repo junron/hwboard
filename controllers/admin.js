@@ -101,7 +101,6 @@ async function addSubject(channelData){
 async function removeSubject(channelData){
     let {channel,subject} = channelData;
     subject = xss(subject);
-    console.log(channel,subject);
     const originalDataArray = (await Channels.findAll({
         where:{
             name:channel
