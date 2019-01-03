@@ -143,9 +143,9 @@ async function backgroundSync(url,body){
         Framework7App.dialog.confirm("You are currently offline. Your homework will be "+action+" ASAP.")
       }
       console.log({type:"sync",
-      data:{
-        url,
-        options:{
+        data:{
+          url,
+          options:{
             method:"POST",
             headers: {
               'Accept': 'application/json',
@@ -153,19 +153,19 @@ async function backgroundSync(url,body){
             },
             body:JSON.stringify(body)
           }
-      }
-    })
+        }
+      })
       const id = promiseServiceWorker.postMessage({type:"sync",
         data:{
           url,
           options:{
-              method:"POST",
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body:JSON.stringify(body)
-            }
+            method:"POST",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(body)
+          }
         }
       })
       return resolve(id)

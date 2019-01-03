@@ -136,35 +136,35 @@ app.use((req, res, next) => {
   next(err);
 });
   
-  // error handlers
+// error handlers
   
-  // development error handler
-  // will print stacktrace
-  if (app.get('env') === 'development' && hostName!="nushhwboard.tk") {
-    app.use((err, req, res, next) => {
-      res.status(err.status || 500);
-      res.render('error', {
-        message: err.message,
-        error: err
-      });
-    });
-  }
-  
-  // production error handler
-  // no stackTraces leaked to user
-  app.use((err, req, res, next) => {
-    Raven.captureException(err)
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development' && hostName!="nushhwboard.tk") {
+  app.use((err, req, res) => {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
-      error: {}
+      error: err
     });
   });
-  require("./controllers").init().then(()=>{
-    console.log("Inited")
-  })
-  module.exports= {
-    server,
-    app,
-    io,
-  };
+}
+  
+// production error handler
+// no stackTraces leaked to user
+app.use((err, req, res) => {
+  Raven.captureException(err)
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
+require("./controllers").init().then(()=>{
+  console.log("Inited")
+})
+module.exports= {
+  server,
+  app,
+  io,
+};

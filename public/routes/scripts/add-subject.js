@@ -5,12 +5,12 @@ const addSubjectTiming = start => {
   const startTime = start.getHours() * 100 + start.getMinutes()
   const endTime = (startTime + 30) % 100==60 ? startTime + 70 : startTime + 30
   addSubjectTimings[day] = addSubjectTimings[day] === undefined 
-  ? [[startTime,endTime]]
-  : [...addSubjectTimings[day],[startTime,endTime]]
+    ? [[startTime,endTime]]
+    : [...addSubjectTimings[day],[startTime,endTime]]
   addSubjectTimings[day] = addSubjectTimings[day].sort(([a],[b])=>{
     return a>b ? 1 
-    : b>a ? -1 
-    : 0
+      : b>a ? -1 
+        : 0
   })
   updateDisabledStatus()
 }
@@ -22,8 +22,8 @@ const removeSubjectTiming = start => {
   addSubjectTimings[day].splice(index,1)
   addSubjectTimings[day] = addSubjectTimings[day].sort(([a],[b])=>{
     return a>b ? 1 
-    : b>a ? -1 
-    : 0
+      : b>a ? -1 
+        : 0
   })
   if(addSubjectTimings[day].length===0) delete addSubjectTimings[day]
   updateDisabledStatus()
@@ -64,14 +64,14 @@ const addSubject = _ =>{
 
 const updateDisabledStatus = _ =>{
   checkIfComplete() 
-  ? $(".page-current #add-subject").removeClass("disabled") 
-  : $(".page-current #add-subject").addClass("disabled")
+    ? $(".page-current #add-subject").removeClass("disabled") 
+    : $(".page-current #add-subject").addClass("disabled")
 }
 
 const checkIfComplete = _ => $("#subjectInput").val().trim().length === 0 
-? false 
-: Object.keys(addSubjectTimings).length !== 0
-? true : false
+  ? false 
+  : Object.keys(addSubjectTimings).length !== 0
+    ? true : false
 
 //Event listeners
 $(document).on("input",".page-current #subjectInput",updateDisabledStatus)

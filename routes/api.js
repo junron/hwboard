@@ -7,7 +7,7 @@ let io
 
 class socketIO extends EventEmitter {}
 
-router.post("/api/:method",(req, res, next) => {
+router.post("/api/:method",(req, res) => {
   console.log("Loaded API route")
   ;(async ()=>{
     if(!io){
@@ -97,16 +97,16 @@ router.post("/api/:method",(req, res, next) => {
       return res.status(400).end("Invalid method")
     }
   })()
-  .catch((e)=>{
-    let code;
-    if(err.toString().includes("Please check if the homework you want to")){
-      code = 409;
-      console.log({err})
-    }else{
-      code = err.code || 500
-    }
-    res.status(code).end(err.toString().replace("Error: ",""))
-  })
+    .catch(err=>{
+      let code;
+      if(err.toString().includes("Please check if the homework you want to")){
+        code = 409;
+        console.log({err})
+      }else{
+        code = err.code || 500
+      }
+      res.status(code).end(err.toString().replace("Error: ",""))
+    })
 });
 
 module.exports = router;

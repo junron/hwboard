@@ -10,7 +10,7 @@ simpleGit.show = promisify(show)
 simpleGit.log = promisify(log)
 
 router.get("/cd/version.json",(req, res) => {
-  ;(async ()=>{
+  (async ()=>{
     const promiseArr = [
       simpleGit.revparse(["--abbrev-ref","HEAD"]),
       simpleGit.revparse(["HEAD"]),
@@ -25,14 +25,14 @@ router.get("/cd/version.json",(req, res) => {
       lastUpdate
     }))
   })()
-  .catch((e)=>{
-    const code = e.code || 500
-    res.status(code).end(e.toString())
-    console.log(e)
-  })
+    .catch((e)=>{
+      const code = e.code || 500
+      res.status(code).end(e.toString())
+      console.log(e)
+    })
 })
 router.get("/cd/version",(req, res) => {
-  ;(async ()=>{
+  (async ()=>{
     res.set('Content-Type','text/plain')
     await simpleGit.fetch()
     const promiseArr = [
@@ -59,11 +59,11 @@ ${latest}
 ${thisCommit}
     `)
   })()
-  .catch((e)=>{
-    const code = e.code || 500
-    res.status(code).end(e.toString())
-    console.log(e)
-  })
+    .catch((e)=>{
+      const code = e.code || 500
+      res.status(code).end(e.toString())
+      console.log(e)
+    })
 })
 
 module.exports = router

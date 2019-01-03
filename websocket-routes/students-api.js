@@ -10,7 +10,7 @@ module.exports = socket=>{
   const uncaughtErrorHandler = require("./error")(socket)
 
   socket.on("studentDataReq",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       const {method,data} = msg
       const methodList = {
         "getStudentById":200,
@@ -47,13 +47,13 @@ module.exports = socket=>{
       const result = await students[method](data)
       return callback(null,result)
     })()
-    .catch(e => {
-      console.log(e)
-      throw e
-    })
-    .catch(e => callback(e.toString()))
+      .catch(e => {
+        console.log(e)
+        throw e
+      })
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 
 }

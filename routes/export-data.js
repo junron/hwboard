@@ -11,8 +11,8 @@ const removePersonalData = homework =>{
   delete homeworkClone.lastEditTime
   return homeworkClone
 }
-router.get("/:channelName/data.json",(req, res, next) => {
-  ;(async ()=>{
+router.get("/:channelName/data.json",(req, res) => {
+  (async ()=>{
     const authData = await authChannels(req,res)
     if(authData=="redirected"){
       return
@@ -23,25 +23,25 @@ router.get("/:channelName/data.json",(req, res, next) => {
       res.setHeader('Content-disposition', 'attachment; filename='+req.params.channelName+'.data.json')
       res.type("json")
       const data = (await db.getHomework(req.params.channelName,false))
-      .map(removePersonalData)
+        .map(removePersonalData)
       res.send(JSON.stringify(data))
     }else{
       res.status(404).end("Channel not found")
     }
   })()
-  .catch(e=>{
-    res.render("error",{message:e.message||e.name,error:e})
-    console.log(e)
-    return
-  })
-  .catch(e=>{
-    res.status(500).end(e.toString())
-    console.log("Unhandled error: ",e.toString())
-  })
+    .catch(e=>{
+      res.render("error",{message:e.message||e.name,error:e})
+      console.log(e)
+      return
+    })
+    .catch(e=>{
+      res.status(500).end(e.toString())
+      console.log("Unhandled error: ",e.toString())
+    })
 })
 
 router.get("/:channelName/data.csv",(req, res) => {
-  ;(async ()=>{
+  (async ()=>{
     const authData = await authChannels(req,res)
     if(authData=="redirected"){
       return
@@ -52,7 +52,7 @@ router.get("/:channelName/data.csv",(req, res) => {
       res.setHeader('Content-disposition', 'attachment; filename='+req.params.channelName+'.data.csv')
       res.type("csv")
       const data = (await db.getHomework(req.params.channelName,false))
-      .map(removePersonalData)
+        .map(removePersonalData)
       const dataStream = new Readable()
       dataStream._read = () => {};
       dataStream.push(JSON.stringify(data))
@@ -69,25 +69,25 @@ router.get("/:channelName/data.csv",(req, res) => {
       const toCSV = new Json2csvStream(options, transformOptions)
 
       dataStream
-      .pipe(toCSV)
-      .pipe(res)
+        .pipe(toCSV)
+        .pipe(res)
     }else{
       res.status(404).end("Channel not found")
     }
   })()
-  .catch(e=>{
-    res.render("error",{message:e.message||e.name,error:e})
-    console.log(e)
-    return
-  })
-  .catch(e=>{
-    res.status(500).end(e.toString())
-    console.log("Unhandled error: ",e.toString())
-  })
+    .catch(e=>{
+      res.render("error",{message:e.message||e.name,error:e})
+      console.log(e)
+      return
+    })
+    .catch(e=>{
+      res.status(500).end(e.toString())
+      console.log("Unhandled error: ",e.toString())
+    })
 })
 
-router.get("/data.json",(req, res, next) => {
-  ;(async ()=>{
+router.get("/data.json",(req, res) => {
+  (async ()=>{
     const authData = await authChannels(req,res)
     if(authData=="redirected"){
       return
@@ -99,19 +99,19 @@ router.get("/data.json",(req, res, next) => {
       .map(removePersonalData)
     res.send(JSON.stringify(data))
   })()
-  .catch(e=>{
-    res.render("error",{message:e.message||e.name,error:e})
-    console.log(e)
-    return
-  })
-  .catch(e=>{
-    res.status(500).end(e.toString())
-    console.log("Unhandled error: ",e.toString())
-  })
+    .catch(e=>{
+      res.render("error",{message:e.message||e.name,error:e})
+      console.log(e)
+      return
+    })
+    .catch(e=>{
+      res.status(500).end(e.toString())
+      console.log("Unhandled error: ",e.toString())
+    })
 })
 
 router.get("/data.csv",(req, res) => {
-  ;(async ()=>{
+  (async ()=>{
     const authData = await authChannels(req,res)
     if(authData=="redirected"){
       return
@@ -133,17 +133,17 @@ router.get("/data.csv",(req, res) => {
     const toCSV = new Json2csvStream(options, transformOptions)
 
     dataStream
-    .pipe(toCSV)
-    .pipe(res)
+      .pipe(toCSV)
+      .pipe(res)
   })()
-  .catch(e=>{
-    res.render("error",{message:e.message||e.name,error:e})
-    console.log(e)
-    return
-  })
-  .catch(e=>{
-    res.status(500).end(e.toString())
-    console.log("Unhandled error: ",e.toString())
-  })
+    .catch(e=>{
+      res.render("error",{message:e.message||e.name,error:e})
+      console.log(e)
+      return
+    })
+    .catch(e=>{
+      res.status(500).end(e.toString())
+      console.log("Unhandled error: ",e.toString())
+    })
 })
 module.exports = router

@@ -55,17 +55,17 @@ function addCacheHeader(response){
     return response
   }
   if((response.url.endsWith(".css")||response.url.endsWith(".ttf")||response.url.indexOf("min")>-1||response.url.indexOf("io")>-1)&&response){
-  const newHeaders = new Headers(response.headers);
-          newHeaders.append("Cache-Control","public, max-age=31536000");
-          const newResponse = new Response(response.body, {
-          status: response.status,
-          statusText: response.statusText,
-          headers: newHeaders
-        });
-          return newResponse
-      }else{
-        return response
-      }
+    const newHeaders = new Headers(response.headers);
+    newHeaders.append("Cache-Control","public, max-age=31536000");
+    const newResponse = new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: newHeaders
+    });
+    return newResponse
+  }else{
+    return response
+  }
 }
 self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim())
@@ -101,68 +101,68 @@ self.addEventListener('fetch',function(event) {
               }))
             },1000)
             fetch(event.request)
-            .then(response=>{
-              clearTimeout(timer)
-              resolve(response)
-            })
+              .then(response=>{
+                clearTimeout(timer)
+                resolve(response)
+              })
           })
-          .then(networkResponse=>{
+            .then(networkResponse=>{
             //Dont cache stuffs
-            if((!url.includes("?useCache")) &&
+              if((!url.includes("?useCache")) &&
              (url.includes("transport=polling") || 
              url.includes("/cd/") || 
              url.includes("checkVersion.js") ||
              url.includes("api/") ||
              url.includes("?noCache"))){
-              return networkResponse;
-            }
-            if(networkResponse.ok){
+                return networkResponse;
+              }
+              if(networkResponse.ok){
               //Request successful, add to cache
-              cache.put(event.request, networkResponse.clone());
-              console.log(`Cached ${url}`)
-              //For debugging and testing - Delay loading
-              if(queryString.includes("delay=")){
-                const delayScripts = queryString.replace("delay=","").split(",")
-                let delay = false
-                for(const delayScript of delayScripts){
-                  if(url.includes(delayScript) /* || Math.random()>0.5 */){
-                    delay = true
-                    console.log(`%c Delayed ${url.split("/")[url.split("/").length-1]}`,"color:red")
-                    return new Promise(resolve=>{
-                      setTimeout(_=>{
-                        resolve(networkResponse)
-                      },3000)
-                    })
+                cache.put(event.request, networkResponse.clone());
+                console.log(`Cached ${url}`)
+                //For debugging and testing - Delay loading
+                if(queryString.includes("delay=")){
+                  const delayScripts = queryString.replace("delay=","").split(",")
+                  let delay = false
+                  for(const delayScript of delayScripts){
+                    if(url.includes(delayScript) /* || Math.random()>0.5 */){
+                      delay = true
+                      console.log(`%c Delayed ${url.split("/")[url.split("/").length-1]}`,"color:red")
+                      return new Promise(resolve=>{
+                        setTimeout(()=>{
+                          resolve(networkResponse)
+                        },3000)
+                      })
+                    }
                   }
-                }
-                if(!delay){
+                  if(!delay){
+                    return networkResponse
+                  }
+                }else{
                   return networkResponse
                 }
+                //Something went wrong
               }else{
-                return networkResponse
-              }
-            //Something went wrong
-            }else{
               //Redirect user to microsoft login
               //https://github.com/whatwg/fetch/issues/127
-              if(networkResponse.ok!==false || networkResponse.type=="opaqueredirect"){
-                return networkResponse
-              }
-              //Other network error
-              console.log(`Failed to fetch from network ${url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
-              if(!response){
+                if(networkResponse.ok!==false || networkResponse.type=="opaqueredirect"){
+                  return networkResponse
+                }
+                //Other network error
+                console.log(`Failed to fetch from network ${url}: Error code ${networkResponse.status} ${networkResponse.statusText}`)
+                if(!response){
                 //Likely 404
-                console.log("No cached response, returning errored response")
-                return networkResponse
+                  console.log("No cached response, returning errored response")
+                  return networkResponse
+                }
+                //Maybe server down
+                return response
               }
-              //Maybe server down
+            })
+            .catch(e=>{
+              console.log("An error occurred:",e)
               return response
-            }
-          })
-          .catch(e=>{
-            console.log("An error occurred:",e)
-            return response
-          })
+            })
           if(queryString.includes("delay=")){
             return fetchPromise
           }else{
@@ -190,36 +190,36 @@ registerPromiseWorker(async function (msg) {
 self.addEventListener("sync",async event =>{
   console.log(event)
   //event.waitUntil((async ()=>{
-    //Is hwboard-sync
-    if(event.tag.split("-").length===4 && syncs[event.tag]){
-      const sync = syncs[event.tag]
-      const {data,} = sync
-      const {url,options} = data
-      let action
-      if(url.includes("add")){
-        action="added."
-      }else if(url.includes("edit")){
-        action="edited."
-      }else if(url.includes("delete")){
-        action="deleted."
-      }
-      const response = await fetch(url,options)
-      const title = "Hwboard"
-      const notifOptions = {
-        icon:"/images/icons/favicon.png",
-      }
-
-      if(response.ok){
-        console.log(await response.json())
-        if(action===undefined){
-          notifOptions.body = "Your request has succeeded"
-        }else{
-          notifOptions.body = "Homework " + action
-        }
-      }else{
-        notifOptions.body = "Failed: " + await response.text()
-      }
-      return self.registration.showNotification(title, notifOptions)
+  //Is hwboard-sync
+  if(event.tag.split("-").length===4 && syncs[event.tag]){
+    const sync = syncs[event.tag]
+    const {data,} = sync
+    const {url,options} = data
+    let action
+    if(url.includes("add")){
+      action="added."
+    }else if(url.includes("edit")){
+      action="edited."
+    }else if(url.includes("delete")){
+      action="deleted."
     }
+    const response = await fetch(url,options)
+    const title = "Hwboard"
+    const notifOptions = {
+      icon:"/images/icons/favicon.png",
+    }
+
+    if(response.ok){
+      console.log(await response.json())
+      if(action===undefined){
+        notifOptions.body = "Your request has succeeded"
+      }else{
+        notifOptions.body = "Homework " + action
+      }
+    }else{
+      notifOptions.body = "Failed: " + await response.text()
+    }
+    return self.registration.showNotification(title, notifOptions)
+  }
   //})())
 })

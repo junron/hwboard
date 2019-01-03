@@ -37,21 +37,21 @@ async function authChannels(req,res){
         sameSite:"lax",
       })
       if(!(req.query&&req.query.code)){
-          console.log("redirected")
-          res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
+        console.log("redirected")
+        res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
           "response_type=code&"+
           `scope=https%3A%2F%2Fgraph.microsoft.com%2F${scopes.join("%20")}&`+
           `client_id=${clientId}&`+
           `redirect_uri=https://${hostname}/&`+
           "prompt=select_account&"+
           `response_mode=query`)
-          return "redirected"
+        return "redirected"
       }else{
         //Get id_token from auth code
         const code = req.query.code
         const options = {
-            method:"POST",
-            uri:"https://login.microsoftonline.com/common/oauth2/v2.0/token",
+          method:"POST",
+          uri:"https://login.microsoftonline.com/common/oauth2/v2.0/token",
           formData:{
             //grant_type:"id_token",
             grant_type:"authorization_code",
@@ -115,15 +115,15 @@ async function authChannels(req,res){
   //Yey my failed attempt at functional programming
   const adminChannels =
   channels
-  .filter(channel=>
+    .filter(channel=>
     //Only users with at least admin permissions can edit homework
-    channel.permissions>=2
-  )
-  .reduce((subjects,channel)=>{
+      channel.permissions>=2
+    )
+    .reduce((subjects,channel)=>{
     //Create object with channel names as keys and subject array as values
-    subjects[channel.name] = channel.subjects
+      subjects[channel.name] = channel.subjects
       return subjects
-  },{})
+    },{})
   return {
     channelData,
     adminChannels,
