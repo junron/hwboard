@@ -31,7 +31,7 @@ module.exports = (socket,db)=>{
   }
   //Get homework statistics/subject
   socket.on("homeworkSubjectData",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       let subjects = []
       const promises = []
       if(msg.channel==""){
@@ -62,15 +62,15 @@ module.exports = (socket,db)=>{
       callback(null,sorted)
       return null
     })()
-    .then(callback)
-    .catch(e => {console.log(e);callback(e.toString())})
+      .then(callback)
+      .catch(e => {console.log(e);callback(e.toString())})
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 
   //Get homework statistics/day
   socket.on("homeworkDayData",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       let data
       if(msg.channel ==""){
         data = await db.getHomeworkAll(socket.channels,false)
@@ -96,9 +96,9 @@ module.exports = (socket,db)=>{
       callback(null,result)
       return null
     })()
-    .then(callback)
-    .catch(e => {console.log(e);callback(e.toString())})
+      .then(callback)
+      .catch(e => {console.log(e);callback(e.toString())})
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 }

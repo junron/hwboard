@@ -20,7 +20,7 @@ const renderAdmins = (()=>{
     </div>`
     if(isRoot){
       if(permission!="Roots"){
-      person+=`<div class="swipeout-actions-left">
+        person+=`<div class="swipeout-actions-left">
         <a onclick="promoteMember(this.parentElement.parentElement)" class="swipeout-close" style="background-color:#4caf50">Promote</a>
       </div>`
       }
@@ -61,7 +61,7 @@ const renderAdmins = (()=>{
         const id = email.replace("@nushigh.edu.sg","")
         let name
         try{
-          ;({name} = await promisifiedSocketio({
+          ({name} = await promisifiedSocketio({
             method:"getStudentById",
             data:id
           }))

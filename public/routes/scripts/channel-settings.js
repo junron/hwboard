@@ -63,10 +63,10 @@ function deleteMember(memberElem){
   const memberId = memberEmail.replace("@nushigh.edu.sg","")
   Framework7App.dialog.confirm("Are you sure you want to remove "+memberEmail +"?",function(){
     conn.emit("removeMember",{channel,student:memberId},function(err){
-  if(err){
-    Framework7App.dialog.alert(err.toString())
-    throw new Error(err)
-  }
+      if(err){
+        Framework7App.dialog.alert(err.toString())
+        throw new Error(err)
+      }
       console.log("done")
     })
   })
@@ -76,10 +76,10 @@ function promoteMember(memberElem){
   const memberId = memberEmail.replace("@nushigh.edu.sg","")
   Framework7App.dialog.confirm("Are you sure you want to promote " + memberEmail + "?",function(){
     conn.emit("promoteMember",{channel,student:memberId},function(err){
-        if(err){
-    Framework7App.dialog.alert(err.toString())
-    throw new Error(err)
-  }
+      if(err){
+        Framework7App.dialog.alert(err.toString())
+        throw new Error(err)
+      }
       console.log("done")
     })
   })
@@ -89,10 +89,10 @@ function demoteMember(memberElem){
   const memberId = memberEmail.replace("@nushigh.edu.sg","")
   Framework7App.dialog.confirm("Are you sure you want to demote " + memberEmail + "?",function(){
     conn.emit("demoteMember",{channel,student:memberId},function(err){
-  if(err){
-    Framework7App.dialog.alert(err.toString())
-    throw new Error(err)
-  }
+      if(err){
+        Framework7App.dialog.alert(err.toString())
+        throw new Error(err)
+      }
       console.log("done")
     })
   })
@@ -102,10 +102,10 @@ function deleteSubject(subjectElem){
   const subjectName = subjectElem.children[0].children[0].children[0].innerText.split("\n")[0]
   Framework7App.dialog.confirm("Are you sure you want to delete " + subjectName + "?",function(){
     conn.emit("removeSubject",{channel,subject:subjectName},function(err){
-  if(err){
-    Framework7App.dialog.alert(err.toString())
-    throw new Error(err)
-  }
+      if(err){
+        Framework7App.dialog.alert(err.toString())
+        throw new Error(err)
+      }
       console.log("done")
     })
   })

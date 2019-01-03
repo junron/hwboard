@@ -27,7 +27,7 @@ const checkHomeworkValid = homework => {
   if(new Date(homework.dueDate)<=new Date()){
     throw "Homework date must be in the future"
   }
-  if(typeof homework.tags !== "object" || !homework.tags instanceof Array){
+  if(typeof homework.tags !== "object" || !(homework.tags instanceof Array)){
     throw "Homework tags is not an array"
   }
   if(homework.tags.length===0){
@@ -65,18 +65,18 @@ module.exports = (socket,io,db)=>{
         return callback(null,data)
       }
     })()
-    .catch(e=>{
-      console.log(e)
-      throw e
-    })
-    .catch(e => callback(e.toString()))
+      .catch(e=>{
+        console.log(e)
+        throw e
+      })
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
     
   //Add homework
   socket.on("addReq",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg)
       delete msg.id
       const {channel} = msg
@@ -104,13 +104,13 @@ module.exports = (socket,io,db)=>{
       })
       return callback(null)
     })()
-    .catch(e => {console.log(e);callback(e.toString())})
+      .catch(e => {console.log(e);callback(e.toString())})
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
   //Edit homework
   socket.on("editReq",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg)
       const {channel} = msg
       if(msg.previousHomeworkHash){
@@ -137,14 +137,14 @@ module.exports = (socket,io,db)=>{
       })
       return callback(null)
     })()
-    .catch(e => callback(e.toString()))
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 
   //Delete homework
   socket.on("deleteReq",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg)
       const {channel} = msg
       if(msg.previousHomeworkHash){
@@ -165,8 +165,8 @@ module.exports = (socket,io,db)=>{
       io.to(channel).emit("data",{channel,data})
       return callback(null)
     })()
-    .catch(e => callback(e.toString()))
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 }

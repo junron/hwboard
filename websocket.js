@@ -50,7 +50,7 @@ exports.createServer = function(server){
       socket.ready = false
       //Tell client socket status
       socket.on("isReady",(_,callback)=>{
-        ;(async ()=>{
+        (async ()=>{
           callback(socket.ready)
         })().catch(uncaughtErrorHandler)
       })
@@ -126,25 +126,25 @@ exports.createServer = function(server){
         }
       }
     })()
-    .then(async ()=>{
+      .then(async ()=>{
       //Administration
-      require("./websocket-routes/admin")(socket,io,db)
+        require("./websocket-routes/admin")(socket,io,db)
 
-      //Homework ops
-      require("./websocket-routes/homework")(socket,io,db)
+        //Homework ops
+        require("./websocket-routes/homework")(socket,io,db)
 
-      //Student data
-      require("./websocket-routes/students-api")(socket)
-      //Stats
-      require("./websocket-routes/analytics")(socket,db)
+        //Student data
+        require("./websocket-routes/students-api")(socket)
+        //Stats
+        require("./websocket-routes/analytics")(socket,db)
 
-      //For tests
-      require("./websocket-routes/tests")(socket)
+        //For tests
+        require("./websocket-routes/tests")(socket)
 
-      socket.ready = true
-      return socket.emit("ready")
+        socket.ready = true
+        return socket.emit("ready")
       })
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
 
     socket.on('disconnect', function(){
       console.log('user disconnected')

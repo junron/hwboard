@@ -25,7 +25,7 @@ module.exports = (socket,io,db)=>{
 
 
   socket.on("addChannel",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       let name = xss(msg)
       if(encodeURI(name)!==name){
         //Channel will be part of url
@@ -67,18 +67,18 @@ module.exports = (socket,io,db)=>{
       //disconnect to refresh channels
       return socket.disconnect()
     })()
-    .catch(e => {
-      console.log(e)
-      throw e
-    })
-    .catch(e => callback(e.toString()))
+      .catch(e => {
+        console.log(e)
+        throw e
+      })
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 
   //Remove subject
   socket.on("removeSubject",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3)
       const {channel} = msg
       const numHomework = await db.getNumHomework({
@@ -94,15 +94,15 @@ module.exports = (socket,io,db)=>{
       io.to(channel).emit("channelData",{[channel]:thisChannel})
       return null
     })()
-    .then(callback)
-    .catch(e => callback(e.toString()))
+      .then(callback)
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 
   //Add subject
   socket.on("addSubject",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3)
       const {channel} = msg
       await db.addSubject(msg)
@@ -111,15 +111,15 @@ module.exports = (socket,io,db)=>{
       io.to(channel).emit("channelData",{[channel]:thisChannel})
       return null
     })()
-    .then(callback)
-    .catch(e => callback(e.toString()))
+      .then(callback)
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 
   //Add tag
   socket.on("addTag",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3)
       const {channel,name,color} = msg
       if(name.trim().length===0){
@@ -134,10 +134,10 @@ module.exports = (socket,io,db)=>{
       io.to(channel).emit("channelData",{[channel]:thisChannel})
       return null
     })()
-    .then(callback)
-    .catch(e => callback(e.toString()))
+      .then(callback)
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
   //Add member
   socket.on("addMember",function(msg,callback){
@@ -151,14 +151,14 @@ module.exports = (socket,io,db)=>{
       io.to(channel).emit("channelData",{[channel]:thisChannel})
       return null
     })()
-    .then(callback)
-    .catch(e => callback(e.toString()))
+      .then(callback)
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
   //Remove members
   socket.on("removeMember",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3)
       const {channel,student} = msg
       await db.removeMember(channel,student)
@@ -167,14 +167,14 @@ module.exports = (socket,io,db)=>{
       io.to(channel).emit("channelData",{[channel]:thisChannel})
       return null
     })()
-    .then(callback)
-    .catch(e => callback(e.toString()))
+      .then(callback)
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
   //Promote member
   socket.on("promoteMember",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3)
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
@@ -192,14 +192,14 @@ module.exports = (socket,io,db)=>{
       io.to(channel).emit("channelData",{[channel]:thisChannel})
       return null
     })()
-    .then(callback)
-    .catch(e => callback(e.toString()))
+      .then(callback)
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
   //Demote member
   socket.on("demoteMember",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3)
       const numberToPermission = number => ["member","admin","root"][number-1]
       const {channel,student} = msg
@@ -217,20 +217,20 @@ module.exports = (socket,io,db)=>{
       io.to(channel).emit("channelData",{[channel]:thisChannel})
       return null
     })()
-    .then(callback)
-    .catch(e => callback(e.toString()))
+      .then(callback)
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 
   //Get channel data
   socket.on("channelDataReq",function(msg,callback){
-    ;(async ()=>{
+    (async ()=>{
       //Get channel data from all channels
       if(!msg.channel){
         const channels = await db.getUserChannels(socket.userData.preferred_username)
         const arrayChannels = []
-        for (channelName in channels){
+        for (const channelName in channels){
           arrayChannels.push(channels[channelName])
         }
         return [null,arrayChannels]
@@ -243,9 +243,9 @@ module.exports = (socket,io,db)=>{
       const thisChannel = socket.channels[channel]
       return [null,thisChannel]
     })()
-    .then(returnVals => callback(...returnVals))
-    .catch(e => callback(e.toString()))
+      .then(returnVals => callback(...returnVals))
+      .catch(e => callback(e.toString()))
     //Error in handling error
-    .catch(uncaughtErrorHandler)
+      .catch(uncaughtErrorHandler)
   })
 }

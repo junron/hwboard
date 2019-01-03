@@ -10,35 +10,35 @@ const homework = require("./homework");
 
 //Generate tables
 async function init(){
-    await sequelize.sync();
-    await homework.generateHomeworkTables();
-    return sequelize.sync()
+  await sequelize.sync();
+  await homework.generateHomeworkTables();
+  return sequelize.sync()
 }
 
 const arrayToObject = channelArrays => {
-    const result = {};
-    for (const channel of channelArrays){
-        result[channel.name] = channel
-    }
-    return result
+  const result = {};
+  for (const channel of channelArrays){
+    result[channel.name] = channel
+  }
+  return result
 };
 
 module.exports={
-    sequelize,
-    getHomework:homework.getHomework,
-    addHomework:homework.addHomework,
-    editHomework:homework.editHomework,
-    deleteHomework:homework.deleteHomework,
-    init,
-    getUserChannels:admin.getUserChannels,
-    getHomeworkAll:homework.getHomeworkAll,
-    addMember:admin.addMember,
-    arrayToObject,
-    removeMember:admin.removeMember,
-    addSubject:admin.addSubject,
-    getNumTables: homework.getNumTables,
-    whenHomeworkExpires:homework.whenHomeworkExpires,
-    getNumHomework:homework.getNumHomework,
-    removeSubject:admin.removeSubject,
-    addTag:admin.addTag
+  sequelize,
+  getHomework:homework.getHomework,
+  addHomework:homework.addHomework,
+  editHomework:homework.editHomework,
+  deleteHomework:homework.deleteHomework,
+  init,
+  getUserChannels:admin.getUserChannels,
+  getHomeworkAll:homework.getHomeworkAll,
+  addMember:admin.addMember,
+  arrayToObject,
+  removeMember:admin.removeMember,
+  addSubject:admin.addSubject,
+  getNumTables: homework.getNumTables,
+  whenHomeworkExpires:homework.whenHomeworkExpires,
+  getNumHomework:homework.getNumHomework,
+  removeSubject:admin.removeSubject,
+  addTag:admin.addTag
 };

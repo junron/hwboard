@@ -1,14 +1,13 @@
 const chai = require("chai")
 const request = require("request")
 chai.use(require('chai-uuid'))
-const mocha = require("mocha")
 const {expect} = chai
 const io = require('socket.io-client')
 const websocket = require("../app").server
 const {COOKIE_SECRET:password,PORT:port} = require("../loadConfig")
 
 const switchUser = name=>{
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     request.get("http://localhost:" + port+"/testing/su/",{
       qs:{
         switchUserName:name,

@@ -13,7 +13,7 @@ conn.on("data",({channel,data:channelData})=>{
   })
 });
 
-conn.on("channelData",_=>{
+conn.on("channelData",()=>{
   conn.emit("channelDataReq",{},(err,data)=>{
     if(err) throw err
     setSubjectVariables(data)

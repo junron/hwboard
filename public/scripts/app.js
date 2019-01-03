@@ -22,10 +22,12 @@ const Framework7App = new Framework7({
       on:{
         pageAfterIn:e=>{
           loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css",'/fullcalendar/dist/fullcalendar.min.css'])
-          .then(()=>{
-              while (!$("#hwboard-timetable").fullCalendar){}
+            .then(()=>{
+              while (!$("#hwboard-timetable").fullCalendar){
+                continue
+              }
               renderTimetable()
-          })
+            })
         }
       }
     },
@@ -65,53 +67,53 @@ const Framework7App = new Framework7({
         }
       },
       routes:[
-      {
-        name:"sort",
-        path: "/popups/sort/",
-        url:"/routes/sort.html",
-        on :{
-          pageInit: _=>{
+        {
+          name:"sort",
+          path: "/popups/sort/",
+          url:"/routes/sort.html",
+          on :{
+            pageInit: _=>{
             //Uncheck all
-            const radios = Array.from(document.querySelectorAll(`input[type=radio]`));
-            radios.forEach(radio => radio.checked = false);
-            const sortType = sortOptions.type || getCookie("sortType") || "Due date";
-            let sortOrder = sortOptions.order || 0;
-            document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
-            document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
-          }
-        },
-        modules:['checkbox','input','grid',"radio"]
-      },
-      {
-        name:"add-homework",
-        path: "/popups/add/",
-        url:"/routes/edit-homework.html",
-        on :{
-          pageBeforeIn:function(e,page){
-            $(page.el.querySelector("#edit-title")).text("Add homework")
+              const radios = Array.from(document.querySelectorAll(`input[type=radio]`));
+              radios.forEach(radio => radio.checked = false);
+              const sortType = sortOptions.type || getCookie("sortType") || "Due date";
+              let sortOrder = sortOptions.order || 0;
+              document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
+              document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
+            }
           },
-          pageAfterIn:function(e,page){
-            gradedCheckboxChecked = false
-            initEditHomeworkEvents()
-          }
+          modules:['checkbox','input','grid',"radio"]
         },
-        modules:['grid','input','dialog','smart-select','popup']
-      },
-      {
-        name:"edit-homework",
-        path: "/popups/edit/",
-        url:"/routes/edit-homework.html",
-        on :{
-          pageBeforeIn:(_,page)=>{
-            $(page.el.querySelector("#edit-title")).text("Edit homework")
+        {
+          name:"add-homework",
+          path: "/popups/add/",
+          url:"/routes/edit-homework.html",
+          on :{
+            pageBeforeIn:function(e,page){
+              $(page.el.querySelector("#edit-title")).text("Add homework")
+            },
+            pageAfterIn:function(e,page){
+              gradedCheckboxChecked = false
+              initEditHomeworkEvents()
+            }
           },
-          pageAfterIn:e=>{
-            initEditHomeworkEvents()
-          }
+          modules:['grid','input','dialog','smart-select','popup']
         },
-        modules:['grid','input','dialog','smart-select','popup']
-      }
-    ]
+        {
+          name:"edit-homework",
+          path: "/popups/edit/",
+          url:"/routes/edit-homework.html",
+          on :{
+            pageBeforeIn:(_,page)=>{
+              $(page.el.querySelector("#edit-title")).text("Edit homework")
+            },
+            pageAfterIn:e=>{
+              initEditHomeworkEvents()
+            }
+          },
+          modules:['grid','input','dialog','smart-select','popup']
+        }
+      ]
     },
     //Currently disabled 
     // As it adds extra complexity
@@ -210,23 +212,25 @@ const Framework7App = new Framework7({
         }
       }
     },
-      {
-          name: "calendar",
-          path: "/calendar/",
-          reloadPrevious: true,
-          animate: false,
-          url: "/calendar",
-          on: {
-              pageAfterIn: async e => {
-                const sources = ['/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.min.css'];
-                const target = e.currentTarget;
-                await loadSources(target, sources)
-                while (!$("#calendar").fullCalendar){}
-                calendarInit()
-              }
-          },
-          modules:['grid']
+    {
+      name: "calendar",
+      path: "/calendar/",
+      reloadPrevious: true,
+      animate: false,
+      url: "/calendar",
+      on: {
+        pageAfterIn: async e => {
+          const sources = ['/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.min.css'];
+          const target = e.currentTarget;
+          await loadSources(target, sources)
+          while (!$("#calendar").fullCalendar){
+            continue
+          }
+          calendarInit()
+        }
       },
+      modules:['grid']
+    },
     {
       name:"channelSettings",
       path:"/channels/:channelName/settings",
@@ -288,7 +292,7 @@ const Framework7App = new Framework7({
           modules:['grid','input','dialog']
         }
       ],
-    modules:['accordion']
+      modules:['accordion']
     },
   ],
   dialog:{
