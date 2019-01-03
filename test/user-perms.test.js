@@ -116,6 +116,18 @@ describe("Hwboard user access control",function(){
     })
   })
 
+  it("Should not allow subject to be deleted if homework still exists",function(done){
+    const req = {
+      channel:"testing",
+      subject:"math"
+    }
+    rootClient.emit("removeSubject",req,err=>{
+      expect(err).to.not.be.null
+      expect(err.toString()).to.equal("Error: Subjects with homework existing cannot be removed")
+      done()
+    })
+  })
+
   after(function(done){
     websocket.close()
     done()
