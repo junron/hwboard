@@ -6,7 +6,7 @@ function promisifyAll(moduleObj) {
       moduleObj[thing] = promisify(moduleObj[thing])
     }
   }
-	return moduleObj
+  return moduleObj
 }
 
 function uuid() {
@@ -26,7 +26,7 @@ function uuid() {
 //Please ignore it as it is only for the CLI
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2")
 if(process.argv[2]==="restore"){
-  ;(async ()=>{
+  (async ()=>{
     const fileName = process.argv[3]
     const {sequelize,Channels} = require("./models")
     await sequelize.sync()
@@ -80,7 +80,7 @@ if(process.argv[2]==="restore"){
     sequelize.close()
   })()
 }else if(process.argv[2]==="backup"){
-  ;(async ()=>{
+  (async ()=>{
     const fileName = process.argv[3]
     const {sequelize} = require("./models")
     await sequelize.sync()
@@ -102,7 +102,7 @@ if(process.argv[2]==="restore"){
     sequelize.close()
   })()
 }else if(process.argv[2]==="clear-old"){
-  ;(async ()=>{
+  (async ()=>{
     const dirName = process.argv[3]
     const fs  = promisifyAll(require('fs'));
     const path = require("path")
@@ -121,7 +121,7 @@ if(process.argv[2]==="restore"){
   })()
 }else if(process.argv[2]==="cockroach"){
   if(process.argv[3]==="config"){
-    ;(async ()=>{
+    (async ()=>{
       const {promisify} = require("util")
       const fs  = promisifyAll(require('fs'));
       const readline = require('readline')
@@ -233,13 +233,15 @@ if(process.argv[2]==="restore"){
       `)
     })()
   }else if(process.argv[3]==="create-ca"){
-    ;(async ()=>{
+    (async ()=>{
       const {promisify} = require('util');
       const execFile  = promisify(require('child_process').execFile);
       const mkdir = promisify(require('fs').mkdir)
       try{
         await Promise.all([mkdir("cockroach/certs"),mkdir("cockroach/ca-key")])
-      }catch(e){}
+      }catch(e){
+        // 
+      }
       await execFile("cockroach",["cert","create-ca","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
       console.log("CA key generated in `./cockroach/ca-key/ca.key`.")
       console.log("CA cert generated in `./cockroach/certs/ca.crt`.")
@@ -251,7 +253,7 @@ if(process.argv[2]==="restore"){
       await execFile("ssh-keygen",[ "-p", "-f", "./cockroach/ca-key/ca.key"])
     })()
   }else if(process.argv[3]==="create-node"){
-    ;(async ()=>{
+    (async ()=>{
       const {promisify} = require('util');
       const execFile  = promisify(require('child_process').execFile);
       await execFile("cockroach",["cert","create-node","localhost","host.docker.internal","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"])
@@ -261,7 +263,7 @@ if(process.argv[2]==="restore"){
       console.log("to the target server's certs directory to start a secure node.")
     })()
   }else if(process.argv[3]==="create-client"){
-    ;(async ()=>{
+    (async ()=>{
       const {promisify} = require('util');
       const execFile  = promisify(require('child_process').execFile);
       const readline = require('readline')
@@ -285,8 +287,8 @@ if(process.argv[2]==="restore"){
     var output = fs.createWriteStream("data.json")
     const input = fs.createReadStream("data.json.enc")
     input
-    .pipe(decrypt)
-    .pipe(output)
+      .pipe(decrypt)
+      .pipe(output)
   }
   const readline = require('readline')
   if(process.env.HWBOARD_DATA_PASSWORD){
@@ -301,115 +303,104 @@ if(process.argv[2]==="restore"){
     r1.close()
   })
 }else if(process.argv[2]+process.argv[3]=="addchannel"){
-let config ={
-  tags : {
-    "Graded" : "red",
-    "Optional" : "green"
-  }
-}
-if(gitlab||process.argv[4]=="default"){
-  config = {
-    name:"testing",
-    subjects:["math","chemistry"],
-    roots:["tester@nushigh.edu.sg"],
-    admins:[],
-    members:[],
+  let config ={
     tags : {
       "Graded" : "red",
       "Optional" : "green"
     }
   }
-  console.log("Using config:")
-  console.log(config)
-  ;(async()=>{
-    const {sequelize,Channels} = require("./models")
-    await sequelize.sync()
-    const data = await Channels.findAll({
-      where:{
-        name:config.name
-      },
-      raw: true
-    })
-    if(data.length>0){
-      console.log("Channel already exists. Exiting.")
-      sequelize.close()
-      return
-    }
-    await Channels.create(config)
-    console.log("channel created")
-    sequelize.close()
-  })()
-}else{
-  const notEmpty = string => string.length > 0
-  const readline = require('readline')
-  const r1 = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  })
-  r1.question("Channel name: (testing)  ",(answer="testing")=>{
-    if(answer==""){
-      answer ="testing"
-    }
-    config.name = answer
-    r1.question("Subjects (seperate with comma): ()  ",(answer)=>{
-      config.subjects = answer.split(",").filter(notEmpty)
-      if(config.subjects.length==0){
-        config.subjects = []
+  if(gitlab||process.argv[4]=="default"){
+    config = {
+      name:"testing",
+      subjects:["math","chemistry"],
+      roots:["tester@nushigh.edu.sg"],
+      admins:[],
+      members:[],
+      tags : {
+        "Graded" : "red",
+        "Optional" : "green"
       }
-      r1.question("Root users (seperate with comma): (h1710074@nushigh.edu.sg)  ",(answer="h1710074@nushigh.edu.sg")=>{
-        if(answer==""){
-          answer = "h1710074@nushigh.edu.sg"
+    }
+    console.log("Using config:")
+    console.log(config)
+    ;(async()=>{
+      const {sequelize,Channels} = require("./models")
+      await sequelize.sync()
+      const data = await Channels.findAll({
+        where:{
+          name:config.name
+        },
+        raw: true
+      })
+      if(data.length>0){
+        console.log("Channel already exists. Exiting.")
+        sequelize.close()
+        return
+      }
+      await Channels.create(config)
+      console.log("channel created")
+      sequelize.close()
+    })()
+  }else{
+    const notEmpty = string => string.length > 0
+    const readline = require('readline')
+    const r1 = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+    r1.question("Channel name: (testing)  ",(answer="testing")=>{
+      if(answer==""){
+        answer ="testing"
+      }
+      config.name = answer
+      r1.question("Subjects (seperate with comma): ()  ",(answer)=>{
+        config.subjects = answer.split(",").filter(notEmpty)
+        if(config.subjects.length==0){
+          config.subjects = []
         }
-        config.roots = answer.split(",")
-        r1.question("Admin users (seperate with comma): ()  ",(answer)=>{
-          config.admins = answer.split(",")
-          r1.question("Normal users (seperate with comma): ()  ",(answer="*")=>{
-            config.members = answer.split(",").filter(notEmpty)
-            console.log(config)
-            r1.question("Is this okay? (Yes/no)  ",async answer=>{
-              if(answer.toLowerCase()=="yes"){
-                const {init} = require("./controllers")
-                const {sequelize,Channels} = require("./models")
-                await sequelize.sync()
-                const data = await Channels.findAll({
-                  where:{
-                    name:config.name
-                  },
-                  raw: true
-                })
-                if(data.length>0){
-                  console.log("Channel already exists. Exiting.")
+        r1.question("Root users (seperate with comma): (h1710074@nushigh.edu.sg)  ",(answer="h1710074@nushigh.edu.sg")=>{
+          if(answer==""){
+            answer = "h1710074@nushigh.edu.sg"
+          }
+          config.roots = answer.split(",")
+          r1.question("Admin users (seperate with comma): ()  ",(answer)=>{
+            config.admins = answer.split(",")
+            r1.question("Normal users (seperate with comma): ()  ",(answer="*")=>{
+              config.members = answer.split(",").filter(notEmpty)
+              console.log(config)
+              r1.question("Is this okay? (Yes/no)  ",async answer=>{
+                if(answer.toLowerCase()=="yes"){
+                  const {init} = require("./controllers")
+                  const {sequelize,Channels} = require("./models")
+                  await sequelize.sync()
+                  const data = await Channels.findAll({
+                    where:{
+                      name:config.name
+                    },
+                    raw: true
+                  })
+                  if(data.length>0){
+                    console.log("Channel already exists. Exiting.")
+                    sequelize.close()
+                    return
+                  }
+                  await Channels.create(config)
+                  await init()
+                  console.log("channel created")
                   sequelize.close()
-                  return
+                  r1.close()
+                }else{
+                  console.log("operation cancelled")
+                  r1.close()
                 }
-                await Channels.create(config)
-                await init()
-                console.log("channel created")
-                sequelize.close()
-                r1.close()
-              }else{
-                console.log("operation cancelled")
-                r1.close()
-              }
+              })
             })
           })
         })
       })
     })
-  })
-}
-}else if(process.argv[2]=="reset-db-for-test"){
-  const config = {
-    name:"testing",
-    subjects:["math","chemistry"],
-    roots:["tester@nushigh.edu.sg"],
-    admins:[],
-    members:[],
-    tags : {
-      "Graded" : "red",
-      "Optional" : "green"
-    }
   }
+}else if(process.argv[2]=="reset-db-for-test"){
   void async function (){
     const {sequelize,Channels} = require("./models")
     await Channels.destroy({
@@ -460,7 +451,6 @@ if(gitlab||process.argv[4]=="default"){
     const config = {}
     ;(async ()=>{
       const crypto = require("crypto")
-      const randomBytes = util.promisify(crypto.randomBytes)
       const secret = (await crypto.randomBytes(32)).toString("base64")
       config.COOKIE_SECRET = secret
       console.log("Using 32 bytes (256 bits) of random data for cookie secret: \n",config.COOKIE_SECRET)
@@ -494,25 +484,25 @@ if(gitlab||process.argv[4]=="default"){
         console.log(`Please set the HWBOARD_PORT environment variable`)
       }
     })()
-    .then(async ()=>{
-      r1.close()
-      const fs = require("fs")
-      const writeFile = util.promisify(fs.writeFile)
-      const readFile = util.promisify(fs.readFile)
-      const writeConfig = writeFile("./config.json",JSON.stringify(config,null,2))
-      const readDockerCompose = readFile("./docker-compose.yml","utf-8")
-      let [dockerCompose] = await Promise.all([readDockerCompose,writeConfig])
-      dockerCompose = dockerCompose.replace(`3001:3001`,`${config.PORT}:${config.PORT}`)
-      await writeFile("./docker-compose.yml",dockerCompose)
-      console.log("Config complete")
-      console.log("Run `docker-compose up` to build images and start a container")
-      console.log("Check the documentation to find out how to add channels and start hwboard.")
-    })
-    .catch((e)=>{
-      console.log(e)
-      r1.close()
-      throw e
-    })
+      .then(async ()=>{
+        r1.close()
+        const fs = require("fs")
+        const writeFile = util.promisify(fs.writeFile)
+        const readFile = util.promisify(fs.readFile)
+        const writeConfig = writeFile("./config.json",JSON.stringify(config,null,2))
+        const readDockerCompose = readFile("./docker-compose.yml","utf-8")
+        let [dockerCompose] = await Promise.all([readDockerCompose,writeConfig])
+        dockerCompose = dockerCompose.replace(`3001:3001`,`${config.PORT}:${config.PORT}`)
+        await writeFile("./docker-compose.yml",dockerCompose)
+        console.log("Config complete")
+        console.log("Run `docker-compose up` to build images and start a container")
+        console.log("Check the documentation to find out how to add channels and start hwboard.")
+      })
+      .catch((e)=>{
+        console.log(e)
+        r1.close()
+        throw e
+      })
   }else{
     console.log(`\x1b[31m
       The data you input will be stored unencrypted in ./config.json.
@@ -534,8 +524,6 @@ if(gitlab||process.argv[4]=="default"){
     r1.question("Do you want to automatically generate a cookie secret? (yes/no)  ",async (answer)=>{
       if(answer.toLowerCase()=="yes"){
         const crypto = require("crypto")
-        const util = require('util')
-        const randomBytes = util.promisify(crypto.randomBytes)
         const secret = (await crypto.randomBytes(32)).toString("base64")
         config.COOKIE_SECRET = secret
         console.log("Using 32 bytes (256 bits) of random data: \n",config.COOKIE_SECRET)

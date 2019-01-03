@@ -4,7 +4,7 @@ const latencyCheck = ()=>{
     resolve:0,
     database:0,
   }
-  return new Promise((resolve,_)=>{
+  return new Promise(resolve=>{
     let start = performance.now()
     //Tests basic ping
     conn.emit("whoami",null,(_,email)=>{
@@ -22,7 +22,7 @@ const latencyCheck = ()=>{
         }
         //Get channels
         start = performance.now()
-        conn.emit("channelDataReq",{},_=>{
+        conn.emit("channelDataReq",{},()=>{
           latency.database = (performance.now()-start).toFixed(2)
           conn.emit("getHostName",hostname=>{
             latency.nodeId = hostname
@@ -45,7 +45,7 @@ const sendResults = async data=>{
   })
 }
 
-const getStats = async _=>{
+const getStats = async ()=>{
   const idBytes = await crypto.subtle.digest("SHA-512",new TextEncoder("utf-8").encode(getCookie("name")+getCookie("email")))
   const idBase64 = btoa(new Uint8Array(idBytes).reduce((data, byte) => data + String.fromCharCode(byte), ''))
   const release = (await (await fetch("/cd/version.json?useCache")).json()).commitSha
@@ -55,7 +55,7 @@ const getStats = async _=>{
         text:`Hwboard beta version ${JSON.stringify(release).slice(1,9)}`,
         closeTimeout:3000
       })
-   })
+    })
   }
   let storageUsage = "Not supported"
   //Navigator.storage.estimate not supported in Safari and Opera
@@ -73,7 +73,7 @@ const getStats = async _=>{
   }
 }
 
-;(async _=>{
+;(async ()=>{
   async function startCheck(){
     const results = await Promise.all([latencyCheck(),getStats()])
     const data = Object.assign(...results)

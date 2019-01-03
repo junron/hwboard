@@ -72,11 +72,11 @@ const renderer = (()=>{
       }
       html+= parseHomeworkSubject(homework)
     }
-      if(html==""){
-        return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
-      }
-      html+="</div></ul>";
-      return html
+    if(html==""){
+      return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
+    }
+    html+="</div></ul>";
+    return html
   };
   const parseHomeworkSubject = homework =>{
     const {
@@ -108,15 +108,15 @@ const renderer = (()=>{
       <div class="swipeout-actions-left hwboard-item-info">
         <a class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
       </div>`
-      if(subjectChannelMapping[subject]){
-        rendered += `<div class="swipeout-actions-right">
+    if(subjectChannelMapping[subject]){
+      rendered += `<div class="swipeout-actions-right">
             <a class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
             <a class="swipeout-close hwboard-item-delete" style="background-color:#f44336">Delete</a>
           </div>
         </li>
         `
-        }
-      return rendered;
+    }
+    return rendered;
   };
   const parseByDate = (data,order=0) => {
     data = data.filter(filterDue);
@@ -205,8 +205,8 @@ const renderer = (()=>{
 
     var result = "";
     for (i=0; i<str.length; i++) {
-        hex = str.charCodeAt(i).toString(16);
-        result += (hex).slice(-4);
+      hex = str.charCodeAt(i).toString(16);
+      result += (hex).slice(-4);
     }
 
     return result
@@ -277,32 +277,32 @@ const renderer = (()=>{
       icon = "&#xe873;";
     }
     let displayDate;
-    switch (daysLeft) {
-      case 0:
-        displayDate = "Due today";
-        break;
-      case 1:
-        displayDate = "Due tomorrow";
-        break;
-      default:
-        const getNumberOfSundays = date =>{
-          const absDate = Sugar.Date.create(Sugar.Date.format(date, "{d}/{M}/{yyyy}"), "en-GB")
-          const startDate = Sugar.Date.create("Today")
-          let num = 0;
-          while (startDate < absDate){
-            if(startDate.getDay()==0){
-              num++
-            }
-            Sugar.Date.addDays(startDate,1)
-          }
-          return num
-        };
-        if(daysLeft<=14 && getNumberOfSundays(dueDate2)==1){
-          displayDate = "Next ";
-          displayDate+=Sugar.Date.format(dueDate2,"%A")
-        }else{
-          displayDate = `${daysLeft} days left`
+    const getNumberOfSundays = date =>{
+      const absDate = Sugar.Date.create(Sugar.Date.format(date, "{d}/{M}/{yyyy}"), "en-GB")
+      const startDate = Sugar.Date.create("Today")
+      let num = 0;
+      while (startDate < absDate){
+        if(startDate.getDay()==0){
+          num++
         }
+        Sugar.Date.addDays(startDate,1)
+      }
+      return num
+    };
+    switch (daysLeft) {
+    case 0:
+      displayDate = "Due today";
+      break;
+    case 1:
+      displayDate = "Due tomorrow";
+      break;
+    default:
+      if(daysLeft<=14 && getNumberOfSundays(dueDate2)==1){
+        displayDate = "Next ";
+        displayDate+=Sugar.Date.format(dueDate2,"%A")
+      }else{
+        displayDate = `${daysLeft} days left`
+      }
     }
     return {
       dueDate,
@@ -319,7 +319,6 @@ const renderer = (()=>{
       displayDate,
       dueDate2,
       extra,
-      subject,
       subjectText
     }
   };

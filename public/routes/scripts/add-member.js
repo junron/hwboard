@@ -1,4 +1,4 @@
-;(async ()=>{
+(async ()=>{
   const permissionOptions = {
     shouldSort: true,
     threshold: 0.4,
