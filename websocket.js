@@ -1,6 +1,6 @@
 const db = require("./controllers");
 const auth = require("./auth");
-const cookieParser = require("socket.io-cookie-parser");
+const cookieParser = require('socket.io-cookie-parser');
 
 
 const globalChannels = {};
@@ -46,7 +46,7 @@ exports.createServer = function(server){
     const uncaughtErrorHandler = require("./websocket-routes/error")(socket);
 
     //Authentication
-    (async ()=>{
+    ;(async ()=>{
       socket.ready = false;
       //Tell client socket status
       socket.on("isReady",(_,callback)=>{
@@ -57,7 +57,7 @@ exports.createServer = function(server){
       //Authenticate user on connection
       //You can access cookies in websockets too!
       const token = socket.request.signedCookies.token;
-      if(db.getNumTables()=== 0){
+      if(db.getNumTables() === 0){
         await db.init();
       }
       if(Object.keys(globalChannels).length === 0){
@@ -71,7 +71,9 @@ exports.createServer = function(server){
         }
       }
       if(socket.request.signedCookies.username){
-        socket.userData = { preferred_username:socket.request.signedCookies.username };
+        socket.userData = {
+          preferred_username:socket.request.signedCookies.username
+        };
         socket.channels = {};
         const channels = await db.getUserChannels(socket.userData.preferred_username);
         for (const channel of channels){
@@ -166,11 +168,11 @@ module.exports.updateChannels = channels=>{
 module.exports.getPermissionLvl = (email,channelData) => {
   if(channelData.roots.includes(email)){
     return 3;
-  } else if (channelData.admins.includes(email)){
+  }else if(channelData.admins.includes(email)){
     return 2;
-  } else if (channelData.members.includes(email)){
+  }else if(channelData.members.includes(email)){
     return 1;
-  } else {
+  }else{
     return 0;
   }
 };

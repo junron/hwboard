@@ -1,7 +1,7 @@
-const channelRenderer = {}
+const channelRenderer = {};
 
 channelRenderer.renderer = channelData =>{
-  let html = ""
+  let html = "";
   for(const channelName in channelData){
     html += `<li class="item-content">
     <div class="item-inner">
@@ -13,11 +13,11 @@ channelRenderer.renderer = channelData =>{
         <a class="button" href="/channels/${channelName}/analytics">Stats</a>
       </div>
     </div>
-  </li>`
+  </li>`;
   }
-  return html
-}
+  return html;
+};
 
 if(typeof navigator=="undefined"){
-  module.exports =  channelRenderer.renderer
+  module.exports =  channelRenderer.renderer;
 }

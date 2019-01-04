@@ -5,7 +5,7 @@ const renderAdmins = (()=>{
       ${role}
     </div>
     </div>
-  </li>`
+  </li>`;
   const newPerson = (name,email,permission,isRoot)=>{
     let person = `<li class="swipeout item-content">
     <div class="swipeout-content item-content">
@@ -17,64 +17,64 @@ const renderAdmins = (()=>{
             </div>
         </div>
       </div>
-    </div>`
+    </div>`;
     if(isRoot){
       if(permission!="Roots"){
         person+=`<div class="swipeout-actions-left">
         <a onclick="promoteMember(this.parentElement.parentElement)" class="swipeout-close" style="background-color:#4caf50">Promote</a>
-      </div>`
+      </div>`;
       }
-      person+=`<div class="swipeout-actions-right">`
+      person+=`<div class="swipeout-actions-right">`;
       if(permission!="Members"){
-        person+=`<a onclick="demoteMember(this.parentElement.parentElement)" class="swipeout-close" style="background-color:#ff9500">Demote</a>`
+        person+=`<a onclick="demoteMember(this.parentElement.parentElement)" class="swipeout-close" style="background-color:#ff9500">Demote</a>`;
       }
       person+=`<a onclick="deleteMember(this.parentElement.parentElement)" class="swipeout-close" style="background-color:#f44336">Delete</a>
-      </div>`
+      </div>`;
     }
-    person += `</li>`
-    return person
-  }
+    person += `</li>`;
+    return person;
+  };
   const promisifiedSocketio = (...data)=>{
     return new Promise((resolve,reject)=>{
       if(!navigator.onLine){
-        reject("Cannot load student data offline")
+        reject("Cannot load student data offline");
       }
       conn.emit("studentDataReq",...data,(err,data)=>{
         if(err){
-          return reject(err)
+          return reject(err);
         }else{
-          return resolve(data)
+          return resolve(data);
         }
-      })
-    })
-  }
+      });
+    });
+  };
   async function render(channelData){
-    const currentPerson = getCookie("email")
-    const isRoot = channelData.roots.includes(currentPerson)
-    console.log("Data fetched")
-    let html = ""
-    const roles = ["Roots","Admins","Members"]
+    const currentPerson = getCookie("email");
+    const isRoot = channelData.roots.includes(currentPerson);
+    console.log("Data fetched");
+    let html = "";
+    const roles = ["Roots","Admins","Members"];
     for (const role of roles){
-      const key = role.toLowerCase()
-      html += newRole(role)
+      const key = role.toLowerCase();
+      html += newRole(role);
       for(const email of channelData[key]){
-        const id = email.replace("@nushigh.edu.sg","")
-        let name
+        const id = email.replace("@nushigh.edu.sg","");
+        let name;
         try{
           ({name} = await promisifiedSocketio({
             method:"getStudentById",
             data:id
-          }))
+          }));
         }catch(e){
-          console.log(e)
-          name = id
+          console.log(e);
+          name = id;
         }
-        html += newPerson(name,email,role,isRoot)
+        html += newPerson(name,email,role,isRoot);
       }
     }
-    return html
+    return html;
   }
   return Object.freeze({
     render
-  })
-})()
+  });
+})();

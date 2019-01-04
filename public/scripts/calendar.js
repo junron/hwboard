@@ -12,7 +12,7 @@ function pickTextColor(bgColor, lightColor, darkColor) {
 function convertHomework(arrHomework) {
   let calendarEvents = [];
   for (const eachHomework of arrHomework) {
-    const eventColor = subjectColors[0][subjectColors[1].findIndex(function (findSubject) {return findSubject === eachHomework.subject})] || "#3B3EAC"
+    const eventColor = subjectColors[0][subjectColors[1].findIndex(function (findSubject) {return findSubject === eachHomework.subject;})] || "#3B3EAC";
     const event ={
       title: eachHomework.text,
       id: eachHomework.subject,
@@ -31,14 +31,14 @@ function updateHomework() {
   hwboard.getHomework(false).then(async ({promises})=>{
     const p1 = await promises[0];
     const p2 = await promises[1];
-    let hw
+    let hw;
     if(p1 && (p1.length>p2.length || !p2)){
-      hw = p1
+      hw = p1;
     }else{
       if(p2){
-        hw = p2
+        hw = p2;
       }else{
-        hw = []
+        hw = [];
       }
     }
     const homeworkEvents = convertHomework(hw);
@@ -49,7 +49,7 @@ function updateHomework() {
     };
     $("#calendar").fullCalendar("addEventSource", eventsToRender);
     console.log("Homework Events rendered on calendar");
-  })
+  });
 }
 
 function setColors() {
@@ -70,7 +70,7 @@ function setColors() {
     }
     console.log("colours set");
     updateHomework();
-  })
+  });
 }
 
 conn.on("ready",setColors);
@@ -112,18 +112,18 @@ function calendarInit(){
       const start = new Date($("#calendar").fullCalendar("getView").start)
       const end = new Date($("#calendar").fullCalendar("getView").end)
       for(const homework of eventObj.source.rawEventDefs){
-        const date = new Date(homework.start)
+        const date = new Date(homework.start);
         if(date>end || date<start){
-          continue
+          continue;
         }
-        const dow = Sugar.Date.format(date,"{dow}")
+        const dow = Sugar.Date.format(date,"{dow}");
         if((dow[0] === "s")){
           if(!calendarWeekends){
             calendarWeekends = true
             $("#calendar").fullCalendar("option", {weekends:true})
             return
           }
-          return
+          return;
         }
       }
       if(calendarWeekends){
@@ -134,16 +134,16 @@ function calendarInit(){
     viewRender: view=>{
       if(view.type==="basicWeek"){
         dateParser.getTermXWeekY(new Date(view.end - 24 * 60 * 60 * 1000)).then(({term,week})=>{
-          let weekText = ` (Term ${term} Week ${week})`
+          let weekText = ` (Term ${term} Week ${week})`;
           if(term==="Holiday"){
-            weekText = " (Holiday)"
+            weekText = " (Holiday)";
           }
-          let title = $("#calendar .fc-toolbar .fc-left h2").text().split("undefined").join("").replace(/\((.*?)\)/,weekText)
+          let title = $("#calendar .fc-toolbar .fc-left h2").text().split("undefined").join("").replace(/\((.*?)\)/,weekText);
           if(!title.includes(weekText)){
-            title+=weekText
+            title+=weekText;
           }
-          $("#calendar .fc-toolbar .fc-left h2").text(title)
-        })
+          $("#calendar .fc-toolbar .fc-left h2").text(title);
+        });
       }
     },
     eventClick: (eventObj,e)=> {
@@ -161,7 +161,7 @@ function calendarInit(){
                     </div>`
         });
         popover.open();
-      })
+      });
     }
 
   });

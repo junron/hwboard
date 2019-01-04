@@ -1,6 +1,6 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js', {scope: '/'}).then(reg=>{
-    console.log('Registration succeeded. Scope is ' + reg.scope)
+    console.log('Registration succeeded. Scope is ' + reg.scope);
   })
     .then(function () {
       if (navigator.serviceWorker.controller) {
@@ -17,11 +17,11 @@ if ('serviceWorker' in navigator) {
       });
       // return navigator.serviceWorker.getRegistration
     }).then(function (worker) { // the worker is ready
-      console.log("Loaded promise sw")
-      promiseServiceWorker = new PromiseWorker(worker)
+      console.log("Loaded promise sw");
+      promiseServiceWorker = new PromiseWorker(worker);
     })
     .catch(function(error) {
-      console.log('Registration failed with ' + error)
-    })
+      console.log('Registration failed with ' + error);
+    });
   //navigator.serviceWorker.ready.then(sw => sw.update())
 }
