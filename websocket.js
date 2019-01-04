@@ -46,19 +46,19 @@ exports.createServer = function(server){
     const uncaughtErrorHandler = require("./websocket-routes/error")(socket);
 
     //Authentication
-    ;(async ()=>{
+    (async ()=>{
       socket.ready = false;
       //Tell client socket status
       socket.on("isReady",(_,callback)=>{
         (async ()=>{
-          callback(socket.ready)
-        })().catch(uncaughtErrorHandler)
+          callback(socket.ready);
+        })().catch(uncaughtErrorHandler);
       });
       //Authenticate user on connection
       //You can access cookies in websockets too!
       const token = socket.request.signedCookies.token;
       if(db.getNumTables()=== 0){
-        await db.init()
+        await db.init();
       }
       if(Object.keys(globalChannels).length === 0){
         const globalChannelData = await db.getUserChannels("*");
@@ -71,14 +71,12 @@ exports.createServer = function(server){
         }
       }
       if(socket.request.signedCookies.username){
-        socket.userData = {
-          preferred_username:socket.request.signedCookies.username;
-        };
+        socket.userData = { preferred_username:socket.request.signedCookies.username };
         socket.channels = {};
         const channels = await db.getUserChannels(socket.userData.preferred_username);
         for (const channel of channels){
           socket.join(channel.name);
-          socket.channels[channel.name] = globalChannels[channel.name]
+          socket.channels[channel.name] = globalChannels[channel.name];
         }
       }else if(testing){
         //In testing mode
@@ -122,7 +120,7 @@ exports.createServer = function(server){
           `response_mode=query`;
           console.log("Forced disconnect");
           socket.emit("authError",url);
-          socket.disconnect()
+          socket.disconnect();
         }
       }
     })()
@@ -148,10 +146,10 @@ exports.createServer = function(server){
 
     socket.on("disconnect", function(){
       console.log("user disconnected");
-    })
-  })
-  return io
-}
+    });
+  });
+  return io;
+};
 
 //Function to update globalChannels
 module.exports.updateChannels = channels=>{
@@ -163,7 +161,7 @@ module.exports.updateChannels = channels=>{
       globalChannels[channel][property] = channels[channel][property];
     }
   }
-}
+};
 //Function to get permission level
 module.exports.getPermissionLvl = (email,channelData) => {
   if(channelData.roots.includes(email)){

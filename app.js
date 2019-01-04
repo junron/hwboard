@@ -1,7 +1,7 @@
 const Raven = require("raven");
 
-let config
-let reportErrors
+let config;
+let reportErrors;
 //Catch errors in loading config
 try {
   //Load config
@@ -9,12 +9,12 @@ try {
   reportErrors = config.REPORT_ERRORS;
 }catch(e){
   Raven.config("https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453").install();
-  Raven.captureException(e)
+  Raven.captureException(e);
 }
 if(reportErrors){
   Raven.config("https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453").install();
 }
-const {HOSTNAME:hostName,PORT:port,CI:testing,COOKIE_SECRET:cookieSecret,REDUCE_EXPRESS_LOGS:reduceExpressLogs} = config
+const {HOSTNAME:hostName,PORT:port,CI:testing,COOKIE_SECRET:cookieSecret,REDUCE_EXPRESS_LOGS:reduceExpressLogs} = config;
 
 //Utils
 const http = require("http");
@@ -36,17 +36,15 @@ app.use(bodyParser.json());
 if(app.get("env")==="production"){
   app.use((req,res,next)=>{
     if(req.url.includes("/framework7/")){
-      res.minifyOptions = { 
-        minify:false
-      }
+      res.minifyOptions = { minify:false };
     }
-    next()
-  })
+    next();
+  });
   app.use(require("express-minify")({
     cache:__dirname+"/public/cache",
     uglifyJsModule:require("uglify-es"),
     jsonMatch:false
-  }))
+  }));
 }
 
 //Cookie parser must be before routes
@@ -91,10 +89,10 @@ app.use(function(req,res,next){
   res.header("X-Content-Type-Options","nosniff");
   res.header("Strict-Transport-Security","max-age=31536000; includeSubDomains");
   res.header("Referrer-Policy","strict-origin");
-  res.header("Expect-CT",`max-age=31536000, enforce,  report-uri="https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908"`)
-  res.header(`Feature-policy`,`geolocation "none"; accelerometer "none";ambient-light-sensor "none"; sync-xhr "none"; autoplay "none";payment "none"`)
-  next()
-})
+  res.header("Expect-CT",`max-age=31536000, enforce,  report-uri="https://sentry.io/api/1199491/security/?sentry_key=6c425ba741364b1abb9832da6dde3908"`);
+  res.header(`Feature-policy`,`geolocation "none"; accelerometer "none";ambient-light-sensor "none"; sync-xhr "none"; autoplay "none";payment "none"`);
+  next();
+});
 
 //routes
 app.use('/',require("./routes/api"));
@@ -113,7 +111,7 @@ app.set("view engine", "ejs");
 //Show warning for testing mode
 //See testing.md
 if(testing){
-  console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m")
+  console.log("\x1b[31m","Hwboard is being run in testing mode.\nUsers do not need to be authenticated to access hwboard or modify hwboard.","\x1b[0m");
 }
 
 //express setup
@@ -121,13 +119,13 @@ if(hostName==="nushhwboard.tk"){
   app.use(logger("common"));
 }else if(testing || reduceExpressLogs){
   app.use(logger("dev",{
-    skip:function (req, res) { return res.statusCode < 400 }
-  }))
+    skip:function (req, res) { return res.statusCode < 400; }
+  }));
 }else{
-  app.use(logger("dev"))
+  app.use(logger("dev"));
 }
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname, "node_modules")))
+app.use(express.static(path.join(__dirname, "node_modules")));
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -153,7 +151,7 @@ if (app.get("env") === "development" && hostName!="nushhwboard.tk") {
 // production error handler
 // no stackTraces leaked to user
 app.use((err, req, res) => {
-  Raven.captureException(err)
+  Raven.captureException(err);
   res.status(err.status || 500);
   res.render("error", {
     message: err.message,
@@ -161,8 +159,8 @@ app.use((err, req, res) => {
   });
 });
 require("./controllers").init().then(()=>{
-  console.log("Inited")
-})
+  console.log("Inited");
+});
 module.exports= {
   server,
   app,
