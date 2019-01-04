@@ -1,7 +1,7 @@
-colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC']
+colors = ["#3366CC","#DC3912","#FF9900","#109618","#990099","#3B3EAC","#0099C6","#DD4477","#66AA00","#B82E2E","#316395","#994499","#22AA99","#AAAA11","#6633CC","#E67300","#8B0707","#329262","#5574A6","#3B3EAC"]
 
 function pickTextColor(bgColor, lightColor, darkColor) {
-  var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+  var color = (bgColor.charAt(0) === "#") ? bgColor.substring(1, 7) : bgColor;
   var r = parseInt(color.substring(0, 2), 16); // hexToR
   var g = parseInt(color.substring(2, 4), 16); // hexToG
   var b = parseInt(color.substring(4, 6), 16); // hexToB
@@ -42,12 +42,12 @@ function updateHomework() {
       }
     }
     const homeworkEvents = convertHomework(hw);
-    $('#calendar').fullCalendar('removeEventSources');
+    $("#calendar").fullCalendar("removeEventSources");
     const eventsToRender = {
       events: homeworkEvents,
-      textColor: 'white'
+      textColor: "white"
     };
-    $('#calendar').fullCalendar('addEventSource', eventsToRender);
+    $("#calendar").fullCalendar("addEventSource", eventsToRender);
     console.log("Homework Events rendered on calendar");
   })
 }
@@ -76,12 +76,11 @@ function setColors() {
 conn.on("ready",setColors);
 conn.on("data",setColors);
 function changeView(){
-  const {name:currView} = $('#calendar').fullCalendar( 'getView' )
-    
+  const {name:currView} = $("#calendar").fullCalendar( "getView" );
   if(currView==="basicWeek"){
-    $('#calendar').fullCalendar('changeView', 'month')
+    $("#calendar").fullCalendar("changeView", "month")
   }else{
-    $('#calendar').fullCalendar('changeView', 'basicWeek')
+    $("#calendar").fullCalendar("changeView", "basicWeek")
   }
 }
 
@@ -90,11 +89,11 @@ function calendarInit(){
   const calendarPadding = 100;
   const calendarHeight = window.innerHeight - calendarPadding;
 
-  $('#calendar').fullCalendar({
+  $("#calendar").fullCalendar({
     header: {
-      left: 'title',
-      center: '',
-      right: '',
+      left: "title",
+      center: "",
+      right: "",
     },
     weekends:false,
     defaultView:"basicWeek",
@@ -110,8 +109,8 @@ function calendarInit(){
       },
     },
     eventAfterRender: eventObj =>{
-      const start = new Date($('#calendar').fullCalendar('getView').start)
-      const end = new Date($('#calendar').fullCalendar('getView').end)
+      const start = new Date($("#calendar").fullCalendar("getView").start)
+      const end = new Date($("#calendar").fullCalendar("getView").end)
       for(const homework of eventObj.source.rawEventDefs){
         const date = new Date(homework.start)
         if(date>end || date<start){
@@ -121,7 +120,7 @@ function calendarInit(){
         if((dow[0] === "s")){
           if(!calendarWeekends){
             calendarWeekends = true
-            $('#calendar').fullCalendar('option', {weekends:true})
+            $("#calendar").fullCalendar("option", {weekends:true})
             return
           }
           return
@@ -129,7 +128,7 @@ function calendarInit(){
       }
       if(calendarWeekends){
         calendarWeekends = false
-        $('#calendar').fullCalendar('option', {weekends:false})
+        $("#calendar").fullCalendar("option", {weekends:false})
       }
     },
     viewRender: view=>{
@@ -149,7 +148,7 @@ function calendarInit(){
     },
     eventClick: (eventObj,e)=> {
       const formattedDate = new Date(eventObj.start).toDateString()
-      Framework7App.loadModules(['popover']).then(()=>{
+      Framework7App.loadModules(["popover"]).then(()=>{
         const popover = Framework7App.popover.create({
           targetEl: e.target,
           content: `<div class="popover">
@@ -167,8 +166,8 @@ function calendarInit(){
 
   });
   const todayDow = Sugar.Date.format(new Date(),"{dow}")
-  if(todayDow[0] === "s" && $('#calendar').fullCalendar( 'getView' ).name==="basicWeek"){
-    $('#calendar').fullCalendar("next")
+  if(todayDow[0] === "s" && $("#calendar").fullCalendar( "getView" ).name==="basicWeek"){
+    $("#calendar").fullCalendar("next")
   }
   setColors();
 }

@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require("express")
 const router = express.Router()
 const authChannels = require("./authChannels")
 const db = require("../controllers")
