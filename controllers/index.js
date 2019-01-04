@@ -12,15 +12,15 @@ const homework = require("./homework");
 async function init(){
   await sequelize.sync();
   await homework.generateHomeworkTables();
-  return sequelize.sync()
+  return sequelize.sync();
 }
 
 const arrayToObject = channelArrays => {
   const result = {};
   for (const channel of channelArrays){
-    result[channel.name] = channel
+    result[channel.name] = channel;
   }
-  return result
+  return result;
 };
 
 module.exports={

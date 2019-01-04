@@ -9,9 +9,9 @@ const {
   SEQUELIZE_LOGGING:logging,
   DB_PORT:dbPort,
   COCKROACH_DB_SECURE:cockroachSecure
-} = require("../loadConfig")
+} = require("../loadConfig");
 
-const psql = psqlEnabled === "true" || psqlEnabled === true
+const psql = psqlEnabled === "true" || psqlEnabled === true;
 const Sequelize = psql ? require("sequelize") : require('sequelize-cockroachdb');
 
 if(!psql){
@@ -49,12 +49,12 @@ if(!psql){
 
 
 
-let DB_HOST = "localhost"
+let DB_HOST = "localhost";
 //In docker, cockroachDB is on `cockroachdb` and not `localhost`
 //Cos db container is called cockroachdb
 //https://forums.docker.com/t/cant-get-postgres-to-work/29580/4
 if(process.env.CI_PROJECT_NAME=="hwboard2" || process.env.IS_DOCKER=="true"){
-  DB_HOST = psql ? "postgres" : "cockroachdb"
+  DB_HOST = psql ? "postgres" : "cockroachdb";
 }
 
 const config = {
@@ -62,36 +62,36 @@ const config = {
   port:dbPort,
   dialect: "postgres",
   operatorsAliases: Sequelize.Op
-}
-console.log({logging})
+};
+console.log({logging});
 if(logging===false){
-  config.logging = false
+  config.logging = false;
 }
 if(!psql && cockroachSecure && process.env.CI_PROJECT_NAME!=="hwboard2"){
-  const fs = require("fs")
+  const fs = require("fs");
   config.dialectOptions = {
     ssl: {
       ca: fs.readFileSync(__dirname + '/../cockroach/certs/ca.crt').toString(),
       key: fs.readFileSync(__dirname + '/../cockroach/certs/client.'+dbUser+'.key').toString(),
       cert: fs.readFileSync(__dirname + '/../cockroach/certs/client.'+dbUser+'.crt').toString(),
     }
-  }
+  };
 }
-const sequelize = new Sequelize(dbName,dbUser,dbPassword,config)
+const sequelize = new Sequelize(dbName,dbUser,dbPassword,config);
 sequelize.authenticate()
   .then(() => {
-    console.log('Connection has been established successfully.')
+    console.log('Connection has been established successfully.');
   })
   .catch(err => {
-    console.error('Unable to connect to the database:', err)
-  })
+    console.error('Unable to connect to the database:', err);
+  });
 
 //Export the model creator because we may need to create more tables later, on demand
 //Should i curry this?
-const Homework = require("./Homework")(sequelize, Sequelize)
+const Homework = require("./Homework")(sequelize, Sequelize);
 
 //We can export the created model cos we only need one
-const Channels = require("./Channels")(sequelize, Sequelize)
+const Channels = require("./Channels")(sequelize, Sequelize);
 
 
-module.exports = {sequelize,Sequelize,Homework,Channels}
+module.exports = {sequelize,Sequelize,Homework,Channels};

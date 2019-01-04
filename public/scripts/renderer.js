@@ -9,31 +9,31 @@ const renderer = (()=>{
 
   const gradedFirst = (a,b) => {
     if(a.isTest > b.isTest){
-      return -1
+      return -1;
     }else if(a.isTest < b.isTest){
-      return 1
+      return 1;
     }
-    return 0
+    return 0;
   };
 
   const dueEarlierFirst = (a,b) => {
-    const daysLeftA = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(a.dueDate), "{d}/{M}/{yyyy}"), "en-GB"))
-    const daysLeftB = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(b.dueDate), "{d}/{M}/{yyyy}"), "en-GB"))
+    const daysLeftA = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(a.dueDate), "{d}/{M}/{yyyy}"), "en-GB"));
+    const daysLeftB = Sugar.Date.daysUntil(Sugar.Date.create("Today"), Sugar.Date.create(Sugar.Date.format(new Date(b.dueDate), "{d}/{M}/{yyyy}"), "en-GB"));
     if(daysLeftA > daysLeftB){
-      return 1
+      return 1;
     }else if(daysLeftA < daysLeftB){
-      return -1
+      return -1;
     }
-    return 0
+    return 0;
   };
 
   const subjectFirst = (a,b) => {
     if((a.subject+a.text).toLowerCase() > (b.subject+b.text).toLowerCase()){
-      return 1
+      return 1;
     }else if((a.subject+a.text).toLowerCase() < (b.subject+b.text).toLowerCase()){
-      return -1
+      return -1;
     }
-    return 0
+    return 0;
   };
   const parseBySubject = (data,order=0) => {
     data = data.filter(filterDue);
@@ -41,9 +41,9 @@ const renderer = (()=>{
       const returnValue = subjectFirst(a,b);
       if(returnValue){
         if(!order){
-          return returnValue
+          return returnValue;
         }else{
-          return returnValue * -1
+          return returnValue * -1;
         }
       }
       const graded = gradedFirst(a,b);
@@ -60,23 +60,23 @@ const renderer = (()=>{
       let subject = homework.subject;
       if (subjects.indexOf(subject) == -1) {
         if(subjects.length!=0){
-          html += subjectEnd
+          html += subjectEnd;
         }
         const subjectId = "hex" + toHex(subject);
         html += `
         <div class="list-group">
           <ul id="${subjectId}">
             <li style="padding-top:5px" class="list-group-title">${subject}</li>
-        `
-        subjects.push(subject)
+        `;
+        subjects.push(subject);
       }
-      html+= parseHomeworkSubject(homework)
+      html+= parseHomeworkSubject(homework);
     }
     if(html==""){
-      return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
+      return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>";
     }
     html+="</div></ul>";
-    return html
+    return html;
   };
   const parseHomeworkSubject = homework =>{
     const {
@@ -107,14 +107,14 @@ const renderer = (()=>{
         </div>
       <div class="swipeout-actions-left hwboard-item-info">
         <a class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
-      </div>`
+      </div>`;
     if(subjectChannelMapping[subject]){
       rendered += `<div class="swipeout-actions-right">
             <a class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
             <a class="swipeout-close hwboard-item-delete" style="background-color:#f44336">Delete</a>
           </div>
         </li>
-        `
+        `;
     }
     return rendered;
   };
@@ -140,25 +140,25 @@ const renderer = (()=>{
     let html = "";
     const dateEnd = `</ul></div>`;
     for (let homework of data) {
-      let {displayDate,dueDate2,daysLeft} = parseHomeworkMetaData(homework)
+      let {displayDate,dueDate2,daysLeft} = parseHomeworkMetaData(homework);
       if (dates.indexOf(displayDate) == -1) {
         if(dates.length!=0){
-          html += dateEnd
+          html += dateEnd;
         }
         html += `
         <div class="list-group">
           <ul id="${daysLeft}">
             <li style="padding-top:5px" class="list-group-title">${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})</li>
         `;
-        dates.push(displayDate)
+        dates.push(displayDate);
       }
-      html+= parseHomeworkDate(homework)
+      html+= parseHomeworkDate(homework);
     }
     if(html==""){
-      return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>"
+      return "<div style='text-align: center;font-size:2em;margin:0.67em'>No homework yay</div>";
     }
     html+="</div></ul>";
-    return html
+    return html;
   };
 
   const parseHomeworkDate = homework => {
@@ -189,16 +189,16 @@ const renderer = (()=>{
     </div>
     <div class="swipeout-actions-left hwboard-item-info">
       <a class="swipeout-close swipeout-overswipe" style="background-color:#2196f3">Info</a>
-    </div>`
+    </div>`;
     if(subjectChannelMapping[subject]){
       rendered += `<div class="swipeout-actions-right">
           <a class="swipeout-close swipeout-edit-button" style="background-color:#ff9800">Edit</a>
           <a class="swipeout-close hwboard-item-delete" style="background-color:#f44336">Delete</a>
         </div>
       </li>
-      `
+      `;
     }
-    return rendered
+    return rendered;
   } ;
   const toHex = str=>{
     var hex, i;
@@ -209,7 +209,7 @@ const renderer = (()=>{
       result += (hex).slice(-4);
     }
 
-    return result
+    return result;
   };
   const parseHomeworkMetaData = homework => {
     let {
@@ -234,9 +234,9 @@ const renderer = (()=>{
     let iconColor = "";
     if (Sugar.Date.isToday(dueDate2)) {
       daysLeft = 0;
-      iconColor = "red"
+      iconColor = "red";
     } else if (Sugar.Date.isTomorrow(dueDate2)) {
-      iconColor = "#ab47bc"
+      iconColor = "#ab47bc";
     }
     let icon = "";
     let bgColor =  "#bbdefb";
@@ -244,31 +244,31 @@ const renderer = (()=>{
     let tagMode = "graded";
     if(typeof location != "undefined"){
       if(location.search.includes("tagMode=original")){
-        tagMode = "original"
+        tagMode = "original";
       }
     }
     let subjectText = subject;
     if(tagMode!=="original"){
       subjectText = `    <div class="chip" style="background-color:#26c6da">
         <div class="chip-label" style="color:white">${subject}</div>
-      </div>`
+      </div>`;
       for(const tag of tags){
-        const tagTextColor = tinycolor.readability(tagMapping[tag],"#fff")<2 ? "black" : "white"
+        const tagTextColor = tinycolor.readability(tagMapping[tag],"#fff")<2 ? "black" : "white";
         extra += `    <div class="chip" 
         style="background-color:${tagMapping[tag]};color:${tagTextColor}">
           <div class="chip-label">${tag}</div>
-        </div>`
+        </div>`;
 
       }
     }
     if(tagMode=="original"){
-      bgColor = ""
+      bgColor = "";
     }
     if (isTest) {
-      icon = "&#xe900;"
+      icon = "&#xe900;";
       if(tagMode=="original"){
-        bgColor = "#bbdefb"
-        extra = ", Graded"
+        bgColor = "#bbdefb";
+        extra = ", Graded";
       }
     }
     if (isTest) {
@@ -278,16 +278,16 @@ const renderer = (()=>{
     }
     let displayDate;
     const getNumberOfSundays = date =>{
-      const absDate = Sugar.Date.create(Sugar.Date.format(date, "{d}/{M}/{yyyy}"), "en-GB")
-      const startDate = Sugar.Date.create("Today")
+      const absDate = Sugar.Date.create(Sugar.Date.format(date, "{d}/{M}/{yyyy}"), "en-GB");
+      const startDate = Sugar.Date.create("Today");
       let num = 0;
       while (startDate < absDate){
         if(startDate.getDay()==0){
-          num++
+          num++;
         }
-        Sugar.Date.addDays(startDate,1)
+        Sugar.Date.addDays(startDate,1);
       }
-      return num
+      return num;
     };
     switch (daysLeft) {
     case 0:
@@ -299,9 +299,9 @@ const renderer = (()=>{
     default:
       if(daysLeft<=14 && getNumberOfSundays(dueDate2)==1){
         displayDate = "Next ";
-        displayDate+=Sugar.Date.format(dueDate2,"%A")
+        displayDate+=Sugar.Date.format(dueDate2,"%A");
       }else{
-        displayDate = `${daysLeft} days left`
+        displayDate = `${daysLeft} days left`;
       }
     }
     return {
@@ -320,23 +320,23 @@ const renderer = (()=>{
       dueDate2,
       extra,
       subjectText
-    }
+    };
   };
   return function(data,sortType="Due date",sortOrder=0,subjectChannelMap,subjectTagMap){
     if(subjectChannelMap){
-      subjectChannelMapping = subjectChannelMap
+      subjectChannelMapping = subjectChannelMap;
     }
     if(subjectTagMap){
-      subjectTagMapping = subjectTagMap
+      subjectTagMapping = subjectTagMap;
     }
     if(sortType=="Due date"){
-      return parseByDate(data,sortOrder)
+      return parseByDate(data,sortOrder);
     }else{
-      return parseBySubject(data,sortOrder)
+      return parseBySubject(data,sortOrder);
     }
-  }
+  };
 })();
 
 if(typeof navigator=="undefined"){
-  module.exports =  renderer
+  module.exports =  renderer;
 }

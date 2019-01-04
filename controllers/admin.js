@@ -11,7 +11,7 @@ async function getUserChannels(userEmail,permissionLevel=1){
     channel.admins = channel.admins.filter(x => x.length>0);
   }
   if(userEmail==="*"){
-    return data
+    return data;
   }
   for(const channel of data){
     if(channel.roots.includes(userEmail)){
@@ -28,7 +28,7 @@ async function getUserChannels(userEmail,permissionLevel=1){
       continue;
     }
   }
-  return data.filter(channel => channel.permissions!==undefined)
+  return data.filter(channel => channel.permissions!==undefined);
 }
 
 async function addTag(channel,tagName,tagColor){
@@ -37,27 +37,27 @@ async function addTag(channel,tagName,tagColor){
       name:channel
     },
     raw: true
-  }))
+  }));
   if(originalDataArray.length==0){
-    throw new Error("Channel does not exist")
+    throw new Error("Channel does not exist");
   }
-  const originalData = originalDataArray[0]
-  tagName = xss(tagName)
-  tagColor = xss(tagColor)
+  const originalData = originalDataArray[0];
+  tagName = xss(tagName);
+  tagColor = xss(tagColor);
   //Ensure that tag does not already exist
-  const existingTags = originalData.tags
+  const existingTags = originalData.tags;
   if(Object.keys(existingTags).includes(tagName)){
-    throw new Error(`Tag ${tagName} already exists.`)
+    throw new Error(`Tag ${tagName} already exists.`);
   }
   if(Object.values(existingTags).includes(tagColor)){
-    throw new Error(`A tag with color ${tagColor} already exists.`)
+    throw new Error(`A tag with color ${tagColor} already exists.`);
   }
-  originalData.tags[tagName] = tagColor
+  originalData.tags[tagName] = tagColor;
   return Channels.update(originalData,{
     where:{
       name:originalData.name
     }
-  })
+  });
 }
   
 async function addSubject(channelData){
@@ -95,7 +95,7 @@ async function addSubject(channelData){
     where:{
       name:channel
     }
-  })
+  });
 }
 
 async function removeSubject(channelData){
@@ -108,20 +108,20 @@ async function removeSubject(channelData){
     raw: true
   }));
   if(originalDataArray.length===0){
-    throw new Error("Channel does not exist")
+    throw new Error("Channel does not exist");
   }
 
   const originalData = originalDataArray[0];
   const index = originalData.subjects.indexOf(subject);
   if (index > -1) {
-    originalData.subjects.splice(index, 1)
+    originalData.subjects.splice(index, 1);
   }
   delete originalData.timetable[subject];
   return Channels.update(originalData,{
     where:{
       name:channel
     }
-  })
+  });
 }
 async function removeMember(channel,member){
   member += "@nushigh.edu.sg";
@@ -132,43 +132,43 @@ async function removeMember(channel,member){
     raw: true
   }));
   if(originalDataArray.length===0){
-    throw new Error("Channel does not exist")
+    throw new Error("Channel does not exist");
   }
   const originalData = originalDataArray[0];
   const remove = (array,value) =>{
     const index = array.indexOf(value);
     if(index===-1){
-      throw new Error("Member does not exist")
+      throw new Error("Member does not exist");
     }
     array.splice(index,1);
-    return array
+    return array;
   };
   if(originalData.roots.includes(member)){
     originalData.roots = remove(originalData.roots,member);
     if(originalData.roots.length === 0){
-      throw new Error("There must be at least 1 root in the channel.")
+      throw new Error("There must be at least 1 root in the channel.");
     }
   }else if(originalData.admins.includes(member)){
-    originalData.admins = remove(originalData.admins,member)
+    originalData.admins = remove(originalData.admins,member);
   }else if(originalData.members.includes(member)){
     console.log(originalData.members,member);
-    originalData.members = remove(originalData.members,member)
+    originalData.members = remove(originalData.members,member);
   }else{
-    throw new Error("Member does not exist")
+    throw new Error("Member does not exist");
   }
   return Channels.update(originalData,{
     where:{
       name:originalData.name
     }
-  })
+  });
 }
 async function addMember(channel,members,permissionLevel){
   const permissionToNumber = lvl => {
     const index = ["member","admin","root"].indexOf(lvl);
     if(index===-1){
-      throw new Error("Permission level invalid")
+      throw new Error("Permission level invalid");
     }
-    return index+1
+    return index+1;
   };
   const numberToPermission = number => ["members","admins","roots"][number-1];
   const originalDataArray = (await Channels.findAll({
@@ -178,18 +178,18 @@ async function addMember(channel,members,permissionLevel){
     raw: true
   }));
   if(originalDataArray.length===0){
-    throw new Error("Channel does not exist")
+    throw new Error("Channel does not exist");
   }
   const originalData = originalDataArray[0];
   const getPermissionLvl = email => {
     if(originalData.roots.includes(email)){
-      return 3
+      return 3;
     }else if(originalData.admins.includes(email)){
-      return 2
+      return 2;
     }else if(originalData.members.includes(email)){
-      return 1
+      return 1;
     }else{
-      return 0
+      return 0;
     }
   };
   const targetRole = originalData[permissionLevel+"s"];
@@ -222,7 +222,7 @@ async function addMember(channel,members,permissionLevel){
     where:{
       name:originalData.name
     }
-  })
+  });
 }
 
 module.exports = {
