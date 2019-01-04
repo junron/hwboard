@@ -46,7 +46,7 @@ exports.createServer = function(server){
     const uncaughtErrorHandler = require("./websocket-routes/error")(socket);
 
     //Authentication
-    ;(async ()=>{
+    (async ()=>{
       socket.ready = false;
       //Tell client socket status
       socket.on("isReady",(_,callback)=>{
