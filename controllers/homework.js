@@ -12,16 +12,16 @@ let tables = {};
 async function removeXss(object){
   for (let property in object){
     if(typeof object[property]==="string"){
-      object[property] = xss(object[property])
+      object[property] = xss(object[property]);
     }
   }
-  return object
+  return object;
 }
 
 //async filter
 async function filter(arr, callback) {
   const fail = Symbol();
-  return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i=>i!==fail)
+  return (await Promise.all(arr.map(async item => (await callback(item)) ? item : fail))).filter(i=>i!==fail);
 }
 
 //Creates tables based on `Homework` model dynamically
@@ -34,7 +34,7 @@ async function generateHomeworkTables() {
 }
 
 const getNumTables = () => {
-  return Object.keys(tables).length
+  return Object.keys(tables).length;
 };
 
 //Assumes that access has been granted
@@ -56,12 +56,12 @@ async function getHomework(hwboardName,removeExpired=true){
           const student = await getStudentById(homework.lastEditPerson.replace("@nushigh.edu.sg",""));
           studentName = student.name;
         }catch(e) {
-          console.log("Student not found:",studentName)
+          console.log("Student not found:",studentName);
         }
         homework.lastEditPerson = studentName;
         return true;
       }
-      return false
+      return false;
     });
   } else {
     for(const homework of data){
@@ -86,7 +86,7 @@ async function getNumHomework({channel,subject,graded=0,startDate=Infinity,endDa
     where.dueDate = {
       [Op.lte]:endDate,
       [Op.gt]:startDate,
-    }
+    };
   }
   return Homework.count({where});
 }
@@ -105,7 +105,7 @@ async function getHomeworkAll(channels,removeExpired=true){
 async function addHomework(hwboardName,newHomework){
   const Homework = tables[hwboardName];
   if(typeof Homework==="undefined"){
-    throw new Error("Homework table could not be found")
+    throw new Error("Homework table could not be found");
   }
   //Very important step...
   newHomework = await removeXss(newHomework);
@@ -135,7 +135,7 @@ async function editHomework(hwboardName,newHomework){
     const userData = await getUserChannels(newHomework.lastEditPerson);
     const {subjects} = userData.find(channel => channel.name===hwboardName);
     if(!subjects.includes(newHomework.subject)){
-      throw new Error("Invalid subject")
+      throw new Error("Invalid subject");
     }
     const numCount = await Homework.count({
       where:{
@@ -146,7 +146,7 @@ async function editHomework(hwboardName,newHomework){
       }
     });
     if(numCount===0){
-      throw new Error("Modification rejected. Either the homework does not exist or it has expired")
+      throw new Error("Modification rejected. Either the homework does not exist or it has expired");
     }
   }
   return Homework.update(newHomework,
@@ -154,7 +154,7 @@ async function editHomework(hwboardName,newHomework){
       where:{
         id:newHomework.id
       }
-    })
+    });
 }
 async function deleteHomework(hwboardName,homeworkId){
   const Homework = tables[hwboardName];
@@ -182,7 +182,7 @@ async function deleteHomework(hwboardName,homeworkId){
       where:{
         id:homeworkId
       }
-    })
+    });
 }
 
 const expiryTimers = {};
@@ -204,9 +204,9 @@ async function whenHomeworkExpires(channel,callback){
   const dueDate = channelData.pop().dueDate;
   console.log({dueDate});
   if(expiryTimers[channel]){
-    expiryTimers[channel].cancel()
+    expiryTimers[channel].cancel();
   }
-  expiryTimers[channel] = scheduler.scheduleJob(dueDate,callback)
+  expiryTimers[channel] = scheduler.scheduleJob(dueDate,callback);
 }
 
 module.exports = {

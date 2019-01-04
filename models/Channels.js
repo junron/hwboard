@@ -30,5 +30,5 @@ module.exports = (sequelize, Sequelize) => {
     timestamps: true,
     createdAt: false,
     updatedAt: 'lastEditTime'
-  })
+  });
 };

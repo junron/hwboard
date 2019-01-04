@@ -12,6 +12,7 @@
       "error",
       2
     ],
+    "semi":"error",
     "no-console":"off",
     "no-useless-escape":"off",
     "no-inner-declarations":"warn"

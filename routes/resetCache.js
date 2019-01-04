@@ -1,9 +1,9 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 
 router.get("/cache/reset",(req, res) => {
   (async ()=>{
-    res.type("html")
+    res.type("html");
     res.end(`
     <script>
     caches.delete("cache1")
@@ -14,13 +14,13 @@ router.get("/cache/reset",(req, res) => {
       alert(e)
     })
     </script>
-    `)
+    `);
   })()
     .catch((e)=>{
-      const code = e.code || 500
-      res.status(code).end(e.toString())
-      console.log(e)
-    })
-})
+      const code = e.code || 500;
+      res.status(code).end(e.toString());
+      console.log(e);
+    });
+});
 
-module.exports = router
+module.exports = router;

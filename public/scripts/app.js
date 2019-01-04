@@ -24,10 +24,10 @@ const Framework7App = new Framework7({
           loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css",'/fullcalendar/dist/fullcalendar.min.css'])
             .then(()=>{
               while (!$("#hwboard-timetable").fullCalendar){
-                continue
+                continue;
               }
-              renderTimetable()
-            })
+              renderTimetable();
+            });
         }
       }
     },
@@ -39,7 +39,7 @@ const Framework7App = new Framework7({
       animate:false,
       on:{
         pageAfterIn:e=>{
-          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0];
         }
       },
     },
@@ -52,15 +52,15 @@ const Framework7App = new Framework7({
       on:{
         pageBeforeIn:()=>{
           if(document.querySelector(".page-next .navbar.fouc")){
-            document.querySelector(".page-next .navbar.fouc").classList.remove("fouc")
+            document.querySelector(".page-next .navbar.fouc").classList.remove("fouc");
           }
-          document.querySelector("#hwboard-homework-list").style.position = "relative"
-          document.querySelector("#hwboard-homework-list").style.top = "60px"
+          document.querySelector("#hwboard-homework-list").style.position = "relative";
+          document.querySelector("#hwboard-homework-list").style.top = "60px";
         },
         pageAfterIn:e=>{
-          prevDataHash = ""
-          console.log("Navbar")
-          loadSources(e.currentTarget,["/scripts/loadHomework.js"])
+          prevDataHash = "";
+          console.log("Navbar");
+          loadSources(e.currentTarget,["/scripts/loadHomework.js"]);
           if(location.search.includes("websocketOffline=true")){
             $("#connection-status").text("Simulated offline");
           }
@@ -79,7 +79,7 @@ const Framework7App = new Framework7({
               const sortType = sortOptions.type || getCookie("sortType") || "Due date";
               let sortOrder = sortOptions.order || 0;
               document.querySelector(`input[type=radio][name=type][value='${sortType}']`).checked = true;
-              document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true
+              document.querySelector(`input[type=radio][name=order][value='${sortOrder}']`).checked = true;
             }
           },
           modules:['checkbox','input','grid',"radio"]
@@ -90,11 +90,11 @@ const Framework7App = new Framework7({
           url:"/routes/edit-homework.html",
           on :{
             pageBeforeIn:function(e,page){
-              $(page.el.querySelector("#edit-title")).text("Add homework")
+              $(page.el.querySelector("#edit-title")).text("Add homework");
             },
             pageAfterIn:function(e,page){
-              gradedCheckboxChecked = false
-              initEditHomeworkEvents()
+              gradedCheckboxChecked = false;
+              initEditHomeworkEvents();
             }
           },
           modules:['grid','input','dialog','smart-select','popup']
@@ -105,10 +105,10 @@ const Framework7App = new Framework7({
           url:"/routes/edit-homework.html",
           on :{
             pageBeforeIn:(_,page)=>{
-              $(page.el.querySelector("#edit-title")).text("Edit homework")
+              $(page.el.querySelector("#edit-title")).text("Edit homework");
             },
             pageAfterIn:e=>{
-              initEditHomeworkEvents()
+              initEditHomeworkEvents();
             }
           },
           modules:['grid','input','dialog','smart-select','popup']
@@ -133,41 +133,41 @@ const Framework7App = new Framework7({
       url:"/routes/channel-analytics.html",
       on:{
         pageAfterIn:e=>{
-          channel = ""
+          channel = "";
           if(typeof conn==="undefined" || conn.connected===false){
-            renderCharts()
+            renderCharts();
           }
-          homeworkDateChart = false
-          homeworkSubjectChart = false
-          $("a[href='/channels'").parent().html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`)
-          $("a[href='/channelName/data.json'").attr("download",`data.json`)
-          $("a[href='/channelName/data.json'").attr("href",`/data.json`)
-          $("a[href='/channelName/data.csv'").attr("download",`data.csv`)
-          $("a[href='/channelName/data.csv'").attr("href",`/data.csv`)
+          homeworkDateChart = false;
+          homeworkSubjectChart = false;
+          $("a[href='/channels'").parent().html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`);
+          $("a[href='/channelName/data.json'").attr("download",`data.json`);
+          $("a[href='/channelName/data.json'").attr("href",`/data.json`);
+          $("a[href='/channelName/data.csv'").attr("download",`data.csv`);
+          $("a[href='/channelName/data.csv'").attr("href",`/data.csv`);
           conn.emit("isReady",null,res=>{
             if(res){
-              console.log("ready before page load")
+              console.log("ready before page load");
               const i = setInterval(()=>{
                 //Allow canvas to render and exist
                 if(document.getElementById("homework-subject-chart")){
-                  renderCharts()
-                  clearInterval(i)
+                  renderCharts();
+                  clearInterval(i);
                 }
-              },500)
+              },500);
             }
-          })
+          });
           //Db inited, can get data
           conn.on("ready",()=>{
-            console.log("ready")
+            console.log("ready");
             const i = setInterval(()=>{
               //Allow canvas to render and exist
               if(document.getElementById("homework-subject-chart")){
-                renderCharts()
-                clearInterval(i)
+                renderCharts();
+                clearInterval(i);
               }
-            },500)
-            renderCharts()
-          })
+            },500);
+            renderCharts();
+          });
         }
       },
       modules:['checkbox','grid']
@@ -180,22 +180,22 @@ const Framework7App = new Framework7({
       url:"/routes/channel-analytics.html",
       on:{
         pageAfterIn:e=>{
-          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0];
           if(typeof conn==="undefined" || conn.connected===false){
-            renderCharts()
+            renderCharts();
           }
-          homeworkDateChart = false
-          homeworkSubjectChart = false
-          $("a[href='/channelName/data.json'").attr("download",`${channel}.data.json`)
-          $("a[href='/channelName/data.json'").attr("href",`/${channel}/data.json`)
-          $("a[href='/channelName/data.csv'").attr("download",`${channel}.data.csv`)
-          $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`)
+          homeworkDateChart = false;
+          homeworkSubjectChart = false;
+          $("a[href='/channelName/data.json'").attr("download",`${channel}.data.json`);
+          $("a[href='/channelName/data.json'").attr("href",`/${channel}/data.json`);
+          $("a[href='/channelName/data.csv'").attr("download",`${channel}.data.csv`);
+          $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`);
           conn.emit("isReady",null,res=>{
             if(res){
-              console.log("ready before page load")
-              renderCharts()
+              console.log("ready before page load");
+              renderCharts();
             }
-          })
+          });
         }
       },
       modules:['checkbox','grid']
@@ -208,7 +208,7 @@ const Framework7App = new Framework7({
       url:"/routes/add-channel.html",
       on:{
         pageAfterIn:e=>{
-          loadSources(e.currentTarget,["/routes/scripts/add-channel.js"])
+          loadSources(e.currentTarget,["/routes/scripts/add-channel.js"]);
         }
       }
     },
@@ -222,11 +222,11 @@ const Framework7App = new Framework7({
         pageAfterIn: async e => {
           const sources = ['/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.min.css'];
           const target = e.currentTarget;
-          await loadSources(target, sources)
+          await loadSources(target, sources);
           while (!$("#calendar").fullCalendar){
-            continue
+            continue;
           }
-          calendarInit()
+          calendarInit();
         }
       },
       modules:['grid']
@@ -239,18 +239,18 @@ const Framework7App = new Framework7({
       url:"/routes/channel-settings.html",
       on:{
         pageAfterIn:e=>{
-          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0]
+          channel = (location.hash.split("#!/channels/")[1] || "").split("/")[0];
           if(!navigator.onLine){
-            $("#subject-list li").text("Can't load data offline")
-            $("#member-list li").text("Can't load data offline")
-            return getChannelData()
+            $("#subject-list li").text("Can't load data offline");
+            $("#member-list li").text("Can't load data offline");
+            return getChannelData();
           }
-          $(".root-only").hide()
+          $(".root-only").hide();
           conn.emit("isReady",null,res=>{
             if(res){
-              getChannelData()
+              getChannelData();
             }
-          })
+          });
         }
       },
       routes:[
@@ -260,7 +260,7 @@ const Framework7App = new Framework7({
           url:"/routes/add-member.html",
           on:{
             pageAfterIn:e=>{
-              loadSources(e.currentTarget,["/routes/scripts/add-member.js"])
+              loadSources(e.currentTarget,["/routes/scripts/add-member.js"]);
             }
           },
           modules:['grid','input','dialog','autocomplete']
@@ -271,7 +271,7 @@ const Framework7App = new Framework7({
           url:"/routes/add-tag.html",
           on:{
             pageAfterIn:e=>{
-              loadSources(e.currentTarget,["/routes/scripts/add-tag.js"])
+              loadSources(e.currentTarget,["/routes/scripts/add-tag.js"]);
             }
           },
           modules:['grid','input','dialog','autocomplete']
@@ -282,11 +282,11 @@ const Framework7App = new Framework7({
           url:"/routes/add-subject.html",
           on:{
             pageAfterIn:e=>{
-              const target = e.currentTarget
+              const target = e.currentTarget;
               loadSources(target,["/routes/scripts/timetable.js","/routes/styles/timetable.css",'/fullcalendar/dist/fullcalendar.min.css']).then(()=>{
-                renderTimetable("#hwboard-add-subject-timetable",true)
-                updateDisabledStatus()
-              })
+                renderTimetable("#hwboard-add-subject-timetable",true);
+                updateDisabledStatus();
+              });
             }
           },
           modules:['grid','input','dialog']
@@ -298,7 +298,7 @@ const Framework7App = new Framework7({
   dialog:{
     title: 'Hwboard',
   }
-})
+});
 
 async function loadSources(target, sources) {
   function loadSource(source){
@@ -315,11 +315,11 @@ async function loadSources(target, sources) {
         target.appendChild(styleTag);
         styleTag.addEventListener("load",resolve);
       }else{
-        reject("Source type cannot be determined")
+        reject("Source type cannot be determined");
       }
-    })
+    });
   }
-  return Promise.all(sources.map(loadSource))
+  return Promise.all(sources.map(loadSource));
 }
-Framework7App.swipeout.init()
-Framework7App.input.init()
+Framework7App.swipeout.init();
+Framework7App.input.init();

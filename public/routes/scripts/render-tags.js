@@ -1,8 +1,8 @@
 function renderTags(data){
-  const {tags} = data
-  let html = ""
+  const {tags} = data;
+  let html = "";
   for(const tag in tags){
-    const tagTextColor = tinycolor.readability(tags[tag],"#fff")<2 ? "black" : "white"
+    const tagTextColor = tinycolor.readability(tags[tag],"#fff")<2 ? "black" : "white";
     html+=`<li class="item-content">
       <div class="item-inner">
         <div class="chip item-title" 
@@ -10,7 +10,7 @@ function renderTags(data){
             ${tag}
         </div>
       </div>
-      </li>`
+      </li>`;
   }
-  return html
+  return html;
 }
