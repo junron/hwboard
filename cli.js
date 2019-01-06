@@ -530,23 +530,23 @@ if(process.argv[2]==="restore"){
       }else{
         console.log(`Please set the HWBOARD_COOKIE_SECRET environment variable`);
       }
-      r1.question("Postgresql username  ",(answer)=>{
+      r1.question("Database username  ",(answer)=>{
         if(answer!="skip"){
-          config.POSTGRES_USER = answer;
+          config.DB_USER = answer;
         }else{
-          console.log(`Please set the POSTGRES_USER environment variable`);
+          console.log(`Please set the DB_USER environment variable`);
         }
-        r1.question("Postgresql database  ",(answer)=>{
+        r1.question("Database  name  ",(answer)=>{
           if(answer!="skip"){
-            config.POSTGRES_DB = answer;
+            config.DB_AME = answer;
           }else{
-            console.log(`Please set the POSTGRES_DB environment variable`);
+            console.log(`Please set the DB_NAME environment variable`);
           }
-          r1.question("Postgresql password  ",(answer)=>{
+          r1.question("Database password  ",(answer)=>{
             if(answer!="skip"){
-              config.POSTGRES_PASSWORD = answer;
+              config.DB_PASSWORD = answer;
             }else{
-              console.log(`Please set the POSTGRES_PASSWORD environment variable`);
+              console.log(`Please set the DB_PASSWORD environment variable`);
             }
             r1.question("Do you want to run hwboard in dev/testing mode? This will skip the authentication process. (yes/no)",(answer)=>{
               config.CI = answer=="yes";

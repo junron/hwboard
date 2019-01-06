@@ -93,5 +93,7 @@ const Homework = require("./Homework")(sequelize, Sequelize);
 //We can export the created model cos we only need one
 const Channels = require("./Channels")(sequelize, Sequelize);
 
+const Users = require("./Users")(sequelize, Sequelize);
 
-module.exports = {sequelize,Sequelize,Homework,Channels};
+
+module.exports = {sequelize,Sequelize,Homework,Channels,Users};

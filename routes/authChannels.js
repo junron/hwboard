@@ -104,6 +104,8 @@ async function authChannels(req,res){
     //Just for analytics
     res.cookie('email',decodedToken.preferred_username,{maxAge:2592000000,sameSite:"lax"});
     res.cookie('name',decodedToken.name,{maxAge:2592000000,sameSite:"lax"});
+
+    decodedToken
   }
 
   //Get authorised channels
