@@ -6,7 +6,7 @@ const conn = io(location.origin,{
 //Handle websocket connection errors
 //Standard code for all my websocket apps
 if(!navigator.onLine){
-  $("#connection-status").text(`Offline`)
+  $("#connection-status").text(`Offline`);
 }
 conn.on("connect_error",function(e){
   if(navigator.onLine===undefined){
@@ -17,7 +17,7 @@ conn.on("connect_error",function(e){
       Raven.captureException(new Error("error checking connection status"));
     }
     $("#connection-status").text(`Error checking connection state`);
-    return
+    return;
   }
   if(navigator.onLine){
     //Its a server problem, perhaps websocket server not started
@@ -36,18 +36,18 @@ conn.on("disconnect",function(){
 conn.on("connect",function(){
   $("#connection-status").text("Connected");
   if(location.search.includes("websocketOffline=true")){
-    conn.disconnect()
+    conn.disconnect();
     $("#connection-status").text("Simulated offline");
   }
 });
 
 //Uncaught error that could not be handled via callback etc
 conn.on("uncaughtError",error=>{
-  Framework7App.dialog.alert(error)
-  throw new Error(error)
-})
+  Framework7App.dialog.alert(error);
+  throw new Error(error);
+});
 
 //Auth errors, redirect to auth url
 conn.on("authError",url=>{
-  location.href=url
-})
+  location.href=url;
+});

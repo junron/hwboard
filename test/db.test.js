@@ -7,13 +7,13 @@ const channels = {testing:{
 const {getHomeworkAll,init,addHomework} = require("../controllers");
 describe("database.js",function(){
   before(function(){
-    return init()
+    return init();
   });
   it("Should be able to get homework in the correct format",function(done){
     getHomeworkAll(channels).then(function(homeworks){
-      expect(homeworks).to.be.an("array")
+      expect(homeworks).to.be.an("array");
       if(homeworks.length<1){
-        console.log("\033[0;31m There is no homework to check format.\033[0m")
+        console.log("\033[0;31m There is no homework to check format.\033[0m");
       }
       for (let homework of homeworks){
         expect(homework).to.be.an("object");
@@ -27,10 +27,10 @@ describe("database.js",function(){
         expect(homework.lastEditTime).to.be.a.instanceof(Date);
         expect(homework.text).to.be.a("string");
       }
-      done()
+      done();
     }).catch(function(err){
-      console.log(err)
-    })
+      console.log(err);
+    });
   });
   it("Should escape HTML special characters",async function(){
     const payload = {
@@ -43,13 +43,13 @@ describe("database.js",function(){
       lastEditPerson:"tester@nushigh.edu.sg",
       tags:['Optional'],
       token:"bleh"
-    }
+    };
     await addHomework("testing",payload);
     const homeworks = await getHomeworkAll(channels);
     expect(homeworks).to.be.an("array");
     for (let homework of homeworks){
       if(homework.subject==="XSSTest"){
-        expect(homework.text).to.equal("&lt;script&gt;alert('helloworld')&lt;/script&gt;")
+        expect(homework.text).to.equal("&lt;script&gt;alert('helloworld')&lt;/script&gt;");
       }
     }
   });
@@ -71,8 +71,8 @@ describe("database.js",function(){
     expect(homeworks).to.be.an("array");
     for (let homework of homeworks){
       if(homework.subject==="SQLInjectionTest"){
-        expect(homework.text).to.equal(payload.text)
+        expect(homework.text).to.equal(payload.text);
       }
     }
-  })
+  });
 });
