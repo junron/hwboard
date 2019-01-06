@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("../controllers");
 const EventEmitter = require('events');
 const auth = require("../auth");
-let io
+let io;
 
 class socketIO extends EventEmitter {}
 
@@ -11,26 +11,26 @@ router.post("/api/:method",(req, res) => {
   console.log("Loaded API route")
   ;(async ()=>{
     if(!io){
-      io = require("../app").io
+      io = require("../app").io;
     }
     const socket = new socketIO();
     const {method} = req.params;
 
     //Handle uncaught errors
     socket.on("uncaughtError",err=>{
-      let code
+      let code;
       if(err.toString().includes("Please check if the homework you want to")){
-        code = 409
-        console.log({err})
+        code = 409;
+        console.log({err});
       }else{
-        code = err.code || 500
+        code = err.code || 500;
       }
-      res.status(code).end(err.toString().replace("Error: ",""))
-    })
+      res.status(code).end(err.toString().replace("Error: ",""));
+    });
 
     try{
       if(db.getNumTables()===0){
-        await db.init()
+        await db.init();
       }
       const token = req.signedCookies.token;
       const tokenClaims = await auth.verifyToken(token);
@@ -42,26 +42,26 @@ router.post("/api/:method",(req, res) => {
         //Add user to rooms
         //Client will receive relevant events emitted to these rooms,
         //but not others
-        socket.channels[channel.name] = channel
+        socket.channels[channel.name] = channel;
       }
     }catch(e){
-      console.log(e)
+      console.log(e);
       //Problem with token, perhaps spoofed token?
       //Anyway get rid of this socket
-      console.log("Forced disconnect")
-      return res.status(403).end("Auth error")
+      console.log("Forced disconnect");
+      return res.status(403).end("Auth error");
     }
     //Administration
-    require("../websocket-routes/admin")(socket,io,db)
+    require("../websocket-routes/admin")(socket,io,db);
 
     //Homework ops
-    require("../websocket-routes/homework")(socket,io,db)
+    require("../websocket-routes/homework")(socket,io,db);
 
     //Stats
-    require("../websocket-routes/analytics")(socket,db)
+    require("../websocket-routes/analytics")(socket,db);
 
     //For tests
-    require("../websocket-routes/tests")(socket)
+    require("../websocket-routes/tests")(socket);
 
     //Supported methods
     const methods = [
@@ -85,28 +85,28 @@ router.post("/api/:method",(req, res) => {
       
       //Most destructive admin methods are not supported as of now
       "addMember",
-    ]
+    ];
     if(methods.includes(method)){
       socket.emit(method,req.body,function(err,...results){
         if(err){
-          throw err
+          throw err;
         }
-        return res.end(JSON.stringify(results))
-      })
+        return res.end(JSON.stringify(results));
+      });
     }else{
-      return res.status(400).end("Invalid method")
+      return res.status(400).end("Invalid method");
     }
   })()
     .catch(err=>{
       let code;
       if(err.toString().includes("Please check if the homework you want to")){
         code = 409;
-        console.log({err})
+        console.log({err});
       }else{
-        code = err.code || 500
+        code = err.code || 500;
       }
-      res.status(code).end(err.toString().replace("Error: ",""))
-    })
+      res.status(code).end(err.toString().replace("Error: ",""));
+    });
 });
 
 module.exports = router;
