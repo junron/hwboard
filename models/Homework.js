@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   return name =>{
-    console.log('homework-'+name)
+    console.log('homework-'+name);
     const Homework = sequelize.define('homework-'+name, {
       id :{
         type: Sequelize.UUID,
@@ -33,7 +33,7 @@ module.exports = (sequelize, Sequelize) => {
       timestamps:true,
       createdAt: false,
       updatedAt: 'lastEditTime'
-    })
-    return Homework
-  }
+    });
+    return Homework;
+  };
 };
