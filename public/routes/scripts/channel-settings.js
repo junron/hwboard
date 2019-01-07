@@ -110,3 +110,17 @@ function deleteSubject(subjectElem){
     });
   });
 }
+
+function deleteTag(tagElem){
+  const tagName = tagElem.children[0].children[0].children[0].innerText.split("\n")[0];
+  Framework7App.dialog.confirm("Are you sure you want to delete " + tagName + "?",function(){
+    conn.emit("removeTag",{channel,tag:tagName},function(err){
+      if(err){
+        Framework7App.dialog.alert(err.toString());
+        throw new Error(err);
+      }
+      getChannelData();
+      console.log("done");
+    });
+  });
+}
