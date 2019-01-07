@@ -139,6 +139,23 @@ module.exports = (socket,io,db)=>{
     //Error in handling error
       .catch(uncaughtErrorHandler);
   });
+
+  socket.on("removeTag",function(msg,callback){
+    (async ()=>{
+      msg = await checkPayloadAndPermissions(socket,msg,3);
+      const {channel} = msg;
+      await db.removeTag(msg);
+      updateChannels(db.arrayToObject(await db.getUserChannels("*")));
+      const thisChannel = socket.channels[channel];
+      io.to(channel).emit("channelData",{[channel]:thisChannel});
+      return null;
+    })()
+      .then(callback)
+      .catch(e => callback(e.toString()))
+      //Error in handling error
+      .catch(uncaughtErrorHandler);
+  });
+
   //Add member
   socket.on("addMember",function(msg,callback){
     console.log(msg,"attempt to add member")
