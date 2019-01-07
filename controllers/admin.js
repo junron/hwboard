@@ -138,7 +138,7 @@ async function removeSubject(channelData){
   const originalData = originalDataArray[0];
   const existingSubjects = originalData.subjects;
   if(!Object.values(existingSubjects).includes(subject)) {
-      throw new Error(`Subject ${subject} does not exist.`);
+    throw new Error(`Subject ${subject} does not exist.`);
   }
   const index = originalData.subjects.indexOf(subject);
   if (index > -1) {
