@@ -14,7 +14,7 @@ function renderTags(data){
         </div>
       </div>`;
     if(isRoot){
-        html+=`<div class="swipeout-actions-right">
+      html+=`<div class="swipeout-actions-right">
   <a onclick="deleteTag(this.parentElement.parentElement)" class="swipeout-close" style="background-color:#f44336">Delete</a>
   </div>`;
     }
