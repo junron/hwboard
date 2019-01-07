@@ -3,7 +3,7 @@ function getChannelData(){
   worker.postMessage({
     type:"getSingleChannelByName",
     name:channel
-  }).then(data=>{
+  }).then((data)=>{
     if(!data.name){
       //IndexedDB is empty, perhaps is first page load
       return;

@@ -78,10 +78,6 @@ async function loadHomework(){
     }
     return results[1];
   }
-  console.log({xdfgtduhjakosidjc});
-  console.log({escfvgadyscauiOAJSD});
-  console.log(typeof hwboard,"async");
-  console.log(Object.keys(hwboard),"async");
   const results = await Promise.all([
     hwboard.getHomework(),
     hwboard.getChannelData()
