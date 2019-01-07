@@ -1,66 +1,66 @@
-'use strict'
-const commonJS = ("undefined" != typeof require)
-const node = ("undefined" == typeof window)
-const studentsByName = {}
-const studentsByMG = {}
-const studentsById = {}
-let students
+'use strict';
+const commonJS = ("undefined" != typeof require);
+const node = ("undefined" == typeof window);
+const studentsByName = {};
+const studentsByMG = {};
+const studentsById = {};
+let students;
 async function getData(dataPath,cache=false){
   if(students){
     //Already fetched data
-    return students
+    return students;
   }
-  let data
+  let data;
   if(node && commonJS){
-    data = require(dataPath)
+    data = require(dataPath);
   }else{
     data = await fetch(dataPath)
-    .then(function(res){
-      return res.json()
-    })
+      .then(function(res){
+        return res.json();
+      });
   }
-  students = data
+  students = data;
   if(Object.keys(studentsByMG).length){
-    console.log(studentsByMG)
-    return
+    console.log(studentsByMG);
+    return;
   }
   for (const student of data){
     if(typeof studentsByMG[student.mentorGrp]=="undefined"){
-      studentsByMG[student.mentorGrp] = [student.id]
+      studentsByMG[student.mentorGrp] = [student.id];
     }else{
-      studentsByMG[student.mentorGrp].push(student.id)
+      studentsByMG[student.mentorGrp].push(student.id);
     }
-    studentsByName[student.name] = student.id
-    studentsById[student.id] = student
+    studentsByName[student.name] = student.id;
+    studentsById[student.id] = student;
   }
-  return data
+  return data;
 }
 async function getStudentById(studentId){
-  const result = studentsById[studentId]
-  if(!result) throw new Error("Student not found")
-  return result
+  const result = studentsById[studentId];
+  if(!result) throw new Error("Student not found");
+  return result;
 }
 function getStudentByIdSync(studentId){
-  return studentsById[studentId]
+  return studentsById[studentId];
 }
 function getClassesSync(){
-  return Object.keys(studentsByMG)
+  return Object.keys(studentsByMG);
 }
 async function getStudentByName(studentName){
-  const result = studentsById[studentsByName[studentName]]
-  if(!result) throw new Error("Student not found")
-  return result
+  const result = studentsById[studentsByName[studentName]];
+  if(!result) throw new Error("Student not found");
+  return result;
 }
 async function getStudentsByClassName(mentorGrp){
-  const result = studentsByMG[mentorGrp]
-  if(!result) throw new Error("Student not found")
-  return result
+  const result = studentsByMG[mentorGrp];
+  if(!result) throw new Error("Student not found");
+  return result;
 }
 function getStudentsByClassNameSync(mentorGrp){
-  return studentsByMG[mentorGrp]
+  return studentsByMG[mentorGrp];
 }
 async function getStudentByName2(studentName){
-  return students.find(student => student.name == studentName)
+  return students.find(student => student.name == studentName);
 }
 
 
@@ -73,7 +73,7 @@ const studentsExport = Object.freeze({
   getStudentByName2,
   getStudentByIdSync,
   getClassesSync
-})
+});
 //commonJS pro
 if(commonJS){
   module.exports = Object.freeze({
@@ -82,5 +82,5 @@ if(commonJS){
     getStudentByName,
     getStudentsByClassName,
     getStudentByName2,
-  })
+  });
 }
