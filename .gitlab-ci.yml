@@ -32,7 +32,7 @@ test:
   - node --version
   - npm install
   - npm audit
-  - npm run hwboard getData
+  - mv data.json.test data.json
   - mkdir artifacts
   - npm test
   artifacts:
