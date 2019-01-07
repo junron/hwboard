@@ -40,5 +40,6 @@ module.exports={
   whenHomeworkExpires:homework.whenHomeworkExpires,
   getNumHomework:homework.getNumHomework,
   removeSubject:admin.removeSubject,
-  addTag:admin.addTag
+  addTag:admin.addTag,
+  removeTag:admin.removeTag
 };
