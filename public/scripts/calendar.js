@@ -172,3 +172,4 @@ function calendarInit(){
   }
   setColors();
 }
+
