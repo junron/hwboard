@@ -32,6 +32,7 @@ test:
   - node --version
   - npm install
   - npm audit
+  - apk add openssl
   - echo $HWBOARD_DATA_PASSWORD | openssl aes-256-cbc -d -pbkdf2 -a -in data.json.enc -out data.json
   - mkdir artifacts
   - npm test
