@@ -47,6 +47,7 @@
         throw err;
       }
       mainView.router.back();
+      getChannelData();
     });
   });
 })();

@@ -9,6 +9,17 @@ function promisifyAll(moduleObj) {
   return moduleObj;
 }
 
+function decryptData(password){
+  var fs = require('fs');
+  const crypto = require("crypto");
+  var decrypt = crypto.createDecipher("aes-256-cbc", password);
+  var output = fs.createWriteStream("data.json");
+  const input = fs.createReadStream("data.json.enc");
+  input
+    .pipe(decrypt)
+    .pipe(output);
+}
+
 function uuid() {
   var uuid = "", i, random;
   for (i = 0; i < 32; i++) {
@@ -280,16 +291,6 @@ if(process.argv[2]==="restore"){
     })();
   }
 }else if(process.argv[2]==="getData"){
-  function decryptData(password){
-    var fs = require('fs');
-    const crypto = require("crypto");
-    var decrypt = crypto.createDecipher("aes-256-cbc", password);
-    var output = fs.createWriteStream("data.json");
-    const input = fs.createReadStream("data.json.enc");
-    input
-      .pipe(decrypt)
-      .pipe(output);
-  }
   const readline = require('readline');
   if(process.env.HWBOARD_DATA_PASSWORD){
     return decryptData(process.env.HWBOARD_DATA_PASSWORD);
