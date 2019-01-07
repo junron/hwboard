@@ -4,13 +4,13 @@ body {
   font-size: 14px;
 }
 
-#calendar {
+.calendar-page {
   margin: auto;
   margin-top: 50px;
   margin-bottom: 10px;
   max-width: 95%;
-  max-height: 80%;
-  padding-top: 30px;
+  max-height: 95%;
+  padding-top: 20px;
 }
 
 .fc-state-highlight {
