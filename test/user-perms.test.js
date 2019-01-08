@@ -127,6 +127,108 @@ describe("Hwboard user access control",function(){
     });
   });
 
+  it("Should allow root to promote non-roots",function(done){
+    const channel= "testing";
+    rootClient.emit("promoteMember",{
+      channel,
+      students:["member"]
+    }, err=>{
+      expect(err).to.be.null;
+      client.emit("channelDataReq",{},function(err,channels){
+        expect(err).to.be.null;
+        const testChannel = channels.find(c=>c.name===channel);
+        console.log(testChannel);
+        expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
+        expect(testChannel.admins).to.deep.equal(["admin@nushigh.edu.sg", "member@nushigh.edu.sg"]);
+        expect(testChannel.members).to.deep.equal([]);
+        done();
+      });
+    });
+
+    rootClient.emit("promoteMember",{
+      channel,
+      students:["member"],
+    }, err=>{
+      expect(err).to.be.null;
+      client.emit("channelDataReq",{},function(err,channels){
+        expect(err).to.be.null;
+        const testChannel = channels.find(c=>c.name===channel);
+        console.log(testChannel);
+        expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg", "member@nushigh.edu.sg"]);
+        expect(testChannel.admins).to.deep.equal(["admin@nushigh.edu.sg"]);
+        expect(testChannel.members).to.deep.equal([]);
+        done();
+      });
+    });
+
+    rootClient.emit("promoteMember",{
+      channel,
+      students:["admin"],
+    }, err=>{
+      expect(err).to.be.null;
+      client.emit("channelDataReq",{},function(err,channels){
+        expect(err).to.be.null;
+        const testChannel = channels.find(c=>c.name===channel);
+        console.log(testChannel);
+        expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg", "member@nushigh.edu.sg", "admin@nushigh.edu.sg"]);
+        expect(testChannel.admins).to.deep.equal([]);
+        expect(testChannel.members).to.deep.equal([]);
+        done();
+      });
+    });
+  });
+
+  it("Should allow root to demote non-roots",function(done){
+    const channel= "testing";
+    rootClient.emit("demoteMember",{
+      channel,
+      students:["member"]
+    }, err=>{
+      expect(err).to.be.null;
+      client.emit("channelDataReq",{},function(err,channels){
+        expect(err).to.be.null;
+        const testChannel = channels.find(c=>c.name===channel);
+        console.log(testChannel);
+        expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg", "admin@nushigh.edu.sg"]);
+        expect(testChannel.admins).to.deep.equal(["member@nushigh.edu.sg"]);
+        expect(testChannel.members).to.deep.equal([]);
+        done();
+      });
+    });
+
+    rootClient.emit("demoteMember",{
+      channel,
+      students:["member"],
+    }, err=>{
+      expect(err).to.be.null;
+      client.emit("channelDataReq",{},function(err,channels){
+        expect(err).to.be.null;
+        const testChannel = channels.find(c=>c.name===channel);
+        console.log(testChannel);
+        expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg", "admin@nushigh.edu.sg"]);
+        expect(testChannel.admins).to.deep.equal([]);
+        expect(testChannel.members).to.deep.equal(["member@nushigh.edu.sg"]);
+        done();
+      });
+    });
+
+    rootClient.emit("demoteMember",{
+      channel,
+      students:["admin"],
+    }, err=>{
+      expect(err).to.be.null;
+      client.emit("channelDataReq",{},function(err,channels){
+        expect(err).to.be.null;
+        const testChannel = channels.find(c=>c.name===channel);
+        console.log(testChannel);
+        expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
+        expect(testChannel.admins).to.deep.equal(["admin@nushigh.edu.sg"]);
+        expect(testChannel.members).to.deep.equal(["member@nushigh.edu.sg"]);
+        done();
+      });
+    });
+  });
+
   after(function(done){
     websocket.close();
     done();
