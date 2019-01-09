@@ -134,7 +134,7 @@ describe("Hwboard user access control",function(){
       students:["member"]
     }, err=>{
       expect(err).to.be.null;
-      client.emit("channelDataReq",{},function(err,channels){
+      rootClient.emit("channelDataReq",{},function(err,channels){
         expect(err).to.be.null;
         const testChannel = channels.find(c=>c.name===channel);
         console.log(testChannel);
@@ -146,7 +146,7 @@ describe("Hwboard user access control",function(){
           students:["member"],
         }, err=>{
           expect(err).to.be.null;
-          client.emit("channelDataReq",{},function(err,channels){
+          rootClient.emit("channelDataReq",{},function(err,channels){
             expect(err).to.be.null;
             const testChannel = channels.find(c=>c.name===channel);
             console.log(testChannel);
@@ -158,7 +158,7 @@ describe("Hwboard user access control",function(){
               students:["admin"],
             }, err=>{
               expect(err).to.be.null;
-              client.emit("channelDataReq",{},function(err,channels){
+              rootClient.emit("channelDataReq",{},function(err,channels){
                 expect(err).to.be.null;
                 const testChannel = channels.find(c=>c.name===channel);
                 console.log(testChannel);
@@ -181,7 +181,7 @@ describe("Hwboard user access control",function(){
       students:["member"]
     }, err=>{
       expect(err).to.be.null;
-      client.emit("channelDataReq",{},function(err,channels){
+      rootClient.emit("channelDataReq",{},function(err,channels){
         expect(err).to.be.null;
         const testChannel = channels.find(c=>c.name===channel);
         console.log(testChannel);
@@ -193,7 +193,7 @@ describe("Hwboard user access control",function(){
           students:["member"],
         }, err=>{
           expect(err).to.be.null;
-          client.emit("channelDataReq",{},function(err,channels){
+          rootClient.emit("channelDataReq",{},function(err,channels){
             expect(err).to.be.null;
             const testChannel = channels.find(c=>c.name===channel);
             console.log(testChannel);
@@ -205,7 +205,7 @@ describe("Hwboard user access control",function(){
               students:["admin"],
             }, err=>{
               expect(err).to.be.null;
-              client.emit("channelDataReq",{},function(err,channels){
+              rootClient.emit("channelDataReq",{},function(err,channels){
                 expect(err).to.be.null;
                 const testChannel = channels.find(c=>c.name===channel);
                 console.log(testChannel);
