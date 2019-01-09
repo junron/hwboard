@@ -4,7 +4,7 @@ const io = require('socket.io-client');
 const websocket = require("../app").server;
 const port = require("../loadConfig").PORT;
 let rootClient;
-describe("Admin API",function(){
+describe("Removing stuff",function(){
   this.timeout(3000);
   before(function(done){
     websocket.listen(port);
@@ -26,26 +26,22 @@ describe("Admin API",function(){
     done();
   });
 
-  it("Should be able to remove subjects",function(done){
+  it("Should be able to remove tags",function(done){
     const channel= "testing";
-    rootClient.emit("removeSubject",{
+    rootClient.emit("removeTag",{
       channel,
-      subject:"math"
+      tag:"test-root"
     },err=>{
       expect(err).to.be.null;
-      rootClient.emit("removeSubject",{
-        channel,
-        subject:"chemistry"
-      },err=>{
+      rootClient.emit("channelDataReq",{},function(err,channels){
         expect(err).to.be.null;
-        rootClient.emit("channelDataReq",{},function(err,channels){
-          expect(err).to.be.null;
-          const testChannel = channels.find(c=>c.name===channel);
-          console.log(testChannel);
-          expect(testChannel.subjects).to.deep.equal([]);
-          expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
-          done();
+        const testChannel = channels.find(c=>c.name===channel);
+        expect(testChannel.tags).to.deep.equal({
+          Graded:"red",
+          Optional:"green",
+          test:"#03a9f4"
         });
+        done();
       });
     });
   });
