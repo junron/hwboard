@@ -177,8 +177,10 @@ module.exports = (socket,io,db)=>{
   socket.on("removeMember",function(msg,callback){
     (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3);
-      const {channel,student} = msg;
-      await db.removeMember(channel,student);
+      const {channel,students} = msg;
+      for(const student of students){
+        await db.removeMember(channel,student);
+      }
       updateChannels(db.arrayToObject(await db.getUserChannels("*")));
       const thisChannel = socket.channels[channel];
       io.to(channel).emit("channelData",{[channel]:thisChannel});
@@ -194,16 +196,18 @@ module.exports = (socket,io,db)=>{
     (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3);
       const numberToPermission = number => ["member","admin","root"][number-1];
-      const {channel,student} = msg;
-      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel]);
-      if(currentPermissionLvl==3){
-        throw new Error("Can't promote root");
+      const {channel,students} = msg;
+      for (const student of students) {
+        const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel]);
+        if(currentPermissionLvl===3){
+          throw new Error("Can't promote root");
+        }
+        if(currentPermissionLvl===0){
+          throw new Error("Not a member");
+        }
+        await db.removeMember(channel,student);
+        await db.addMember(channel,[student],numberToPermission(currentPermissionLvl + 1));
       }
-      if(currentPermissionLvl==0){
-        throw new Error("Not a member");
-      }
-      await db.removeMember(channel,student);
-      await db.addMember(channel,[student],numberToPermission(currentPermissionLvl + 1));
       updateChannels(db.arrayToObject(await db.getUserChannels("*")));
       const thisChannel = socket.channels[channel];
       io.to(channel).emit("channelData",{[channel]:thisChannel});
@@ -219,16 +223,18 @@ module.exports = (socket,io,db)=>{
     (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3);
       const numberToPermission = number => ["member","admin","root"][number-1];
-      const {channel,student} = msg;
-      const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel]);
-      if(currentPermissionLvl==1){
-        throw new Error("Can't demote member");
+      const {channel,students} = msg;
+      for (const student of students) {
+        const currentPermissionLvl = getPermissionLvl(student+"@nushigh.edu.sg",socket.channels[channel]);
+        if(currentPermissionLvl==1){
+          throw new Error("Can't demote member");
+        }
+        if(currentPermissionLvl==0){
+          throw new Error("Not a member");
+        }
+        await db.removeMember(channel,student);
+        await db.addMember(channel,[student],numberToPermission(currentPermissionLvl - 1));
       }
-      if(currentPermissionLvl==0){
-        throw new Error("Not a member");
-      }
-      await db.removeMember(channel,student);
-      await db.addMember(channel,[student],numberToPermission(currentPermissionLvl - 1));
       updateChannels(db.arrayToObject(await db.getUserChannels("*")));
       const thisChannel = socket.channels[channel];
       io.to(channel).emit("channelData",{[channel]:thisChannel});

@@ -15,11 +15,16 @@ router.get("/testing/su",(req, res) => {
     const {userPassword,switchUserName} = req.query;
     const bufferUserPassword = Buffer.from(userPassword.split(" ").join("+"),"utf-8");
     //Use timing secure to prevent timing attacks
-    if(bufferPassword.length==bufferUserPassword.length && timingSafeEqual(bufferPassword,bufferUserPassword)){
+    if(bufferPassword.length===bufferUserPassword.length && timingSafeEqual(bufferPassword,bufferUserPassword)){
       console.log(`Successful su from ${ip} for ${switchUserName}`);
       res.cookie("username",switchUserName,{
         secure:true,
         signed:true,
+        httpOnly:true,
+        sameSite:"lax"
+      });
+      res.cookie("email", switchUserName, {
+        secure:true,
         httpOnly:true,
         sameSite:"lax"
       });
