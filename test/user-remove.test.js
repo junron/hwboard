@@ -3,21 +3,21 @@ const {expect} = chai;
 const io = require('socket.io-client');
 const websocket = require("../app").server;
 const port = require("../loadConfig").PORT;
-let client;
+let rootClient;
 describe("Admin API",function(){
   this.timeout(3000);
   before(function(done){
     websocket.listen(port);
     setTimeout(()=>{
       console.log("http://localhost:" + port);
-      client = io("http://localhost:" + port);
-      client.on("disconnect",()=>{
+      rootClient = io("http://localhost:" + port);
+      rootClient.on("disconnect",()=>{
         console.log("Disconnect");
       });
-      client.on("error",console.log);
-      client.on("connect",()=>{
+      rootClient.on("error",console.log);
+      rootClient.on("connect",()=>{
         console.log("connected");
-        client.on("ready",done);
+        rootClient.on("ready",done);
       },1000);
     });
   });
@@ -28,17 +28,17 @@ describe("Admin API",function(){
 
   it("Should be able to remove subjects",function(done){
     const channel= "testing";
-    client.emit("removeSubject",{
+    rootClient.emit("removeSubject",{
       channel,
       subject:"math"
     },err=>{
       expect(err).to.be.null;
-      client.emit("removeSubject",{
+      rootClient.emit("removeSubject",{
         channel,
         subject:"chemistry"
       },err=>{
         expect(err).to.be.null;
-        client.emit("channelDataReq",{},function(err,channels){
+        rootClient.emit("channelDataReq",{},function(err,channels){
           expect(err).to.be.null;
           const testChannel = channels.find(c=>c.name===channel);
           console.log(testChannel);
@@ -51,17 +51,17 @@ describe("Admin API",function(){
   });
   it("Should be able to remove admins and members",function(done){
     const channel= "testing";
-    client.emit("removeMember",{
+    rootClient.emit("removeMember",{
       channel,
       students:["admin"]
     },err=>{
       expect(err).to.be.null;
-      client.emit("removeMember",{
+      rootClient.emit("removeMember",{
         channel,
         students:["member"]
       },err=>{
         expect(err).to.be.null;
-        client.emit("channelDataReq",{},function(err,channels){
+        rootClient.emit("channelDataReq",{},function(err,channels){
           expect(err).to.be.null;
           const testChannel = channels.find(c=>c.name===channel);
           console.log(testChannel);
