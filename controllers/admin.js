@@ -190,6 +190,7 @@ async function removeMember(channel,member){
     }
   });
 }
+
 async function addMember(channel,members,permissionLevel){
   const permissionToNumber = lvl => {
     const index = ["member","admin","root"].indexOf(lvl);
