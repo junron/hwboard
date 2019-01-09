@@ -62,7 +62,7 @@ function deleteMember(memberElem){
   const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1];
   const memberId = memberEmail.replace("@nushigh.edu.sg","");
   Framework7App.dialog.confirm("Are you sure you want to remove "+memberEmail +"?",function(){
-    conn.emit("removeMember",{channel,student:memberId},function(err){
+    conn.emit("removeMember",{channel,students:[memberId]},function(err){
       if(err){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);

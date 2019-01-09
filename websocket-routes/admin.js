@@ -177,8 +177,10 @@ module.exports = (socket,io,db)=>{
   socket.on("removeMember",function(msg,callback){
     (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3);
-      const {channel,student} = msg;
-      await db.removeMember(channel,student);
+      const {channel,students} = msg;
+      for(const student of students){
+        await db.removeMember(channel,student);
+      }
       updateChannels(db.arrayToObject(await db.getUserChannels("*")));
       const thisChannel = socket.channels[channel];
       io.to(channel).emit("channelData",{[channel]:thisChannel});
