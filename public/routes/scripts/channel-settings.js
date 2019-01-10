@@ -3,7 +3,7 @@ function getChannelData(){
   worker.postMessage({
     type:"getSingleChannelByName",
     name:channel
-  }).then(data=>{
+  }).then((data)=>{
     if(!data.name){
       //IndexedDB is empty, perhaps is first page load
       return;
@@ -62,7 +62,7 @@ function deleteMember(memberElem){
   const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1];
   const memberId = memberEmail.replace("@nushigh.edu.sg","");
   Framework7App.dialog.confirm("Are you sure you want to remove "+memberEmail +"?",function(){
-    conn.emit("removeMember",{channel,student:memberId},function(err){
+    conn.emit("removeMember",{channel,students:[memberId]},function(err){
       if(err){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
@@ -75,7 +75,7 @@ function promoteMember(memberElem){
   const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1];
   const memberId = memberEmail.replace("@nushigh.edu.sg","");
   Framework7App.dialog.confirm("Are you sure you want to promote " + memberEmail + "?",function(){
-    conn.emit("promoteMember",{channel,student:memberId},function(err){
+    conn.emit("promoteMember",{channel,students:[memberId]},function(err){
       if(err){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
@@ -88,7 +88,7 @@ function demoteMember(memberElem){
   const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1];
   const memberId = memberEmail.replace("@nushigh.edu.sg","");
   Framework7App.dialog.confirm("Are you sure you want to demote " + memberEmail + "?",function(){
-    conn.emit("demoteMember",{channel,student:memberId},function(err){
+    conn.emit("demoteMember",{channel,students:[memberId]},function(err){
       if(err){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
@@ -106,6 +106,20 @@ function deleteSubject(subjectElem){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
       }
+      console.log("done");
+    });
+  });
+}
+
+function deleteTag(tagElem){
+  const tagName = tagElem.children[0].children[0].children[0].innerText.split("\n")[0];
+  Framework7App.dialog.confirm("Are you sure you want to delete " + tagName + "?",function(){
+    conn.emit("removeTag",{channel,tag:tagName},function(err){
+      if(err){
+        Framework7App.dialog.alert(err.toString());
+        throw new Error(err);
+      }
+      getChannelData();
       console.log("done");
     });
   });

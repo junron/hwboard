@@ -1,6 +1,6 @@
 //Web worker for indexedDB
 //Use promise based messaging
-worker = new PromiseWorker(new Worker("/scripts/worker.js"));
+worker = new PromiseWorker(new Worker("./scripts/worker.js"));
 escfvgadyscauiOAJSD = true;
 xdfgtduhjakosidjc = true;
 hwboard = {

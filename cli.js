@@ -9,6 +9,17 @@ function promisifyAll(moduleObj) {
   return moduleObj;
 }
 
+function decryptData(password){
+  var fs = require('fs');
+  const crypto = require("crypto");
+  var decrypt = crypto.createDecipher("aes-256-cbc", password);
+  var output = fs.createWriteStream("data.json");
+  const input = fs.createReadStream("data.json.enc");
+  input
+    .pipe(decrypt)
+    .pipe(output);
+}
+
 function uuid() {
   var uuid = "", i, random;
   for (i = 0; i < 32; i++) {
@@ -168,7 +179,7 @@ if(process.argv[2]==="restore"){
       }
       const sshTunnelInit = options.nodes.reduce((prev,curr)=>{
         if(curr.connectionCommand!==undefined){
-          return prev + curr.connectionCommand + ";"; 
+          return prev + curr.connectionCommand + ";";
         }
         return prev;
       },"");
@@ -240,7 +251,7 @@ if(process.argv[2]==="restore"){
       try{
         await Promise.all([mkdir("cockroach/certs"),mkdir("cockroach/ca-key")]);
       }catch(e){
-        // 
+        //
       }
       await execFile("cockroach",["cert","create-ca","--certs-dir=cockroach/certs","--ca-key=cockroach/ca-key/ca.key","--key-size=4096"]);
       console.log("CA key generated in `./cockroach/ca-key/ca.key`.");
@@ -280,16 +291,6 @@ if(process.argv[2]==="restore"){
     })();
   }
 }else if(process.argv[2]==="getData"){
-  function decryptData(password){
-    var fs = require('fs');
-    const crypto = require("crypto");
-    var decrypt = crypto.createDecipher("aes-256-cbc", password);
-    var output = fs.createWriteStream("data.json");
-    const input = fs.createReadStream("data.json.enc");
-    input
-      .pipe(decrypt)
-      .pipe(output);
-  }
   const readline = require('readline');
   if(process.env.HWBOARD_DATA_PASSWORD){
     return decryptData(process.env.HWBOARD_DATA_PASSWORD);
@@ -302,7 +303,7 @@ if(process.argv[2]==="restore"){
     decryptData(password);
     r1.close();
   });
-}else if(process.argv[2]+process.argv[3]=="addchannel"){
+}else if(process.argv[2]+process.argv[3]==="addchannel"){
   let config ={
     tags : {
       "Graded" : "red",
@@ -400,7 +401,7 @@ if(process.argv[2]==="restore"){
       });
     });
   }
-}else if(process.argv[2]=="reset-db-for-test"){
+}else if(process.argv[2]==="reset-db-for-test"){
   void async function (){
     const {sequelize,Channels} = require("./models");
     await Channels.destroy({
@@ -412,8 +413,8 @@ if(process.argv[2]==="restore"){
     sequelize.close();
   }();
 
-}else if(process.argv[2]=="config"){
-  if(process.argv[3]=="secret-only"){
+}else if(process.argv[2]==="config"){
+  if(process.argv[3]==="secret-only"){
     const fs = require("fs");
     let config;
     try{
@@ -433,7 +434,7 @@ if(process.argv[2]==="restore"){
         console.log("Config complete");
       });
     });
-  }else  if(process.argv[3]=="docker"){
+  }else  if(process.argv[3]==="docker"){
     const util = require('util');
     const readline = require('readline');
     readline.Interface.prototype.question[util.promisify.custom] = function(prompt) {
@@ -449,36 +450,36 @@ if(process.argv[2]==="restore"){
       output: process.stdout
     });
     const config = {}
-    ;(async ()=>{
+        ;(async ()=>{
       const crypto = require("crypto");
       const secret = (await crypto.randomBytes(32)).toString("base64");
       config.COOKIE_SECRET = secret;
       console.log("Using 32 bytes (256 bits) of random data for cookie secret: \n",config.COOKIE_SECRET);
       console.log();
       const hostname = await r1.questionAsync("Hostname (omit protocol and path) eg nushwhboard.tk: ",);
-      if(hostname!="skip"){
+      if(hostname!=="skip"){
         config.HOSTNAME = hostname;
       }else{
         console.log(`Please set the HWBOARD_HOSTNAME environment variable`);
       }
       const ci = await r1.questionAsync("\nDo you want to run hwboard in dev/testing mode? This will skip the authentication process. (yes/no):  ");
-      config.CI = ci=="yes";
+      config.CI = ci==="yes";
       if(!config.CI){
         const clientId = await r1.questionAsync("\nMicrosoft client id:  ");
-        if(clientId!="skip"){
+        if(clientId!=="skip"){
           config.MS_CLIENTID = clientId;
         }else{
           console.log(`Please set the MS_CLIENTID environment variable`);
         }
         const clientSecret = await r1.questionAsync("\nMicrosoft client secret:  ");
-        if(clientSecret!="skip"){
+        if(clientSecret!=="skip"){
           config.MS_CLIENTSECRET = clientSecret;
         }else{
           console.log(`Please set the MS_CLIENTSECRET environment variable`);
         }
       }
       const port = await r1.questionAsync("\nPort to run hwboard on:  ");
-      if(port!="skip"){
+      if(port!=="skip"){
         config.PORT = port;
       }else{
         console.log(`Please set the HWBOARD_PORT environment variable`);
@@ -522,7 +523,7 @@ if(process.argv[2]==="restore"){
     });
     const config = {};
     r1.question("Do you want to automatically generate a cookie secret? (yes/no)  ",async (answer)=>{
-      if(answer.toLowerCase()=="yes"){
+      if(answer.toLowerCase()==="yes"){
         const crypto = require("crypto");
         const secret = (await crypto.randomBytes(32)).toString("base64");
         config.COOKIE_SECRET = secret;
@@ -543,28 +544,28 @@ if(process.argv[2]==="restore"){
             console.log(`Please set the DB_NAME environment variable`);
           }
           r1.question("Database password  ",(answer)=>{
-            if(answer!="skip"){
+            if(answer!=="skip"){
               config.DB_PASSWORD = answer;
             }else{
               console.log(`Please set the DB_PASSWORD environment variable`);
             }
             r1.question("Do you want to run hwboard in dev/testing mode? This will skip the authentication process. (yes/no)",(answer)=>{
-              config.CI = answer=="yes";
+              config.CI = answer==="yes";
               if(!config.CI){
                 r1.question("Microsoft client id  ",(answer)=>{
-                  if(answer!="skip"){
+                  if(answer!=="skip"){
                     config.MS_CLIENTID = answer;
                   }else{
                     console.log(`Please set the MS_CLIENTID environment variable`);
                   }
                   r1.question("Microsoft client secret  ",(answer)=>{
-                    if(answer!="skip"){
+                    if(answer!=="skip"){
                       config.MS_CLIENTSECRET = answer;
                     }else{
                       console.log(`Please set the MS_CLIENTSECRET environment variable`);
                     }
                     r1.question("Hostname (omit protocol and path) eg nushwhboard.tk  ",(answer)=>{
-                      if(answer!="skip"){
+                      if(answer!=="skip"){
                         config.HOSTNAME = answer;
                       }else{
                         console.log(`Please set the HWBOARD_HOSTNAME environment variable`);

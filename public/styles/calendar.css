@@ -1,17 +1,10 @@
 body {
   margin: 0;
   padding: 0;
-  font-size: 14px;
-}
+  font-size: 14px; }
 
 #calendar {
-  margin: auto;
-  margin-top: 50px;
-  margin-bottom: 10px;
-  max-width: 95%;
-  max-height: 80%;
-  padding-top: 30px;
-}
+  margin: auto; }
 
 .fc-time-grid-event.fc-v-event.fc-event {
   border-radius: 4px;
@@ -19,14 +12,12 @@ body {
   padding: 5px;
   opacity: .65;
   left: 5% !important;
-  right: 5% !important;
-}
+  right: 5% !important; }
 
 .fc-event {
   font-size: inherit !important;
   font-weight: bold !important;
-  overflow-wrap: break-word;
-}
+  overflow-wrap: break-word; }
 
 .fc td, .fc th {
   border-style: solid !important;
@@ -35,31 +26,27 @@ body {
   border-right-style: none !important;
   border-width: 1px !important;
   padding: 0 !important;
-  vertical-align: top !important;
-}
+  vertical-align: top !important; }
 
 .fc-event .fc-bg {
   z-index: 1 !important;
   background: inherit !important;
-  opacity: .25 !important;
-}
+  opacity: .25 !important; }
 
 .fc-time-grid-event .fc-time {
-  font-weight: normal !important;
-}
+  font-weight: normal !important; }
 
 .fc-ltr .fc-h-event.fc-not-end, .fc-rtl .fc-h-event.fc-not-start {
   opacity: .65 !important;
   margin-left: 12px !important;
-  padding: 5px !important;
-}
+  padding: 5px !important; }
 
 .fc-day-grid-event.fc-h-event.fc-event.fc-not-start.fc-end {
   opacity: .65 !important;
   margin-left: 12px !important;
-  padding: 5px !important;
-}
+  padding: 5px !important; }
 
 .fc-button {
-  white-space-collapsing: discard;
-}
+  white-space-collapsing: discard; }
+
+/*# sourceMappingURL=calendar.css.map */

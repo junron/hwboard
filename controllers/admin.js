@@ -38,7 +38,7 @@ async function addTag(channel,tagName,tagColor){
     },
     raw: true
   }));
-  if(originalDataArray.length==0){
+  if(originalDataArray.length===0){
     throw new Error("Channel does not exist");
   }
   const originalData = originalDataArray[0];
@@ -53,6 +53,30 @@ async function addTag(channel,tagName,tagColor){
     throw new Error(`A tag with color ${tagColor} already exists.`);
   }
   originalData.tags[tagName] = tagColor;
+  return Channels.update(originalData,{
+    where:{
+      name:originalData.name
+    }
+  });
+}
+
+async function removeTag(tagData) {
+  const {channel, tag:tagName} = tagData;
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }));
+  if(originalDataArray.length===0){
+    throw new Error("Channel does not exist");
+  }
+  const originalData = originalDataArray[0];
+  const existingTags = originalData.tags;
+  if(!Object.keys(existingTags).includes(tagName)) {
+    throw new Error(`Tag ${tagName} does not exist.`);
+  }
+  delete originalData.tags[tagName];
   return Channels.update(originalData,{
     where:{
       name:originalData.name
@@ -112,6 +136,10 @@ async function removeSubject(channelData){
   }
 
   const originalData = originalDataArray[0];
+  const existingSubjects = originalData.subjects;
+  if(!Object.values(existingSubjects).includes(subject)) {
+    throw new Error(`Subject ${subject} does not exist.`);
+  }
   const index = originalData.subjects.indexOf(subject);
   if (index > -1) {
     originalData.subjects.splice(index, 1);
@@ -162,6 +190,7 @@ async function removeMember(channel,member){
     }
   });
 }
+
 async function addMember(channel,members,permissionLevel){
   const permissionToNumber = lvl => {
     const index = ["member","admin","root"].indexOf(lvl);
@@ -231,5 +260,6 @@ module.exports = {
   removeSubject,
   addMember,
   removeMember,
-  addTag
+  addTag,
+  removeTag
 };

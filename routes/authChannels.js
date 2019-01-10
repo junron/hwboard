@@ -19,6 +19,11 @@ async function authChannels(req,res){
       name:"tester",
       preferred_username:"tester@nushigh.edu.sg"
     };
+    res.cookie("email", decodedToken.preferred_username, {
+      maxAge:10*60*60*1000,
+      secure:true,
+      sameSite:"lax",
+    });
   }else{
     const scopes = ["user.read","openid","profile"];
     //Check auth here

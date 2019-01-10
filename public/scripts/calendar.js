@@ -86,7 +86,7 @@ function changeView(){
 
 calendarWeekends = false;
 function calendarInit(){
-  const calendarPadding = 100;
+  const calendarPadding = 180;
   const calendarHeight = window.innerHeight - calendarPadding;
 
   $("#calendar").fullCalendar({
@@ -171,3 +171,4 @@ function calendarInit(){
   }
   setColors();
 }
+
