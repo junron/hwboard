@@ -27,6 +27,9 @@ const dateParserFn = (timetable,subjectSelectionList)=>{
    */
   async function parseDate(dateString){
     dateString = dateString || $(".page-current #dueDate").val();
+    if(dateString.toLowerCase().includes("unknown")){
+      return NaN;
+    }
     if(dateString.toLowerCase().includes("next lesson")){
       const numNextLesson = dateString.toLowerCase().split("next").join("").length-6;
       let nextLesson = new Date();
