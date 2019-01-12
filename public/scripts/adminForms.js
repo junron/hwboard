@@ -39,7 +39,7 @@ async function getHomeworkData(id=false){
     throw new Error("Subject is not valid");
   }
   const date = await dateParser.parseDate();
-  const dueDate = date.getTime();
+  const dueDate = Number.isNaN(date) ? "Unknown" : date.getTime();
   if(text==""){
     throw new Error("Homework name not specified");
   }
@@ -74,7 +74,7 @@ function load(subject,tags,text,dueDate,id,pageSelector=".page-current"){
     return `<option ${tags.includes(tag) ? "selected" : ""}>${tag}</option>`;
   }).join(""));
   //Keep the time also
-  $(`${pageSelector} #dueDate`).val(Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"));
+  $(`${pageSelector} #dueDate`).val(new Date(dueDate).getFullYear()===2099 ? "Unknown" : Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M"));
   $(`${pageSelector} #homework-name`).val(text.trim());
   dateParser.parseDate(dueDate);
   const textInputSelectors = [`${pageSelector} #subject-name`,`${pageSelector} #dueDate`,`${pageSelector} #homework-name`];
@@ -222,12 +222,9 @@ function deleteHomework(element){
       backgroundSync("/api/deleteReq",homeworkData).then(console.log);
       return;
     }
-    const promise = new Promise(function(resolve,reject){
-      conn.emit('deleteReq',homeworkData,(err)=>{
-        if(err) return reject(err);
-        //TODO: tell user that operation succeeded
-        return resolve();
-      });
+    conn.emit('deleteReq',homeworkData,(err)=>{
+      if(err) throw err;
+      console.log("Homework deleted");
     });
   });
 }
