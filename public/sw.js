@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js");
 
-const version = "1.3.7";
+const version = "1.3.8";
 
 console.log(`Service worker version ${version}`);
 self.addEventListener('install', function(e) {
@@ -99,7 +99,7 @@ self.addEventListener('fetch',function(event) {
                 status:500,
                 statusText:"Request timed out"
               }));
-            },1000);
+            },5000);
             fetch(event.request)
               .then(response=>{
                 clearTimeout(timer);
