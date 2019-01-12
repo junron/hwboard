@@ -21,6 +21,9 @@ const checkHomeworkValid = homework => {
   if(homework.text.trim().length === 0){
     throw "Homework text length is 0";
   }
+  if(homework.dueDate==="Unknown"){
+    homework.dueDate = new Date(2099,11,31);
+  }
   if(!homework.dueDate || new Date(homework.dueDate).toString()==="Invalid Date"){
     throw "Homework date is not valid";
   }
