@@ -13,6 +13,11 @@ const renderer = (()=>{
     }else if(a.isTest < b.isTest){
       return 1;
     }
+    if(a.tags.includes("Optional") > b.tags.includes("Optional")){
+      return 1;
+    }else if(a.tags.includes("Optional") < b.tags.includes("Optional")){
+      return -1;
+    }
     return 0;
   };
 
