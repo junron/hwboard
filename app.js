@@ -161,9 +161,16 @@ app.use((err, req, res) => {
     error: {}
   });
 });
-require("./controllers").init().then(()=>{
+
+const db = require("./controllers");
+
+db.init().then(()=>{
   console.log("Inited");
+  db.addUser("ronn", "ronn@is.gay", "lammmmmmmmejunwrong").then(()=>{
+    db.getUserTokens().then(console.log);
+  });
 });
+
 module.exports= {
   server,
   app,

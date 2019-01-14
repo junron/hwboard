@@ -13,7 +13,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         calendarToken: {
             type: Sequelize.STRING,
-            defaultValue: null
+            defaultValue: ""
         }
     }, {
         timestamps: false,

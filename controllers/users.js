@@ -8,17 +8,21 @@ async function getUsers() {
 }
 
 async function getUserTokens() {
-    return await Users.findAll({ where: {
-          raw: true,
-          calendarToken: { [Sequelize.Op.ne]: null }
-    } });
+    return await Users.findAll({
+      raw: true,
+      where: {
+        calendarToken: {
+          [Sequelize.Op.ne]: ""
+        }
+      }
+    });
 }
 
 async function addUser(name, email, token) {
     const data = {
         name: name,
         email: email,
-        token: token
+        calendarToken: token
     };
     return await Users.create(data);
 }

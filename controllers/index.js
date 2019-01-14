@@ -7,6 +7,7 @@ const {sequelize} = require("../models");
 
 const admin = require("./admin");
 const homework = require("./homework");
+const users = require("./users");
 
 //Generate tables
 async function init(){
@@ -25,15 +26,15 @@ const arrayToObject = channelArrays => {
 
 module.exports={
   sequelize,
+  init,
+  arrayToObject,
   getHomework:homework.getHomework,
   addHomework:homework.addHomework,
   editHomework:homework.editHomework,
   deleteHomework:homework.deleteHomework,
-  init,
   getUserChannels:admin.getUserChannels,
   getHomeworkAll:homework.getHomeworkAll,
   addMember:admin.addMember,
-  arrayToObject,
   removeMember:admin.removeMember,
   addSubject:admin.addSubject,
   getNumTables: homework.getNumTables,
@@ -41,5 +42,9 @@ module.exports={
   getNumHomework:homework.getNumHomework,
   removeSubject:admin.removeSubject,
   addTag:admin.addTag,
-  removeTag:admin.removeTag
+  removeTag:admin.removeTag,
+  addUser:users.addUser,
+  removeUser:users.removeUser,
+  getUsers:users.getUsers,
+  getUserTokens:users.getUserTokens
 };
