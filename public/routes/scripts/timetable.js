@@ -1,4 +1,4 @@
-async function renderTimetable(calendarSelector='#hwboard-timetable',showBreaks=false){
+async function renderTimetable(calendarSelector='#hwboard-timetable',showBreaks=false,editSubject=""){
   const insertBreaks = timetable=>{
     const days = {};
     //Show free periods after school
@@ -12,6 +12,9 @@ async function renderTimetable(calendarSelector='#hwboard-timetable',showBreaks=
       }
     };
     timetable = Object.assign(timetable,fakeSubject);
+    if(editSubject){
+      delete timetable[editSubject];
+    }
     for(const subjectName in timetable){
       const subject = timetable[subjectName];
       for(const day in subject){
