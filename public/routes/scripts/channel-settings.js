@@ -1,3 +1,4 @@
+editingSubject = false;
 function getChannelData(){
   //Load data from indexedDB, in case there is no internet
   worker.postMessage({
@@ -121,5 +122,19 @@ function deleteTag(tagElem){
       }
       console.log("done");
     });
+  });
+}
+
+function editSubject(elem){
+  const subject = elem.children[0].children[0].children[0].innerText.split("\n")[0];
+  Framework7App.views.main.router.navigate("/channels/"+channel+"/settings/popups/add-subject/");
+  Framework7App.views.main.router.once("routeChanged",()=>{
+    $("#subjectInput").parentsUntil(".item-content").addClass("item-input-with-value");
+    $("#subjectInput").val(subject);
+    setTimeout(()=>{
+      $("#hwboard-add-subject-timetable").fullCalendar("destroy");
+      renderTimetable("#hwboard-add-subject-timetable",true,subject);
+      editingSubject = true;
+    },250);
   });
 }
