@@ -151,6 +151,33 @@ async function removeSubject(channelData){
     }
   });
 }
+
+async function editSubject(channelData){
+  let {channel,data,subject} = channelData;
+  subject = xss(subject);
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }));
+  if(originalDataArray.length===0){
+    throw new Error("Channel does not exist");
+  }
+
+  const originalData = originalDataArray[0];
+  const existingSubjects = originalData.subjects;
+  if(!Object.values(existingSubjects).includes(subject)) {
+    throw new Error(`Subject ${subject} does not exist.`);
+  }
+  originalData.timetable[subject] = data;
+  return Channels.update(originalData,{
+    where:{
+      name:channel
+    }
+  });
+}
+
 async function removeMember(channel,member){
   member += "@nushigh.edu.sg";
   const originalDataArray = (await Channels.findAll({
@@ -261,5 +288,6 @@ module.exports = {
   addMember,
   removeMember,
   addTag,
-  removeTag
+  removeTag,
+  editSubject
 };
