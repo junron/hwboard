@@ -45,6 +45,7 @@ lint:
   script:
   - npm -v
   - node --version
+  - npm ci
   - npm run lint
 # deploy_beta:
 #   stage: deploy
