@@ -100,6 +100,22 @@ module.exports = (socket,io,db)=>{
       .catch(uncaughtErrorHandler);
   });
 
+  socket.on("editSubject",function(msg,callback){
+    (async ()=>{
+      msg = await checkPayloadAndPermissions(socket,msg,3);
+      const {channel} = msg;
+      await db.editSubject(msg);
+      updateChannels(db.arrayToObject(await db.getUserChannels("*")));
+      const thisChannel = socket.channels[channel];
+      io.to(channel).emit("channelData",{[channel]:thisChannel});
+      return null;
+    })()
+      .then(callback)
+      .catch(e => callback(e.toString()))
+    //Error in handling error
+      .catch(uncaughtErrorHandler);
+  });
+
   //Add subject
   socket.on("addSubject",function(msg,callback){
     (async ()=>{

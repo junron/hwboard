@@ -41,5 +41,6 @@ module.exports={
   getNumHomework:homework.getNumHomework,
   removeSubject:admin.removeSubject,
   addTag:admin.addTag,
-  removeTag:admin.removeTag
+  removeTag:admin.removeTag,
+  editSubject:admin.editSubject
 };
