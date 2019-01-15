@@ -112,6 +112,9 @@ async function addSubject(channelData){
     throw new Error("Channel does not exist");
   }
   const originalData = originalDataArray[0];
+  if(originalData.subjects.includes(subject)){
+    throw new Error("Subject already exists");
+  }
   originalData.timetable = (originalData.timetable || {});
   originalData.timetable[subject] = data;
   originalData.subjects.push(subject);

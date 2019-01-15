@@ -1,3 +1,4 @@
+editingSubject = false;
 function getChannelData(){
   //Load data from indexedDB, in case there is no internet
   worker.postMessage({
