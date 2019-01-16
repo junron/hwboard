@@ -3,7 +3,7 @@ function renderSubjects(data){
   const isRoot = data.roots.includes(currentPerson);
   const {subjects} = data;
   let html = "";
-  for(const subject of subjects){
+  for(const subject of subjects.sort()){
     html+=`<li class="swipeout item-content">
     <div class="swipeout-content item-content">
       <div class="item-inner">

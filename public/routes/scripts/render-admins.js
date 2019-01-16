@@ -57,7 +57,7 @@ const renderAdmins = (()=>{
     for (const role of roles){
       const key = role.toLowerCase();
       html += newRole(role);
-      for(const email of channelData[key]){
+      for(const email of channelData[key].sort()){
         const id = email.replace("@nushigh.edu.sg","");
         let name;
         try{
