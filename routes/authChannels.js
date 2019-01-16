@@ -107,8 +107,9 @@ async function authChannels(req,res){
     //Accessible and modifiable via client side JS\
     //DO NOT trust!!!
     //Just for analytics
-    res.cookie('email',decodedToken.preferred_username,{maxAge:2592000000,sameSite:"lax"});
-    res.cookie('name',decodedToken.name,{maxAge:2592000000,sameSite:"lax"});
+    // Used for frontend UI
+    res.cookie('email',decodedToken.preferred_username,{maxAge:2592000000,secure:true,sameSite:"lax"});
+    res.cookie('name',decodedToken.name,{maxAge:2592000000,secure:true,sameSite:"lax"});
   }
 
   //Get authorised channels
