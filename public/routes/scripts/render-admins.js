@@ -34,8 +34,14 @@ const renderAdmins = (()=>{
     person += `</li>`;
     return person;
   };
+  const studentDataCache = {};
   const promisifiedSocketio = (...data)=>{
     return new Promise((resolve,reject)=>{
+      const key = data[0].method+data[0].data;
+      if(studentDataCache[key]){
+        console.log("cacheHit");
+        return resolve(studentDataCache[key]);
+      }
       if(!navigator.onLine){
         reject("Cannot load student data offline");
       }
@@ -43,6 +49,7 @@ const renderAdmins = (()=>{
         if(err){
           return reject(err);
         }else{
+          studentDataCache[key] = data;
           return resolve(data);
         }
       });
