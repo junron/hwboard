@@ -1,8 +1,9 @@
 const channelRenderer = {};
 
 channelRenderer.renderer = channelData =>{
+  const channelNames = Object.keys(channelData).sort();
   let html = "";
-  for(const channelName in channelData){
+  for(const channelName of channelNames){
     html += `<li class="item-content">
     <div class="item-inner">
       <div class="item-title">
