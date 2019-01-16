@@ -121,6 +121,10 @@ module.exports = (socket,io,db)=>{
     (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3);
       const {channel} = msg;
+      const k = {};
+      if(k[msg.subject]){
+        throw new Error("Subject name invalid");
+      }
       await db.addSubject(msg);
       updateChannels(db.arrayToObject(await db.getUserChannels("*")));
       const thisChannel = socket.channels[channel];
@@ -138,6 +142,10 @@ module.exports = (socket,io,db)=>{
     (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg,3);
       const {channel,name,color} = msg;
+      const k = {};
+      if(k[name]){
+        throw new Error("Tag name invalid");
+      }
       if(name.trim().length===0){
         throw new Error("Tag name cannot be empty");
       }
