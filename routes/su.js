@@ -21,7 +21,12 @@ router.get("/testing/su",(req, res) => {
     const bufferUserPassword = Buffer.from(userPassword.split(" ").join("+"),"utf-8");
     //Use timing secure to prevent timing attacks
     if(bufferPassword.length===bufferUserPassword.length && timingSafeEqual(bufferPassword,bufferUserPassword)){
-      const {name} = await studentApi.getStudentById(switchUserName.replace("@nushigh.edu.sg",""));
+      let name = "Unknown";
+      try{
+        ({name} = await studentApi.getStudentById(switchUserName.replace("@nushigh.edu.sg","")));
+      }catch(_){
+        console.log("Student not found");
+      }
       console.log(`Successful su from ${ip} for ${name} (${switchUserName})`);
       res.cookie("username",switchUserName,{
         secure:true,
