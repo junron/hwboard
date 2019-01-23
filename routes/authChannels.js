@@ -51,7 +51,7 @@ async function authChannels(req,res){
           "prompt=select_account&"+
           `response_mode=query`);
         return "redirected";
-      }else{
+      } else {
         //Get id_token from auth code
         const code = req.query.code;
         const options = {
