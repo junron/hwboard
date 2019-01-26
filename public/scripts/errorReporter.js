@@ -7,11 +7,20 @@ Raven.setUserContext({
 });
 
 console.log("User context:");
-console.table({
-  username: getCookie("name"),
-  email: getCookie("email"),
-  channel:(channel || "none")
-});
+if(console.table){
+  console.table({
+    username: getCookie("name"),
+    email: getCookie("email"),
+    channel:(channel || "none")
+  });
+}else{
+  console.log({
+    username: getCookie("name"),
+    email: getCookie("email"),
+    channel:(channel || "none")
+  });
+}
+
 
 function setSentryRelease(commitSHA){
   console.log("Current release ",commitSHA);
