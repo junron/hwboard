@@ -36,9 +36,9 @@ async function renderChannelData(data){
     }
     if(data.roots.includes(name)){
       $(".root-only").show();
-      $("a[href='/channels/channelName/settings/popups/add-member/'").attr("href",`/channels/${channel}/settings/popups/add-member/`);
-      $("a[href='/channels/channelName/settings/popups/add-subject/'").attr("href",`/channels/${channel}/settings/popups/add-subject/`);
-      $("a[href='/channels/channelName/settings/popups/add-tag/'").attr("href",`/channels/${channel}/settings/popups/add-tag/`);
+      $("a[href='/channels/channelName/settings/popups/add-member/']").attr("href",`/channels/${channel}/settings/popups/add-member/`);
+      $("a[href='/channels/channelName/settings/popups/add-subject/']").attr("href",`/channels/${channel}/settings/popups/add-subject/`);
+      $("a[href='/channels/channelName/settings/popups/add-tag/']").attr("href",`/channels/${channel}/settings/popups/add-tag/`);
     }
   });
 }
