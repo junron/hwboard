@@ -71,6 +71,9 @@ self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
 });
 self.addEventListener('fetch',function(event) {
+  if(event.request.url.includes("?code") || event.request.url.includes("sw.js")){
+    return false;
+  }
   if(event.request.method=="GET"){
     event.respondWith(
       caches.open('cache1').then(async function(cache) {
