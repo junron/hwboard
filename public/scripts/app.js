@@ -15,6 +15,11 @@ const Framework7App = new Framework7({
   },
   routes:[
     {
+      name:"logout",
+      path:"/logout",
+      url:"/logout",
+    },
+    {
       name:"timetable",
       path:"/timetable",
       url:"/routes/timetable.html",

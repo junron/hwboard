@@ -106,6 +106,7 @@ app.use("/", require("./routes/su"));
 app.use("/", require("./routes/update"));
 app.use("/", require("./routes/version"));
 app.use("/", require("./routes/info"));
+app.use("/", require("./routes/logout"));
 
 //Views
 app.set("views", path.join(__dirname, "views"));
