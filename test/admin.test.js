@@ -1,26 +1,39 @@
 const chai = require("chai");
 chai.use(require('chai-uuid'));
+const request = require("request");
 const {expect} = chai;
 const io = require('socket.io-client');
 const websocket = require("../app").server;
-const port = require("../loadConfig").PORT;
-let client;
+const {COOKIE_SECRET:password,PORT:port} = require("../loadConfig");
+
+const switchUser = name=>{
+  return new Promise(resolve => {
+    request.get("http://localhost:" + port+"/testing/su/",{
+      qs:{
+        switchUserName:name,
+        userPassword:password
+      }
+    },(err,res)=>{
+      const cookie = res.headers["set-cookie"][0].split(";")[0];
+      const client = io("http://localhost:"+port,{
+        extraHeaders:{
+          cookie
+        }
+      });
+      client.once("ready",()=>{
+        resolve(client);
+      });
+    });
+  });
+};
+
+let client,adminClient;
 describe("Admin API",function(){
   this.timeout(3000);
-  before(function(done){
+  before(async function(){
     websocket.listen(port);
-    setTimeout(()=>{
-      console.log("http://localhost:" + port);
-      client = io("http://localhost:" + port);
-      client.on("disconnect",()=>{
-        console.log("Disconnect");
-      });
-      client.on("error",console.log);
-      client.on("connect",()=>{
-        console.log("connected");
-        client.on("ready",done);
-      },1000);
-    });
+    client = io("http://localhost:" + port);
+    adminClient = await switchUser("admin@nushigh.edu.sg");
   });
   after(function(done){
     websocket.close();
@@ -40,7 +53,6 @@ describe("Admin API",function(){
         client.emit("channelDataReq",{},function(err,channels){
           expect(err).to.be.null;
           const testChannel = channels.find(c=>c.name===name);
-          console.log(testChannel);
           expect(testChannel.tags).to.deep.equal({
             Graded:"red",
             Optional:"green",
@@ -84,7 +96,6 @@ describe("Admin API",function(){
         client.emit("channelDataReq",{},function(err,channels){
           expect(err).to.be.null;
           const testChannel = channels.find(c=>c.name===channel);
-          console.log(testChannel);
           expect(testChannel.subjects).to.deep.equal(["math","chemistry"]);
           expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
           done();
@@ -109,11 +120,18 @@ describe("Admin API",function(){
         client.emit("channelDataReq",{},function(err,channels){
           expect(err).to.be.null;
           const testChannel = channels.find(c=>c.name===channel);
-          console.log(testChannel);
           expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
           expect(testChannel.admins).to.deep.equal(["admin@nushigh.edu.sg"]);
           expect(testChannel.members).to.deep.equal(["member@nushigh.edu.sg"]);
-          done();
+          adminClient.emit("getOwnData",function(err,channels){
+            expect(err).to.be.null;
+            const testChannel = channels[channel];
+            console.log(testChannel);
+            expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
+            expect(testChannel.admins).to.deep.equal(["admin@nushigh.edu.sg"]);
+            expect(testChannel.members).to.deep.equal(["member@nushigh.edu.sg"]);
+            done();
+          });
         });
       });
     });
