@@ -48,4 +48,12 @@ module.exports = (socket)=>{
     //Error in handling error
       .catch(uncaughtErrorHandler);
   });
+  socket.on("getOwnData",function(callback){
+    (async()=>{
+      callback(null,socket.channels);
+    })()
+      .catch(e => callback(e.toString()))
+    //Error in handling error
+      .catch(uncaughtErrorHandler);
+  });
 };
