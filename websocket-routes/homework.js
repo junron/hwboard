@@ -57,14 +57,14 @@ module.exports = (socket,io,db)=>{
       //User only requested specific channel
       if(msg.channel){
         //Ensure that user is member of channel
-        if(socket.channels[msg.channel]){
+        if(await db.getUserChannel(socket.username,msg.channel)){
           const data = await db.getHomework(msg.channel,msg.removeExpired);
           return callback(null,data);
         }else{
           throw "You are not a member of this channel";
         }
       }else{
-        const data = await db.getHomeworkAll(socket.channels,msg.removeExpired);
+        const data = await db.getHomeworkAll(await db.getUserChannels(socket.username,1,true),msg.removeExpired);
         return callback(null,data);
       }
     })()
