@@ -13,7 +13,7 @@ module.exports = (socket)=>{
   //For tests
   socket.on("whoami",function(msg,callback){
     (async ()=>{
-      return callback(null,socket.userData.preferred_username);
+      return callback(null,socket.username);
     })()
       .catch(e => callback(e.toString()))
     //Error in handling error

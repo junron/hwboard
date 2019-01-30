@@ -15,13 +15,6 @@ async function init(){
   return sequelize.sync();
 }
 
-const arrayToObject = channelArrays => {
-  const result = {};
-  for (const channel of channelArrays){
-    result[channel.name] = channel;
-  }
-  return result;
-};
 
 module.exports={
   sequelize,
@@ -31,9 +24,9 @@ module.exports={
   deleteHomework:homework.deleteHomework,
   init,
   getUserChannels:admin.getUserChannels,
+  getUserChannel:admin.getUserChannel,
   getHomeworkAll:homework.getHomeworkAll,
   addMember:admin.addMember,
-  arrayToObject,
   removeMember:admin.removeMember,
   addSubject:admin.addSubject,
   getNumTables: homework.getNumTables,
