@@ -35,15 +35,6 @@ router.post("/api/:method",(req, res) => {
       const token = req.signedCookies.token;
       const tokenClaims = await auth.verifyToken(token);
       socket.userData = tokenClaims;
-      const channels = await db.getUserChannels(socket.userData.preferred_username);
-      //Client cannot access socket object, so authorization data is safe and trustable.
-      socket.channels = {};
-      for (let channel of channels){
-        //Add user to rooms
-        //Client will receive relevant events emitted to these rooms,
-        //but not others
-        socket.channels[channel.name] = channel;
-      }
     }catch(e){
       console.log(e);
       //Problem with token, perhaps spoofed token?
