@@ -11,11 +11,8 @@ describe("Admin API",function(){
   this.timeout(3000);
   before(function(done){
     websocket.listen(port);
-    setTimeout(()=>{
-      console.log(websocket.listening);
-      client = io("http://localhost:" + port);
-      client.once("connect",done);
-    },1000);
+    client = io("http://localhost:" + port);
+    client.once("ready",done);
   });
   after(function(done){
     websocket.close();
@@ -29,17 +26,16 @@ describe("Admin API",function(){
       console.log("Created channel",name);
       expect(err).to.be.null;
       expect(name).to.equal("testing");
-      done();
-      // client.emit("channelDataReq",{},function(err,channels){
-      //   expect(err).to.be.null;
-      //   const testChannel = channels.find(c=>c.name===name);
-      //   expect(testChannel.tags).to.deep.equal({
-      //     Graded:"red",
-      //     Optional:"green",
-      //   });
-      //   expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
-      //   done();
-      // });
+      client.emit("channelDataReq",{},function(err,channels){
+        expect(err).to.be.null;
+        const testChannel = channels.find(c=>c.name===name);
+        expect(testChannel.tags).to.deep.equal({
+          Graded:"red",
+          Optional:"green",
+        });
+        expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
+        done();
+      });
     });
   });
   it("Should not be able to add duplicate channels",function(done){
