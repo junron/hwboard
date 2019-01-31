@@ -70,7 +70,7 @@ async function getHomework(hwboardName,removeExpired=true){
     return data;
   }
 }
-async function getNumHomework({channel,subject,graded=0,startDate=-Infinity,endDate=Infinity}){
+async function getNumHomework({channel,subject,graded=0,startDate=1819,endDate=2219}){
   const Homework = tables[channel];
   if(typeof Homework==="undefined"){
     throw new Error("Homework table could not be found");
@@ -82,7 +82,7 @@ async function getNumHomework({channel,subject,graded=0,startDate=-Infinity,endD
   if(graded){
     where.isTest = !(graded===-1);
   }
-  if(startDate!==-Infinity && startDate !== endDate){
+  if(startDate!==1819 && startDate !== endDate){
     where.dueDate = {
       [Op.lte]:endDate,
       [Op.gt]:startDate,
