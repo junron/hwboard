@@ -64,7 +64,7 @@ const csp =
 `default-src 'none';
 script-src 'self' 'unsafe-inline';
 style-src 'self' 'unsafe-inline';
-connect-src 'self' https://sentry.io https://latency-check.nushhwboard.tk wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
+connect-src 'self' https://sentry.io https://latency-check.nushhwboard.tk ${hostName ? `wss://${hostName}` : ""} ${port? `ws://localhost:${port}` : ""} https://login.microsoftonline.com/;
 object-src 'none';
 img-src 'self' data:;
 base-uri 'none';
