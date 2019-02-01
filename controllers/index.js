@@ -16,27 +16,9 @@ async function init(){
   return sequelize.sync();
 }
 
-
-module.exports={
+const exported = {
   init,
-  sequelize,
-  getHomework:homework.getHomework,
-  addHomework:homework.addHomework,
-  editHomework:homework.editHomework,
-  deleteHomework:homework.deleteHomework,
-  getHomeworkAll:homework.getHomeworkAll,
-  getNumTables: homework.getNumTables,
-  whenHomeworkExpires:homework.whenHomeworkExpires,
-  getNumHomework:homework.getNumHomework,
-  removeSubject:admin.removeSubject,
-  getUserChannels:admin.getUserChannels,
-  getUserChannel:admin.getUserChannel,
-  addMember:admin.addMember,
-  removeMember:admin.removeMember,
-  addSubject:admin.addSubject,
-  addTag:admin.addTag,
-  removeTag:admin.removeTag,
-  editSubject:admin.editSubject,
-  editChannel:channel.editChannel,
-  deleteChannel:channel.deleteChannel
+  sequelize
 };
+
+module.exports = {...exported,...admin,...channel,...homework};
