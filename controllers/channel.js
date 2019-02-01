@@ -1,5 +1,5 @@
 const xss = require("xss");
-const {Sequelize,Channels,Homework} = require("../models");
+const {Sequelize,Channels/*,Homework*/} = require("../models");
 
 async function editChannel(channelName, newChannelName) {
   channelName = xss(channelName);
@@ -14,11 +14,11 @@ async function editChannel(channelName, newChannelName) {
 
   channels.name = xss(newChannelName);
   return Channels.update(channels,
-  {
-    where:{
-      id:channels.id
-    }
-  });
+    {
+      where:{
+        id:channels.id
+      }
+    });
 }
 
 async function deleteChannel(channelName) {
@@ -35,3 +35,8 @@ async function deleteChannel(channelName) {
   await channels.destroy();
   return Sequelize.dropTable("homework-"+channelName);
 }
+
+module.exports = {
+  editChannel,
+  deleteChannel
+};
