@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js");
 
-const version = "1.3.8";
+const version = "1.3.9";
 
 console.log(`Service worker version ${version}`);
 self.addEventListener('install', function(e) {
@@ -71,7 +71,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
 });
 self.addEventListener('fetch',function(event) {
-  if(event.request.url.includes("?code") || event.request.url.includes("sw.js")){
+  if(event.request.url.includes("?code") || event.request.url.includes("sw.js")||event.request.url.includes("authorize")){
     return false;
   }
   if(event.request.method=="GET"){

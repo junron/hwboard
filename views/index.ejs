@@ -8,11 +8,6 @@
     <div class="panel panel-left">
     <div class="list links-list" style="transform:translateX(100%)">
       <ul>
-      <li class="appventure">
-        <a href="https://tinyurl.com/y7f6djqb"  target="_blank" class="external panel-close">
-            Sign up for AppVenture
-          </a>
-        </li>
         <li>
           <a href="/" class="panel-close">
             Homework
@@ -152,9 +147,6 @@
 
     <script>
     document.querySelector(".panel.panel-left .list").style.transform = "";
-    if(new Date()>new Date(2019,1,3,23,59,59)){
-      document.querySelector(".appventure").style.display="none";
-    }
     </script>
     <%- include("./partials/dialogs.ejs") %>
 

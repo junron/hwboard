@@ -124,6 +124,9 @@ module.exports = (socket,io,db)=>{
       if(k[msg.subject]){
         throw new Error("Subject name invalid");
       }
+      if(xss(msg.subject)!=msg.subject){
+        throw new Error("Subject name invalid");
+      }
       await db.addSubject(msg);
       const thisChannel = await db.getUserChannel(socket.username,channel);
       io.to(channel).emit("channelData",{[channel]:thisChannel});
