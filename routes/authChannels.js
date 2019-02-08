@@ -35,12 +35,6 @@ async function authChannels(req,res){
 
       //Check if authorization code is present
       //Auth codes can be exchanged for id_tokens
-      res.cookie("redirPath",req.url,{
-        maxAge:10*60*60*1000,
-        signed:true,
-        secure:true,
-        sameSite:"lax",
-      });
       if(!(req.query&&req.query.code)){
         console.log("redirected");
         res.redirect("https://login.microsoftonline.com/common/oauth2/v2.0/authorize?"+
@@ -95,7 +89,13 @@ async function authChannels(req,res){
       throw e;
     }
     if(!decodedToken.preferred_username.endsWith("nushigh.edu.sg")){
-      throw new Error("You must log in with a NUSH email.");
+      res.clearCookie("token");
+      res.clearCookie("name");
+      res.clearCookie("email");
+      res.send("Please login with a NUSH email. Click <a href=/>here</a> to login again.");
+      res.end();
+      console.log("Invalid email:",decodedToken.preferred_username);
+      return "redirected";
     }
 
     //Accessible and modifiable via client side JS\

@@ -88,10 +88,6 @@ router.get("/channels", async (req, res) => {
     if(authData==="redirected"){
       return;
     }
-    if(req.query.code && req.signedCookies.redirPath){
-      const url = require('url');
-      return res.redirect(url.parse(req.signedCookies.redirPath).pathname);
-    }
     const {channelData} = authData;
     res.header("Link", parsePushHeaders(basePushFiles));
     return res.render("channels",{
@@ -116,10 +112,6 @@ router.get("/calendar",async (req, res) => {
     if (authData === "redirected") {
       return;
     }
-    if(req.query.code && req.signedCookies.redirPath){
-      const url = require('url');
-      return res.redirect(url.parse(req.signedCookies.redirPath).pathname);
-    }
     res.render("calendar");
   })()
     .catch(e=>{
@@ -141,9 +133,8 @@ router.get('/', async (req, res) => {
     if (authData === "redirected") {
       return;
     }
-    if(req.query.code && req.signedCookies.redirPath){
-      const url = require('url');
-      return res.redirect(url.parse(req.signedCookies.redirPath).pathname);
+    if(req.query.code){
+      return res.redirect("/");
     }
     const {channelData, adminChannels} = authData;
     //Check if user is admin in any channel
