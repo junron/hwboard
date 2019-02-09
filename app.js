@@ -69,7 +69,7 @@ object-src 'none';
 img-src 'self' data:;
 base-uri 'none';
 form-action 'none';
-font-src 'self';
+font-src 'self' data:;
 manifest-src 'self';
 frame-ancestors 'none';
 child-src 'self';`.split("\n").join("");
