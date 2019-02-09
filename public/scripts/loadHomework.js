@@ -64,10 +64,10 @@ async function reRender(data){
 
 async function loadHomework(){
   async function getBestPromise(obj){
-    if(obj.quickest && obj.quickest.length && obj.quickest.length>0){
-      return obj.quickest;
-    }
     const results = await Promise.all(obj.promises);
+    if(results[0] && (results[0].length===1||results[1]===undefined)){
+      return results[0];
+    }
     if(results[0] && results[0].length && (!results[1].length || results[0].length>results[1].length)){
       return results[0];
     }
@@ -88,10 +88,4 @@ async function loadHomework(){
   $(".swipeout-actions-left").css("visibility","visible");
   $(".swipeout-actions-right").css("visibility","visible");
 }
-//This is a test for iOS users
-function loadHw(){
-  console.log(typeof hwboard,"sync");
-  console.log(Object.keys(hwboard),"sync");
-}
-loadHw();
 loadHomework();
