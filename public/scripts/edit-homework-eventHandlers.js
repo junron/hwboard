@@ -99,9 +99,12 @@ const initEditHomeworkEvents = ()=>{
   };
   $("#subject-name").keypress(subjectChanged);
   Framework7App.loadModules(["smart-select","checkbox"]).then(()=>{
-    Framework7App.smartSelect.create({
+    const popup = Framework7App.smartSelect.create({
       el:document.getElementById("selectTagsElem"),
       openIn:"popup"
+    });
+    popup.on("open",()=>{
+      $(".view.view-main").append($(".popup-backdrop.backdrop-in"));
     });
   });
 };

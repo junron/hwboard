@@ -17,4 +17,5 @@ cockroach-data
 !package.json
 !package-lock.json
 !.eslintrc.json
+!manifest.json
 process-data.js

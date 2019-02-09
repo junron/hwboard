@@ -14,7 +14,6 @@ function renderSubjects(data){
     </div>`;
     if(isRoot){
       html+=`<div class="swipeout-actions-right">
-      <a onclick="editSubject(this.parentElement.parentElement)" class="swipeout-close" style="background-color:#ff9800">Edit</a>
       <a onclick="deleteSubject(this.parentElement.parentElement)" class="swipeout-close" style="background-color:#f44336">Delete</a>
       </div>`;
     }
