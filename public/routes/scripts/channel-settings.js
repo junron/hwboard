@@ -120,7 +120,6 @@ function deleteTag(tagElem){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
       }
-      getChannelData();
       console.log("done");
     });
   });
