@@ -83,7 +83,8 @@ module.exports = (socket,io,db)=>{
       const {channel} = msg;
       const numHomework = await db.getNumHomework({
         channel,
-        subject:msg.subject
+        subject:msg.subject,
+        startDate: new Date()
       });
       if(numHomework!==0){
         throw new Error("Subjects with homework existing cannot be removed");
@@ -121,6 +122,9 @@ module.exports = (socket,io,db)=>{
       const {channel} = msg;
       const k = {};
       if(k[msg.subject]){
+        throw new Error("Subject name invalid");
+      }
+      if(xss(msg.subject)!=msg.subject){
         throw new Error("Subject name invalid");
       }
       await db.addSubject(msg);

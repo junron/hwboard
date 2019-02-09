@@ -7,6 +7,7 @@ const {sequelize} = require("../models");
 
 const admin = require("./admin");
 const homework = require("./homework");
+const channel = require("./channel");
 
 //Generate tables
 async function init(){
@@ -15,25 +16,9 @@ async function init(){
   return sequelize.sync();
 }
 
-
-module.exports={
-  sequelize,
-  getHomework:homework.getHomework,
-  addHomework:homework.addHomework,
-  editHomework:homework.editHomework,
-  deleteHomework:homework.deleteHomework,
+const exported = {
   init,
-  getUserChannels:admin.getUserChannels,
-  getUserChannel:admin.getUserChannel,
-  getHomeworkAll:homework.getHomeworkAll,
-  addMember:admin.addMember,
-  removeMember:admin.removeMember,
-  addSubject:admin.addSubject,
-  getNumTables: homework.getNumTables,
-  whenHomeworkExpires:homework.whenHomeworkExpires,
-  getNumHomework:homework.getNumHomework,
-  removeSubject:admin.removeSubject,
-  addTag:admin.addTag,
-  removeTag:admin.removeTag,
-  editSubject:admin.editSubject
+  sequelize
 };
+
+module.exports = {...exported,...admin,...channel,...homework};
