@@ -8,7 +8,7 @@ const Framework7App = new Framework7({
   pushState:true,
   name:"Hwboard",
   id:"web.hwboard.hwboard2",
-  lazyModulesPath: '/framework7/lazy-components',
+  lazyModulesPath: '/framework7/components',
   view: {
     pushState: true,
     mdSwipeBack:true
