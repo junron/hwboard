@@ -71,7 +71,7 @@ async function getHomework(hwboardName,removeExpired=true){
   }
 }
 
-async function getNumHomework({channel,subject,graded=0,startDate=1819,endDate=2219}){
+async function getNumHomework({channel,subject,graded=0,startDate=new Date(1819,0,2),endDate=new Date(2219,0,2)}){
   const Homework = tables[channel];
   if(typeof Homework==="undefined"){
     throw new Error("Homework table could not be found");

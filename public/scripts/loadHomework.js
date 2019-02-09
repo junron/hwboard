@@ -65,7 +65,7 @@ async function reRender(data){
 async function loadHomework(){
   async function getBestPromise(obj){
     const results = await Promise.all(obj.promises);
-    if(results[0].length===1||results[1]===undefined){
+    if(results[0] && (results[0].length===1||results[1]===undefined)){
       return results[0];
     }
     if(results[0] && results[0].length && (!results[1].length || results[0].length>results[1].length)){
