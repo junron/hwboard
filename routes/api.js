@@ -3,11 +3,14 @@ const router = express.Router();
 const db = require("../controllers");
 const EventEmitter = require('events');
 const auth = require("../auth");
+const {timingSecureEquals} = require("crypto");
+
 let io;
+const {ALLOW_REPLICATION_WITH_PASSWORD:repPass} = require("../loadConfig");
 
 class socketIO extends EventEmitter {}
 
-router.post("/api/:method",(req, res) => {
+router.post("/api/:method",(req, res, next) => {
   console.log("Loaded API route")
   ;(async ()=>{
     if(!io){
@@ -32,9 +35,25 @@ router.post("/api/:method",(req, res) => {
       if(db.getNumTables()===0){
         await db.init();
       }
-      const token = req.signedCookies.token;
-      const tokenClaims = await auth.verifyToken(token);
-      socket.userData = tokenClaims;
+      if(repPass){
+        const providedPassword = req.params.replication ? req.params.replication.password : "";
+        if(providedPassword.length===repPass.length){
+          if(timingSecureEquals(Buffer.from(providedPassword),Buffer.from(repPass))){
+            socket.userData = {
+              name:"replication_user",
+              preferred_username:req.params.replication.user || "repuser@nushigh.edu.sg"
+            };
+          }else{
+            throw new Error("Replication password incorrect");
+          }
+        }else{
+          throw new Error("Replication password incorrect");
+        }
+      }else{
+        const token = req.signedCookies.token;
+        const tokenClaims = await auth.verifyToken(token);
+        socket.userData = tokenClaims;
+      }
     }catch(e){
       console.log(e);
       //Problem with token, perhaps spoofed token?
@@ -54,6 +73,14 @@ router.post("/api/:method",(req, res) => {
     //For tests
     require("../websocket-routes/tests")(socket);
 
+    const specialMethods = [
+      "setChannelData",
+      "setHomeworkData"
+    ];
+    const replicationMethods = [
+      "addChannel",
+    ].concat(specialMethods);
+    
     //Supported methods
     const methods = [
 
@@ -73,10 +100,7 @@ router.post("/api/:method",(req, res) => {
 
       //Administration and channels
       "channelDataReq",
-      
-      //Most destructive admin methods are not supported as of now
-      "addMember",
-    ];
+    ].push(...(socket.userData.name === "rep_user" ? replicationMethods : []));
     if(methods.includes(method)){
       socket.emit(method,req.body,function(err,...results){
         if(err){
@@ -85,7 +109,7 @@ router.post("/api/:method",(req, res) => {
         return res.end(JSON.stringify(results));
       });
     }else{
-      return res.status(400).end("Invalid method");
+      return next();
     }
   })()
     .catch(err=>{
