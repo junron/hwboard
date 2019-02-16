@@ -208,7 +208,6 @@
 }
 
 .md #app .navbar {
-  height: 64px;
   background: #2196f3;
   color: #fff;
   font-size: 20px;
@@ -235,4 +234,12 @@
 .md #app label.item-radio > .icon-radio {
   margin-right: calc(var(--f7-list-item-media-margin) + var(--f7-checkbox-extra-margin));
   margin-left: initial;
+}
+
+#app .panel.panel-left div ul li:last-child {
+  color: var(--f7-input-error-text-color);
+}
+
+#app .panel.panel-left {
+  border-right: 1px solid #ddd;
 }
