@@ -1,10 +1,30 @@
 const xss = require("xss");
 const {Channels} = require("../models");
 
-async function getUserChannels(userEmail,permissionLevel=1){
+const arrayToObject = channelArrays => {
+  const result = {};
+  for (const channel of channelArrays){
+    result[channel.name] = channel;
+  }
+  return result;
+};
+
+async function getUserChannels(userEmail,permissionLevel=1,asObject=false){
   const data = await Channels.findAll({
-    raw: true,
+    raw: true
   });
+  if(asObject) return arrayToObject(parseChannelData(userEmail,permissionLevel,data));
+  return parseChannelData(userEmail,permissionLevel,data);
+}
+async function getUserChannel(userEmail,name,permissionLevel=1){
+  const where = {name};
+  const data = await Channels.findOne({
+    raw: true,
+    where
+  });
+  return parseChannelData(userEmail,permissionLevel,[data])[0];
+}
+function parseChannelData(userEmail,permissionLevel,data){
   for(const channel of data){
     channel.members = channel.members.filter(x => x.length>0);
     channel.subjects = channel.subjects.filter(x => x.length>0);
@@ -38,7 +58,7 @@ async function addTag(channel,tagName,tagColor){
     },
     raw: true
   }));
-  if(originalDataArray.length==0){
+  if(originalDataArray.length===0){
     throw new Error("Channel does not exist");
   }
   const originalData = originalDataArray[0];
@@ -53,6 +73,30 @@ async function addTag(channel,tagName,tagColor){
     throw new Error(`A tag with color ${tagColor} already exists.`);
   }
   originalData.tags[tagName] = tagColor;
+  return Channels.update(originalData,{
+    where:{
+      name:originalData.name
+    }
+  });
+}
+
+async function removeTag(tagData) {
+  const {channel, tag:tagName} = tagData;
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }));
+  if(originalDataArray.length===0){
+    throw new Error("Channel does not exist");
+  }
+  const originalData = originalDataArray[0];
+  const existingTags = originalData.tags;
+  if(!Object.keys(existingTags).includes(tagName)) {
+    throw new Error(`Tag ${tagName} does not exist.`);
+  }
+  delete originalData.tags[tagName];
   return Channels.update(originalData,{
     where:{
       name:originalData.name
@@ -88,6 +132,9 @@ async function addSubject(channelData){
     throw new Error("Channel does not exist");
   }
   const originalData = originalDataArray[0];
+  if(originalData.subjects.includes(subject)){
+    throw new Error("Subject already exists");
+  }
   originalData.timetable = (originalData.timetable || {});
   originalData.timetable[subject] = data;
   originalData.subjects.push(subject);
@@ -112,6 +159,10 @@ async function removeSubject(channelData){
   }
 
   const originalData = originalDataArray[0];
+  const existingSubjects = originalData.subjects;
+  if(!Object.values(existingSubjects).includes(subject)) {
+    throw new Error(`Subject ${subject} does not exist.`);
+  }
   const index = originalData.subjects.indexOf(subject);
   if (index > -1) {
     originalData.subjects.splice(index, 1);
@@ -123,6 +174,33 @@ async function removeSubject(channelData){
     }
   });
 }
+
+async function editSubject(channelData){
+  let {channel,data,subject} = channelData;
+  subject = xss(subject);
+  const originalDataArray = (await Channels.findAll({
+    where:{
+      name:channel
+    },
+    raw: true
+  }));
+  if(originalDataArray.length===0){
+    throw new Error("Channel does not exist");
+  }
+
+  const originalData = originalDataArray[0];
+  const existingSubjects = originalData.subjects;
+  if(!Object.values(existingSubjects).includes(subject)) {
+    throw new Error(`Subject ${subject} does not exist.`);
+  }
+  originalData.timetable[subject] = data;
+  return Channels.update(originalData,{
+    where:{
+      name:channel
+    }
+  });
+}
+
 async function removeMember(channel,member){
   member += "@nushigh.edu.sg";
   const originalDataArray = (await Channels.findAll({
@@ -162,6 +240,7 @@ async function removeMember(channel,member){
     }
   });
 }
+
 async function addMember(channel,members,permissionLevel){
   const permissionToNumber = lvl => {
     const index = ["member","admin","root"].indexOf(lvl);
@@ -231,5 +310,8 @@ module.exports = {
   removeSubject,
   addMember,
   removeMember,
-  addTag
+  addTag,
+  removeTag,
+  editSubject,
+  getUserChannel
 };

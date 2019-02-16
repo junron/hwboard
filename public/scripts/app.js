@@ -8,12 +8,17 @@ const Framework7App = new Framework7({
   pushState:true,
   name:"Hwboard",
   id:"web.hwboard.hwboard2",
-  lazyModulesPath: '/framework7/lazy-components',
+  lazyModulesPath: '/framework7/components',
   view: {
     pushState: true,
     mdSwipeBack:true
   },
   routes:[
+    {
+      name:"logout",
+      path:"/logout",
+      url:"/logout",
+    },
     {
       name:"timetable",
       path:"/timetable",
@@ -139,11 +144,11 @@ const Framework7App = new Framework7({
           }
           homeworkDateChart = false;
           homeworkSubjectChart = false;
-          $("a[href='/channels'").parent().html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`);
-          $("a[href='/channelName/data.json'").attr("download",`data.json`);
-          $("a[href='/channelName/data.json'").attr("href",`/data.json`);
-          $("a[href='/channelName/data.csv'").attr("download",`data.csv`);
-          $("a[href='/channelName/data.csv'").attr("href",`/data.csv`);
+          $("a[href='/channels']").parent().html(`<a href="#" class="left panel-open" style="padding-left:10px"><i class="bar" style="color:#ffffff">&#xe900;</i></a>`);
+          $("a[href='/channelName/data.json']").attr("download",`data.json`);
+          $("a[href='/channelName/data.json']").attr("href",`/data.json`);
+          $("a[href='/channelName/data.csv']").attr("download",`data.csv`);
+          $("a[href='/channelName/data.csv']").attr("href",`/data.csv`);
           conn.emit("isReady",null,res=>{
             if(res){
               console.log("ready before page load");
@@ -186,10 +191,10 @@ const Framework7App = new Framework7({
           }
           homeworkDateChart = false;
           homeworkSubjectChart = false;
-          $("a[href='/channelName/data.json'").attr("download",`${channel}.data.json`);
-          $("a[href='/channelName/data.json'").attr("href",`/${channel}/data.json`);
-          $("a[href='/channelName/data.csv'").attr("download",`${channel}.data.csv`);
-          $("a[href='/channelName/data.csv'").attr("href",`/${channel}/data.csv`);
+          $("a[href='/channelName/data.json']").attr("download",`${channel}.data.json`);
+          $("a[href='/channelName/data.json']").attr("href",`/${channel}/data.json`);
+          $("a[href='/channelName/data.csv']").attr("download",`${channel}.data.csv`);
+          $("a[href='/channelName/data.csv']").attr("href",`/${channel}/data.csv`);
           conn.emit("isReady",null,res=>{
             if(res){
               console.log("ready before page load");

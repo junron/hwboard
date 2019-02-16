@@ -13,6 +13,11 @@ const renderer = (()=>{
     }else if(a.isTest < b.isTest){
       return 1;
     }
+    if(a.tags.includes("Optional") > b.tags.includes("Optional")){
+      return 1;
+    }else if(a.tags.includes("Optional") < b.tags.includes("Optional")){
+      return -1;
+    }
     return 0;
   };
 
@@ -148,7 +153,7 @@ const renderer = (()=>{
         html += `
         <div class="list-group">
           <ul id="${daysLeft}">
-            <li style="padding-top:5px" class="list-group-title">${displayDate} (${Sugar.Date.format(dueDate2,"{d}/{M}")})</li>
+            <li style="padding-top:5px" class="list-group-title">${displayDate} ${displayDate === "Due date unknown" ? "" : `(${Sugar.Date.format(dueDate2,"{d}/{M}")})`}</li>
         `;
         dates.push(displayDate);
       }
@@ -297,7 +302,9 @@ const renderer = (()=>{
       displayDate = "Due tomorrow";
       break;
     default:
-      if(daysLeft<=14 && getNumberOfSundays(dueDate2)==1){
+      if(dueDate2.getFullYear()===2099){
+        displayDate = "Due date unknown";
+      }else if(daysLeft<=14 && getNumberOfSundays(dueDate2)==1){
         displayDate = "Next ";
         displayDate+=Sugar.Date.format(dueDate2,"%A");
       }else{

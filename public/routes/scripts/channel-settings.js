@@ -1,9 +1,10 @@
+editingSubject = false;
 function getChannelData(){
   //Load data from indexedDB, in case there is no internet
   worker.postMessage({
     type:"getSingleChannelByName",
     name:channel
-  }).then(data=>{
+  }).then((data)=>{
     if(!data.name){
       //IndexedDB is empty, perhaps is first page load
       return;
@@ -35,9 +36,9 @@ async function renderChannelData(data){
     }
     if(data.roots.includes(name)){
       $(".root-only").show();
-      $("a[href='/channels/channelName/settings/popups/add-member/'").attr("href",`/channels/${channel}/settings/popups/add-member/`);
-      $("a[href='/channels/channelName/settings/popups/add-subject/'").attr("href",`/channels/${channel}/settings/popups/add-subject/`);
-      $("a[href='/channels/channelName/settings/popups/add-tag/'").attr("href",`/channels/${channel}/settings/popups/add-tag/`);
+      $("a[href='/channels/channelName/settings/popups/add-member/']").attr("href",`/channels/${channel}/settings/popups/add-member/`);
+      $("a[href='/channels/channelName/settings/popups/add-subject/']").attr("href",`/channels/${channel}/settings/popups/add-subject/`);
+      $("a[href='/channels/channelName/settings/popups/add-tag/']").attr("href",`/channels/${channel}/settings/popups/add-tag/`);
     }
   });
 }
@@ -62,7 +63,7 @@ function deleteMember(memberElem){
   const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1];
   const memberId = memberEmail.replace("@nushigh.edu.sg","");
   Framework7App.dialog.confirm("Are you sure you want to remove "+memberEmail +"?",function(){
-    conn.emit("removeMember",{channel,student:memberId},function(err){
+    conn.emit("removeMember",{channel,students:[memberId]},function(err){
       if(err){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
@@ -75,7 +76,7 @@ function promoteMember(memberElem){
   const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1];
   const memberId = memberEmail.replace("@nushigh.edu.sg","");
   Framework7App.dialog.confirm("Are you sure you want to promote " + memberEmail + "?",function(){
-    conn.emit("promoteMember",{channel,student:memberId},function(err){
+    conn.emit("promoteMember",{channel,students:[memberId]},function(err){
       if(err){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
@@ -88,7 +89,7 @@ function demoteMember(memberElem){
   const memberEmail = memberElem.children[0].children[0].children[0].innerText.split("\n")[1];
   const memberId = memberEmail.replace("@nushigh.edu.sg","");
   Framework7App.dialog.confirm("Are you sure you want to demote " + memberEmail + "?",function(){
-    conn.emit("demoteMember",{channel,student:memberId},function(err){
+    conn.emit("demoteMember",{channel,students:[memberId]},function(err){
       if(err){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
@@ -108,5 +109,32 @@ function deleteSubject(subjectElem){
       }
       console.log("done");
     });
+  });
+}
+
+function deleteTag(tagElem){
+  const tagName = tagElem.children[0].children[0].children[0].innerText.split("\n")[0];
+  Framework7App.dialog.confirm("Are you sure you want to delete " + tagName + "?",function(){
+    conn.emit("removeTag",{channel,tag:tagName},function(err){
+      if(err){
+        Framework7App.dialog.alert(err.toString());
+        throw new Error(err);
+      }
+      console.log("done");
+    });
+  });
+}
+
+function editSubject(elem){
+  const subject = elem.children[0].children[0].children[0].innerText.split("\n")[0];
+  Framework7App.views.main.router.navigate("/channels/"+channel+"/settings/popups/add-subject/");
+  Framework7App.views.main.router.once("routeChanged",()=>{
+    $("#subjectInput").parentsUntil(".item-content").addClass("item-input-with-value");
+    $("#subjectInput").val(subject);
+    setTimeout(()=>{
+      $("#hwboard-add-subject-timetable").fullCalendar("destroy");
+      renderTimetable("#hwboard-add-subject-timetable",true,subject);
+      editingSubject = true;
+    },250);
   });
 }

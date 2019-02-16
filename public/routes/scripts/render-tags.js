@@ -1,16 +1,25 @@
 function renderTags(data){
+  const currentPerson = getCookie("email");
+  const isRoot = data.roots.includes(currentPerson);
   const {tags} = data;
+  const tagNames = Object.keys(tags).sort();
   let html = "";
-  for(const tag in tags){
+  for(const tag of tagNames){
     const tagTextColor = tinycolor.readability(tags[tag],"#fff")<2 ? "black" : "white";
-    html+=`<li class="item-content">
-      <div class="item-inner">
-        <div class="chip item-title" 
-        style="font-size:13px;background-color:${tags[tag]};color:${tagTextColor}">
-            ${tag}
+    html+=`<li class="swipeout item-content">
+      <div class="swipeout-content item-content">
+        <div class="item-inner">
+          <div class="chip item-title" style="font-size:13px;background-color:${tags[tag]};color:${tagTextColor}">
+              ${tag}
+          </div>
         </div>
-      </div>
-      </li>`;
+      </div>`;
+    if(isRoot){
+      html+=`<div class="swipeout-actions-right">
+  <a onclick="deleteTag(this.parentElement.parentElement)" class="swipeout-close" style="background-color:#f44336">Delete</a>
+  </div>`;
+    }
+    html += `</li>`;
   }
   return html;
 }

@@ -54,7 +54,7 @@ async function loadDetails(element){
   }else{
     $("#detailGraded").text("No");
   }
-  $("#detailDue").text(`${Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M")}, ${dateParser.daysUntil(new Date(dueDate))} days left.`);
+  $("#detailDue").text(new Date(dueDate).getFullYear()===2099 ? "Unknown" : `${Sugar.Date.format(new Date(dueDate),"%d/%m/%Y %H:%M")}, ${dateParser.daysUntil(new Date(dueDate))} days left.`);
   detailsSheet.open();
 }
 

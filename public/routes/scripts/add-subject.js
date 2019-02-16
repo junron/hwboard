@@ -56,10 +56,24 @@ const addSubject = _ =>{
     data:times
   };
   addSubjectTimings = {};
-  conn.emit("addSubject",subjectData,(err)=>{
-    if(err) throw new Error(err);
-    mainView.router.back();
-  });
+  if(editingSubject){
+    conn.emit("editSubject",subjectData,err=>{
+      if(err){
+        Framework7App.dialog.alert(err.toString());
+        throw err;
+      }
+      mainView.router.back();
+    });
+    editingSubject = false;
+  }else{
+    conn.emit("addSubject",subjectData,err=>{
+      if(err){
+        Framework7App.dialog.alert(err.toString());
+        throw err;
+      }
+      mainView.router.back();
+    });
+  }
 };
 
 const updateDisabledStatus = _ =>{

@@ -30,8 +30,13 @@
       </li>
       <li>
       <a href="/analytics/" class="panel-close">
-        Statistics
-      </a>
+          Statistics
+        </a>
+      </li>
+      <li>
+      <a href="/logout" class="color-red panel-close">
+          Logout
+        </a>
       </li>
       </ul>
     </div>
@@ -74,14 +79,14 @@
       </div>
       </div>
     </div>
-    <link rel="stylesheet" href="/framework7/lazy-components/list-index.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/chip.css">
-    <link rel="stylesheet" href="/framework7/css/framework7-lazy.min.css">
+    <link rel="stylesheet" href="/framework7/components/list-index.css">
+    <link rel="stylesheet" href="/framework7/components/chip.css">
+    <link rel="stylesheet" href="/framework7/css/framework7.min.css">
     <!-- unhide rendered page -->
     <script>
       document.querySelector("#app").style.transform = ""
     </script>
-    <link rel="stylesheet" href="/framework7/lazy-components/fab.css">
+    <link rel="stylesheet" href="/framework7/components/fab.css">
     <link href="/styles/roboto.css" rel="stylesheet">
     <link rel="stylesheet" href = "/styles/icons.css">
     <link rel="stylesheet" href = "/styles/bars.css">
@@ -97,6 +102,7 @@
     <script src="/scripts/core.js"></script>
     <script src="/scripts/dates.js"></script>
     <script src="/scripts/loadHomework.js"></script>
+    <script src="/tinycolor2/dist/tinycolor-min.js"></script>
     
     <!-- Get updated homework from server asap -->
     <script src="/socket.io-client/dist/socket.io.slim.js"></script>
@@ -110,23 +116,23 @@
     <% } %>
 
     <!-- framework7 scripts can be deferred -->
-    <script src="/framework7/js/framework7-lazy.min.js"></script>
-    <script async defer src="/framework7/lazy-components/list-index.js"></script>
-    <script async defer src="/framework7/lazy-components/chip.js"></script>
-    <script async defer src="/framework7/lazy-components/panel.js"></script>
-    <script async defer src="/framework7/lazy-components/fab.js"></script>
-    <script async defer src="/framework7/lazy-components/dialog.js"></script>
-    <script src="/framework7/lazy-components/input.js"></script>
-    <script src="/framework7/lazy-components/swipeout.js"></script>
+    <script src="/framework7/js/framework7.min.js"></script>
+    <script async defer src="/framework7/components/list-index.js"></script>
+    <script async defer src="/framework7/components/chip.js"></script>
+    <script async defer src="/framework7/components/panel.js"></script>
+    <script async defer src="/framework7/components/fab.js"></script>
+    <script async defer src="/framework7/components/dialog.js"></script>
+    <script src="/framework7/components/input.js"></script>
+    <script src="/framework7/components/swipeout.js"></script>
     <script defer src="/scripts/app.js"></script>
     <script defer src="/scripts/framework7Load.js"></script>
 
     <!-- Hidden styles are not so critical -->
     <link rel="stylesheet" href="/styles/index.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/swipeout.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/panel.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/dialog.css">
-    <link rel="stylesheet" href="/framework7/lazy-components/input.css">
+    <link rel="stylesheet" href="/framework7/components/swipeout.css">
+    <link rel="stylesheet" href="/framework7/components/panel.css">
+    <link rel="stylesheet" href="/framework7/components/dialog.css">
+    <link rel="stylesheet" href="/framework7/components/input.css">
     
     <!-- non critical styles and scripts can be deferred-->
     <script async defer src="/scripts/eventHandlers.js"></script>
@@ -140,7 +146,7 @@
     <% } %>
 
     <script>
-    document.querySelector(".panel.panel-left .list").style.transform = ""
+    document.querySelector(".panel.panel-left .list").style.transform = "";
     </script>
     <%- include("./partials/dialogs.ejs") %>
 
@@ -160,8 +166,7 @@
 
     <!-- timetable and calendar -->
     <script async defer src='/moment/min/moment.min.js'></script>
-    <script async defer src="/tinygradient/bower_components/tinycolor/tinycolor.js"></script>
-    <script async defer src='/tinygradient/tinygradient.min.js'></script>
+    <script async defer src='/tinygradient/browser.js'></script>
 
     <script async defer src="/routes/scripts/add-subject.js"></script>
 

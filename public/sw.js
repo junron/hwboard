@@ -4,7 +4,7 @@
 //Promise worker for promise based-sw communication
 importScripts("/promise-worker/dist/promise-worker.register.js");
 
-const version = "1.3.7";
+const version = "1.3.9";
 
 console.log(`Service worker version ${version}`);
 self.addEventListener('install', function(e) {
@@ -16,8 +16,8 @@ self.addEventListener('install', function(e) {
         "/styles/roboto.css",
         "/styles/icons.css",
         "/socket.io-client/dist/socket.io.slim.js",
-        "/framework7/css/framework7-lazy.min.css",
-        "/framework7/js/framework7-lazy.min.js",
+        "/framework7/css/framework7.min.css",
+        "/framework7/js/framework7.min.js",
         "/promise-worker/dist/promise-worker.js",
         "/jquery/dist/jquery.slim.min.js",
         "/scripts/app.js",
@@ -71,6 +71,9 @@ self.addEventListener('activate', event => {
   event.waitUntil(self.clients.claim());
 });
 self.addEventListener('fetch',function(event) {
+  if(event.request.url.includes("?code") || event.request.url.includes("sw.js")||event.request.url.includes("authorize")){
+    return false;
+  }
   if(event.request.method=="GET"){
     event.respondWith(
       caches.open('cache1').then(async function(cache) {
@@ -99,7 +102,7 @@ self.addEventListener('fetch',function(event) {
                 status:500,
                 statusText:"Request timed out"
               }));
-            },1000);
+            },5000);
             fetch(event.request)
               .then(response=>{
                 clearTimeout(timer);

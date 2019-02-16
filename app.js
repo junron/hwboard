@@ -59,17 +59,18 @@ const io = websocket.createServer(server);
 //"unsafe-inline" for inline styles and scripts, aim to remove
 //https://developers.google.com/web/fundamentals/security/csp/
 const csp = 
-`default-src "none";
-script-src "self" "unsafe-inline";
-style-src "self" "unsafe-inline";
-connect-src "self" https://sentry.io https://latency-check.nushhwboard.tk wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
-object-src "none";
-img-src "self" data:;
-base-uri "none";
-form-action "none";
-font-src "self";
-manifest-src "self";
-frame-ancestors "none";`.split("\n").join("");
+`default-src 'none';
+script-src 'self' 'unsafe-inline';
+style-src 'self' 'unsafe-inline';
+connect-src 'self' https://sentry.io https://latency-check.nushhwboard.tk ${hostName ? `wss://${hostName}` : ""} ${port? `ws://localhost:${port}` : ""} https://login.microsoftonline.com/;
+object-src 'none';
+img-src 'self' data:;
+base-uri 'none';
+form-action 'none';
+font-src 'self' data:;
+manifest-src 'self';
+frame-ancestors 'none';
+child-src 'self';`.split("\n").join("");
 
 app.use(function(req,res,next){
   if(reportErrors){

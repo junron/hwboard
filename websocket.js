@@ -3,7 +3,7 @@ const auth = require("./auth");
 const cookieParser = require('socket.io-cookie-parser');
 
 
-const globalChannels = {};
+let initialized = false;
 
 //export so that accessible in app.js
 //server param is a http server
@@ -60,25 +60,23 @@ exports.createServer = function(server){
       if(db.getNumTables() === 0){
         await db.init();
       }
-      if(Object.keys(globalChannels).length === 0){
-        const globalChannelData = await db.getUserChannels("*");
-        for(const channel of globalChannelData){
+      if(!initialized){
+        for(const channel of (await db.getUserChannels("*"))){
           await db.whenHomeworkExpires(channel.name,async()=>{
             const data = await db.getHomework(channel.name);
             io.to(channel.name).emit("data",data);
           });
-          globalChannels[channel.name] = channel;
         }
+        initialized=true;
       }
       if(socket.request.signedCookies.username){
         socket.userData = {
           preferred_username:socket.request.signedCookies.username
         };
-        socket.channels = {};
-        const channels = await db.getUserChannels(socket.userData.preferred_username);
+        socket.username = socket.userData.preferred_username;
+        const channels = await db.getUserChannels(socket.username);
         for (const channel of channels){
           socket.join(channel.name);
-          socket.channels[channel.name] = globalChannels[channel.name];
         }
       }else if(testing){
         //In testing mode
@@ -86,26 +84,23 @@ exports.createServer = function(server){
           name:"tester",
           preferred_username:"tester@nushigh.edu.sg"
         };
-        socket.channels = {};
-        const channels = await db.getUserChannels(socket.userData.preferred_username);
+        socket.username = "tester@nushigh.edu.sg";
+        const channels = await db.getUserChannels(socket.username);
         for (const channel of channels){
           socket.join(channel.name);
-          socket.channels[channel.name] = globalChannels[channel.name];
         }
       }else{
         //In production, verify token
         try{
           const tokenClaims = await auth.verifyToken(token);
           socket.userData = tokenClaims;
-          const channels = await db.getUserChannels(socket.userData.preferred_username);
-          //Client cannot access socket object, so authorization data is safe and trustable.
-          socket.channels = {};
+          socket.username = socket.userData.preferred_username;
+          const channels = await db.getUserChannels(socket.username);
+          console.log("Authed");
           for (let channel of channels){
             //Add user to rooms
             //Client will receive relevant events emitted to these rooms,
             //but not others
-            socket.channels[channel.name] = globalChannels[channel.name];
-            console.log("Authed");
             socket.join(channel.name);
           }
         }catch(e){
@@ -150,20 +145,16 @@ exports.createServer = function(server){
       console.log("user disconnected");
     });
   });
+  module.exports.getSocketById = id=>{
+    for(const socketId in io.sockets.sockets){
+      if(id===io.sockets.sockets[socketId].userData.preferred_username){
+        return io.sockets.sockets[socketId];
+      }
+    }
+  };
   return io;
 };
 
-//Function to update globalChannels
-module.exports.updateChannels = channels=>{
-  for(const channel in channels){
-    for(const property in channels[channel]){
-      if(!globalChannels[channel]){
-        globalChannels[channel] = {};
-      }
-      globalChannels[channel][property] = channels[channel][property];
-    }
-  }
-};
 //Function to get permission level
 module.exports.getPermissionLvl = (email,channelData) => {
   if(channelData.roots.includes(email)){
