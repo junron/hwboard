@@ -25,6 +25,8 @@ let exported = {
 
 if(repHosts.length>0 && repPass.length>0){
   // Override init method to sync with rep host
-  exported = Object.assign({replication:require("./replication")},exported);
+  const replication = require("./replication");
+  exported = Object.assign(exported,{replication});
 }
+
 module.exports = {...exported,...admin,...channel,...homework};
