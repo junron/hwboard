@@ -61,21 +61,12 @@ router.post("/api/:method",(req, res, next) => {
       console.log("Forced disconnect");
       return res.status(403).end("Auth error");
     }
-    //Administration
-    require("../websocket-routes/admin")(socket,io,db);
-
-    //Homework ops
-    require("../websocket-routes/homework")(socket,io,db);
-
-    //Stats
-    require("../websocket-routes/analytics")(socket,db);
-
-    //For tests
-    require("../websocket-routes/tests")(socket);
-
+    // Special methods bypass websockets and deal straight with db
+    // For replication only
     const specialMethods = [
       "setChannelData",
-      "setHomeworkData"
+      "setHomeworkData",
+      "getLastUpdated"
     ];
     const replicationMethods = [
       "addChannel",
@@ -101,16 +92,32 @@ router.post("/api/:method",(req, res, next) => {
       //Administration and channels
       "channelDataReq",
     ].push(...(socket.userData.name === "rep_user" ? replicationMethods : []));
-    if(methods.includes(method)){
-      socket.emit(method,req.body,function(err,...results){
-        if(err){
-          throw err;
-        }
-        return res.end(JSON.stringify(results));
-      });
-    }else{
+
+    if(!methods.includes(method)){
       return next();
     }
+    if(specialMethods.includes(method)){
+      const result = await db.replication[method](req.body);
+      return res.end(JSON.stringify(result));
+    }
+    //Administration
+    require("../websocket-routes/admin")(socket,io,db);
+
+    //Homework ops
+    require("../websocket-routes/homework")(socket,io,db);
+
+    //Stats
+    require("../websocket-routes/analytics")(socket,db);
+
+    //For tests
+    require("../websocket-routes/tests")(socket);
+
+    socket.emit(method,req.body,function(err,...results){
+      if(err){
+        throw err;
+      }
+      return res.end(JSON.stringify(results));
+    });
   })()
     .catch(err=>{
       let code;
