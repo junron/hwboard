@@ -236,3 +236,7 @@
   margin-right: calc(var(--f7-list-item-media-margin) + var(--f7-checkbox-extra-margin));
   margin-left: initial;
 }
+
+body, html {
+  overscroll-behavior: none;
+}

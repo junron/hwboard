@@ -157,6 +157,7 @@ exports.createServer = function(server){
 
 //Function to get permission level
 module.exports.getPermissionLvl = (email,channelData) => {
+  if(email==="*") return 3;
   if(channelData.roots.includes(email)){
     return 3;
   }else if(channelData.admins.includes(email)){

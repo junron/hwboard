@@ -12,9 +12,10 @@ const homework = require("./homework");
 const channel = require("./channel");
 
 //Generate tables
-async function init(){
+async function init(replication=true){
   await sequelize.sync();
   await homework.generateHomeworkTables();
+  if(replication && module.exports.replication) await module.exports.replication.sync();
   return sequelize.sync();
 }
 

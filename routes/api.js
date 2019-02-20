@@ -3,12 +3,16 @@ const router = express.Router();
 const db = require("../controllers");
 const EventEmitter = require('events');
 const auth = require("../auth");
-const {timingSecureEquals} = require("crypto");
+const {timingSafeEqual} = require("crypto");
 
 let io;
-const {ALLOW_REPLICATION_WITH_PASSWORD:repPass} = require("../loadConfig");
+const {REPLICATION_PASSWORD:repPass} = require("../loadConfig");
 
-class socketIO extends EventEmitter {}
+class socketIO extends EventEmitter {
+  join(c){
+    console.log("API joined room:",c);
+  }
+}
 
 router.post("/api/:method",(req, res, next) => {
   console.log("Loaded API route")
@@ -36,13 +40,14 @@ router.post("/api/:method",(req, res, next) => {
         await db.init();
       }
       if(repPass){
-        const providedPassword = req.params.replication ? req.params.replication.password : "";
+        const providedPassword = req.body.replication ? req.body.replication.password : "";
         if(providedPassword.length===repPass.length){
-          if(timingSecureEquals(Buffer.from(providedPassword),Buffer.from(repPass))){
+          if(timingSafeEqual(Buffer.from(providedPassword),Buffer.from(repPass))){
             socket.userData = {
               name:"replication_user",
-              preferred_username:req.params.replication.user || "repuser@nushigh.edu.sg"
+              preferred_username:req.body.replication.user || "repuser@nushigh.edu.sg"
             };
+            socket.username = req.body.replication.user || "repuser@nushigh.edu.sg";
           }else{
             throw new Error("Replication password incorrect");
           }
@@ -65,7 +70,6 @@ router.post("/api/:method",(req, res, next) => {
     // For replication only
     const specialMethods = [
       "setChannelData",
-      "setHomeworkData",
       "getLastUpdated"
     ];
     const replicationMethods = [
@@ -91,13 +95,17 @@ router.post("/api/:method",(req, res, next) => {
 
       //Administration and channels
       "channelDataReq",
-    ].push(...(socket.userData.name === "rep_user" ? replicationMethods : []));
+    ];
+    methods.push(...(socket.userData.name === "replication_user" ? replicationMethods : []));
 
     if(!methods.includes(method)){
       return next();
     }
     if(specialMethods.includes(method)){
       const result = await db.replication[method](req.body);
+      if(method==="setChannelData"){
+        io.to(req.body.name).emit("channelData",{[req.body.name]:req.body});
+      }
       return res.end(JSON.stringify(result));
     }
     //Administration
