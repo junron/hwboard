@@ -3,7 +3,7 @@ document.getElementById("add-channel").addEventListener("click",()=>{
   if(input.trim().length==0){
     return Framework7App.dialog.alert("Channel name cannot be empty");
   }
-  conn.emit("addChannel",input.trim(),(err,channelName)=>{
+  conn.emit("addChannel",{name:input.trim()},(err,channelName)=>{
     if(err){
       Framework7App.loadModules(['dialog']).then(()=>{
         Framework7App.dialog.alert(err);

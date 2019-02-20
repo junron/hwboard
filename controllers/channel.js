@@ -1,5 +1,5 @@
 const xss = require("xss");
-const {Sequelize,Channels/*,Homework*/} = require("../models");
+const {Sequelize,Channels} = require("../models");
 
 async function editChannel(channelName, newChannelName) {
   channelName = xss(channelName);

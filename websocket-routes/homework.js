@@ -10,6 +10,7 @@
 const checkPayloadAndPermissions = require("./check-perm");
 const {isObject} = require("../utils");
 const crypto = require('crypto');
+const replication = require("./replication");
 
 const checkHomeworkValid = homework => {
   if(!isObject(homework)){
@@ -81,7 +82,8 @@ module.exports = (socket,io,db)=>{
   socket.on("addReq",function(msg,callback){
     (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg);
-      delete msg.id;
+      // Preserve homework id for replication
+      if(socket.userData.name!=="replication_user") delete msg.id;
       const {channel} = msg;
       if(msg.previousHomeworkHash){
         const currentData = JSON.stringify((await db.getHomework(channel)).filter(homework=>homework.subject===msg.subject));
@@ -96,7 +98,7 @@ module.exports = (socket,io,db)=>{
         }
       }
       checkHomeworkValid(msg);
-      await db.addHomework(channel,msg);
+      const {dataValues:homework} = await db.addHomework(channel,msg);
       //Notify users
       const data = await db.getHomework(channel);
       io.to(channel).emit("data",{channel,data});
@@ -105,6 +107,8 @@ module.exports = (socket,io,db)=>{
         const data = await db.getHomework(channel);
         io.to(channel).emit("data",{channel,data});
       });
+      msg.id = homework.id;
+      await replication(socket,"addReq",msg);
       return callback(null);
     })()
       .catch(e => {console.log(e);callback(e.toString());})
@@ -138,6 +142,7 @@ module.exports = (socket,io,db)=>{
         const data = await db.getHomework(channel);
         io.to(channel).emit("data",{channel,data});
       });
+      await replication(socket,"editReq",msg);
       return callback(null);
     })()
       .catch(e => callback(e.toString()))
@@ -166,6 +171,7 @@ module.exports = (socket,io,db)=>{
       //Notify users
       const data = await db.getHomework(channel);
       io.to(channel).emit("data",{channel,data});
+      await replication(socket,"deleteReq",msg);
       return callback(null);
     })()
       .catch(e => callback(e.toString()))
