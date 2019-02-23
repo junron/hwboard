@@ -203,7 +203,6 @@ async function whenHomeworkExpires(channel,callback){
     }
   });
   const dueDate = channelData.pop().dueDate;
-  console.log({dueDate});
   if(expiryTimers[channel]){
     expiryTimers[channel].cancel();
   }

@@ -15,6 +15,7 @@
 const checkPayloadAndPermissions = require("./check-perm");
 const {getSocketById,getPermissionLvl} = require("../websocket");
 const {sequelize,Channels} = require("../models");
+const replication = require("./replication");
 const tinycolor = require("tinycolor2");
 const xss = require("xss");
 
@@ -26,7 +27,9 @@ module.exports = (socket,io,db)=>{
 
   socket.on("addChannel",function(msg,callback){
     (async ()=>{
-      let name = xss(msg);
+      // Preserve channel id for replication
+      if(socket.userData.name!=="replication_user") delete msg.id;
+      let name = xss(msg.name);
       if(encodeURI(name)!==name){
         //Channel will be part of url
         return callback("Channel name invalid");
@@ -48,6 +51,7 @@ module.exports = (socket,io,db)=>{
           "Optional" : "green"
         }
       };
+      if(msg.id) config.id = msg.id;
       const data = await Channels.findAll({
         where:{
           name
@@ -58,13 +62,15 @@ module.exports = (socket,io,db)=>{
         return callback("Channel already exists");
       }
       //Create channel tables
-      await Channels.create(config);
+      const {dataValues:channel}= await Channels.create(config);
       //Sync to db
       await sequelize.sync();
-      await db.init();
+      await db.init(false);
       socket.join(name);
       const thisChannel = await db.getUserChannel(socket.username,name);
       socket.emit("channelData",{[name]:thisChannel});
+      msg.id = channel.id;
+      await replication(socket,"addChannel",msg);
       callback(null,name);
     })()
       .catch(e => {
@@ -92,6 +98,7 @@ module.exports = (socket,io,db)=>{
       await db.removeSubject(msg);
       const thisChannel = await db.getUserChannel(socket.username,channel);
       io.to(channel).emit("channelData",{[channel]:thisChannel});
+      await replication(socket,"setChannelData",thisChannel);
       return null;
     })()
       .then(callback)
@@ -102,12 +109,13 @@ module.exports = (socket,io,db)=>{
 
   socket.on("editSubject",function(msg,callback){
     (async ()=>{
-      msg = await checkPayloadAndPermissions(socket,msg,3);
-      const {channel} = msg;
-      await db.editSubject(msg);
-      const thisChannel = await db.getUserChannel(socket.username,channel);
-      io.to(channel).emit("channelData",{[channel]:thisChannel});
-      return null;
+      throw new Error("This method has been deprecated");
+      // msg = await checkPayloadAndPermissions(socket,msg,3);
+      // const {channel} = msg;
+      // await db.editSubject(msg);
+      // const thisChannel = await db.getUserChannel(socket.username,channel);
+      // io.to(channel).emit("channelData",{[channel]:thisChannel});
+      // return null;
     })()
       .then(callback)
       .catch(e => callback(e.toString()))
@@ -130,6 +138,7 @@ module.exports = (socket,io,db)=>{
       await db.addSubject(msg);
       const thisChannel = await db.getUserChannel(socket.username,channel);
       io.to(channel).emit("channelData",{[channel]:thisChannel});
+      await replication(socket,"setChannelData",thisChannel);
       return null;
     })()
       .then(callback)
@@ -156,10 +165,11 @@ module.exports = (socket,io,db)=>{
       await db.addTag(channel,name,color);
       const thisChannel = await db.getUserChannel(socket.username,channel);
       io.to(channel).emit("channelData",{[channel]:thisChannel});
+      await replication(socket,"setChannelData",thisChannel);
       return null;
     })()
       .then(callback)
-      .catch(e => callback(e.toString()))
+      .catch(e => {console.log(e);callback(e.toString());})
     //Error in handling error
       .catch(uncaughtErrorHandler);
   });
@@ -171,6 +181,7 @@ module.exports = (socket,io,db)=>{
       await db.removeTag(msg);
       const thisChannel = await db.getUserChannel(socket.username,channel);
       io.to(channel).emit("channelData",{[channel]:thisChannel});
+      await replication(socket,"setChannelData",thisChannel);
       return null;
     })()
       .then(callback)
@@ -189,6 +200,7 @@ module.exports = (socket,io,db)=>{
       const newMemberSockets = students.map(getSocketById).filter(s=>s!==undefined);
       newMemberSockets.map(socket=>socket.emit("channelData",{[channel]:thisChannel}));
       io.to(channel).emit("channelData",{[channel]:thisChannel});
+      await replication(socket,"setChannelData",thisChannel);
       return null;
     })()
       .then(callback)
@@ -209,6 +221,7 @@ module.exports = (socket,io,db)=>{
       const newMemberSockets = students.map(getSocketById).filter(s=>s!==undefined);
       newMemberSockets.map(socket=>socket.emit("channelData",{[channel]:thisChannel}));
       io.to(channel).emit("channelData",{[channel]:thisChannel});
+      await replication(socket,"setChannelData",thisChannel);
       return null;
     })()
       .then(callback)
@@ -235,6 +248,7 @@ module.exports = (socket,io,db)=>{
       }
       const thisChannel = await db.getUserChannel(socket.username,channel);
       io.to(channel).emit("channelData",{[channel]:thisChannel});
+      await replication(socket,"setChannelData",thisChannel);
       return null;
     })()
       .then(callback)
@@ -261,6 +275,7 @@ module.exports = (socket,io,db)=>{
       }
       const thisChannel = await db.getUserChannel(socket.username,channel);
       io.to(channel).emit("channelData",{[channel]:thisChannel});
+      await replication(socket,"setChannelData",thisChannel);
       return null;
     })()
       .then(callback)
