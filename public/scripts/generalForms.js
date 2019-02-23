@@ -65,6 +65,9 @@ Framework7App.loadModules(["sheet"]).then(()=>{
     el:".sheet-modal",
     backdrop:true
   });
+  detailsSheet.on("open",()=>{
+    $(".view.view-main").append($(".sheet-backdrop.backdrop-in"));
+  });
 });
 function rerenderSort(){
   if(document.getElementById("sort-set-default").checked){

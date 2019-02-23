@@ -14,7 +14,14 @@ try {
 if(reportErrors){
   Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install();
 }
-const {HOSTNAME:hostName,PORT:port,CI:testing,COOKIE_SECRET:cookieSecret,REDUCE_EXPRESS_LOGS:reduceExpressLogs} = config;
+const {
+  HOSTNAME: hostName,
+  PORT: port,
+  CI: testing,
+  COOKIE_SECRET: cookieSecret,
+  REDUCE_EXPRESS_LOGS: reduceExpressLogs,
+  ALLOW_REPLICATION_WITH_PASSWORD:repPassword
+} = config;
 
 //Utils
 const http = require('http');
@@ -107,6 +114,9 @@ app.use("/", require("./routes/update"));
 app.use("/", require("./routes/version"));
 app.use("/", require("./routes/info"));
 app.use("/", require("./routes/logout"));
+if(repPassword){
+  app.use("/", require("./routes/replication"));
+}
 
 //Views
 app.set("views", path.join(__dirname, "views"));

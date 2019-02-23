@@ -22,7 +22,7 @@ describe("Admin API",function(){
   it("Should be able to add channels",function(done){
     this.timeout(3000);
     const name = "testing";
-    client.emit("addChannel",name,(err,name)=>{
+    client.emit("addChannel",{name},(err,name)=>{
       console.log("Created channel",name);
       expect(err).to.be.null;
       expect(name).to.equal("testing");
@@ -40,7 +40,7 @@ describe("Admin API",function(){
   });
   it("Should not be able to add duplicate channels",function(done){
     const name = "testing";
-    client.emit("addChannel",name,err=>{
+    client.emit("addChannel",{name},err=>{
       expect(err).to.be.not.null;
       console.log(err.toString());
       done();
@@ -48,7 +48,7 @@ describe("Admin API",function(){
   });
   it("Should not be able to add channels that overwrite the prototype",function(done){
     const name = "__proto__";
-    client.emit("addChannel",name,err=>{
+    client.emit("addChannel",{name},err=>{
       expect(err).to.be.not.null;
       console.log(err.toString());
       done();
