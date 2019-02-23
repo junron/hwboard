@@ -61,7 +61,19 @@ const variables = [
   {
     name:"REDUCE_EXPRESS_LOGS",
     default:true
-  }
+  },
+  {
+    name:"REPLICATION_PASSWORD",
+    default:""
+  },
+  {
+    name:"REPLICATION_HOSTS",
+    default:[]
+  },
+  {
+    name:"ALLOW_REPLICATION_WITH_PASSWORD",
+    default:false
+  },
 ];
 
 let finalSettings = {};

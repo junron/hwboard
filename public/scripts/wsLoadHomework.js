@@ -13,9 +13,6 @@ conn.on("data",({channel,data:channelData})=>{
   });
 });
 
-conn.on("channelData",()=>{
-  conn.emit("channelDataReq",{},(err,data)=>{
-    if(err) throw err;
-    setSubjectVariables(data);
-  });
+conn.on("channelData",data=>{
+  setSubjectVariables([data[Object.keys(data)[0]]],true);
 });

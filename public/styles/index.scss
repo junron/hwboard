@@ -240,3 +240,6 @@
 #app .panel.panel-left {
   border-right: 1px solid #ddd;
 }
+body,html{
+  overscroll-behavior: none;
+}
