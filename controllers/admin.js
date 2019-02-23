@@ -313,5 +313,6 @@ module.exports = {
   addTag,
   removeTag,
   editSubject,
-  getUserChannel
+  getUserChannel,
+  arrayToObject
 };

@@ -57,6 +57,7 @@ conn.on("channelData",async function(data){
     const thisChannelData = data[channel];
     document.getElementById("member-list").innerHTML = await render(thisChannelData);
     document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData);
+    document.getElementById("tag-list").innerHTML = renderTags(thisChannelData);
   }
 });
 function deleteMember(memberElem){
