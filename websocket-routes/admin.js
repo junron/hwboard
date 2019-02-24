@@ -18,8 +18,9 @@ const {sequelize,Channels} = require("../models");
 const replication = require("./replication");
 const tinycolor = require("tinycolor2");
 const xss = require("xss");
+const db = require("../controllers");
 
-module.exports = (socket,io,db)=>{
+module.exports = (socket,io)=>{
 
   //Send uncaught errors, eg `callback is not a function` to client
   const uncaughtErrorHandler = require("./error")(socket);

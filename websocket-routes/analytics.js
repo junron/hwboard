@@ -6,9 +6,9 @@
  */
 
 const checkPayloadAndPermissions = require("./check-perm");
+const db = require("../controllers");
 
-
-module.exports = (socket,db)=>{
+module.exports = socket=>{
 
   //Send uncaught errors, eg `callback is not a function` to client
   const uncaughtErrorHandler = require("./error")(socket);
