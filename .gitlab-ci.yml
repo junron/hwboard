@@ -1,7 +1,7 @@
 # This file is a template, and might need editing before it works on your project.
 # Official framework image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/node/tags/
-image: node:10-alpine
+image: node:11-alpine
 
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
@@ -30,8 +30,7 @@ test:
   - pwd  
   - npm -v
   - node --version
-  - npm install
-  - npm audit
+  - npm ci
   - mv data.json.test data.json
   - mkdir artifacts
   - npm test
@@ -45,6 +44,7 @@ lint:
   script:
   - npm -v
   - node --version
+  - npm ci
   - npm run lint
 # deploy_beta:
 #   stage: deploy

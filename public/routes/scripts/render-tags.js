@@ -2,8 +2,9 @@ function renderTags(data){
   const currentPerson = getCookie("email");
   const isRoot = data.roots.includes(currentPerson);
   const {tags} = data;
+  const tagNames = Object.keys(tags).sort();
   let html = "";
-  for(const tag in tags){
+  for(const tag of tagNames){
     const tagTextColor = tinycolor.readability(tags[tag],"#fff")<2 ? "black" : "white";
     html+=`<li class="swipeout item-content">
       <div class="swipeout-content item-content">

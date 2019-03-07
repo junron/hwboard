@@ -1,3 +1,4 @@
+editingSubject = false;
 function getChannelData(){
   //Load data from indexedDB, in case there is no internet
   worker.postMessage({
@@ -35,9 +36,9 @@ async function renderChannelData(data){
     }
     if(data.roots.includes(name)){
       $(".root-only").show();
-      $("a[href='/channels/channelName/settings/popups/add-member/'").attr("href",`/channels/${channel}/settings/popups/add-member/`);
-      $("a[href='/channels/channelName/settings/popups/add-subject/'").attr("href",`/channels/${channel}/settings/popups/add-subject/`);
-      $("a[href='/channels/channelName/settings/popups/add-tag/'").attr("href",`/channels/${channel}/settings/popups/add-tag/`);
+      $("a[href='/channels/channelName/settings/popups/add-member/']").attr("href",`/channels/${channel}/settings/popups/add-member/`);
+      $("a[href='/channels/channelName/settings/popups/add-subject/']").attr("href",`/channels/${channel}/settings/popups/add-subject/`);
+      $("a[href='/channels/channelName/settings/popups/add-tag/']").attr("href",`/channels/${channel}/settings/popups/add-tag/`);
     }
   });
 }
@@ -119,8 +120,21 @@ function deleteTag(tagElem){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
       }
-      getChannelData();
       console.log("done");
     });
+  });
+}
+
+function editSubject(elem){
+  const subject = elem.children[0].children[0].children[0].innerText.split("\n")[0];
+  Framework7App.views.main.router.navigate("/channels/"+channel+"/settings/popups/add-subject/");
+  Framework7App.views.main.router.once("routeChanged",()=>{
+    $("#subjectInput").parentsUntil(".item-content").addClass("item-input-with-value");
+    $("#subjectInput").val(subject);
+    setTimeout(()=>{
+      $("#hwboard-add-subject-timetable").fullCalendar("destroy");
+      renderTimetable("#hwboard-add-subject-timetable",true,subject);
+      editingSubject = true;
+    },250);
   });
 }

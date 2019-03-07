@@ -44,6 +44,10 @@ const initEditHomeworkEvents = ()=>{
     dateParser.parseDate().then(date=>{
       $(".date-input").removeClass("item-input-invalid");
       $("#due-date-validation-err").text("");
+      if(Number.isNaN(date)){
+        $("#date-input-info").text(`Due date unknown`);
+        return;
+      }
       $("#date-input-info").text(`${Sugar.Date.format(date,"%d/%m/%Y %H:%M")}, ${dateParser.daysUntil(date)} days time`);
     }).catch(err=>{
       $(".date-input").addClass("item-input-invalid");
@@ -95,9 +99,12 @@ const initEditHomeworkEvents = ()=>{
   };
   $("#subject-name").keypress(subjectChanged);
   Framework7App.loadModules(["smart-select","checkbox"]).then(()=>{
-    Framework7App.smartSelect.create({
+    const popup = Framework7App.smartSelect.create({
       el:document.getElementById("selectTagsElem"),
       openIn:"popup"
+    });
+    popup.on("open",()=>{
+      $(".view.view-main").append($(".popup-backdrop.backdrop-in"));
     });
   });
 };

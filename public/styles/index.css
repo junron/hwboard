@@ -206,3 +206,33 @@
   height: 16px;
   line-height: 16px;
 }
+
+.md #app .navbar {
+  height: 64px;
+  background: #2196f3;
+  color: #fff;
+  font-size: 20px;
+}
+
+#app label.item-checkbox > .icon-checkbox {
+  margin-right: 38px;
+  margin-left: initial;
+}
+
+#app .list .item-floating-label {
+  transform-origin: left bottom;
+}
+
+#app .navbar a i.icon.icon-back {
+  color: white;
+}
+
+#app .list .item-footer {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.md #app label.item-radio > .icon-radio {
+  margin-right: calc(var(--f7-list-item-media-margin) + var(--f7-checkbox-extra-margin));
+  margin-left: initial;
+}

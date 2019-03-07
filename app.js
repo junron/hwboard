@@ -1,4 +1,4 @@
-const Raven = require('raven');
+const Raven = require("raven");
 
 let config;
 let reportErrors;
@@ -8,22 +8,22 @@ try {
   config = require("./loadConfig");
   reportErrors = config.REPORT_ERRORS;
 }catch(e){
-  Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install();
+  Raven.config("https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453").install();
   Raven.captureException(e);
 }
 if(reportErrors){
-  Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install();
+  Raven.config("https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453").install();
 }
 const {HOSTNAME:hostName,PORT:port,CI:testing,COOKIE_SECRET:cookieSecret,REDUCE_EXPRESS_LOGS:reduceExpressLogs} = config;
 
 //Utils
-const http = require('http');
+const http = require("http");
 const express = require("express");
 const app = express();
-const path = require('path');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
+const path = require("path");
+const logger = require("morgan");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 const websocket = require("./websocket");
 
 
@@ -36,15 +36,13 @@ app.use(bodyParser.json());
 if(app.get("env")==="production"){
   app.use((req,res,next)=>{
     if(req.url.includes("/framework7/")){
-      res.minifyOptions = { 
-        minify:false
-      };
+      res.minifyOptions = { minify:false };
     }
     next();
   });
-  app.use(require('express-minify')({
+  app.use(require("express-minify")({
     cache:__dirname+"/public/cache",
-    uglifyJsModule:require('uglify-es'),
+    uglifyJsModule:require("uglify-es"),
     jsonMatch:false
   }));
 }
@@ -60,16 +58,16 @@ const io = websocket.createServer(server);
 //Content security policy settings
 //"unsafe-inline" for inline styles and scripts, aim to remove
 //https://developers.google.com/web/fundamentals/security/csp/
-const csp = 
+const csp =
 `default-src 'none';
 script-src 'self' 'unsafe-inline';
 style-src 'self' 'unsafe-inline';
-connect-src 'self' https://sentry.io https://latency-check.nushhwboard.tk wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
+connect-src 'self' https://sentry.io https://latency-check.nushhwboard.tk ${hostName ? `wss://${hostName}` : ""} ${port? `ws://localhost:${port}` : ""} https://login.microsoftonline.com/;
 object-src 'none';
 img-src 'self' data:;
 base-uri 'none';
 form-action 'none';
-font-src 'self';
+font-src 'self' data:;
 manifest-src 'self';
 frame-ancestors 'none';
 child-src 'self';`.split("\n").join("");

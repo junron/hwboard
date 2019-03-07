@@ -3,24 +3,16 @@ chai.use(require('chai-uuid'));
 const {expect} = chai;
 const io = require('socket.io-client');
 const websocket = require("../app").server;
-const port = require("../loadConfig").PORT;
+const {PORT:port} = require("../loadConfig");
+
+
 let client;
 describe("Admin API",function(){
   this.timeout(3000);
   before(function(done){
     websocket.listen(port);
-    setTimeout(()=>{
-      console.log("http://localhost:" + port);
-      client = io("http://localhost:" + port);
-      client.on("disconnect",()=>{
-        console.log("Disconnect");
-      });
-      client.on("error",console.log);
-      client.on("connect",()=>{
-        console.log("connected");
-        client.on("ready",done);
-      },1000);
-    });
+    client = io("http://localhost:" + port);
+    client.once("ready",done);
   });
   after(function(done){
     websocket.close();
@@ -28,26 +20,21 @@ describe("Admin API",function(){
   });
 
   it("Should be able to add channels",function(done){
+    this.timeout(3000);
     const name = "testing";
     client.emit("addChannel",name,(err,name)=>{
       console.log("Created channel",name);
       expect(err).to.be.null;
       expect(name).to.equal("testing");
-      // Reconnect
-      client = io("http://localhost:" + port);
-      client.on("connect",()=>{
-        console.log("Reconnected");
-        client.emit("channelDataReq",{},function(err,channels){
-          expect(err).to.be.null;
-          const testChannel = channels.find(c=>c.name===name);
-          console.log(testChannel);
-          expect(testChannel.tags).to.deep.equal({
-            Graded:"red",
-            Optional:"green",
-          });
-          expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
-          done();
+      client.emit("channelDataReq",{},function(err,channels){
+        expect(err).to.be.null;
+        const testChannel = channels.find(c=>c.name===name);
+        expect(testChannel.tags).to.deep.equal({
+          Graded:"red",
+          Optional:"green",
         });
+        expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
+        done();
       });
     });
   });
@@ -84,7 +71,6 @@ describe("Admin API",function(){
         client.emit("channelDataReq",{},function(err,channels){
           expect(err).to.be.null;
           const testChannel = channels.find(c=>c.name===channel);
-          console.log(testChannel);
           expect(testChannel.subjects).to.deep.equal(["math","chemistry"]);
           expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
           done();
@@ -109,7 +95,6 @@ describe("Admin API",function(){
         client.emit("channelDataReq",{},function(err,channels){
           expect(err).to.be.null;
           const testChannel = channels.find(c=>c.name===channel);
-          console.log(testChannel);
           expect(testChannel.roots).to.deep.equal(["tester@nushigh.edu.sg"]);
           expect(testChannel.admins).to.deep.equal(["admin@nushigh.edu.sg"]);
           expect(testChannel.members).to.deep.equal(["member@nushigh.edu.sg"]);
