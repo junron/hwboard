@@ -123,15 +123,15 @@ exports.createServer = function(server){
     })()
       .then(async ()=>{
       //Administration
-        require("./websocket-routes/admin")(socket,io,db);
+        require("./websocket-routes/admin")(socket,io);
 
         //Homework ops
-        require("./websocket-routes/homework")(socket,io,db);
+        require("./websocket-routes/homework")(socket,io);
 
         //Student data
         require("./websocket-routes/students-api")(socket);
         //Stats
-        require("./websocket-routes/analytics")(socket,db);
+        require("./websocket-routes/analytics")(socket);
 
         //For tests
         require("./websocket-routes/tests")(socket);

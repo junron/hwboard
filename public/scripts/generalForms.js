@@ -69,6 +69,14 @@ Framework7App.loadModules(["sheet"]).then(()=>{
     $(".view.view-main").append($(".sheet-backdrop.backdrop-in"));
   });
 });
+let ptr = Framework7App.ptr.get('.page-current .ptr-content');
+ptr.on("refresh",async (_,done)=>{
+  $("#hwboard-homework-list").html("<div class=homework-reload-status>Reloading homework...</div>");
+  setTimeout(async ()=>{
+    await loadHomework(true);
+    done();
+  },300);
+});
 function rerenderSort(){
   if(document.getElementById("sort-set-default").checked){
     document.cookie = "sortType="+sortOptions.type;

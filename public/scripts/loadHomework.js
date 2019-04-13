@@ -61,7 +61,7 @@ channelSettings = {
 prevDataHash = "";
 //Get cookies
 //Re-render homework
-async function reRender(data){
+async function reRender(data,force=false){
   if(data.null){
     return;
   }
@@ -72,28 +72,31 @@ async function reRender(data){
   }
   const sortType = sortOptions.type || getCookie("sortType") || "Due date";
   let sortOrder = sortOptions.order || 0;
-  const hashHomeworkData = data.sort((a,b)=>{
-    aHash = a.id+a.text+a.subject+a.dueDate+a.lastEditPerson+a.lastEditTime+a.tags;
-    bHash = b.id+b.text+b.subject+b.dueDate+b.lastEditPerson+b.lastEditTime+b.tags;
-    if(aHash > bHash){
-      return -1;
-    }else if(aHash < bHash){
-      return 1;
-    }else{
-      return 0;
-    }
-  });
-  const hashData = JSON.stringify(hashHomeworkData)+sortOrder+sortType;
-  const hash = await computeHash(hashData);
+  let hash="Hello, World!";
+  if(!force){
+    const hashHomeworkData = data.sort((a,b)=>{
+      aHash = a.id+a.text+a.subject+a.dueDate+a.lastEditPerson+a.lastEditTime+a.tags;
+      bHash = b.id+b.text+b.subject+b.dueDate+b.lastEditPerson+b.lastEditTime+b.tags;
+      if(aHash > bHash){
+        return -1;
+      }else if(aHash < bHash){
+        return 1;
+      }else{
+        return 0;
+      }
+    });
+    const hashData = JSON.stringify(hashHomeworkData)+sortOrder+sortType;
+    hash = await computeHash(hashData);
+  }
   if(hash!==prevDataHash){
     const rendered = renderer(data,sortType,sortOrder);
     $("#hwboard-homework-list").html(rendered);
     console.log("rerendered");
-    prevDataHash = hash;
+    if(!force) prevDataHash = hash;
   }
 }
 
-async function loadHomework(){
+async function loadHomework(force=false){
   async function getBestPromise(obj){
     const results = await Promise.all(obj.promises);
     if(results[0] && (results[0].length===1||results[1]===undefined)){
@@ -115,7 +118,7 @@ async function loadHomework(){
   ]);
   const [homeworkData,channelData] = await Promise.all(results.map(getBestPromise));
   setSubjectVariables(channelData);
-  await reRender(homeworkData);
+  await reRender(homeworkData,force);
   $(".swipeout-actions-left").css("visibility","visible");
   $(".swipeout-actions-right").css("visibility","visible");
 }
