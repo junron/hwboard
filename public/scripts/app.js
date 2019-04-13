@@ -64,6 +64,16 @@ const Framework7App = new Framework7({
         },
         pageAfterIn:e=>{
           prevDataHash = "";
+          if(Framework7App.ptr){
+            ptr = Framework7App.ptr.get('.page-current .ptr-content');
+            ptr.on("refresh",async (_,done)=>{
+              $("#hwboard-homework-list").html("<h2 class=homework-reload-status>Reloading homework...</h2>");
+              setTimeout(async ()=>{
+                await loadHomework(true);
+                done();
+              },300);
+            });
+          }
           console.log("Navbar");
           loadSources(e.currentTarget,["/scripts/loadHomework.js"]);
           if(location.search.includes("websocketOffline=true")){

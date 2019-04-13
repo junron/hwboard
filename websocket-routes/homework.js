@@ -11,6 +11,7 @@ const checkPayloadAndPermissions = require("./check-perm");
 const {isObject} = require("../utils");
 const crypto = require('crypto');
 const replication = require("./replication");
+const db = require("../controllers");
 
 const checkHomeworkValid = homework => {
   if(!isObject(homework)){
@@ -40,7 +41,7 @@ const checkHomeworkValid = homework => {
   return true;
 };
 
-module.exports = (socket,io,db)=>{
+module.exports = (socket,io)=>{
 
   //Send uncaught errors, eg `callback is not a function` to client
   const uncaughtErrorHandler = require("./error")(socket);

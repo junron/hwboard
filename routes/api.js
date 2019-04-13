@@ -109,13 +109,13 @@ router.post("/api/:method",(req, res, next) => {
       return res.end(JSON.stringify(result));
     }
     //Administration
-    require("../websocket-routes/admin")(socket,io,db);
+    require("../websocket-routes/admin")(socket,io);
 
     //Homework ops
-    require("../websocket-routes/homework")(socket,io,db);
+    require("../websocket-routes/homework")(socket,io);
 
     //Stats
-    require("../websocket-routes/analytics")(socket,db);
+    require("../websocket-routes/analytics")(socket);
 
     //For tests
     require("../websocket-routes/tests")(socket);

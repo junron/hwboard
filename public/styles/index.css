@@ -245,5 +245,15 @@
 }
 
 body, html {
-  overscroll-behavior: none;
+  overscroll-behavior: contain;
+}
+
+#hwboard-homework-list {
+  user-select: none;
+}
+
+.homework-reload-status {
+  text-align: center;
+  padding: 5%;
+  font-size: 24px;
 }

@@ -58,7 +58,19 @@
           <a class="right" href="/popups/sort/"><i class="material-icons" style="color:#ffffff">&#xE164;</i></a>
         </div>
       </div>
-        <div class="page-content block" style="padding-top:0px" role="main">
+        <div class="page-content block ptr-content" data-ptr-distance="55" style="padding-top:0px" role="main">
+        <div class="ptr-preloader">
+        <div class="preloader"><span class="preloader-inner">
+              <span class="preloader-inner-gap"></span>
+              <span class="preloader-inner-left">
+                  <span class="preloader-inner-half-circle"></span>
+              </span>
+              <span class="preloader-inner-right">
+                  <span class="preloader-inner-half-circle"></span>
+              </span>
+            </span></div>
+        <div class="ptr-arrow" style=""></div>
+        </div>
           <div class="list" id="hwboard-homework-list" style="position:relative;top:57px">
             <%- renderer(data,sortType,sortOrder,subjectChannelMapping,subjectTagMapping) %>
           </div>
@@ -79,9 +91,9 @@
       </div>
       </div>
     </div>
+    <link rel="stylesheet" href="/framework7/css/framework7.min.css">
     <link rel="stylesheet" href="/framework7/components/list-index.css">
     <link rel="stylesheet" href="/framework7/components/chip.css">
-    <link rel="stylesheet" href="/framework7/css/framework7.min.css">
     <!-- unhide rendered page -->
     <script>
       document.querySelector("#app").style.transform = ""
@@ -122,6 +134,7 @@
     <script async defer src="/framework7/components/panel.js"></script>
     <script async defer src="/framework7/components/fab.js"></script>
     <script async defer src="/framework7/components/dialog.js"></script>
+    <script async defer src="/framework7/components/pull-to-refresh.js"></script>
     <script src="/framework7/components/input.js"></script>
     <script src="/framework7/components/swipeout.js"></script>
     <script defer src="/scripts/app.js"></script>
@@ -133,7 +146,9 @@
     <link rel="stylesheet" href="/framework7/components/panel.css">
     <link rel="stylesheet" href="/framework7/components/dialog.css">
     <link rel="stylesheet" href="/framework7/components/input.css">
-    
+    <link rel="stylesheet" href="/framework7/components/pull-to-refresh.css">
+    <link rel="stylesheet" href="/framework7/components/preloader.css">
+
     <!-- non critical styles and scripts can be deferred-->
     <script async defer src="/scripts/eventHandlers.js"></script>
     <script async defer src="/fuse.js/dist/fuse.min.js"></script>
