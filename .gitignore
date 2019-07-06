@@ -10,9 +10,6 @@ artifacts
 **/data.json
 backup.json
 **/backup.json
-cockroach/*
-!cockroach/Dockerfile
-cockroach-data
 *.json
 !package.json
 !package-lock.json
