@@ -79,7 +79,8 @@ form-action 'none';
 font-src 'self' data:;
 manifest-src 'self';
 frame-ancestors 'none';
-child-src 'self';`.split("\n").join("");
+worker-src 'self';
+`.split("\n").join("");
 
 app.use(function(req,res,next){
   if(reportErrors){
