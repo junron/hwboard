@@ -26,14 +26,6 @@ const variables = [
     default:5432,
   },
   {
-    name:"USE_POSTGRES",
-    default:true
-  },
-  {
-    name:"COCKROACH_DB_SECURE",
-    default:true,
-  },
-  {
     name:"CI",
     default:false
   },

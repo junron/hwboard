@@ -1,8 +1,5 @@
 //Get data from indexedDB about specific homework
 async function getExistingInfo(homeworkDataElement){
-  if(typeof homeworkDataElement==="undefined"){
-    homeworkDataElement = lastTouched;
-  }
   const id = $(homeworkDataElement).attr("sqlid");
   const result = await worker.postMessage({
     type:"getSingle",

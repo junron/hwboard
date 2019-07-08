@@ -16,6 +16,8 @@
     "semi":"error",
     "no-console":"off",
     "no-undef":"off",
-    "no-unused-vars":"off"
+    "no-unused-vars":"off",
+    "no-async-promise-executor":"off",
+    "require-atomic-updates":"off"
   }
 }

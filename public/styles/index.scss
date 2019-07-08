@@ -84,7 +84,7 @@
 }
 
 .page>.page-content.block {
-  margin-top: 15px;
+  margin-top: calc(var(--f7-navbar-height) + 15px)
 }
 
 .page>.page-content>.block-title {

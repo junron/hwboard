@@ -16,14 +16,14 @@ function promisifyAll(moduleObj) {
 const gitlab = (process.env.CI_PROJECT_NAME=="hwboard2");
 if(process.argv[2]==="restore"){
   (async ()=>{
-    const {DB_USER:dbUser,USE_POSTGRES:p} = require("./loadConfig");
+    const {DB_USER:dbUser} = require("./loadConfig");
     const fileName = process.argv[3];
     const force = process.argv[4] === "force";
     const {sequelize,Channels} = require("./models");
     if(force){
       console.log("Force specified");
       console.log("Dropping all tables...");
-      await sequelize.query("drop owned by "+dbUser+(p?" cascade;":" ;"));
+      await sequelize.query("drop owned by "+dbUser+" cascade;");
     }
     await sequelize.sync();
     const {addHomework,init} = require("./controllers");
@@ -222,6 +222,7 @@ if(process.argv[2]==="restore"){
   }
 }else if(process.argv[2]==="reset-db-for-test"){
   void async function (){
+    await require("./controllers").init(false);
     const {sequelize,Channels} = require("./models");
     await Channels.destroy({
       where:{
@@ -230,7 +231,10 @@ if(process.argv[2]==="restore"){
     });
     await require("./controllers").init(false);
     sequelize.close();
-  }();
+  }()
+    .catch(e=>{
+      console.log(e);
+    });
 }else{
   console.log(`
   
