@@ -7,11 +7,11 @@ image: node:11-alpine
 # Only needed when using a docker container to run your tests in.
 # Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
 services:
-  - name: jro11/cockroachdb-alpine-docker:stable
-    alias: cockroachdb
+  - name: postgres:10
+    alias: postgres
 variables:
-  COCKROACH_DB: hwboard
-  COCKROACH_USER: hwboard
+  POSTGRES_DB: hwboard
+  POSTGRES_USER: hwboard
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
 cache:
@@ -23,8 +23,7 @@ test:
   variables:
     CI: "true"
     HWBOARD_COOKIE_SECRET: "totallyVerySecureSecretWhatCouldPossiblyGoWrong"
-    USE_POSTGRES: "false"
-    DB_PORT: "26257"
+    DB_PORT: "5432"
   stage: test
   script:
   - pwd  
@@ -33,6 +32,7 @@ test:
   - npm ci
   - mv data.json.test data.json
   - mkdir artifacts
+  - npm run hwboard reset-db-for-test
   - npm test
   artifacts:
     paths: 
@@ -61,7 +61,7 @@ auto_update:
   script:
   - apk add curl
   # - curl --header "X-Gitlab-Token:$GITLAB_TOKEN" https://node1.vorld.nushhwboard.tk/cd/update/?commitSHA=$CI_COMMIT_SHA
-  - curl --header "X-Gitlab-Token:$GITLAB_TOKEN" https://node1.orange.nushhwboard.tk/cd/update/?commitSHA=$CI_COMMIT_SHA
+  - curl --header "X-Gitlab-Token:$GITLAB_TOKEN" https://nushhwboard.tk/cd/update/?commitSHA=$CI_COMMIT_SHA
   environment:
     name: hwboard
     url: https://nushhwboard.tk

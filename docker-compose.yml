@@ -1,18 +1,15 @@
 version: '3'
 services:
-  cockroachdb:
-    build:
-      dockerfile: cockroach/Dockerfile
-      context: .
-    ports:
-      - "$COCKROACHDB_PORT:$COCKROACHDB_PORT"
-      - "$COCKROACH_DB_EXPOSE_HTTP_PORT:$COCKROACH_DB_EXPOSE_HTTP_PORT"
-    command: "./cockroach/run.sh"
-    environment:
-      - COCKROACH_USER=hwboard
-      - COCKROACH_DB=hwboard
+  postgres:
+    image: postgres:latest
     volumes:
-      - ./cockroach:/cockroach
+    - /var/lib/postgresql/data
+    ports:
+    - 5432:5432
+    environment:
+      - POSTGRES_USER=hwboard
+      - POSTGRES_DB=hwboard
+      - POSTGRES_PASSWORD=incorrect_spaghett
   web:
     restart: always
     build: .
@@ -25,6 +22,6 @@ services:
       - POSTGRES_PASSWORD=incorrect_spaghett
       - POSTGRES_USER=hwboard
     depends_on:
-      - "cockroachdb"
+      - "postgres"
     volumes:
       - ./:/home/hwboard/hwboard2
