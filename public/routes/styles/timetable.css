@@ -31,6 +31,12 @@ td {
   align-content: center;
   height: 100%;
   align-items: center;
+  font-size: 1.6em;
+  word-break: break-all;
+}
+.hwboard-timetable-display tr td.fc-widget-content div.fc-content .fc-bg {
+  background: #fff;
+  opacity: 0.25;
 }
 .hwboard-timetable-display .fc-time-grid-event.fc-v-event.fc-event {
   opacity: 0.85;
