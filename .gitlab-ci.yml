@@ -7,7 +7,7 @@ image: node:11-alpine
 # Only needed when using a docker container to run your tests in.
 # Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
 services:
-  - name: postgres:latest
+  - name: postgres:10
     alias: postgres
 variables:
   POSTGRES_DB: hwboard
@@ -60,7 +60,7 @@ auto_update:
   script:
   - apk add curl
   # - curl --header "X-Gitlab-Token:$GITLAB_TOKEN" https://node1.vorld.nushhwboard.tk/cd/update/?commitSHA=$CI_COMMIT_SHA
-  - curl --header "X-Gitlab-Token:$GITLAB_TOKEN" https://node1.orange.nushhwboard.tk/cd/update/?commitSHA=$CI_COMMIT_SHA
+  - curl --header "X-Gitlab-Token:$GITLAB_TOKEN" https://nushhwboard.tk/cd/update/?commitSHA=$CI_COMMIT_SHA
   environment:
     name: hwboard
     url: https://nushhwboard.tk
