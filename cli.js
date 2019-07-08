@@ -222,6 +222,7 @@ if(process.argv[2]==="restore"){
   }
 }else if(process.argv[2]==="reset-db-for-test"){
   void async function (){
+    await require("./controllers").init(false);
     const {sequelize,Channels} = require("./models");
     await Channels.destroy({
       where:{
@@ -230,7 +231,10 @@ if(process.argv[2]==="restore"){
     });
     await require("./controllers").init(false);
     sequelize.close();
-  }();
+  }()
+    .catch(e=>{
+      console.log(e);
+    });
 }else{
   console.log(`
   
