@@ -309,15 +309,19 @@ const Framework7App = new Framework7({
             pageAfterIn: e => {
               const target = e.currentTarget;
               loadSources(target, [
-                "/routes/scripts/timetable2js",
                 "/routes/styles/timetable.css",
                 '/@fullcalendar/core/main.min.js',
                 "/@fullcalendar/daygrid/main.min.js",
                 "/@fullcalendar/timegrid/main.min.js",
                 "/@fullcalendar/interaction/main.min.js",
+                "/@fullcalendar/core/main.min.css",
+                "/@fullcalendar/daygrid/main.min.css",
+                "/@fullcalendar/timegrid/main.min.css",
+                "/routes/scripts/timetable.js",
+                "/routes/scripts/add-subject.js"
               ], false).then(() => {
                 renderTimetable("#hwboard-add-subject-timetable", true);
-                updateDisabledStatus();
+                // updateDisabledStatus();
               });
             }
           },

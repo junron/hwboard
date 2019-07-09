@@ -19,6 +19,9 @@ td {
   /* Override element style */
   height:initial !important;
 }
+.hwboard-timetable-display tr td.fc-widget-content a.fc-mirror div.fc-content div.fc-time {
+  display: initial;
+}
 .hwboard-timetable-display tr td.fc-widget-content div.fc-content div.fc-time {
   display: none;
 }

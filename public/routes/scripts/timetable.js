@@ -1,4 +1,5 @@
 function renderTimetable(selector, editable = false) {
+  addSubjectCalendar = null;
   const daysOfWeek = ["sun","mon","tue","wed","thu","fri","sat"];
   const parseTime = time => 
     Math.floor(time/100).toString().padStart(2,'0') +
@@ -14,7 +15,7 @@ function renderTimetable(selector, editable = false) {
     plugins: ['dayGrid', 'timeGrid', 'interaction'],
     weekends: false,
     defaultView: "timeGridWeek",
-    editable: true,
+    editable: false,
     firstDay: 1,
     views: {
       timeGridWeek: {
@@ -24,7 +25,10 @@ function renderTimetable(selector, editable = false) {
     nowIndicator:true,
     allDaySlot: false,
     selectMirror: true,
+    selectOverlap:false,
     selectable: editable,
+    select: info=>timingChangeCallback(calendar,info),
+    selectLongPressDelay:10,
     minTime: "08:00",
     maxTime: "18:00",
     height: "auto",
@@ -36,7 +40,19 @@ function renderTimetable(selector, editable = false) {
     selectAllow: info => {
       // Limit to 4 hours
       return (info.end - info.start) <= 14400000;
+    },
+    eventRender:info=>{
+      if(info.event._def.groupId==="addSubject"){
+        if($(info.el).children(".fc-content").children(".fc-title").length){
+          $(info.el).children(".fc-content").children(".fc-title").text($(".page-current #subjectInput").val());
+          return;
+        }
+        $(info.el).children(".fc-content").append(`<div class='fc-title'>${$(".page-current #subjectInput").val()}</div>`);
+      }
+      if(!info.isMirror) return;
+      $(info.el).children(".fc-content").append(`<div class='fc-title'>${$(".page-current #subjectInput").val()}</div>`);
     }
+    
   };
   const calculateSmallestDay = times =>{
     let n=0;
@@ -48,7 +64,19 @@ function renderTimetable(selector, editable = false) {
     }
   };
   const allColors = ["#ff0000", "#ff2000", "#ff4000", "#ff5f00", "#ff7f00", "#ff9900", "#ffb200", "#ffcc00", "#ffe500", "#ffff00", "#ccff00", "#99ff00", "#66ff00", "#33ff00", "#00ff00", "#00ff66", "#00ffcc", "#00ccff", "#0066ff", "#0000ff", "#1b00e6", "#2f00cd", "#3e00b4", "#48009b", "#4b0082", "#580092", "#6600a2", "#7400b3", "#8400c3", "#9400d3"];
-  const subjects = Object.entries(timetable).sort(([_,a],[_b,b])=>{
+  
+  const assemblyAndCCA = {
+    "Assembly":{
+      "mon":[[1500,1600]]
+    },
+    "CCA":{
+      "mon":[[1600,1800]],
+      "fri":[[1600,1800]]
+    }
+  };
+
+  const modifiedTimetable = Object.assign(assemblyAndCCA,timetable);
+  const subjects = Object.entries(modifiedTimetable).sort(([_,a],[_b,b])=>{
     return calculateSmallestDay(a) - calculateSmallestDay(b);
   });
 
