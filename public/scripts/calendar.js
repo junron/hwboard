@@ -1,15 +1,15 @@
 colors = ['#3366CC','#DC3912','#FF9900','#109618','#990099','#3B3EAC','#0099C6','#DD4477','#66AA00','#B82E2E','#316395','#994499','#22AA99','#AAAA11','#6633CC','#E67300','#8B0707','#329262','#5574A6','#3B3EAC'];
-
-function pickTextColor(bgColor, lightColor, darkColor) {
-  var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
-  var r = parseInt(color.substring(0, 2), 16); // hexToR
-  var g = parseInt(color.substring(2, 4), 16); // hexToG
-  var b = parseInt(color.substring(4, 6), 16); // hexToB
-  return (Math.round(((r * 0.299) + (g * 0.587) + (b * 0.114))) >= 180) ?
-    darkColor : lightColor;
-}
+calendar = null;
 
 function convertHomework(arrHomework) {
+  function pickTextColor(bgColor, lightColor, darkColor) {
+    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+    var r = parseInt(color.substring(0, 2), 16); // hexToR
+    var g = parseInt(color.substring(2, 4), 16); // hexToG
+    var b = parseInt(color.substring(4, 6), 16); // hexToB
+    return (Math.round(((r * 0.299) + (g * 0.587) + (b * 0.114))) >= 180) ?
+      darkColor : lightColor;
+  }
   let calendarEvents = [];
   for (const eachHomework of arrHomework) {
     const eventColor = subjectColors[0][subjectColors[1].findIndex(function (findSubject) {return findSubject === eachHomework.subject;})] || "#3B3EAC";
@@ -42,12 +42,12 @@ function updateHomework() {
       }
     }
     const homeworkEvents = convertHomework(hw);
-    $('#calendar').fullCalendar('removeEventSources');
+    calendar.removeAllEventSources();
     const eventsToRender = {
       events: homeworkEvents,
       textColor: 'white'
     };
-    $('#calendar').fullCalendar('addEventSource', eventsToRender);
+    calendar.addEventSource(eventsToRender);
     console.log("Homework Events rendered on calendar");
   });
 }
@@ -76,12 +76,12 @@ function setColors() {
 conn.on("ready",setColors);
 conn.on("data",setColors);
 function changeView(){
-  const {name:currView} = $('#calendar').fullCalendar( 'getView' );
+  const {type:currView} = calendar.view;
     
-  if(currView==="basicWeek"){
-    $('#calendar').fullCalendar('changeView', 'month');
+  if(currView==="dayGridWeek"){
+    calendar.changeView('dayGridMonth');
   }else{
-    $('#calendar').fullCalendar('changeView', 'basicWeek');
+    calendar.changeView('dayGridWeek');
   }
 }
 
@@ -89,29 +89,30 @@ calendarWeekends = false;
 function calendarInit(){
   const calendarPadding = 180;
   const calendarHeight = window.innerHeight - calendarPadding;
-
-  $('#calendar').fullCalendar({
+  
+  calendar = new FullCalendar.Calendar($("#calendar")[0],{
     header: {
       left: 'title',
       center: '',
       right: '',
     },
+    plugins:['dayGrid'],
     weekends:false,
-    defaultView:"basicWeek",
+    defaultView:"dayGridWeek",
     height: calendarHeight,
     editable: false,
     firstDay:1,
     views:{
-      month: {
-        columnHeaderFormat:"ddd"
+      dayGridMonth: {
+        columnHeaderFormat: { weekday: 'short' }
       },
-      basicWeek:{
-        columnHeaderFormat:"ddd D/M"
+      dayGridWeek:{
+        columnHeaderFormat:{ weekday: 'short',month: 'numeric',day: 'numeric', omitCommas: true}
       },
     },
     eventAfterRender: eventObj =>{
-      const start = new Date($('#calendar').fullCalendar('getView').start);
-      const end = new Date($('#calendar').fullCalendar('getView').end);
+      const start = calendar.view.currentStart;
+      const end = calendar.view.currentEnd;
       for(const homework of eventObj.source.rawEventDefs){
         const date = new Date(homework.start);
         if(date>end || date<start){
@@ -121,7 +122,7 @@ function calendarInit(){
         if((dow[0] === "s")){
           if(!calendarWeekends){
             calendarWeekends = true;
-            $('#calendar').fullCalendar('option', {weekends:true});
+            calendar.setOption({weekends:true});
             return;
           }
           return;
@@ -129,11 +130,11 @@ function calendarInit(){
       }
       if(calendarWeekends){
         calendarWeekends = false;
-        $('#calendar').fullCalendar('option', {weekends:false});
+        calendar.setOption({weekends:false});
       }
     },
     viewRender: view=>{
-      if(view.type==="basicWeek"){
+      if(view.type==="dayGridWeek"){
         dateParser.getTermXWeekY(new Date(view.end - 24 * 60 * 60 * 1000)).then(({term,week})=>{
           let weekText = ` (Term ${term} Week ${week})`;
           if(term==="Holiday"){
@@ -147,16 +148,16 @@ function calendarInit(){
         });
       }
     },
-    eventClick: (eventObj,e)=> {
-      const formattedDate = new Date(eventObj.start).toDateString();
+    eventClick: ({el,event})=> {
+      const formattedDate = new Date(event.start).toDateString();
       Framework7App.loadModules(['popover']).then(()=>{
         const popover = Framework7App.popover.create({
-          targetEl: e.target,
+          targetEl: el,
           content: `<div class="popover">
                     <div class="popover-inner">
                     <div class="block">
-                    <h1>${eventObj.title}</h1>
-                    <p>${eventObj.id}<br/>Due ${formattedDate}</p>
+                    <h1>${event._def.title}</h1>
+                    <p>${event.id}<br/>Due ${formattedDate}</p>
                     </div>
                     </div>
                     </div>`
@@ -164,12 +165,18 @@ function calendarInit(){
         popover.open();
       });
     }
-
   });
+  calendar.render();
   const todayDow = Sugar.Date.format(new Date(),"{dow}");
-  if(todayDow[0] === "s" && $('#calendar').fullCalendar( 'getView' ).name==="basicWeek"){
-    $('#calendar').fullCalendar("next");
+  if(todayDow[0] === "s" && calendar.view.type==="dayGridWeek"){
+    calendar.next();
   }
+  $("#calendar-prev").on("click",()=>calendar.prev());
+  $("#calendar-today").on("click",()=>calendar.today());
+  $("#calendar-next").on("click",()=>calendar.next());
+  $("#calendar-mode-toggle").on("click",changeView);
+
+
   setColors();
 }
 

@@ -21,6 +21,7 @@ body {
   font-size: inherit !important;
   font-weight: bold !important;
   overflow-wrap: break-word;
+  font-size: 1.5em;
 }
 
 .fc td, .fc th {
@@ -53,20 +54,4 @@ body {
   opacity: .65 !important;
   margin-left: 12px !important;
   padding: 5px !important;
-}
-
-.fc-button {
-  white-space-collapsing: discard;
-}
-
-.fc-button:hover {
-}
-
-.fc-button:focus {
-}
-
-.fc-state-active {
-}
-
-.fc-state-default {
 }

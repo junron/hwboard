@@ -35,7 +35,7 @@ const Framework7App = new Framework7({
             "/@fullcalendar/core/main.min.css",
             "/@fullcalendar/daygrid/main.min.css",
             "/@fullcalendar/timegrid/main.min.css",
-          ])
+          ], false)
             .then(() => {
               renderTimetable("#hwboard-timetable");
             });
@@ -241,12 +241,16 @@ const Framework7App = new Framework7({
       url: "/calendar",
       on: {
         pageAfterIn: async e => {
-          const sources = ['/scripts/calendar.js', '/styles/calendar.css', '/fullcalendar/dist/fullcalendar.min.css'];
+          const sources = [
+            '/styles/calendar.css',
+            '/@fullcalendar/core/main.min.js',
+            "/@fullcalendar/daygrid/main.min.js",
+            "/@fullcalendar/core/main.min.css",
+            "/@fullcalendar/daygrid/main.min.css",
+            '/scripts/calendar.js',
+          ];
           const target = e.currentTarget;
-          await loadSources(target, sources);
-          while (!$("#calendar").fullCalendar) {
-            continue;
-          }
+          await loadSources(target, sources,false);
           calendarInit();
         }
       },
@@ -311,7 +315,7 @@ const Framework7App = new Framework7({
                 "/@fullcalendar/daygrid/main.min.js",
                 "/@fullcalendar/timegrid/main.min.js",
                 "/@fullcalendar/interaction/main.min.js",
-              ]).then(() => {
+              ], false).then(() => {
                 renderTimetable("#hwboard-add-subject-timetable", true);
                 updateDisabledStatus();
               });
@@ -328,7 +332,7 @@ const Framework7App = new Framework7({
   }
 });
 
-async function loadSources(target, sources) {
+async function loadSources(target, sources, async = true) {
   function loadSource(source) {
     return new Promise((resolve, reject) => {
       if (source.endsWith(".js")) {
@@ -347,7 +351,15 @@ async function loadSources(target, sources) {
       }
     });
   }
-  return Promise.all(sources.map(loadSource));
+  if (async) {
+    return Promise.all(sources.map(loadSource));
+  } else {
+    const results = [];
+    for (const source of sources) {
+      results.push(await loadSource(source));
+    }
+    return results;
+  }
 }
 Framework7App.swipeout.init();
 Framework7App.input.init();
