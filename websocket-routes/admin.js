@@ -110,13 +110,12 @@ module.exports = (socket,io)=>{
 
   socket.on("editSubject",function(msg,callback){
     (async ()=>{
-      throw new Error("This method has been deprecated");
-      // msg = await checkPayloadAndPermissions(socket,msg,3);
-      // const {channel} = msg;
-      // await db.editSubject(msg);
-      // const thisChannel = await db.getUserChannel(socket.username,channel);
-      // io.to(channel).emit("channelData",{[channel]:thisChannel});
-      // return null;
+      msg = await checkPayloadAndPermissions(socket,msg,3);
+      const {channel} = msg;
+      await db.editSubject(msg);
+      const thisChannel = await db.getUserChannel(socket.username,channel);
+      io.to(channel).emit("channelData",{[channel]:thisChannel});
+      return null;
     })()
       .then(callback)
       .catch(e => callback(e.toString()))

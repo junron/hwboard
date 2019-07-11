@@ -1,4 +1,3 @@
-let addSubjectCalendar;
 function timingChangeCallback(calendar,event) {
   addSubjectCalendar = calendar;
   calendar.unselect();
@@ -32,7 +31,7 @@ function checkIfComplete() {
   return $("#subjectInput").val().trim().length !== 0 && events.length !== 0;
 }
 
-function addSubject(){
+function modifySubject(){
   const daysOfWeek = ["sun","mon","tue","wed","thu","fri","sat"];
   const events = addSubjectCalendar.getEvents().filter(e=>e._def.groupId==="addSubject").map(a=>a._instance.range);
   const subjectName = $("#subjectInput").val().trim();
@@ -56,7 +55,8 @@ function addSubject(){
     channel,
     data:parsed
   };
-  conn.emit("addSubject",subjectData,err=>{
+  const editing = location.hash.includes("/popups/edit-subject/");
+  conn.emit((editing?"edit":"add")+"Subject",subjectData,err=>{
     if(err){
       Framework7App.dialog.alert(err.toString());
       throw err;
@@ -67,5 +67,7 @@ function addSubject(){
 
 //Event listeners
 $(document).on("input", ".page-current #subjectInput", updateDisabledStatus);
-$(document).on("click", ".page-current #add-subject", addSubject);
+$(document).one("click", ".page-current #add-subject", ()=>{
+  modifySubject();
+});
 $(document).on("click", ".page-current #reset-timings", resetTimings);
