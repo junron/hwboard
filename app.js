@@ -2,6 +2,14 @@ const Sentry = require('@sentry/node');
 
 let config = require("./loadConfig");
 let reportErrors;
+const {
+  HOSTNAME: hostName,
+  PORT: port,
+  CI: testing,
+  COOKIE_SECRET: cookieSecret,
+  REDUCE_EXPRESS_LOGS: reduceExpressLogs,
+  ALLOW_REPLICATION_WITH_PASSWORD:repPassword
+} = config;
 //Catch errors in loading config
 const getRelease = () =>{
   const fs = require("fs");
@@ -9,6 +17,17 @@ const getRelease = () =>{
   const sha = fs.readFileSync(".git/"+branch,"utf-8").trim();
   return sha;
 };
+
+//Utils
+const http = require('http');
+const express = require("express");
+const app = express();
+const path = require('path');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const websocket = require("./websocket");
+
 const environment = testing ? "CI" : app.get("env") !== "production" ? "dev" : app.get("env");
 if(environment!=="dev"&&reportErrors){
   Sentry.init({ 
@@ -23,25 +42,6 @@ if(environment!=="dev"&&reportErrors){
   });
   app.use(Sentry.Handlers.requestHandler());
 }
-const {
-  HOSTNAME: hostName,
-  PORT: port,
-  CI: testing,
-  COOKIE_SECRET: cookieSecret,
-  REDUCE_EXPRESS_LOGS: reduceExpressLogs,
-  ALLOW_REPLICATION_WITH_PASSWORD:repPassword
-} = config;
-
-//Utils
-const http = require('http');
-const express = require("express");
-const app = express();
-const path = require('path');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const websocket = require("./websocket");
-
 
 //Parsing request body
 app.use(bodyParser.urlencoded({ extended: true }));
