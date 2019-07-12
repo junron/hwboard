@@ -1,10 +1,13 @@
 //DoNt toUcHa my eRRor rePoTer
-Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install();
-Raven.setUserContext({
+Sentry.init({
+  dsn: 'https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491'
+});
+Sentry.setUser({
   username: getCookie("name"),
   email: getCookie("email"),
-  channel:(channel || "none")
 });
+Sentry.setExtra("channel",(channel || "none"));
+
 
 console.log("User context:");
 if(console.table){
@@ -24,7 +27,5 @@ if(console.table){
 
 function setSentryRelease(commitSHA){
   console.log("Current release ",commitSHA);
-  Raven.setRelease({
-    release: commitSHA
-  });
+  Sentry.setExtra("release",commitSHA);
 }

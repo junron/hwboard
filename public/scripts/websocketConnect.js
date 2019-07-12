@@ -13,8 +13,8 @@ conn.on("connect_error",function(e){
     //Some browsers may not support navigator.onLine
     //EDIT: appears that most browsers support but meh
     //https://caniuse.com/#feat=online-status
-    if(typeof Raven !=="undefined"){
-      Raven.captureException(new Error("error checking connection status"));
+    if(typeof Sentry !=="undefined"){
+      Sentry.captureException(new Error("error checking connection status"));
     }
     $("#connection-status").text(`Error checking connection state`);
     return;
@@ -22,8 +22,8 @@ conn.on("connect_error",function(e){
   if(navigator.onLine){
     //Its a server problem, perhaps websocket server not started
     $("#connection-status").text(`Error connecting to server`);
-    if(typeof Raven !=="undefined"){
-      Raven.captureException(e);
+    if(typeof Sentry !=="undefined"){
+      Sentry.captureException(e);
     }
   }else{
     $("#connection-status").text(`Offline`);

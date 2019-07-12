@@ -25,7 +25,7 @@ self.addEventListener('install', function(e) {
         "/scripts/generalForms.js",
         "/scripts/worker.js",
         "/dexie/dist/dexie.min.js",
-        "/scripts/raven.min.js",
+        "/@sentry/browser/build/bundle.min.js",
         "/promise-worker/dist/promise-worker.register.js",
         "/fonts/material.ttf",
         "/scripts/renderer.js",

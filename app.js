@@ -1,18 +1,27 @@
-const Raven = require('raven');
+const Sentry = require('@sentry/node');
 
-let config;
+let config = require("./loadConfig");
 let reportErrors;
 //Catch errors in loading config
-try {
-  //Load config
-  config = require("./loadConfig");
-  reportErrors = config.REPORT_ERRORS;
-}catch(e){
-  Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install();
-  Raven.captureException(e);
-}
-if(reportErrors){
-  Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install();
+const getRelease = () =>{
+  const fs = require("fs");
+  const branch = fs.readFileSync(".git/HEAD","utf-8").replace("ref: ","").trim();
+  const sha = fs.readFileSync(".git/"+branch,"utf-8").trim();
+  return sha;
+};
+const environment = testing ? "CI" : app.get("env") !== "production" ? "dev" : app.get("env");
+if(environment!=="dev"&&reportErrors){
+  Sentry.init({ 
+    dsn: 'https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453',
+    release:getRelease(),
+    environment
+  });
+  
+  Sentry.configureScope(scope => {
+    scope.setTag('env', environment);
+    scope.setUser(config);
+  });
+  app.use(Sentry.Handlers.requestHandler());
 }
 const {
   HOSTNAME: hostName,
@@ -166,7 +175,7 @@ if (app.get("env") === "development" && hostName!="nushhwboard.tk") {
 // production error handler
 // no stackTraces leaked to user
 app.use((err, req, res) => {
-  Raven.captureException(err);
+  Sentry.captureException(err);
   res.status(err.status || 500);
   res.render("error", {
     message: err.message,
