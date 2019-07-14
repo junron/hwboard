@@ -45,22 +45,7 @@ function homeworkSubjectData(data){
   });
 }
 function renderCharts(gradedMode=0){
-  hwboard.getHomework(false).then(async ({promises})=>{
-    const results = await Promise.all(promises);
-    let data;
-    if(results[0].length===undefined){
-      data = results[1];
-    }
-    if(results[1].length===undefined){
-      data = results[0];
-    }
-    if(!data){
-      if(results[0].length>results[1].length){
-        data = results[0];
-      }else{
-        data = results[1];
-      }
-    }
+  hwboard.getHomework(false).then(async data=>{
     if(gradedMode===-1){
       data = data.filter(hw=>!hw.tags.includes("Graded"));
     }
@@ -69,22 +54,7 @@ function renderCharts(gradedMode=0){
     }
     homeworkSubjectChart = renderHomeworkSubjectChart(homeworkSubjectData(data));
   });
-  hwboard.getHomework(false).then(async ({promises})=>{
-    const results = await Promise.all(promises);
-    let data;
-    if(results[0].length===undefined){
-      data = results[1];
-    }
-    if(results[1].length===undefined){
-      data = results[0];
-    }
-    if(!data){
-      if(results[0].length>results[1].length){
-        data = results[0];
-      }else{
-        data = results[1];
-      }
-    }
+  hwboard.getHomework(false).then(async data=>{
     if(gradedMode===-1){
       data = data.filter(hw=>!hw.tags.includes("Graded"));
     }

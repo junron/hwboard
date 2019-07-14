@@ -28,19 +28,7 @@ function convertHomework(arrHomework) {
 
 
 function updateHomework() {
-  hwboard.getHomework(false).then(async ({promises})=>{
-    const p1 = await promises[0];
-    const p2 = await promises[1];
-    let hw;
-    if(p1 && (p1.length>p2.length || !p2)){
-      hw = p1;
-    }else{
-      if(p2){
-        hw = p2;
-      }else{
-        hw = [];
-      }
-    }
+  hwboard.getHomework(false).then(async hw=>{
     const homeworkEvents = convertHomework(hw);
     calendar.removeAllEventSources();
     const eventsToRender = {
@@ -54,7 +42,7 @@ function updateHomework() {
 
 function setColors() {
   subjectColors = [[],[]];
-  hwboard.getChannelData().then(({quickest:data})=>{
+  hwboard.getChannelData().then(data=>{
     let allSubjects = [];
     for (const channel of data) {
       const channelSubjects = channel.subjects;
