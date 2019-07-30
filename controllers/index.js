@@ -2,45 +2,32 @@
 //If your db library return promises, they will be unwrapped automatically
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
 
+const {REPLICATION_HOSTS:repHosts,REPLICATION_PASSWORD:repPass} = require("../loadConfig");
+
 //Load models and stuffs
 const {sequelize} = require("../models");
 
 const admin = require("./admin");
 const homework = require("./homework");
+const channel = require("./channel");
 
 //Generate tables
-async function init(){
+async function init(replication=true){
   await sequelize.sync();
   await homework.generateHomeworkTables();
+  if(replication && module.exports.replication) await module.exports.replication.sync();
   return sequelize.sync();
 }
 
-const arrayToObject = channelArrays => {
-  const result = {};
-  for (const channel of channelArrays){
-    result[channel.name] = channel;
-  }
-  return result;
+let exported = {
+  init,
+  sequelize
 };
 
-module.exports={
-  sequelize,
-  getHomework:homework.getHomework,
-  addHomework:homework.addHomework,
-  editHomework:homework.editHomework,
-  deleteHomework:homework.deleteHomework,
-  init,
-  getUserChannels:admin.getUserChannels,
-  getHomeworkAll:homework.getHomeworkAll,
-  addMember:admin.addMember,
-  arrayToObject,
-  removeMember:admin.removeMember,
-  addSubject:admin.addSubject,
-  getNumTables: homework.getNumTables,
-  whenHomeworkExpires:homework.whenHomeworkExpires,
-  getNumHomework:homework.getNumHomework,
-  removeSubject:admin.removeSubject,
-  addTag:admin.addTag,
-  removeTag:admin.removeTag,
-  editSubject:admin.editSubject
-};
+if(repHosts.length>0 && repPass.length>0){
+  // Override init method to sync with rep host
+  const replication = require("./replication");
+  exported = Object.assign(exported,{replication});
+}
+
+module.exports = {...exported,...admin,...channel,...homework};

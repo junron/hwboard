@@ -1,10 +1,30 @@
 const xss = require("xss");
 const {Channels} = require("../models");
 
-async function getUserChannels(userEmail,permissionLevel=1){
+const arrayToObject = channelArrays => {
+  const result = {};
+  for (const channel of channelArrays){
+    result[channel.name] = channel;
+  }
+  return result;
+};
+
+async function getUserChannels(userEmail,permissionLevel=1,asObject=false){
   const data = await Channels.findAll({
-    raw: true,
+    raw: true
   });
+  if(asObject) return arrayToObject(parseChannelData(userEmail,permissionLevel,data));
+  return parseChannelData(userEmail,permissionLevel,data);
+}
+async function getUserChannel(userEmail,name,permissionLevel=1){
+  const where = {name};
+  const data = await Channels.findOne({
+    raw: true,
+    where
+  });
+  return parseChannelData(userEmail,permissionLevel,[data])[0];
+}
+function parseChannelData(userEmail,permissionLevel,data){
   for(const channel of data){
     channel.members = channel.members.filter(x => x.length>0);
     channel.subjects = channel.subjects.filter(x => x.length>0);
@@ -292,5 +312,7 @@ module.exports = {
   removeMember,
   addTag,
   removeTag,
-  editSubject
+  editSubject,
+  getUserChannel,
+  arrayToObject
 };

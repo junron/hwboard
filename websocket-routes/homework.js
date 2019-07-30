@@ -10,6 +10,8 @@
 const checkPayloadAndPermissions = require("./check-perm");
 const {isObject} = require("../utils");
 const crypto = require('crypto');
+const replication = require("./replication");
+const db = require("../controllers");
 
 const checkHomeworkValid = homework => {
   if(!isObject(homework)){
@@ -39,7 +41,7 @@ const checkHomeworkValid = homework => {
   return true;
 };
 
-module.exports = (socket,io,db)=>{
+module.exports = (socket,io)=>{
 
   //Send uncaught errors, eg `callback is not a function` to client
   const uncaughtErrorHandler = require("./error")(socket);
@@ -57,14 +59,14 @@ module.exports = (socket,io,db)=>{
       //User only requested specific channel
       if(msg.channel){
         //Ensure that user is member of channel
-        if(socket.channels[msg.channel]){
+        if(await db.getUserChannel(socket.username,msg.channel)){
           const data = await db.getHomework(msg.channel,msg.removeExpired);
           return callback(null,data);
         }else{
           throw "You are not a member of this channel";
         }
       }else{
-        const data = await db.getHomeworkAll(socket.channels,msg.removeExpired);
+        const data = await db.getHomeworkAll(await db.getUserChannels(socket.username,1,true),msg.removeExpired);
         return callback(null,data);
       }
     })()
@@ -81,7 +83,8 @@ module.exports = (socket,io,db)=>{
   socket.on("addReq",function(msg,callback){
     (async ()=>{
       msg = await checkPayloadAndPermissions(socket,msg);
-      delete msg.id;
+      // Preserve homework id for replication
+      if(socket.userData.name!=="replication_user") delete msg.id;
       const {channel} = msg;
       if(msg.previousHomeworkHash){
         const currentData = JSON.stringify((await db.getHomework(channel)).filter(homework=>homework.subject===msg.subject));
@@ -96,7 +99,7 @@ module.exports = (socket,io,db)=>{
         }
       }
       checkHomeworkValid(msg);
-      await db.addHomework(channel,msg);
+      const {dataValues:homework} = await db.addHomework(channel,msg);
       //Notify users
       const data = await db.getHomework(channel);
       io.to(channel).emit("data",{channel,data});
@@ -105,6 +108,8 @@ module.exports = (socket,io,db)=>{
         const data = await db.getHomework(channel);
         io.to(channel).emit("data",{channel,data});
       });
+      msg.id = homework.id;
+      await replication(socket,"addReq",msg);
       return callback(null);
     })()
       .catch(e => {console.log(e);callback(e.toString());})
@@ -138,6 +143,7 @@ module.exports = (socket,io,db)=>{
         const data = await db.getHomework(channel);
         io.to(channel).emit("data",{channel,data});
       });
+      await replication(socket,"editReq",msg);
       return callback(null);
     })()
       .catch(e => callback(e.toString()))
@@ -166,6 +172,7 @@ module.exports = (socket,io,db)=>{
       //Notify users
       const data = await db.getHomework(channel);
       io.to(channel).emit("data",{channel,data});
+      await replication(socket,"deleteReq",msg);
       return callback(null);
     })()
       .catch(e => callback(e.toString()))

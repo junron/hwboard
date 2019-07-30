@@ -15,6 +15,7 @@
     "semi":"error",
     "no-console":"off",
     "no-useless-escape":"off",
-    "no-inner-declarations":"warn"
+    "no-inner-declarations":"warn",
+    "require-atomic-updates":"off"
   }
 }

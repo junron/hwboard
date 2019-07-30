@@ -26,14 +26,6 @@ const variables = [
     default:5432,
   },
   {
-    name:"USE_POSTGRES",
-    default:true
-  },
-  {
-    name:"COCKROACH_DB_SECURE",
-    default:true,
-  },
-  {
     name:"CI",
     default:false
   },
@@ -61,7 +53,19 @@ const variables = [
   {
     name:"REDUCE_EXPRESS_LOGS",
     default:true
-  }
+  },
+  {
+    name:"REPLICATION_PASSWORD",
+    default:""
+  },
+  {
+    name:"REPLICATION_HOSTS",
+    default:[]
+  },
+  {
+    name:"ALLOW_REPLICATION_WITH_PASSWORD",
+    default:false
+  },
 ];
 
 let finalSettings = {};

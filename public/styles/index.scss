@@ -84,7 +84,7 @@
 }
 
 .page>.page-content.block {
-  margin-top: 15px;
+  margin-top: calc(var(--f7-navbar-height) + 15px)
 }
 
 .page>.page-content>.block-title {
@@ -205,4 +205,51 @@
   font-size: 11px;
   height: 16px;
   line-height: 16px;
+}
+
+.md #app .navbar {
+  background: #2196f3;
+  color: #fff;
+  font-size: 20px;
+}
+
+#app label.item-checkbox>.icon-checkbox {
+  margin-right:38px;
+  margin-left:initial;
+}
+#app .list .item-floating-label {
+  transform-origin: left bottom;
+}
+#app .navbar a i.icon.icon-back{
+  color:white;
+}
+
+#app .list .item-footer {
+  font-size:12px;
+  color: rgba(0, 0, 0, 0.5);
+}
+.md #app label.item-radio>.icon-radio {
+  margin-right: calc(var(--f7-list-item-media-margin) + var(--f7-checkbox-extra-margin));
+  margin-left:initial;
+}
+
+#app .panel.panel-left div ul li:last-child{
+  color: var( --f7-input-error-text-color);
+}
+
+#app .panel.panel-left {
+  border-right: 1px solid #ddd;
+}
+body,html{
+  overscroll-behavior: contain;
+}
+
+#hwboard-homework-list {
+  user-select: none;
+}
+
+.homework-reload-status{
+  text-align: center;
+  padding: 5%;
+  font-size:24px;
 }

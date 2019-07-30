@@ -6,9 +6,9 @@
  */
 
 const checkPayloadAndPermissions = require("./check-perm");
+const db = require("../controllers");
 
-
-module.exports = (socket,db)=>{
+module.exports = socket=>{
 
   //Send uncaught errors, eg `callback is not a function` to client
   const uncaughtErrorHandler = require("./error")(socket);
@@ -35,8 +35,9 @@ module.exports = (socket,db)=>{
       let subjects = [];
       const promises = [];
       if(msg.channel==""){
-        for(const channelName in socket.channels){
-          for(const subject of socket.channels[channelName].subjects){
+        const channels = await db.getUserChannels(socket.username,1,true);
+        for(const channelName in channels){
+          for(const subject of channels[channelName].subjects){
             msg.subject = subject;
             msg.channel = channelName;
             promises.push(db.getNumHomework(msg));
@@ -49,7 +50,7 @@ module.exports = (socket,db)=>{
       }else{
         msg = await checkPayloadAndPermissions(socket,msg,1);
         const {channel} = msg;
-        subjects = socket.channels[channel].subjects;
+        ({subjects} = await db.getUserChannel(socket.username,channel));
         for(const subject of subjects){
           msg.subject = subject;
           promises.push(db.getNumHomework(msg));
@@ -73,7 +74,7 @@ module.exports = (socket,db)=>{
     (async ()=>{
       let data;
       if(msg.channel ==""){
-        data = await db.getHomeworkAll(socket.channels,false);
+        data = await db.getHomeworkAll(await db.getUserChannels(socket.username,1,true),false);
       }else{
         msg = await checkPayloadAndPermissions(socket,msg,1);
         const {channel} = msg;

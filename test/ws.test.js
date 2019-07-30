@@ -130,4 +130,19 @@ describe("websocket",function(){
       }
     });
   });
+  it("Should be able to delete subjects without homework",function(done){
+    const req = {
+      channel:"testing",
+      subject:"math"
+    };
+    client.emit("removeSubject",req,err=>{
+      expect(err).to.be.null;
+      client.emit("dataReq",{removeExpired:false},async function(err,channels){
+        expect(err).to.be.null;
+        const testChannel = channels.find(c=>c.name===req.channel);
+        console.log(testChannel);
+        done();
+      });
+    });
+  });
 });

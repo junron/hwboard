@@ -1,8 +1,5 @@
 //Get data from indexedDB about specific homework
 async function getExistingInfo(homeworkDataElement){
-  if(typeof homeworkDataElement==="undefined"){
-    homeworkDataElement = lastTouched;
-  }
   const id = $(homeworkDataElement).attr("sqlid");
   const result = await worker.postMessage({
     type:"getSingle",
@@ -65,6 +62,17 @@ Framework7App.loadModules(["sheet"]).then(()=>{
     el:".sheet-modal",
     backdrop:true
   });
+  detailsSheet.on("open",()=>{
+    $(".view.view-main").append($(".sheet-backdrop.backdrop-in"));
+  });
+});
+let ptr = Framework7App.ptr.get('.page-current .ptr-content');
+ptr.on("refresh",async (_,done)=>{
+  $("#hwboard-homework-list").html("<div class=homework-reload-status>Reloading homework...</div>");
+  setTimeout(async ()=>{
+    await loadHomework(true);
+    done();
+  },300);
 });
 function rerenderSort(){
   if(document.getElementById("sort-set-default").checked){

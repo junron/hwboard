@@ -1,20 +1,22 @@
-const Raven = require('raven');
+const Sentry = require('@sentry/node');
 
-let config;
+let config = require("./loadConfig");
 let reportErrors;
+const {
+  HOSTNAME: hostName,
+  PORT: port,
+  CI: testing,
+  COOKIE_SECRET: cookieSecret,
+  REDUCE_EXPRESS_LOGS: reduceExpressLogs,
+  ALLOW_REPLICATION_WITH_PASSWORD:repPassword
+} = config;
 //Catch errors in loading config
-try {
-  //Load config
-  config = require("./loadConfig");
-  reportErrors = config.REPORT_ERRORS;
-}catch(e){
-  Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install();
-  Raven.captureException(e);
-}
-if(reportErrors){
-  Raven.config('https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453').install();
-}
-const {HOSTNAME:hostName,PORT:port,CI:testing,COOKIE_SECRET:cookieSecret,REDUCE_EXPRESS_LOGS:reduceExpressLogs} = config;
+const getRelease = () =>{
+  const fs = require("fs");
+  const branch = fs.readFileSync(".git/HEAD","utf-8").replace("ref: ","").trim();
+  const sha = fs.readFileSync(".git/"+branch,"utf-8").trim();
+  return sha;
+};
 
 //Utils
 const http = require('http');
@@ -26,6 +28,20 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const websocket = require("./websocket");
 
+const environment = testing ? "CI" : app.get("env") !== "production" ? "dev" : app.get("env");
+if(environment!=="dev"&&reportErrors){
+  Sentry.init({ 
+    dsn: 'https://0f3d032052aa41419bcc7ec732bf1d77@sentry.io/1188453',
+    release:getRelease(),
+    environment
+  });
+  
+  Sentry.configureScope(scope => {
+    scope.setTag('env', environment);
+    scope.setUser(config);
+  });
+  app.use(Sentry.Handlers.requestHandler());
+}
 
 //Parsing request body
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -64,15 +80,16 @@ const csp =
 `default-src 'none';
 script-src 'self' 'unsafe-inline';
 style-src 'self' 'unsafe-inline';
-connect-src 'self' https://sentry.io https://latency-check.nushhwboard.tk wss://${hostName} ws://localhost:${port} https://login.microsoftonline.com/;
+connect-src 'self' https://sentry.io https://latency-check.nushhwboard.tk ${hostName ? `wss://${hostName}` : ""} ${port? `ws://localhost:${port}` : ""} https://login.microsoftonline.com/;
 object-src 'none';
 img-src 'self' data:;
 base-uri 'none';
 form-action 'none';
-font-src 'self';
+font-src 'self' data:;
 manifest-src 'self';
 frame-ancestors 'none';
-child-src 'self';`.split("\n").join("");
+worker-src 'self';
+`.split("\n").join("");
 
 app.use(function(req,res,next){
   if(reportErrors){
@@ -106,6 +123,10 @@ app.use("/", require("./routes/su"));
 app.use("/", require("./routes/update"));
 app.use("/", require("./routes/version"));
 app.use("/", require("./routes/info"));
+app.use("/", require("./routes/logout"));
+if(repPassword){
+  app.use("/", require("./routes/replication"));
+}
 
 //Views
 app.set("views", path.join(__dirname, "views"));
@@ -154,7 +175,7 @@ if (app.get("env") === "development" && hostName!="nushhwboard.tk") {
 // production error handler
 // no stackTraces leaked to user
 app.use((err, req, res) => {
-  Raven.captureException(err);
+  Sentry.captureException(err);
   res.status(err.status || 500);
   res.render("error", {
     message: err.message,

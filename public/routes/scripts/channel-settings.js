@@ -36,9 +36,9 @@ async function renderChannelData(data){
     }
     if(data.roots.includes(name)){
       $(".root-only").show();
-      $("a[href='/channels/channelName/settings/popups/add-member/'").attr("href",`/channels/${channel}/settings/popups/add-member/`);
-      $("a[href='/channels/channelName/settings/popups/add-subject/'").attr("href",`/channels/${channel}/settings/popups/add-subject/`);
-      $("a[href='/channels/channelName/settings/popups/add-tag/'").attr("href",`/channels/${channel}/settings/popups/add-tag/`);
+      $("a[href='/channels/channelName/settings/popups/add-member/']").attr("href",`/channels/${channel}/settings/popups/add-member/`);
+      $("a[href='/channels/channelName/settings/popups/add-subject/']").attr("href",`/channels/${channel}/settings/popups/add-subject/`);
+      $("a[href='/channels/channelName/settings/popups/add-tag/']").attr("href",`/channels/${channel}/settings/popups/add-tag/`);
     }
   });
 }
@@ -57,6 +57,7 @@ conn.on("channelData",async function(data){
     const thisChannelData = data[channel];
     document.getElementById("member-list").innerHTML = await render(thisChannelData);
     document.getElementById("subject-list").innerHTML = renderSubjects(thisChannelData);
+    document.getElementById("tag-list").innerHTML = renderTags(thisChannelData);
   }
 });
 function deleteMember(memberElem){
@@ -120,7 +121,6 @@ function deleteTag(tagElem){
         Framework7App.dialog.alert(err.toString());
         throw new Error(err);
       }
-      getChannelData();
       console.log("done");
     });
   });
@@ -128,14 +128,5 @@ function deleteTag(tagElem){
 
 function editSubject(elem){
   const subject = elem.children[0].children[0].children[0].innerText.split("\n")[0];
-  Framework7App.views.main.router.navigate("/channels/"+channel+"/settings/popups/add-subject/");
-  Framework7App.views.main.router.once("routeChanged",()=>{
-    $("#subjectInput").parentsUntil(".item-content").addClass("item-input-with-value");
-    $("#subjectInput").val(subject);
-    setTimeout(()=>{
-      $("#hwboard-add-subject-timetable").fullCalendar("destroy");
-      renderTimetable("#hwboard-add-subject-timetable",true,subject);
-      editingSubject = true;
-    },250);
-  });
+  Framework7App.views.main.router.navigate("/channels/"+channel+"/settings/popups/edit-subject/"+subject);
 }

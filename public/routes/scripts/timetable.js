@@ -1,160 +1,119 @@
-async function renderTimetable(calendarSelector='#hwboard-timetable',showBreaks=false,editSubject=""){
-  const insertBreaks = timetable=>{
-    const days = {};
-    //Show free periods after school
-    const fakeSubject = {
-      "fake subject":{
-        mon:[[1900,1930]],
-        tue:[[1900,1930]],
-        wed:[[1900,1930]],
-        thu:[[1900,1930]],
-        fri:[[1900,1930]],
-      }
-    };
-    timetable = Object.assign(timetable,fakeSubject);
-    if(editSubject){
-      delete timetable[editSubject];
-    }
-    for(const subjectName in timetable){
-      const subject = timetable[subjectName];
-      for(const day in subject){
-        if(days[day]===undefined){
-          days[day] = subject[day];
-        }else{
-          days[day] = [...days[day],...subject[day]];
-        }
-      }
-    }
-    const breaks = {};
-    for(const day in days){
-      let prevLessonEnd = 800;
-      lessons = days[day].sort((a,b)=>a[0]-b[0]);
-      for(const lesson of lessons){
-        //There is a space between previous lesson and next lesson
-        // console.log({day,prevLessonEnd,lesson})
-        if(lesson[0]>prevLessonEnd){
-          const halfHours = [];
-          for(let i = prevLessonEnd;i<lesson[0];i+=30){
-            if(i%100==60){
-              i+=40;
-            }
-            if(i<lesson[0]){
-              halfHours.push([i,(i+30)%100==60 ? i+70 : i+30]);
-            }
-          }
-          if(breaks[day]===undefined){
-            breaks[day] = halfHours;
-          }else{
-            breaks[day].push(...halfHours);
-          }
-        }
-        prevLessonEnd = lesson[1];
-      }
-    }
-    return Object.assign(timetable,{" ":breaks});
-  };
-  if(!Object.keys(timetable).length){
-    await loadHomework();
-  }
-  const assemblyAndCCA = {
-    "Assembly":{
-      "mon":[[1500,1600]]
-    },
-    "CCA":{
-      "mon":[[1600,1800]],
-      "fri":[[1600,1800]]
-    }
-  };
-  const modifiedTimetable = showBreaks ? insertBreaks(Object.assign(assemblyAndCCA,timetable)) : Object.assign(assemblyAndCCA,timetable);
-  const events = [];
-  const numSubjects = Object.keys(modifiedTimetable).length;
-  let range = ['#FF0000','#FF7F00','#FFFF00','#00FF00','#0000FF','#4B0082','#9400D3'];
-  if(numSubjects<7){
-    const num = Math.floor(numSubjects/2);
-    range = range.slice(0,num).concat(range.slice(7-num));
-  }
-  const colors = tinygradient(range).hsv(numSubjects).map(c=>c.toHexString());
-  const getStartTime = subjectName =>{
-    const lessons = modifiedTimetable[subjectName];
-    return lessons[Object.keys(lessons)[0]][0][0];
-  };
-  const subjects = Object.keys(modifiedTimetable).sort((subjectA,subjectB)=>{
-    const subjectATime = getStartTime(subjectA);
-    const subjectBTime = getStartTime(subjectB);
-    if(subjectATime>subjectBTime){
-      return 1;
-    }else if(subjectATime<subjectBTime){
-      return -1;
-    }
-    return 0;
-  });
-  for(let subject of subjects){
-    const lessons = modifiedTimetable[subject];
-    const color = subject===" " ? "#009624" : colors[subjects.indexOf(subject)];
-    for (const dayName in lessons){
-      const dayLessons = lessons[dayName];
-      for(const day of dayLessons){
-        const eventStart = Sugar.Date.create(`${dayName} ${Math.floor(day[0]/100)}:${(day[0] % 100).toString().padStart(2,"0")}`);
-        const eventEnd = Sugar.Date.create(`${dayName} ${Math.floor(day[1]/100)}:${(day[1] % 100).toString().padStart(2,"0")}`);
-        //Ensure that subjects do not get cutoff in a weird way
-        if(window.innerWidth<450){
-          const cutoff = 4;
-          if(subject==="Assembly"){
-            subject = "Assem";
-          }else if(subject.length>cutoff){
-            const subjectParts = subject.split(" ");
-            subject = subjectParts[0].slice(0,cutoff);
-            if(subject[subject.length-1]==="l"){
-              subject = subject.slice(0,3);
-            }
-          }
-        }
-        let textColor = tinycolor.readability(color,"#fff") < 3 ? "black" : "white"; 
-        events.push({
-          title:subject,
-          start:eventStart,
-          end:eventEnd,
-          allDay:false,
-          color,
-          textColor:textColor+`;font-size:1.2em;${showBreaks && color!=="#009624" ? "opacity:0.5;":""}`
+function renderTimetable(selector, editable = false) {
+  const editingSubject = editable && location.hash.includes("/popups/edit-subject/");
+  const editingSubjectName = editingSubject ? location.hash.split("/popups/edit-subject/")[1] : undefined;
 
-        });
-      }
-    }
+  if (editingSubject) {
+    $(".page-current .title").text("Edit subject");
+    addFloating("#subjectInput");
+    $("#subjectInput").val(editingSubjectName);
+    $("#subjectInput").addClass("disabled");
   }
-  $(calendarSelector).fullCalendar({
+
+  const daysOfWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  const parseTime = time =>
+    Math.floor(time / 100).toString().padStart(2, '0') +
+    ":" +
+    (time % 100).toString().padStart(2, '0');
+
+  const config = {
     header: {
       left: '',
       center: '',
-      right: ''
+      right: '',
     },
-    events,
-    columnFormat: 'ddd',
-    defaultView: 'agendaWeek',
-    hiddenDays: [0,6],
-    weekNumbers:  false,
-    minTime: '08:00:00',
-    maxTime: '18:00:00',
-    slotDuration: '00:30:00',
-    slotLabelInterval:{minutes:30},
-    slotLabelFormat:'h:mma',
+    plugins: ['dayGrid', 'timeGrid', 'interaction'],
+    weekends: false,
+    defaultView: "timeGridWeek",
+    editable: false,
+    firstDay: 1,
+    views: {
+      timeGridWeek: {
+        columnHeaderFormat: { weekday: 'short' }
+      },
+    },
+    nowIndicator: true,
     allDaySlot: false,
-    slotEventOverlap:false,
-    nowIndicator:true,
-    eventClick: function({title,start}) {
-      if(title===" " && showBreaks){
-        const selected = $(this).css("background-color") === "rgb(3, 169, 244)";
-        if(!selected){
-          $(this).css("background-color","#03a9f4");
-          $(this).css("border-color","#03a9f4");
-          addSubjectTiming(start);
-        }else{
-          $(this).css("background-color","#009624");
-          $(this).css("border-color","#009624");
-          removeSubjectTiming(start);
+    selectMirror: true,
+    selectOverlap: false,
+    selectable: editable,
+    select: info => timingChangeCallback(calendar, info),
+    selectLongPressDelay: 10,
+    minTime: "08:00",
+    maxTime: "18:00",
+    height: "auto",
+    slotLabelInterval: { minutes: 30 },
+    selectConstraint: {
+      startTime: "08:00",
+      endTime: "18:00",
+    },
+    selectAllow: info => {
+      // Limit to 4 hours
+      return (info.end - info.start) <= 14400000;
+    },
+    eventRender: info => {
+      if (info.event._def.groupId === "addSubject") {
+        if ($(info.el).children(".fc-content").children(".fc-title").length) {
+          $(info.el).children(".fc-content").children(".fc-title").text($(".page-current #subjectInput").val());
+          return;
         }
+        $(info.el).children(".fc-content").append(`<div class='fc-title'>${$(".page-current #subjectInput").val()}</div>`);
       }
+      if (!info.isMirror) return;
+      $(info.el).children(".fc-content").append(`<div class='fc-title'>${$(".page-current #subjectInput").val()}</div>`);
     }
-  });
-}
 
+  };
+  const calculateSmallestDay = times => {
+    let n = 0;
+    for (const day of daysOfWeek) {
+      if (times[day]) {
+        return n + times[day][0][0];
+      }
+      n++;
+    }
+  };
+  const allColors = ["#ff0000", "#ff2000", "#ff4000", "#ff5f00", "#ff7f00", "#ff9900", "#ffb200", "#ffcc00", "#ffe500", "#ffff00", "#ccff00", "#99ff00", "#66ff00", "#33ff00", "#00ff00", "#00ff66", "#00ffcc", "#00ccff", "#0066ff", "#0000ff", "#1b00e6", "#2f00cd", "#3e00b4", "#48009b", "#4b0082", "#580092", "#6600a2", "#7400b3", "#8400c3", "#9400d3"];
+
+  const assemblyAndCCA = {
+    "Assembly": {
+      "mon": [[1500, 1600]]
+    },
+    "CCA": {
+      "mon": [[1600, 1800]],
+      "fri": [[1600, 1800]]
+    }
+  };
+
+  const modifiedTimetable = Object.assign(assemblyAndCCA, timetable);
+  const subjects = Object.entries(modifiedTimetable).sort(([_, a], [_b, b]) => {
+    return calculateSmallestDay(a) - calculateSmallestDay(b);
+  });
+
+  let n = -1;
+  config.events = subjects
+    .map(([subject, times]) => {
+      const isEditingSubject = editingSubject ? subject === editingSubjectName : location.hash.includes("/popups/edit-subject/");
+      n++;
+      const color = allColors[Math.floor(30 / subjects.length) * n] + (location.hash.includes("/timetable/") || isEditingSubject ? "bf" : "40");
+      const textColor = !location.hash.includes("/timetable/") && !isEditingSubject ? "white"
+        : tinycolor.readability(color, "#fff") < 3 ? "black" : "white";
+      return Object.entries(times)
+        .map(([day, [time]]) => {
+          console.log(isEditingSubject);
+          return {
+            groupId: isEditingSubject ? "addSubject" : undefined,
+            title: subject,
+            daysOfWeek: [daysOfWeek.indexOf(day)],
+            startTime: parseTime(time[0]),
+            endTime: parseTime(time[1]),
+            editable: false,
+            color,
+            textColor
+          };
+        });
+    }).flat();
+
+  const calendar = new FullCalendar.Calendar($(selector)[0], config);
+  addSubjectCalendar = calendar;
+  calendar.render();
+}

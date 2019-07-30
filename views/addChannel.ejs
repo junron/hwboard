@@ -62,7 +62,7 @@
   <script src="/framework7/js/framework7.min.js"></script>
   <script src="/scripts/app.js"></script>
   <script src="/scripts/socket.io.js"></script>
-  <script src="/scripts/raven.min.js" crossorigin="anonymous"></script>
+  <script src="/@sentry/browser/build/bundle.min.js" crossorigin="anonymous"></script>
   <script>
   function getCookie(cname) {
     var name = cname + "=";
@@ -82,16 +82,18 @@
 </script>
   <script>
     //DoNt toUcHa my eRRor rePoTer
-    Raven.config('https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491').install()
-    Raven.setUserContext({
-      name: getCookie("name"),
+    Sentry.init({
+      dsn: 'https://6c425ba741364b1abb9832da6dde3908@sentry.io/1199491'
+    });
+    Sentry.setUser({
+      username: getCookie("name"),
       email: getCookie("email"),
-    })
+    });
   </script>
 <script>
   const conn = io(location.origin,{secure: true})
   conn.on("connect_error",function(err){
-    Raven.captureException(err)
+    Sentry.captureException(err)
   })
 
   conn.on("connect",function(){
@@ -107,7 +109,7 @@
     if(input.trim().length==0){
       return Framework7App.dialog.alert("Channel name cannot be empty")
     }
-    conn.emit("addChannel",input.trim(),(err,channelName)=>{
+    conn.emit("addChannel",{name:input.trim()},(err,channelName)=>{
       if(err){
         Framework7App.dialog.alert(err)
         throw err
