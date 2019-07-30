@@ -21,7 +21,7 @@ const Framework7App = new Framework7({
       animate:false,
       on:{
         pageAfterIn:e=>{
-          loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css",'/fullcalendar/dist/fullcalendar.min.css'])
+          loadSources(e.currentTarget,["/routes/scripts/timetable.js","/routes/styles/timetable.css","/fullcalendar/dist/fullcalendar.min.css"])
             .then(()=>{
               while (!$("#hwboard-timetable").fullCalendar){
                 continue;
