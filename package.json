@@ -8,7 +8,9 @@
     "test": "CI=true mocha test --exit",
     "lint": "eslint .",
     "start:dev": "nodemon ./bin/www",
-    "hwboard": "node cli.js"
+    "hwboard": "node cli.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": "https://gitlab.therealorange.com/Jro/hwboard2.git",
   "author": "junron",
@@ -46,7 +48,8 @@
     "sugar-date": "^2.0.6",
     "tinygradient": "^1.0.0",
     "uglify-es": "^3.3.9",
-    "xss": "^1.0.6"
+    "xss": "^1.0.6",
+    "snyk": "^1.230.5"
   },
   "devDependencies": {
     "chai": "^4.2.0",
@@ -54,7 +57,7 @@
     "eslint": "^6.0.1",
     "mocha": "^6.1.4",
     "nodemon": "^1.19.1",
-    "snyk": "^1.192.3",
     "socket.io-client": "^2.2.0"
-  }
+  },
+  "snyk": true
 }
